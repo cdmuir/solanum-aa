@@ -14,9 +14,20 @@ aa_hyperpars = list(
   max_gsw_pseudohypo = 0.25,
   intercept = 0, # later on, change to mu_intercept, sigma_intercept
   slope = 1,  # later on, change to mu_slope, sigma_slope
+  rho_error_resid = 0.9, # correlation coefficient between data points (need to adjust to per second rate)
   sigma_error_intercept = 1,
   sigma_error_resid = 0.1
 )
+
+
+# t = 0:(aa_hyperpars$n_pts - 1)
+# 
+# x = rnorm(aa_hyperpars$n_pts, 0, exp(t * log(aa_hyperpars$rho_error_resid)))
+# sd(0.5 * x)
+# 
+# e1 = o1
+# e2 = e1 * rho + o2
+# arima.sim(n = 10, list(ar = 0.9))
 
 rep_vector = with(aa_hyperpars, str_c("r", str_pad(
   seq_len(n_rep), floor(log10(n_rep)) + 1, "left", "0"
@@ -26,14 +37,20 @@ pts_vector = with(aa_hyperpars, str_c("p", str_pad(
 )))
 leaf_type_vector = c("amphi", "pseudohypo")
 
-aa_pars = with(aa_hyperpars,
-               crossing(nesting(
-                 crossing(rep = rep_vector,
-                          leaf_type = leaf_type_vector),
-                 error_intercept = rnorm(2 * n_rep, 0, sigma_error_intercept)
-               ),
-               pts = pts_vector) |>
-                 mutate(error_resid = rnorm(2 * n_rep * n_pts, 0,  sigma_error_resid)))
+aa_pars = with(
+  aa_hyperpars,
+  crossing(nesting(
+    crossing(rep = rep_vector,
+             leaf_type = leaf_type_vector),
+    error_intercept = rnorm(2 * n_rep, 0, sigma_error_intercept)
+  ),
+  pts = pts_vector) |>
+    split( ~ rep + leaf_type) |>
+    # this will need to be adjusted for time interval between points
+    map_dfr(\(x) mutate(x, error_resid = arima.sim(
+      list(ar = rho_error_resid), n = nrow(x), sd = sigma_error_resid
+    )))
+)
 
 df_sim = with(
   aa_hyperpars,
@@ -56,8 +73,8 @@ df_sim = with(
     )
 )
 
-# ggplot(df_sim, aes(log_gsw, log_A, color = leaf_type)) +
-#   facet_wrap(~rep) +
-#   geom_point()
+ggplot(df_sim, aes(log_gsw, log_A, color = leaf_type)) +
+  facet_wrap(~rep) +
+  geom_point()
 
 write_rds(df_sim, "synthetic-data/df_sim.rds")
