@@ -1,42 +1,16 @@
-# Simulate synthetic data sets to validate statistical models
+# Define parameters for simulate synthetic data sets
 source("r/header.R")
 
+# testing out alternative way to simulate autocorrelation
+elapsed = seq(0, by = 10, length.out = 3)
+exp(-aa_hyperpars$b_autocorr_c * elapsed)
+
+# just testing that arima.sim works the way I think
+arima.sim(list(ar = 0.9), n = 2, sd = 1)
+
+aa_hyperpars = read_rds("objects/aa_hyperpars.rds")
+
 set.seed(20231227)
-
-# hyper parameters
-aa_hyperpars = list(
-  
-  # Experimental design hyperparameters
-  n_acc = 1, # number of accessions
-  n_rep = 1e1, # number of replicates per accession per treatment
-  n_pts = 1e1, # number of points per curve
-  
-  # Chamber environment hyperparameters
-  c_a = 415, # CO2 [umol / mol]
-  flow = 600, # chamber flow rate [umol / s]
-  g_bw = 2.5, # boundary layer conductance to water vapor [mol / m^2 / s]
-  P = 100, # atmospheric pressure [kPa]
-  RH = 0.5, # relative humidity
-  s = 6, #  leaf area [cm^2]
-  T_air = 25, # air temperature [degreeC]
-  T_leaf = 25, # leaf temperature [degreeC]
-  sigma_c = 0.1, # LI6800 IRGA SD of measurement error in CO2 [umol / mol]
-  sigma_w = 0.1, # LI6800 IRGA SD of measurement error in H2O [mmol / mol]
-
-  # Leaf hyperparameters
-  K_amphi = 0.5, # stomatal conductance ratio (treating as constant, but could treat as variable),
-  g_bw = 2.5, # boundary layer conductance to water vapor [mol / m^2 / s]
-  min_gsw_amphi = 0.10,
-  max_gsw_amphi = 0.50,
-  min_gsw_pseudohypo = 0.05,
-  max_gsw_pseudohypo = 0.25,
-  intercept = 0, # later on, change to mu_intercept, sigma_intercept
-  slope = 1,  # later on, change to mu_slope, sigma_slope
-  rho_error_resid = 0.9, # correlation coefficient between data points (need to adjust to per second rate)
-  sigma_error_intercept = 1,
-  sigma_error_resid = 0.1
-)
-
 
 rep_vector = with(aa_hyperpars, str_c("r", str_pad(
   seq_len(n_rep), floor(log10(n_rep)) + 1, "left", "0"

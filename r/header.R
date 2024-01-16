@@ -16,6 +16,7 @@ library(stringr)
 library(tibble)
 library(tidyr)
 
+source("r/functions.R")
 source("r/licor-functions.R")
 
 # format of acceptable IDs
