@@ -37,11 +37,11 @@ li6800_estimate = function(.sims, check = TRUE, ...) {
 
 check_li6800_estimate_sims = function(.sims) {
   check_li6800_simulate_vars(.sims)
-  assert_subset(names(.sims),
-                choices = c("CO2_r",
-                            "CO2_s",
-                            "H2O_r",
-                            "H2O_s"))
+  assert_subset(x = c("CO2_r",
+                      "CO2_s",
+                      "H2O_r",
+                      "H2O_s"),
+                choices = names(.sims))
   assert_numeric(
     .sims$CO2_r,
     finite = TRUE,
@@ -136,11 +136,11 @@ li6800_add_error = function(.sims, .vars, check = TRUE, ...) {
 }
 
 check_li6800_add_error_sims = function(.sims) {
-  assert_subset(names(.sims),
-                choices = c("c_0",
-                            "c_a",
-                            "w_0",
-                            "w_a"))
+  assert_subset(x = c("c_0",
+                      "c_a",
+                      "w_0",
+                      "w_a"),
+                choices = names(.sims),)
   assert_numeric(
     .sims$c_0,
     finite = TRUE,
@@ -171,9 +171,7 @@ check_li6800_add_error_sims = function(.sims) {
 }
 
 check_li6800_add_error_vars = function(.vars) {
-  assert_subset(names(.vars),
-                choices = c("sigma_c",
-                            "sigma_w"))
+  assert_subset(x = c("sigma_c", "sigma_w"), choices = names(.vars))
   assert_numeric(
     .vars$sigma_c,
     finite = TRUE,
@@ -209,7 +207,7 @@ li6800_simulate = function(.vars, check = TRUE, ...) {
   assert_data_frame(.vars)
   assert_flag(check)
   
-  if (check) check_simulate_li6800_vars(.vars)
+  if (check) check_li6800_simulate_vars(.vars)
   
   # intermediate
   # E : transpiration per area [mmol / m^2 / s]
@@ -232,15 +230,14 @@ li6800_simulate = function(.vars, check = TRUE, ...) {
       g_tw = li6800_gtw(g_bw, g_sw, K),
       E = li6800_E(g_tw, w_a, w_i),
       w_0 = li6800_w0(E, flow, s, w_a),
-      c_0 = li6800_c0(A, c_a, flow, s, w_0)
+      c_0 = li6800_c0(A, c_a, flow, s, w_a, w_0)
     )
   
 }
 
 check_li6800_simulate_vars = function(.vars) {
   assert_subset(
-    names(.vars),
-    choices = c(
+    x = c(
       "A",
       "c_a",
       "flow",
@@ -252,57 +249,50 @@ check_li6800_simulate_vars = function(.vars) {
       "s",
       "T_air",
       "T_leaf"
-    )
+    ),
+    choices = names(.vars)
   )
   assert_numeric(.vars$A,
-                 len = 1L,
                  finite = TRUE,
                  any.missing = FALSE)
   assert_numeric(
     .vars$c_a,
-    len = 1L,
     finite = TRUE,
     any.missing = FALSE,
     lower = 0
   )
   assert_numeric(
     .vars$flow,
-    len = 1L,
     finite = TRUE,
     any.missing = FALSE,
     lower = 0
   )
   assert_numeric(
     .vars$g_bw,
-    len = 1L,
     finite = TRUE,
     any.missing = FALSE,
     lower = 0
   )
   assert_numeric(
     .vars$g_sw,
-    len = 1L,
     finite = TRUE,
     any.missing = FALSE,
     lower = 0
   )
   assert_numeric(
     .vars$K,
-    len = 1L,
     finite = FALSE,
     any.missing = FALSE,
     lower = 0
   )
   assert_numeric(
     .vars$P,
-    len = 1L,
     finite = TRUE,
     any.missing = FALSE,
     lower = 0
   )
   assert_numeric(
     .vars$RH,
-    len = 1L,
     finite = TRUE,
     any.missing = FALSE,
     lower = 0,
@@ -310,7 +300,6 @@ check_li6800_simulate_vars = function(.vars) {
   )
   assert_numeric(
     .vars$s,
-    len = 1L,
     finite = TRUE,
     any.missing = FALSE,
     lower = 0,
@@ -318,7 +307,6 @@ check_li6800_simulate_vars = function(.vars) {
   )
   assert_numeric(
     .vars$T_air,
-    len = 1L,
     finite = TRUE,
     any.missing = FALSE,
     lower = 0,
@@ -326,7 +314,6 @@ check_li6800_simulate_vars = function(.vars) {
   )
   assert_numeric(
     .vars$T_leaf,
-    len = 1L,
     finite = TRUE,
     any.missing = FALSE,
     lower = 0,
@@ -369,6 +356,6 @@ li6800_w0 = function(E, flow, s, w_a) {
 }
 
 # Calculate 'true' reference [CO2] following the LI6800 manual
-li6800_c0 = function(A, c_a, flow, s, w_0) {
+li6800_c0 = function(A, c_a, flow, s, w_a, w_0) {
   1000 * (s * A * 100) / (1000 * flow) + c_a * ((1000 - w_0) / (1000 - w_a))
 }
