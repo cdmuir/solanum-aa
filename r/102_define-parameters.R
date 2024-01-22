@@ -1,8 +1,33 @@
 # Define parameters for simulate synthetic data sets
 source("r/header.R")
 
+aa_hyperpars = read_rds("objects/aa_hyperpars.rds")
+
 # testing out alternative way to simulate autocorrelation
-elapsed = seq(0, by = 10, length.out = 3)
+# this code generate correlation matrices for MVN()
+elapsed = c(seq(0, by = 10, length.out = 4), 100)
+m1 = outer(elapsed, elapsed, "-")
+
+R_c = R_w = diag(1, length(elapsed))
+
+ltri_c = exp(-aa_hyperpars$b_autocorr_c * m1[which(lower.tri(m1))])
+utri_c = exp(-aa_hyperpars$b_autocorr_c * t(m1)[which(upper.tri(m1))])
+ltri_w = exp(-aa_hyperpars$b_autocorr_w * m1[which(lower.tri(m1))])
+utri_w = exp(-aa_hyperpars$b_autocorr_w * t(m1)[which(upper.tri(m1))])
+
+R_c[which(lower.tri(R_c))] = ltri_c
+R_c[which(upper.tri(R_c))] = utri_c
+R_w[which(lower.tri(R_w))] = ltri_w
+R_w[which(upper.tri(R_w))] = utri_w
+
+assert_true(isSymmetric(R_c))
+assert_true(isSymmetric(R_w))
+
+  t(R_c)[which(upper.tri(R_c))] =
+  
+R_w[which(lower.tri(R_w))] = R_w[which(upper.tri(R_w))] =
+  exp(-aa_hyperpars$b_autocorr_w * m1[which(lower.tri(m1))])
+
 exp(-aa_hyperpars$b_autocorr_c * elapsed)
 
 # just testing that arima.sim works the way I think
