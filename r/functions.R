@@ -14,3 +14,25 @@ calculate_corr_decay = function(rho, t) {
   # -log(rho) / t = b
   -log(rho) / t
 }
+
+# Function to generate correlation matrix for simulating correlated error
+make_autocorr_matrix = function(elapsed, b_autocorr) {
+  # `elapsed` should be vector of time points in a series
+  assert_numeric(elapsed, lower = 0, any.missing = FALSE, finite = TRUE)
+  # `b_autocorr` should be a number indicating the autocorrelation decay rate
+  assert_number(b_autocorr, lower = 0, finite = TRUE)
+  
+  m1 = outer(elapsed, elapsed, "-")
+  R = diag(1, length(elapsed))
+  
+  ltri = exp(-b_autocorr * m1[which(lower.tri(m1))])
+  utri = exp(-b_autocorr * t(m1)[which(upper.tri(m1))])
+  
+  R[which(lower.tri(R))] = ltri
+  R[which(upper.tri(R))] = utri
+ 
+  assert_true(isSymmetric(R))
+  
+  R
+  
+}

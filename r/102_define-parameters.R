@@ -1,41 +1,17 @@
 # Define parameters for simulate synthetic data sets
 source("r/header.R")
+set.seed(20231227)
 
 aa_hyperpars = read_rds("objects/aa_hyperpars.rds")
 
-# testing out alternative way to simulate autocorrelation
-# this code generate correlation matrices for MVN()
-elapsed = c(seq(0, by = 10, length.out = 4), 100)
-m1 = outer(elapsed, elapsed, "-")
-
-R_c = R_w = diag(1, length(elapsed))
-
-ltri_c = exp(-aa_hyperpars$b_autocorr_c * m1[which(lower.tri(m1))])
-utri_c = exp(-aa_hyperpars$b_autocorr_c * t(m1)[which(upper.tri(m1))])
-ltri_w = exp(-aa_hyperpars$b_autocorr_w * m1[which(lower.tri(m1))])
-utri_w = exp(-aa_hyperpars$b_autocorr_w * t(m1)[which(upper.tri(m1))])
-
-R_c[which(lower.tri(R_c))] = ltri_c
-R_c[which(upper.tri(R_c))] = utri_c
-R_w[which(lower.tri(R_w))] = ltri_w
-R_w[which(upper.tri(R_w))] = utri_w
-
-assert_true(isSymmetric(R_c))
-assert_true(isSymmetric(R_w))
-
-  t(R_c)[which(upper.tri(R_c))] =
-  
-R_w[which(lower.tri(R_w))] = R_w[which(upper.tri(R_w))] =
-  exp(-aa_hyperpars$b_autocorr_w * m1[which(lower.tri(m1))])
-
-exp(-aa_hyperpars$b_autocorr_c * elapsed)
 
 # just testing that arima.sim works the way I think
-arima.sim(list(ar = 0.9), n = 2, sd = 1)
-
-aa_hyperpars = read_rds("objects/aa_hyperpars.rds")
-
-set.seed(20231227)
+# map_dfr(seq_len(1e4), \(x) {
+#   tibble(r = x, name = 1:3, value = arima.sim(list(ar = 0.9), n = 3, sd = 1)[1:3])
+# }) |>
+#   pivot_wider() |>
+#   select(-r) |>
+#   cor()
 
 rep_vector = with(aa_hyperpars, str_c("r", str_pad(
   seq_len(n_rep), floor(log10(n_rep)) + 1, "left", "0"
@@ -57,9 +33,16 @@ aa_pars = with(
     split(~ rep + leaf_type) |>
     # this will need to be adjusted for time interval between points
     map_dfr(\(x) {
+      n = nrow(x)
       x |>
         mutate(
-          error_resid = arima.sim(list(ar = rho_error_resid), n = nrow(x), sd = sigma_error_resid),
+          elapsed = seq(0, length.out = n, by = interval),
+          R_c = list(make_autocorr_matrix(elapsed, b_autocorr_c)),
+          R_w = list(make_autocorr_matrix(elapsed, b_autocorr_w)),
+          b_autocorr_c = b_autocorr_c,
+          b_autocorr_w = b_autocorr_w,
+          error_CO2r = mvnfast::rmvn(1, rep(0, n), R_c[[1]]),
+          # error_resid = arima.sim(list(ar = rho_error_resid), n = nrow(x), sd = sigma_error_resid),
           c_a = c_a,
           flow = flow,
           g_bw = g_bw,
