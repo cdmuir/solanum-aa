@@ -4,7 +4,6 @@ set.seed(20231227)
 
 aa_hyperpars = read_rds("objects/aa_hyperpars.rds")
 
-
 # just testing that arima.sim works the way I think
 # map_dfr(seq_len(1e4), \(x) {
 #   tibble(r = x, name = 1:3, value = arima.sim(list(ar = 0.9), n = 3, sd = 1)[1:3])
@@ -21,7 +20,6 @@ pts_vector = with(aa_hyperpars, str_c("p", str_pad(
 )))
 leaf_type_vector = c("amphi", "pseudohypo")
 
-
 aa_pars = with(
   aa_hyperpars,
   crossing(nesting(
@@ -31,7 +29,6 @@ aa_pars = with(
   ),
   pts = pts_vector) |>
     split(~ rep + leaf_type) |>
-    # this will need to be adjusted for time interval between points
     map_dfr(\(x) {
       n = nrow(x)
       x |>
@@ -41,8 +38,6 @@ aa_pars = with(
           R_w = list(make_autocorr_matrix(elapsed, b_autocorr_w)),
           b_autocorr_c = b_autocorr_c,
           b_autocorr_w = b_autocorr_w,
-          error_CO2r = mvnfast::rmvn(1, rep(0, n), R_c[[1]]),
-          # error_resid = arima.sim(list(ar = rho_error_resid), n = nrow(x), sd = sigma_error_resid),
           c_a = c_a,
           flow = flow,
           g_bw = g_bw,
@@ -52,7 +47,11 @@ aa_pars = with(
           T_air = T_air,
           T_leaf = T_leaf,
           sigma_c = sigma_c,
-          sigma_w = sigma_w 
+          sigma_w = sigma_w,
+          error_CO2r = sigma_c * mvnfast::rmvn(1, rep(0, n), R_c[[1]])[1,],
+          error_CO2s = sigma_c * mvnfast::rmvn(1, rep(0, n), R_c[[1]])[1,],
+          error_H2Or = sigma_w * mvnfast::rmvn(1, rep(0, n), R_w[[1]])[1,],
+          error_H2Os = sigma_w * mvnfast::rmvn(1, rep(0, n), R_w[[1]])[1,]
         )
     })
 )
@@ -82,8 +81,13 @@ df_sim = with(
 
 df_sim = df_sim |>
   li6800_simulate() |>
-  # NEED TO ADD IN TIME-CORRELATED ERROR USING ARIMA
-  li6800_add_error(select(df_sim, sigma_c, sigma_w)) |>
+  # add autocorrelated error
+  mutate(
+    CO2_r = c_0 + error_CO2r,
+    CO2_s = c_a + error_CO2s,
+    H2O_r = w_0 + error_H2Or,
+    H2O_s = w_a + error_H2Os
+  ) |>
   li6800_estimate() 
 
 ggplot(df_sim, aes(g_sw, A, color = leaf_type)) +

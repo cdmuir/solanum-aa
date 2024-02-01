@@ -26,7 +26,6 @@ aa_hyperpars = list(
 
   # Leaf hyperparameters
   K_amphi = 0.5, # stomatal conductance ratio (treating as constant, but could treat as variable),
-  g_bw = 2.5, # boundary layer conductance to water vapor [mol / m^2 / s]
   min_gsw_amphi = 0.10,
   max_gsw_amphi = 0.50,
   min_gsw_pseudohypo = 0.05,
@@ -36,7 +35,7 @@ aa_hyperpars = list(
   sigma_error_intercept = 1
 )
 
-# Calculate the decary, per s, of autocorrelation between data points given the
+# Calculate the decay, per s, of autocorrelation between data points given the
 # desired autocorrelation and interval between data points
 aa_hyperpars$b_autocorr_c = with(aa_hyperpars, calculate_corr_decay(rho_error_c, interval))
 aa_hyperpars$b_autocorr_w = with(aa_hyperpars, calculate_corr_decay(rho_error_w, interval))
