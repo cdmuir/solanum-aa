@@ -37,15 +37,13 @@ df_pred = df_mu |>
     .by = c(leaf_type, rep, pts)
   )
 
-ggplot(mapping = aes(x = g_sw, y = A, color = leaf_type)) +
+ggplot(mapping = aes(x = g_sw, color = leaf_type)) +
   facet_wrap(~ rep) +
   geom_ribbon(
     data = df_pred,
-    mapping = aes(ymin = .lower, ymax = .upper, fill = leaf_type),
+    mapping = aes(y = A, min = .lower, ymax = .upper, fill = leaf_type),
     alpha = 0.5
   ) +
   geom_point(
-    data = df_sim
-  ) +
-  scale_x_log10() +
-  scale_y_log10()
+    data = df_sim, mapping = aes(y = A_hat)
+  )

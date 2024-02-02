@@ -70,6 +70,7 @@ parameters {
   // parameters
   array[n_rep,n_leaf_type] real intercept;
   array[n_pts,n_rep,n_leaf_type] real log_gsw;
+  array[n_pts,n_rep,n_leaf_type] real c_a;
   
 }
 transformed parameters {
@@ -86,13 +87,12 @@ transformed parameters {
 
   // real [CO2] and [H2O]
   array[n_pts,n_rep,n_leaf_type] real c_0 = rep_array(0.0, n_pts,n_rep,n_leaf_type);
-  array[n_pts,n_rep,n_leaf_type] real c_a = rep_array(0.0, n_pts,n_rep,n_leaf_type);
   array[n_pts,n_rep,n_leaf_type] real w_0 = rep_array(0.0, n_pts,n_rep,n_leaf_type);
   array[n_pts,n_rep,n_leaf_type] real w_a = rep_array(0.0, n_pts,n_rep,n_leaf_type);
   
   // error covariance matrices
-  array[n_pts,n_pts,n_rep,n_leaf_type] real S_c;
-  array[n_pts,n_pts,n_rep,n_leaf_type] real S_w;
+  array[n_pts,n_pts,n_rep,n_leaf_type] real R_c;
+  array[n_pts,n_pts,n_rep,n_leaf_type] real R_w;
   
   // calculations
   for (k in 1:n_leaf_type) {
@@ -121,8 +121,8 @@ transformed parameters {
         c_0[i2,j,k]  += li6800_c0(A[i2,j,k], c_a[i2,j,k], flow[i2,j,k], s[i2,j,k], w_a[i2,j,k], w_0[i2,j,k]);
 
         for (i1 in 1:n_pts) {
-          S_c[i1, i2, j, k] = sigma_c * exp(-b_autocorr_c * abs(elapsed[i2, j, k] - elapsed[i1, j, k]));
-          S_w[i1, i2, j, k] = sigma_w * exp(-b_autocorr_w * abs(elapsed[i2, j, k] - elapsed[i1, j, k]));
+          R_c[i1, i2, j, k] = exp(-b_autocorr_c * abs(elapsed[i2, j, k] - elapsed[i1, j, k]));
+          R_w[i1, i2, j, k] = exp(-b_autocorr_w * abs(elapsed[i2, j, k] - elapsed[i1, j, k]));
 
         }
       }
@@ -148,6 +148,7 @@ model {
     intercept[,k] ~ normal(0, sigma_error_intercept);
     for (j in 1:n_rep) {
       for (i in 1:n_pts) {
+        c_a[i,j,k] ~ normal(415, 1);
         log_gsw[i,j,k] ~ normal(-1, 1); // is this the right choice?
       }
     }
@@ -160,7 +161,8 @@ model {
       // placeholders
       row_vector[n_pts] x;
       row_vector[n_pts] y;
-      matrix[n_pts, n_pts] S;
+      matrix[n_pts, n_pts] R;
+      vector[n_pts] s_vec;
       
       // CO2_r
       for (i2 in 1:n_pts) {
@@ -179,41 +181,45 @@ model {
         // print("i = ", i2, "; j = ", j, "; k = ", k, "; K[i,j,k] = ", K[i2,j,k]);
         x[i2] = c_0[i2,j,k];
         y[i2] = CO2_r[i2,j,k];
+        s_vec[i2] = sigma_c;
         for (i1 in 1:n_pts) {
-          S[i1, i2] = S_c[i1, i2, j, k];
+          R[i1, i2] = R_c[i1, i2, j, k];
         }
       }
-      y ~ multi_normal(x, S);
+      y ~ multi_normal(x, quad_form_diag(R, s_vec));
 
       // CO2_s
       for (i2 in 1:n_pts) {
         x[i2] = c_a[i2,j,k];
         y[i2] = CO2_s[i2,j,k];
+        s_vec[i2] = sigma_c;
         for (i1 in 1:n_pts) {
-          S[i1, i2] = S_c[i1, i2, j, k];
+          R[i1, i2] = R_c[i1, i2, j, k];
         }
       }
-      y ~ multi_normal(x, S);
+      y ~ multi_normal(x, quad_form_diag(R, s_vec));
 
       // H2O_r
       for (i2 in 1:n_pts) {
         x[i2] = w_0[i2,j,k];
         y[i2] = H2O_r[i2,j,k];
+        s_vec[i2] = sigma_w;
         for (i1 in 1:n_pts) {
-          S[i1, i2] = S_w[i1, i2, j, k];
+          R[i1, i2] = R_w[i1, i2, j, k];
         }
       }
-      y ~ multi_normal(x, S);
+      y ~ multi_normal(x, quad_form_diag(R, s_vec));
 
       // H2O_s
       for (i2 in 1:n_pts) {
         x[i2] = w_a[i2,j,k];
         y[i2] = H2O_s[i2,j,k];
+        s_vec[i2] = sigma_w;
         for (i1 in 1:n_pts) {
-          S[i1, i2] = S_w[i1, i2, j, k];
+          R[i1, i2] = R_w[i1, i2, j, k];
         }
       }
-      y ~ multi_normal(x, S);
+      y ~ multi_normal(x, quad_form_diag(R, s_vec));
       
     }
   }

@@ -11,10 +11,8 @@ fit_sim = solanum_aa$sample(
   chains = 1L,
   parallel_chains = 1L,
   init = list(
-    list(g_sw = stan_sim$g_sw)
+    list(c_a = stan_sim$CO2_s, g_sw = stan_sim$g_sw)
   )
 )
 
 fit_sim$save_object("objects/fit_sim.rds")
-
-fit_sim$summary("S_c")
