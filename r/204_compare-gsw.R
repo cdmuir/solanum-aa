@@ -4,16 +4,17 @@ source("r/header.R")
 df_sim = read_rds("synthetic-data/df_sim.rds")
 fit_sim = read_rds("objects/fit_sim.rds")
 
-par_string = "^A\\[([0-9]+),([0-9]+),([0-9]+)\\]$"
-df_A = full_join(
-  # Simulated A
+par_string = "^g_sw\\[([0-9]+),([0-9]+),([0-9]+)\\]$"
+
+df_gsw = full_join(
+  # Simulated g_sw
   df_sim |>
-    select(leaf_type, rep, pts, A, A_sim = A_hat),
+    select(leaf_type, rep, pts, g_sw, gsw_sim = gsw_hat),
   
-  # Estimated A
-  fit_sim$draws("A") |>
+  # Estimated g_sw
+  fit_sim$draws("g_sw") |>
     as_draws_df() |>
-    pivot_longer(starts_with("A"), values_to = "A") |>
+    pivot_longer(starts_with("g_sw"), values_to = "g_sw") |>
     mutate(
       pts = str_c(
         "p",
@@ -30,26 +31,26 @@ df_A = full_join(
                             lt == 2 ~ "pseudohypo")
     ) |>
     select(-name, -lt) |>
-    summarize(A_est = median(A), .by = c(pts, rep, leaf_type)),
+    summarize(gsw_est = median(g_sw), .by = c(pts, rep, leaf_type)),
   by = join_by(leaf_type, rep, pts)
 )
 
-# True A versus simulated A
-ggplot(df_A, aes(A, A_sim, color = leaf_type)) +
+# True g_sw versus simulated g_sw
+ggplot(df_gsw, aes(g_sw, gsw_sim, color = leaf_type)) +
   facet_wrap(~ rep) +
   geom_abline(slope = 1, intercept = 0) +
   geom_point() +
   coord_equal()
 
-# Simulated A versus estimated A
-ggplot(df_A, aes(A_sim, A_est, color = leaf_type)) +
+# Simulated g_sw versus estimated g_sw
+ggplot(df_gsw, aes(gsw_sim, gsw_est, color = leaf_type)) +
   facet_wrap(~ rep) +
   geom_abline(slope = 1, intercept = 0) +
   geom_point() +
   coord_equal()
 
-# True A versus estimated A
-ggplot(df_A, aes(A, A_est, color = leaf_type)) +
+# True g_sw versus estimated g_sw
+ggplot(df_gsw, aes(g_sw, gsw_est, color = leaf_type)) +
   facet_wrap(~ rep) +
   geom_abline(slope = 1, intercept = 0) +
   geom_point() +
