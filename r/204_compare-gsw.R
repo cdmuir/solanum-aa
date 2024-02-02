@@ -1,4 +1,4 @@
-# Compare simulated to estimated A values
+# Compare simulated to estimated g_sw values
 source("r/header.R")
 
 df_sim = read_rds("synthetic-data/df_sim.rds")

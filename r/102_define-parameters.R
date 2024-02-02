@@ -72,7 +72,7 @@ df_sim = with(
       max_log_gsw = (leaf_type == "amphi") * log(max_gsw_amphi) +
         (leaf_type == "pseudohypo") * log(max_gsw_pseudohypo),
       log_gsw_real = min_log_gsw + (max_log_gsw - min_log_gsw) * i,
-      log_A_real = intercept + error_intercept + slope * log_gsw_real,
+      log_A_real = mu_intercept + error_intercept + mu_slope * log_gsw_real,
       g_sw = exp(log_gsw_real),
       A = exp(log_A_real),
       K = K_amphi * 1 / (leaf_type == "amphi")

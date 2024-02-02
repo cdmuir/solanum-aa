@@ -30,8 +30,8 @@ aa_hyperpars = list(
   max_gsw_amphi = 0.50,
   min_gsw_pseudohypo = 0.05,
   max_gsw_pseudohypo = 0.25,
-  intercept = 0, # later on, change to mu_intercept, sigma_intercept
-  slope = 1,  # later on, change to mu_slope, sigma_slope
+  mu_intercept = 0, # later on, change to mu_intercept, sigma_intercept
+  mu_slope = 1,  # later on, change to mu_slope, sigma_slope
   sigma_error_intercept = 1
 )
 

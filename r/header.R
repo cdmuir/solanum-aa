@@ -1,5 +1,6 @@
 rm(list = ls())
 
+library(bayesplot)
 library(brms)
 library(checkmate)
 library(cmdstanr)
