@@ -14,6 +14,7 @@ library(readr)
 library(scales)
 library(stringr)
 library(tibble)
+library(tidybayes)
 library(tidyr)
 
 source("r/functions.R")

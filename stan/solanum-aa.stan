@@ -137,7 +137,7 @@ model {
   b_autocorr_c ~ normal(0, 1); 
   b_autocorr_w ~ normal(0, 1); 
   // sigma_c ~ gamma(2, 0); // https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations
-  sigma_w ~ normal(0, 1); 
+  sigma_c ~ normal(0, 1); 
   sigma_w ~ normal(0, 1); 
   mu_intercept ~ normal(0, 10);
   mu_slope ~ normal(0, 10);
@@ -200,7 +200,7 @@ model {
         x[i2] = w_0[i2,j,k];
         y[i2] = H2O_r[i2,j,k];
         for (i1 in 1:n_pts) {
-          S[i1, i2] = S_c[i1, i2, j, k];
+          S[i1, i2] = S_w[i1, i2, j, k];
         }
       }
       y ~ multi_normal(x, S);
@@ -210,7 +210,7 @@ model {
         x[i2] = w_a[i2,j,k];
         y[i2] = H2O_s[i2,j,k];
         for (i1 in 1:n_pts) {
-          S[i1, i2] = S_c[i1, i2, j, k];
+          S[i1, i2] = S_w[i1, i2, j, k];
         }
       }
       y ~ multi_normal(x, S);

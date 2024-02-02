@@ -16,3 +16,5 @@ fit_sim = solanum_aa$sample(
 )
 
 fit_sim$save_object("objects/fit_sim.rds")
+
+fit_sim$summary("S_c")
