@@ -60,8 +60,8 @@ aa_pars = with(
 df_sim = with(
   aa_hyperpars,
   crossing(
-    rep = rep_vector,
     leaf_type = leaf_type_vector,
+    rep = rep_vector,
     nesting(pts = pts_vector,
             i = seq(0, 1, length.out = n_pts))
   ) |>

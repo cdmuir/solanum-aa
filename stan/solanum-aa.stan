@@ -70,13 +70,14 @@ parameters {
   // parameters
   array[n_rep,n_leaf_type] real intercept;
   array[n_pts,n_rep,n_leaf_type] real log_gsw;
-  array[n_pts,n_rep,n_leaf_type] real log_A;
+  
 }
 transformed parameters {
   
-  array[n_pts,n_rep,n_leaf_type] real g_sw = exp(log_gsw);
-  array[n_pts,n_rep,n_leaf_type] real A = exp(log_A);
-
+  array[n_pts,n_rep,n_leaf_type] real log_A = rep_array(0.0, n_pts,n_rep,n_leaf_type);
+  array[n_pts,n_rep,n_leaf_type] real A = rep_array(0.0, n_pts,n_rep,n_leaf_type);
+  array[n_pts,n_rep,n_leaf_type] real g_sw  = exp(log_gsw);
+  
   // calculated quantities
   array[n_pts,n_rep,n_leaf_type] real w_i = rep_array(0.0, n_pts,n_rep,n_leaf_type);
   array[n_pts,n_rep,n_leaf_type] real g_tc = rep_array(0.0, n_pts,n_rep,n_leaf_type);
@@ -97,6 +98,9 @@ transformed parameters {
   for (k in 1:n_leaf_type) {
     for (j in 1:n_rep) {
       for (i2 in 1:n_pts) {
+        
+        log_A[i2,j,k] += mu_intercept + intercept[j,k] + mu_slope * log_gsw[i2,j,k];
+        A[i2,j,k] += exp(log_A[i2,j,k]);
         
         w_i[i2,j,k]  += li6800_svp(T_leaf[i2,j,k], P[i2,j,k]);
         w_a[i2,j,k]  += RH[i2,j,k] * li6800_svp(T_air[i2,j,k], P[i2,j,k]);
@@ -128,36 +132,28 @@ transformed parameters {
 model {
   
   // placeholders
-  array[n_pts,n_rep,n_leaf_type] real mu = rep_array(0.0, n_pts,n_rep,n_leaf_type);
-  // brms syntax (change to my own once I understand)
-  // array storing lagged residuals
-  array[n_pts,n_rep,n_leaf_type] real Err = rep_array(0, n_pts,n_rep,n_leaf_type);
-  array[n_pts,n_rep,n_leaf_type] real err;  // actual residuals
-  
+
   // priors on hyperparameters
   b_autocorr_c ~ normal(0, 1); 
   b_autocorr_w ~ normal(0, 1); 
-  sigma_c ~ gamma(2, 0); // https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations
-  sigma_w ~ gamma(2, 0); 
+  // sigma_c ~ gamma(2, 0); // https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations
+  sigma_w ~ normal(0, 1); 
+  sigma_w ~ normal(0, 1); 
   mu_intercept ~ normal(0, 10);
   mu_slope ~ normal(0, 10);
-  sigma_error_intercept ~ gamma(2, 0);
+  sigma_error_intercept ~ normal(0, 1);
 
-  // priors on parameters (WHAT GOES HERE?)
-  // array[n_rep,n_leaf_type] real intercept;
-  // array[n_pts,n_rep,n_leaf_type] real log_gsw;
-  // array[n_pts,n_rep,n_leaf_type] real log_A;
-  // array[n_pts,n_rep,n_leaf_type] real c_0;
-  // array[n_pts,n_rep,n_leaf_type] real c_a;
-  // array[n_pts,n_rep,n_leaf_type] real w_0;
-  // array[n_pts,n_rep,n_leaf_type] real w_a;
-  
-  // likelihood
+  // priors on parameters
   for (k in 1:n_leaf_type) {
     intercept[,k] ~ normal(0, sigma_error_intercept);
+    for (j in 1:n_rep) {
+      for (i in 1:n_pts) {
+        log_gsw[i,j,k] ~ normal(-1, 1); // is this the right choice?
+      }
+    }
   }
   
-  // model
+  // likelihood
   for (k in 1:n_leaf_type) {
     for (j in 1:n_rep) {
       
@@ -168,6 +164,19 @@ model {
       
       // CO2_r
       for (i2 in 1:n_pts) {
+        // print("i = ", i2, "; j = ", j, "; k = ", k, "; c_0[i,j,k] = ", c_0[i2,j,k]);
+        // print("i = ", i2, "; j = ", j, "; k = ", k, "; A[i,j,k] = ", A[i2,j,k]);
+        // print("i = ", i2, "; j = ", j, "; k = ", k, "; c_a[i,j,k] = ", c_a[i2,j,k]);
+        // print("i = ", i2, "; j = ", j, "; k = ", k, "; flow[i,j,k] = ", flow[i2,j,k]);
+        // print("i = ", i2, "; j = ", j, "; k = ", k, "; s[i,j,k] = ", s[i2,j,k]);
+        // print("i = ", i2, "; j = ", j, "; k = ", k, "; w_a[i,j,k] = ", w_a[i2,j,k]);
+        // print("i = ", i2, "; j = ", j, "; k = ", k, "; w_0[i,j,k] = ", w_0[i2,j,k]);
+        // print("i = ", i2, "; j = ", j, "; k = ", k, "; E[i,j,k] = ", E[i2,j,k]);
+        // print("i = ", i2, "; j = ", j, "; k = ", k, "; w_i[i,j,k] = ", w_i[i2,j,k]);
+        // print("i = ", i2, "; j = ", j, "; k = ", k, "; g_tw[i,j,k] = ", g_tw[i2,j,k]);
+        // print("i = ", i2, "; j = ", j, "; k = ", k, "; g_sw[i,j,k] = ", g_sw[i2,j,k]);
+        // print("i = ", i2, "; j = ", j, "; k = ", k, "; g_bw[i,j,k] = ", g_bw[i2,j,k]);
+        // print("i = ", i2, "; j = ", j, "; k = ", k, "; K[i,j,k] = ", K[i2,j,k]);
         x[i2] = c_0[i2,j,k];
         y[i2] = CO2_r[i2,j,k];
         for (i1 in 1:n_pts) {
@@ -176,19 +185,35 @@ model {
       }
       y ~ multi_normal(x, S);
 
-      // mu[1,j,k] += mu_intercept + intercept[j,k] + slope * log_gsw[1,j,k];
-      // err[1,j,k] = log_A[1,j,k] - mu[1,j,k];
-      // y = log_A[1,j,k];
-      // y ~ normal(mu[1,j,k], sigma_error_resid);
-      //   
-      // for (i in 2:n_pts) {
-      //   mu[i,j,k] += mu_intercept + intercept[j,k] + slope * log_gsw[i,j,k];
-      //   err[i,j,k] = log_A[i,j,k] - mu[i,j,k];
-      //   Err[i,j,k] = err[i-1,j,k];
-      //   mu[i,j,k] += Err[i,j,k] * rho_error_resid;
-      //   y = log_A[i,j,k];
-      //   y ~ normal(mu[i,j,k], sigma_error_resid);
-      // }
+      // CO2_s
+      for (i2 in 1:n_pts) {
+        x[i2] = c_a[i2,j,k];
+        y[i2] = CO2_s[i2,j,k];
+        for (i1 in 1:n_pts) {
+          S[i1, i2] = S_c[i1, i2, j, k];
+        }
+      }
+      y ~ multi_normal(x, S);
+
+      // H2O_r
+      for (i2 in 1:n_pts) {
+        x[i2] = w_0[i2,j,k];
+        y[i2] = H2O_r[i2,j,k];
+        for (i1 in 1:n_pts) {
+          S[i1, i2] = S_c[i1, i2, j, k];
+        }
+      }
+      y ~ multi_normal(x, S);
+
+      // H2O_s
+      for (i2 in 1:n_pts) {
+        x[i2] = w_a[i2,j,k];
+        y[i2] = H2O_s[i2,j,k];
+        for (i1 in 1:n_pts) {
+          S[i1, i2] = S_c[i1, i2, j, k];
+        }
+      }
+      y ~ multi_normal(x, S);
       
     }
   }
