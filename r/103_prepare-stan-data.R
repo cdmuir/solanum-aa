@@ -10,7 +10,7 @@ list.files("synthetic-data", pattern = "df_sim[0-9]{4}.rds", full.names = TRUE) 
     
     stan_sim = list(
       n_pts = length(unique(df_sim$pts)),
-      n_rep = length(unique(df_sim$rep)),
+      n_id = length(unique(df_sim$id)),
       n_leaf_type = length(unique(df_sim$leaf_type))
     )
     
@@ -34,7 +34,7 @@ list.files("synthetic-data", pattern = "df_sim[0-9]{4}.rds", full.names = TRUE) 
         glue(
           "stan_sim${var} = array(df_sim${var}, dim = c({i}, {j}, {k}))",
           i = stan_sim$n_pts,
-          j = stan_sim$n_rep,
+          j = stan_sim$n_id,
           k = stan_sim$n_leaf_type
         )
       }) |>

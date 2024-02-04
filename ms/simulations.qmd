@@ -1,0 +1,19 @@
+---
+title: "Simulating and fitting synthetic data"
+format: pdf
+editor: visual
+---
+
+## Purpose
+
+We are simulating and fitting synthetic data sets to develop and validate the statistical model for later analysis. This will eventually go in the supporting information.
+
+## Hyperparameters
+
+Here we explaining hyperparameter choices.
+
+`mu_intercept`: this is the value of $A$ where $\text{log}(g_text{sw}) = 0$ or $g_text{sw} = 1$, so this should be close to $A_\text{max}$, which typically varies between 10 and 50 $\mu~\text{mol}~\text{m}^{-2}~\text{s}^{-1}$. So let's say mean of 30 (for high light).
+
+`sigma_intercept_rep`: variation in intercept among replicates within accession. Let's say 2?
+
+, 20 / 3)

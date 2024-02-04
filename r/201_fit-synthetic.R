@@ -13,7 +13,7 @@ list.files("synthetic-data", pattern = "stan_sim[0-9]{4}.rds", full.names = TRUE
       chains = 1L,
       parallel_chains = 1L,
       init = list(
-        list(c_a = stan_sim$CO2_s, g_sw = stan_sim$g_sw)
+        list(c_a = stan_sim$CO2_s, log_gsw = log(stan_sim$g_sw))
       ),
       seed = 20240203
     )

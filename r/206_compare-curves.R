@@ -1,4 +1,5 @@
 # Compare simulated to estimated A-gsw curves
+# NOT SURE HOW/IF I SHOULD SCALE THIS UP FOR MANY SIMULATIONS
 source("r/header.R")
 
 df_sim = read_rds("synthetic-data/df_sim.rds")

@@ -41,21 +41,21 @@ functions {
 }
 data {
   int<lower=0> n_pts;
-  int<lower=0> n_rep;
+  int<lower=0> n_id;
   int<lower=0> n_leaf_type;  
-  array[n_pts,n_rep,n_leaf_type] real elapsed;
-  array[n_pts,n_rep,n_leaf_type] real flow;
-  array[n_pts,n_rep,n_leaf_type] real g_bw;
-  array[n_pts,n_rep,n_leaf_type] real K;
-  array[n_pts,n_rep,n_leaf_type] real P;
-  array[n_pts,n_rep,n_leaf_type] real RH;
-  array[n_pts,n_rep,n_leaf_type] real s;
-  array[n_pts,n_rep,n_leaf_type] real T_air;
-  array[n_pts,n_rep,n_leaf_type] real T_leaf;
-  array[n_pts,n_rep,n_leaf_type] real CO2_r;
-  array[n_pts,n_rep,n_leaf_type] real CO2_s;
-  array[n_pts,n_rep,n_leaf_type] real H2O_r;
-  array[n_pts,n_rep,n_leaf_type] real H2O_s;
+  array[n_pts,n_id,n_leaf_type] real elapsed;
+  array[n_pts,n_id,n_leaf_type] real flow;
+  array[n_pts,n_id,n_leaf_type] real g_bw;
+  array[n_pts,n_id,n_leaf_type] real K;
+  array[n_pts,n_id,n_leaf_type] real P;
+  array[n_pts,n_id,n_leaf_type] real RH;
+  array[n_pts,n_id,n_leaf_type] real s;
+  array[n_pts,n_id,n_leaf_type] real T_air;
+  array[n_pts,n_id,n_leaf_type] real T_leaf;
+  array[n_pts,n_id,n_leaf_type] real CO2_r;
+  array[n_pts,n_id,n_leaf_type] real CO2_s;
+  array[n_pts,n_id,n_leaf_type] real H2O_r;
+  array[n_pts,n_id,n_leaf_type] real H2O_s;
 }
 parameters {
   // hyperparameters
@@ -63,45 +63,50 @@ parameters {
   real<lower=0> b_autocorr_w; 
   real<lower=0> sigma_c; 
   real<lower=0> sigma_w; 
+
   real mu_intercept;
+  real<lower=0> sigma_intercept_id;
+  real<lower=0> sigma_intercept_error;
+
   real mu_slope;
-  real<lower=0> sigma_error_intercept;
+  real<lower=0> sigma_slope_id;
   
   // parameters
-  array[n_rep,n_leaf_type] real intercept;
-  array[n_pts,n_rep,n_leaf_type] real log_gsw;
-  array[n_pts,n_rep,n_leaf_type] real c_a;
+  array[n_id] real b_intercept_id;
+  array[n_id,n_leaf_type] real b_intercept_error;
+  array[n_id] real b_slope_id;
+  array[n_pts,n_id,n_leaf_type] real log_gsw;
+  array[n_pts,n_id,n_leaf_type] real c_a;
   
 }
 transformed parameters {
   
-  array[n_pts,n_rep,n_leaf_type] real log_A = rep_array(0.0, n_pts,n_rep,n_leaf_type);
-  array[n_pts,n_rep,n_leaf_type] real A = rep_array(0.0, n_pts,n_rep,n_leaf_type);
-  array[n_pts,n_rep,n_leaf_type] real g_sw  = exp(log_gsw);
+  array[n_pts,n_id,n_leaf_type] real A = rep_array(0.0, n_pts,n_id,n_leaf_type);
+  array[n_pts,n_id,n_leaf_type] real g_sw  = exp(log_gsw);
   
   // calculated quantities
-  array[n_pts,n_rep,n_leaf_type] real w_i = rep_array(0.0, n_pts,n_rep,n_leaf_type);
-  array[n_pts,n_rep,n_leaf_type] real g_tc = rep_array(0.0, n_pts,n_rep,n_leaf_type);
-  array[n_pts,n_rep,n_leaf_type] real g_tw = rep_array(0.0, n_pts,n_rep,n_leaf_type);
-  array[n_pts,n_rep,n_leaf_type] real E = rep_array(0.0, n_pts,n_rep,n_leaf_type);
+  array[n_pts,n_id,n_leaf_type] real w_i = rep_array(0.0, n_pts,n_id,n_leaf_type);
+  array[n_pts,n_id,n_leaf_type] real g_tc = rep_array(0.0, n_pts,n_id,n_leaf_type);
+  array[n_pts,n_id,n_leaf_type] real g_tw = rep_array(0.0, n_pts,n_id,n_leaf_type);
+  array[n_pts,n_id,n_leaf_type] real E = rep_array(0.0, n_pts,n_id,n_leaf_type);
 
   // real [CO2] and [H2O]
-  array[n_pts,n_rep,n_leaf_type] real c_0 = rep_array(0.0, n_pts,n_rep,n_leaf_type);
-  array[n_pts,n_rep,n_leaf_type] real w_0 = rep_array(0.0, n_pts,n_rep,n_leaf_type);
-  array[n_pts,n_rep,n_leaf_type] real w_a = rep_array(0.0, n_pts,n_rep,n_leaf_type);
+  array[n_pts,n_id,n_leaf_type] real c_0 = rep_array(0.0, n_pts,n_id,n_leaf_type);
+  array[n_pts,n_id,n_leaf_type] real w_0 = rep_array(0.0, n_pts,n_id,n_leaf_type);
+  array[n_pts,n_id,n_leaf_type] real w_a = rep_array(0.0, n_pts,n_id,n_leaf_type);
   
   // error covariance matrices
-  array[n_pts,n_pts,n_rep,n_leaf_type] real R_c;
-  array[n_pts,n_pts,n_rep,n_leaf_type] real R_w;
+  array[n_pts,n_pts,n_id,n_leaf_type] real R_c;
+  array[n_pts,n_pts,n_id,n_leaf_type] real R_w;
   
   // calculations
   for (k in 1:n_leaf_type) {
-    for (j in 1:n_rep) {
+    for (j in 1:n_id) {
       for (i2 in 1:n_pts) {
         
-        log_A[i2,j,k] += mu_intercept + intercept[j,k] + mu_slope * log_gsw[i2,j,k];
-        A[i2,j,k] += exp(log_A[i2,j,k]);
-        
+        A[i2,j,k] += mu_intercept + b_intercept_id[j] + b_intercept_error[j,k] + 
+          (mu_slope + b_slope_id[j]) * log_gsw[i2,j,k];
+
         w_i[i2,j,k]  += li6800_svp(T_leaf[i2,j,k], P[i2,j,k]);
         w_a[i2,j,k]  += RH[i2,j,k] * li6800_svp(T_air[i2,j,k], P[i2,j,k]);
         
@@ -132,21 +137,28 @@ transformed parameters {
 model {
   
   // placeholders
-
+  // nothing right now
+  
   // priors on hyperparameters
   b_autocorr_c ~ normal(0, 1); 
   b_autocorr_w ~ normal(0, 1); 
   // sigma_c ~ gamma(2, 0); // https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations
   sigma_c ~ normal(0, 1); 
   sigma_w ~ normal(0, 1); 
-  mu_intercept ~ normal(0, 10);
-  mu_slope ~ normal(0, 10);
-  sigma_error_intercept ~ normal(0, 1);
+  
+  mu_intercept ~ normal(30, 10);
+  sigma_intercept_id ~ normal(0, 10);
+  sigma_intercept_error ~ normal(0, 10);
+
+  mu_slope ~ normal(10, 5);
+  sigma_intercept_error ~ normal(0, 1);
 
   // priors on parameters
+  b_intercept_id ~ normal(0, sigma_intercept_id);
+  b_slope_id ~ normal(0, sigma_slope_id);
   for (k in 1:n_leaf_type) {
-    intercept[,k] ~ normal(0, sigma_error_intercept);
-    for (j in 1:n_rep) {
+    b_intercept_error[,k] ~ normal(0, sigma_intercept_error);
+    for (j in 1:n_id) {
       for (i in 1:n_pts) {
         c_a[i,j,k] ~ normal(415, 1);
         log_gsw[i,j,k] ~ normal(-1, 1); // is this the right choice?
@@ -156,7 +168,7 @@ model {
   
   // likelihood
   for (k in 1:n_leaf_type) {
-    for (j in 1:n_rep) {
+    for (j in 1:n_id) {
       
       // placeholders
       row_vector[n_pts] x;

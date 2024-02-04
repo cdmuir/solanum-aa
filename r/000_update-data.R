@@ -4,7 +4,9 @@ source("r/header.R")
 # For now, data on UH Google Drive.
 # Change path to  "../../data/adaptive-amphistomy" after data collection is complete
 
-c("plant-info", "stomata") |>
+
+# rh_curves should come from filtered data eventually
+c("plant-info", "rh_curves", "stomata") |>
   walk(\(.x) {
     file.copy(
       glue(
