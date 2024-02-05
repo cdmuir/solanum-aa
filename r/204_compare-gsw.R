@@ -13,12 +13,12 @@ n_dat |>
     df_sim = read_rds(glue("synthetic-data/df_sim{.x}.rds"))
     fit_sim = read_rds(glue("objects/fit_sim{.x}.rds"))
     
-    par_string = "^g_sw\\[([0-9]+),([0-9]+),([0-9]+)\\]$"
+    par_string = "^g_sw\\[([0-9]+),([0-9]+),([0-9]+),([0-9]+)\\]$"
     
     df_gsw = full_join(
       # Simulated g_sw
       df_sim |>
-        select(leaf_type, id, pts, g_sw, gsw_sim = gsw_hat),
+        select(light_treatment, leaf_type, id, pts, g_sw, gsw_sim = gsw_hat),
       
       # Estimated g_sw
       fit_sim$draws("g_sw") |>
@@ -32,16 +32,19 @@ n_dat |>
           ),
           id = LETTERS[str_replace(name, par_string, "\\2") |>
                          as.numeric()],
-          lt = str_replace(name, par_string, "\\3"),
-          leaf_type = case_when(lt == 1 ~  "amphi",
-                                lt == 2 ~ "pseudohypo")
+          lt1 = str_replace(name, par_string, "\\3"),
+          leaf_type = case_when(lt1 == 1 ~  "amphi",
+                                lt1 == 2 ~ "pseudohypo"),
+          lt2 = str_replace(name, par_string, "\\4"),
+          light_treatment = case_when(lt2 == 1 ~  "high",
+                                      lt2 == 2 ~ "low")
         ) |>
-        select(-name,-lt) |>
+        select(-name, -lt1, -lt2) |>
         summarize(
           gsw_est = median(g_sw),
-          .by = c(pts, id, leaf_type)
+          .by = c(pts, id, leaf_type, light_treatment)
         ),
-      by = join_by(leaf_type, id, pts)
+      by = join_by(light_treatment, leaf_type, id, pts)
     )
     
     # Summarize fit

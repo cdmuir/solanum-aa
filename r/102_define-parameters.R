@@ -13,6 +13,7 @@ aa_hyperpars |>
       seq_len(n_pts), floor(log10(n_pts)) + 1, "left", "0"
     )))
     leaf_type_vector = c("amphi", "pseudohypo")
+    light_treatment_vector = c("high", "low")
     
     aa_pars = 
       with(.hpar,
@@ -25,15 +26,22 @@ aa_hyperpars |>
                  tibble(
                    id = id_vector,
                    b_intercept_id = rnorm(n_id, 0, sigma_intercept_id),
-                   b_slope_id = rnorm(n_id, 0, sigma_slope_id)
+                   b_intercept_low_light_id = rnorm(n_id, 0, sigma_intercept_low_light_id),
+                   
+                   b_slope_id = rnorm(n_id, 0, sigma_slope_id),
+                   b_slope_low_light_id = rnorm(n_id, 0, sigma_slope_low_light_id)
                  ),
-                 leaf_type = leaf_type_vector
+                 leaf_type = leaf_type_vector,
+                 light_treatment = light_treatment_vector
                  
                  ),
                
                # leaf_type:id coefficients (should change to leaf_type:accc_id
                # when acc is added)
-               b_intercept_error = rnorm(2 * n_id, 0, sigma_intercept_error)
+               b_intercept_error = rnorm(
+                 length(leaf_type_vector) * length(light_treatment_vector) * n_id, 
+                 0, sigma_intercept_error
+                )
              ),
              pts = pts_vector
            ) |>
@@ -68,19 +76,24 @@ aa_hyperpars |>
     df_sim = with(
       .hpar,
       crossing(
+        light_treatment = light_treatment_vector,
         leaf_type = leaf_type_vector,
         id = id_vector,
         nesting(pts = pts_vector,
                 i = seq(0, 1, length.out = n_pts))
       ) |>
-        full_join(aa_pars, by = join_by(id, pts, leaf_type)) |>
+        full_join(aa_pars, by = join_by(id, pts, leaf_type, light_treatment)) |>
         mutate(
           min_log_gsw = (leaf_type == "amphi") * log(min_gsw_amphi) +
             (leaf_type == "pseudohypo") * log(min_gsw_pseudohypo),
           max_log_gsw = (leaf_type == "amphi") * log(max_gsw_amphi) +
             (leaf_type == "pseudohypo") * log(max_gsw_pseudohypo),
-          intercept = mu_intercept + b_intercept_error + b_intercept_id,
-          slope = mu_slope + b_slope_id,
+          intercept = mu_intercept + 
+            (mu_intercept_low_light + b_intercept_low_light_id) * (light_treatment == "low") +
+            b_intercept_error + b_intercept_id,
+          slope = mu_slope + 
+            (mu_slope_low_light + b_slope_low_light_id) * (light_treatment == "low") +
+            b_slope_id,
           log_gsw = min_log_gsw + (max_log_gsw - min_log_gsw) * i,
           A = intercept + slope * log_gsw,
           g_sw = exp(log_gsw),

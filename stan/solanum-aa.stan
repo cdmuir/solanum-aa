@@ -43,19 +43,20 @@ data {
   int<lower=0> n_pts;
   int<lower=0> n_id;
   int<lower=0> n_leaf_type;  
-  array[n_pts,n_id,n_leaf_type] real elapsed;
-  array[n_pts,n_id,n_leaf_type] real flow;
-  array[n_pts,n_id,n_leaf_type] real g_bw;
-  array[n_pts,n_id,n_leaf_type] real K;
-  array[n_pts,n_id,n_leaf_type] real P;
-  array[n_pts,n_id,n_leaf_type] real RH;
-  array[n_pts,n_id,n_leaf_type] real s;
-  array[n_pts,n_id,n_leaf_type] real T_air;
-  array[n_pts,n_id,n_leaf_type] real T_leaf;
-  array[n_pts,n_id,n_leaf_type] real CO2_r;
-  array[n_pts,n_id,n_leaf_type] real CO2_s;
-  array[n_pts,n_id,n_leaf_type] real H2O_r;
-  array[n_pts,n_id,n_leaf_type] real H2O_s;
+  int<lower=0> n_light_treatment;  
+  array[n_pts,n_id,n_leaf_type,n_light_treatment] real elapsed;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment] real flow;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment] real g_bw;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment] real K;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment] real P;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment] real RH;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment] real s;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment] real T_air;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment] real T_leaf;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment] real CO2_r;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment] real CO2_s;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment] real H2O_r;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment] real H2O_s;
 }
 parameters {
   // hyperparameters
@@ -65,70 +66,82 @@ parameters {
   real<lower=0> sigma_w; 
 
   real mu_intercept;
+  real mu_intercept_low_light;
   real<lower=0> sigma_intercept_id;
+  real<lower=0> sigma_intercept_low_light_id;
   real<lower=0> sigma_intercept_error;
 
   real mu_slope;
+  real mu_slope_low_light;
   real<lower=0> sigma_slope_id;
+  real<lower=0> sigma_slope_low_light_id;
   
   // parameters
   array[n_id] real b_intercept_id;
+  array[n_id] real b_intercept_low_light_id;
   array[n_id,n_leaf_type] real b_intercept_error;
+
   array[n_id] real b_slope_id;
-  array[n_pts,n_id,n_leaf_type] real log_gsw;
-  array[n_pts,n_id,n_leaf_type] real c_a;
+  array[n_id] real b_slope_low_light_id;
+
+  array[n_pts,n_id,n_leaf_type,n_light_treatment] real log_gsw;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment] real c_a;
   
 }
 transformed parameters {
   
-  array[n_pts,n_id,n_leaf_type] real A = rep_array(0.0, n_pts,n_id,n_leaf_type);
-  array[n_pts,n_id,n_leaf_type] real g_sw  = exp(log_gsw);
+  array[n_pts,n_id,n_leaf_type,n_light_treatment] real A;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment] real g_sw  = exp(log_gsw);
   
   // calculated quantities
-  array[n_pts,n_id,n_leaf_type] real w_i = rep_array(0.0, n_pts,n_id,n_leaf_type);
-  array[n_pts,n_id,n_leaf_type] real g_tc = rep_array(0.0, n_pts,n_id,n_leaf_type);
-  array[n_pts,n_id,n_leaf_type] real g_tw = rep_array(0.0, n_pts,n_id,n_leaf_type);
-  array[n_pts,n_id,n_leaf_type] real E = rep_array(0.0, n_pts,n_id,n_leaf_type);
+  array[n_pts,n_id,n_leaf_type,n_light_treatment] real w_i;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment] real g_tc;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment] real g_tw;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment] real E;
 
   // real [CO2] and [H2O]
-  array[n_pts,n_id,n_leaf_type] real c_0 = rep_array(0.0, n_pts,n_id,n_leaf_type);
-  array[n_pts,n_id,n_leaf_type] real w_0 = rep_array(0.0, n_pts,n_id,n_leaf_type);
-  array[n_pts,n_id,n_leaf_type] real w_a = rep_array(0.0, n_pts,n_id,n_leaf_type);
+  array[n_pts,n_id,n_leaf_type,n_light_treatment] real c_0;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment] real w_0;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment] real w_a;
   
   // error covariance matrices
-  array[n_pts,n_pts,n_id,n_leaf_type] real R_c;
-  array[n_pts,n_pts,n_id,n_leaf_type] real R_w;
+  array[n_pts,n_pts,n_id,n_leaf_type,n_light_treatment] real R_c;
+  array[n_pts,n_pts,n_id,n_leaf_type,n_light_treatment] real R_w;
   
   // calculations
-  for (k in 1:n_leaf_type) {
-    for (j in 1:n_id) {
-      for (i2 in 1:n_pts) {
+  for (l in 1:n_light_treatment) {
+    for (k in 1:n_leaf_type) {
+      for (j in 1:n_id) {
+        for (i2 in 1:n_pts) {
         
-        A[i2,j,k] += mu_intercept + b_intercept_id[j] + b_intercept_error[j,k] + 
-          (mu_slope + b_slope_id[j]) * log_gsw[i2,j,k];
+          A[i2,j,k,l] = mu_intercept + 
+            (mu_intercept_low_light + b_intercept_low_light_id[j]) * (l - 1) +
+            b_intercept_id[j] + b_intercept_error[j,k] + 
+            (mu_slope + (mu_slope_low_light + b_slope_low_light_id[j]) * (l - 1) + 
+              b_slope_id[j]) * log_gsw[i2,j,k,l];
 
-        w_i[i2,j,k]  += li6800_svp(T_leaf[i2,j,k], P[i2,j,k]);
-        w_a[i2,j,k]  += RH[i2,j,k] * li6800_svp(T_air[i2,j,k], P[i2,j,k]);
+          w_i[i2,j,k,l]  = li6800_svp(T_leaf[i2,j,k,l], P[i2,j,k,l]);
+          w_a[i2,j,k,l]  = RH[i2,j,k,l] * li6800_svp(T_air[i2,j,k,l], P[i2,j,k,l]);
         
-        // amphi leaves
-        if (k == 1) {
-          g_tc[i2,j,k] += li6800_gtc_amphi(g_bw[i2,j,k], g_sw[i2,j,k], K[i2,j,k]);
-          g_tw[i2,j,k] += li6800_gtw_amphi(g_bw[i2,j,k], g_sw[i2,j,k], K[i2,j,k]);
-        } 
-        // pseudohypo leaves
-        if (k == 2) {
-          g_tc[i2,j,k] += li6800_gtc_hypo(g_bw[i2,j,k], g_sw[i2,j,k]);
-          g_tw[i2,j,k] += li6800_gtw_hypo(g_bw[i2,j,k], g_sw[i2,j,k]);
-        } 
+          // amphi leaves
+          if (k == 1) {
+            g_tc[i2,j,k,l] = li6800_gtc_amphi(g_bw[i2,j,k,l], g_sw[i2,j,k,l], K[i2,j,k,l]);
+            g_tw[i2,j,k,l] = li6800_gtw_amphi(g_bw[i2,j,k,l], g_sw[i2,j,k,l], K[i2,j,k,l]);
+          } 
+          // pseudohypo leaves
+          if (k == 2) {
+            g_tc[i2,j,k,l] = li6800_gtc_hypo(g_bw[i2,j,k,l], g_sw[i2,j,k,l]);
+            g_tw[i2,j,k,l] = li6800_gtw_hypo(g_bw[i2,j,k,l], g_sw[i2,j,k,l]);
+          } 
 
-        E[i2,j,k]    += li6800_E(g_tw[i2,j,k], w_a[i2,j,k], w_i[i2,j,k]);
-        w_0[i2,j,k]  += li6800_w0(E[i2,j,k], flow[i2,j,k], s[i2,j,k], w_a[i2,j,k]);
-        c_0[i2,j,k]  += li6800_c0(A[i2,j,k], c_a[i2,j,k], flow[i2,j,k], s[i2,j,k], w_a[i2,j,k], w_0[i2,j,k]);
+          E[i2,j,k,l]    = li6800_E(g_tw[i2,j,k,l], w_a[i2,j,k,l], w_i[i2,j,k,l]);
+          w_0[i2,j,k,l]  = li6800_w0(E[i2,j,k,l], flow[i2,j,k,l], s[i2,j,k,l], w_a[i2,j,k,l]);
+          c_0[i2,j,k,l]  = li6800_c0(A[i2,j,k,l], c_a[i2,j,k,l], flow[i2,j,k,l], s[i2,j,k,l], w_a[i2,j,k,l], w_0[i2,j,k,l]);
 
-        for (i1 in 1:n_pts) {
-          R_c[i1, i2, j, k] = exp(-b_autocorr_c * abs(elapsed[i2, j, k] - elapsed[i1, j, k]));
-          R_w[i1, i2, j, k] = exp(-b_autocorr_w * abs(elapsed[i2, j, k] - elapsed[i1, j, k]));
-
+          for (i1 in 1:n_pts) {
+            R_c[i1, i2, j, k, l] = exp(-b_autocorr_c * abs(elapsed[i2, j, k, l] - elapsed[i1, j, k, l]));
+            R_w[i1, i2, j, k, l] = exp(-b_autocorr_w * abs(elapsed[i2, j, k, l] - elapsed[i1, j, k, l]));
+          }
         }
       }
     }
@@ -147,94 +160,104 @@ model {
   sigma_w ~ normal(0, 1); 
   
   mu_intercept ~ normal(30, 10);
+  mu_intercept_low_light ~ normal(0, 20);
   sigma_intercept_id ~ normal(0, 10);
+  sigma_intercept_low_light_id ~ normal(0, 10);
   sigma_intercept_error ~ normal(0, 10);
 
   mu_slope ~ normal(10, 5);
-  sigma_intercept_error ~ normal(0, 1);
+  mu_slope_low_light ~ normal(0, 5);
+  sigma_slope_id ~ normal(0, 10);
+  sigma_slope_low_light_id ~ normal(0, 10);
 
   // priors on parameters
   b_intercept_id ~ normal(0, sigma_intercept_id);
+  b_intercept_low_light_id ~ normal(0, sigma_intercept_low_light_id);
   b_slope_id ~ normal(0, sigma_slope_id);
-  for (k in 1:n_leaf_type) {
-    b_intercept_error[,k] ~ normal(0, sigma_intercept_error);
-    for (j in 1:n_id) {
-      for (i in 1:n_pts) {
-        c_a[i,j,k] ~ normal(415, 1);
-        log_gsw[i,j,k] ~ normal(-1, 1); // is this the right choice?
+  b_slope_low_light_id ~ normal(0, sigma_slope_low_light_id);
+
+  for (l in 1:n_light_treatment) {
+    for (k in 1:n_leaf_type) {
+      b_intercept_error[,k] ~ normal(0, sigma_intercept_error);
+      for (j in 1:n_id) {
+        for (i in 1:n_pts) {
+          c_a[i,j,k,l] ~ normal(415, 1);
+          log_gsw[i,j,k,l] ~ normal(-1, 1); // is this the right choice?
+        }
       }
     }
   }
   
   // likelihood
-  for (k in 1:n_leaf_type) {
-    for (j in 1:n_id) {
+  for (l in 1:n_light_treatment) {
+    for (k in 1:n_leaf_type) {
+      for (j in 1:n_id) {
       
-      // placeholders
-      row_vector[n_pts] x;
-      row_vector[n_pts] y;
-      matrix[n_pts, n_pts] R;
-      vector[n_pts] s_vec;
+        // placeholders
+        row_vector[n_pts] x;
+        row_vector[n_pts] y;
+        matrix[n_pts, n_pts] R;
+        vector[n_pts] s_vec;
       
-      // CO2_r
-      for (i2 in 1:n_pts) {
-        // print("i = ", i2, "; j = ", j, "; k = ", k, "; c_0[i,j,k] = ", c_0[i2,j,k]);
-        // print("i = ", i2, "; j = ", j, "; k = ", k, "; A[i,j,k] = ", A[i2,j,k]);
-        // print("i = ", i2, "; j = ", j, "; k = ", k, "; c_a[i,j,k] = ", c_a[i2,j,k]);
-        // print("i = ", i2, "; j = ", j, "; k = ", k, "; flow[i,j,k] = ", flow[i2,j,k]);
-        // print("i = ", i2, "; j = ", j, "; k = ", k, "; s[i,j,k] = ", s[i2,j,k]);
-        // print("i = ", i2, "; j = ", j, "; k = ", k, "; w_a[i,j,k] = ", w_a[i2,j,k]);
-        // print("i = ", i2, "; j = ", j, "; k = ", k, "; w_0[i,j,k] = ", w_0[i2,j,k]);
-        // print("i = ", i2, "; j = ", j, "; k = ", k, "; E[i,j,k] = ", E[i2,j,k]);
-        // print("i = ", i2, "; j = ", j, "; k = ", k, "; w_i[i,j,k] = ", w_i[i2,j,k]);
-        // print("i = ", i2, "; j = ", j, "; k = ", k, "; g_tw[i,j,k] = ", g_tw[i2,j,k]);
-        // print("i = ", i2, "; j = ", j, "; k = ", k, "; g_sw[i,j,k] = ", g_sw[i2,j,k]);
-        // print("i = ", i2, "; j = ", j, "; k = ", k, "; g_bw[i,j,k] = ", g_bw[i2,j,k]);
-        // print("i = ", i2, "; j = ", j, "; k = ", k, "; K[i,j,k] = ", K[i2,j,k]);
-        x[i2] = c_0[i2,j,k];
-        y[i2] = CO2_r[i2,j,k];
-        s_vec[i2] = sigma_c;
-        for (i1 in 1:n_pts) {
-          R[i1, i2] = R_c[i1, i2, j, k];
+        // CO2_r
+        for (i2 in 1:n_pts) {
+          // print("i = ", i2, "; j = ", j, "; k = ", k, "; c_0[i,j,k] = ", c_0[i2,j,k]);
+          // print("i = ", i2, "; j = ", j, "; k = ", k, "; A[i,j,k] = ", A[i2,j,k]);
+          // print("i = ", i2, "; j = ", j, "; k = ", k, "; c_a[i,j,k] = ", c_a[i2,j,k]);
+          // print("i = ", i2, "; j = ", j, "; k = ", k, "; flow[i,j,k] = ", flow[i2,j,k]);
+          // print("i = ", i2, "; j = ", j, "; k = ", k, "; s[i,j,k] = ", s[i2,j,k]);
+          // print("i = ", i2, "; j = ", j, "; k = ", k, "; w_a[i,j,k] = ", w_a[i2,j,k]);
+          // print("i = ", i2, "; j = ", j, "; k = ", k, "; w_0[i,j,k] = ", w_0[i2,j,k]);
+          // print("i = ", i2, "; j = ", j, "; k = ", k, "; E[i,j,k] = ", E[i2,j,k]);
+          // print("i = ", i2, "; j = ", j, "; k = ", k, "; w_i[i,j,k] = ", w_i[i2,j,k]);
+          // print("i = ", i2, "; j = ", j, "; k = ", k, "; g_tw[i,j,k] = ", g_tw[i2,j,k]);
+          // print("i = ", i2, "; j = ", j, "; k = ", k, "; g_sw[i,j,k] = ", g_sw[i2,j,k]);
+          // print("i = ", i2, "; j = ", j, "; k = ", k, "; g_bw[i,j,k] = ", g_bw[i2,j,k]);
+          // print("i = ", i2, "; j = ", j, "; k = ", k, "; K[i,j,k] = ", K[i2,j,k]);
+          x[i2] = c_0[i2,j,k,l];
+          y[i2] = CO2_r[i2,j,k,l];
+          s_vec[i2] = sigma_c;
+          for (i1 in 1:n_pts) {
+            R[i1, i2] = R_c[i1, i2, j, k, l];
+          }
         }
-      }
-      y ~ multi_normal(x, quad_form_diag(R, s_vec));
+        y ~ multi_normal(x, quad_form_diag(R, s_vec));
 
-      // CO2_s
-      for (i2 in 1:n_pts) {
-        x[i2] = c_a[i2,j,k];
-        y[i2] = CO2_s[i2,j,k];
-        s_vec[i2] = sigma_c;
-        for (i1 in 1:n_pts) {
-          R[i1, i2] = R_c[i1, i2, j, k];
+        // CO2_s
+        for (i2 in 1:n_pts) {
+          x[i2] = c_a[i2,j,k,l];
+          y[i2] = CO2_s[i2,j,k,l];
+          s_vec[i2] = sigma_c;
+          for (i1 in 1:n_pts) {
+            R[i1, i2] = R_c[i1, i2, j, k, l];
+          }
         }
-      }
-      y ~ multi_normal(x, quad_form_diag(R, s_vec));
+        y ~ multi_normal(x, quad_form_diag(R, s_vec));
 
-      // H2O_r
-      for (i2 in 1:n_pts) {
-        x[i2] = w_0[i2,j,k];
-        y[i2] = H2O_r[i2,j,k];
-        s_vec[i2] = sigma_w;
-        for (i1 in 1:n_pts) {
-          R[i1, i2] = R_w[i1, i2, j, k];
+        // H2O_r
+        for (i2 in 1:n_pts) {
+          x[i2] = w_0[i2,j,k,l];
+          y[i2] = H2O_r[i2,j,k,l];
+          s_vec[i2] = sigma_w;
+          for (i1 in 1:n_pts) {
+            R[i1, i2] = R_w[i1, i2, j, k, l];
+          }
         }
-      }
-      y ~ multi_normal(x, quad_form_diag(R, s_vec));
+        y ~ multi_normal(x, quad_form_diag(R, s_vec));
 
-      // H2O_s
-      for (i2 in 1:n_pts) {
-        x[i2] = w_a[i2,j,k];
-        y[i2] = H2O_s[i2,j,k];
-        s_vec[i2] = sigma_w;
-        for (i1 in 1:n_pts) {
-          R[i1, i2] = R_w[i1, i2, j, k];
+        // H2O_s
+        for (i2 in 1:n_pts) {
+          x[i2] = w_a[i2,j,k,l];
+          y[i2] = H2O_s[i2,j,k,l];
+          s_vec[i2] = sigma_w;
+          for (i1 in 1:n_pts) {
+            R[i1, i2] = R_w[i1, i2, j, k, l];
+          }
         }
-      }
-      y ~ multi_normal(x, quad_form_diag(R, s_vec));
+        y ~ multi_normal(x, quad_form_diag(R, s_vec));
       
+      }
     }
   }
-  
 }
 

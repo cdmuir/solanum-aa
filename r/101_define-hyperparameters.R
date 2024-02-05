@@ -35,11 +35,18 @@ aa_hyperpars = list(
   max_gsw_amphi = 0.50,
   min_gsw_pseudohypo = 0.05,
   max_gsw_pseudohypo = 0.25,
-  mu_intercept = 30, # later on, change to mu_intercept, sigma_intercept
+  
+  # intercept is amphi, light intensity = 150, light treatment = low
+  mu_intercept = 40, 
+  mu_intercept_low_light = -20, 
   sigma_intercept_id = 2,
+  sigma_intercept_error = 1,
+  sigma_intercept_low_light_id = 3,
+  
   mu_slope = 9, 
+  mu_slope_low_light = -3, 
   sigma_slope_id = 1,
-  sigma_intercept_error = 1
+  sigma_slope_low_light_id = 1
 )
 
 # Calculate the decay, per s, of autocorrelation between data points given the

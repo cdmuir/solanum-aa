@@ -16,10 +16,14 @@ pars = c(
   "sigma_c",
   "sigma_w",
   "mu_intercept",
+  "mu_intercept_low_light",
   "sigma_intercept_id",
+  "sigma_intercept_low_light_id",
   "sigma_intercept_error",
   "mu_slope",
+  "mu_slope_low_light",
   "sigma_slope_id",
+  "sigma_slope_low_light_id",
   "b_autocorr_c",
   "b_autocorr_w"
 )
@@ -45,6 +49,9 @@ full_join(
 ) |>
   write_rds("objects/fit_sim_summary_hyperpars.rds")
 
+read_rds("objects/fit_sim_summary_hyperpars.rds") |>
+  select(variable, simulated, q5, q95) |>
+  filter(simulated > q95)
 # Area plots (NOT SURE IF IʻLL USE FOR SIMULATED DATA, BUT MIGHT BE USEFUL FOR LATER)
 # pdf("figures/fit_sim_areaplot.pdf",
 #     width = 4,
