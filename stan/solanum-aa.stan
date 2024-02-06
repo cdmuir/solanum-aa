@@ -79,7 +79,7 @@ parameters {
   // parameters
   array[n_id] real b_intercept_id;
   array[n_id] real b_intercept_low_light_id;
-  array[n_id,n_leaf_type] real b_intercept_error;
+  array[n_id,n_leaf_type,n_light_treatment] real b_intercept_error;
 
   array[n_id] real b_slope_id;
   array[n_id] real b_slope_low_light_id;
@@ -116,7 +116,7 @@ transformed parameters {
         
           A[i2,j,k,l] = mu_intercept + 
             (mu_intercept_low_light + b_intercept_low_light_id[j]) * (l - 1) +
-            b_intercept_id[j] + b_intercept_error[j,k] + 
+            b_intercept_id[j] + b_intercept_error[j,k,l] + 
             (mu_slope + (mu_slope_low_light + b_slope_low_light_id[j]) * (l - 1) + 
               b_slope_id[j]) * log_gsw[i2,j,k,l];
 
@@ -178,7 +178,7 @@ model {
 
   for (l in 1:n_light_treatment) {
     for (k in 1:n_leaf_type) {
-      b_intercept_error[,k] ~ normal(0, sigma_intercept_error);
+      b_intercept_error[,k,l] ~ normal(0, sigma_intercept_error);
       for (j in 1:n_id) {
         for (i in 1:n_pts) {
           c_a[i,j,k,l] ~ normal(415, 1);

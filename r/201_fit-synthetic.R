@@ -3,8 +3,10 @@ source("r/header.R")
 
 solanum_aa = cmdstan_model("stan/solanum-aa.stan", dir = "stan/bin")
 
+library(furrr)
+plan(multisession(workers = 3))
 list.files("synthetic-data", pattern = "stan_sim[0-9]{4}.rds", full.names = TRUE) |>
-  walk(\(.x) {
+  future_walk(\(.x) {
     n = str_extract(.x, "[0-9]{4}")
     stan_sim = read_rds(.x)
     

@@ -2,8 +2,8 @@
 # NOT SURE HOW/IF I SHOULD SCALE THIS UP FOR MANY SIMULATIONS
 source("r/header.R")
 
-df_sim = read_rds("synthetic-data/df_sim0001.rds")
-fit_sim = read_rds("objects/fit_sim0001.rds")
+df_sim = read_rds("synthetic-data/df_sim0002.rds")
+fit_sim = read_rds("objects/fit_sim0002.rds")
 
 # Overall slope and intercept
 df_mu = c("mu_intercept",
@@ -29,20 +29,23 @@ df_curve = fit_sim$draws("b_intercept_error") |>
                values_to = "b_intercept_error") |>
   mutate(
     id = LETTERS[
-      str_replace(name, "^b_intercept_error\\[([0-9]+),([0-9]+)\\]$", "\\1") |>
+      str_replace(name, "^b_intercept_error\\[([0-9]+),([0-9]+),([0-9]+)\\]$", "\\1") |>
         as.numeric()
     ],
-    lt = str_replace(name, "^b_intercept_error\\[([0-9]+),([0-9]+)\\]$", "\\2"),
-    leaf_type = case_when(lt == 1 ~  "amphi",
-                          lt == 2 ~ "pseudohypo")
+    lt1 = str_replace(name, "^b_intercept_error\\[([0-9]+),([0-9]+),([0-9]+)\\]$", "\\2"),
+    lt2 = str_replace(name, "^b_intercept_error\\[([0-9]+),([0-9]+),([0-9]+)\\]$", "\\3"),
+    leaf_type = case_when(lt1 == 1 ~  "amphi",
+                          lt1 == 2 ~ "pseudohypo"),
+    light_treatment = case_when(lt2 == 1 ~  "high",
+                          lt2 == 2 ~ "low")
   ) |>
-  select(-name, -lt)
+  select(-name, -lt1, -lt2)
 
 df_pred = df_mu |>
   full_join(df_id, by = join_by(.chain, .iteration, .draw)) |>
   full_join(df_curve, by = join_by(id, .chain, .iteration, .draw)) |>
   full_join(select(df_sim, id, pts, leaf_type, light_treatment, g_sw), 
-            by = join_by(id, leaf_type),
+            by = join_by(id, leaf_type, light_treatment),
             relationship = "many-to-many") |>
   mutate(
     A = mu_intercept + b_intercept_id + b_intercept_error + 

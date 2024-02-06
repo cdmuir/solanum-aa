@@ -51,7 +51,7 @@ full_join(
 
 read_rds("objects/fit_sim_summary_hyperpars.rds") |>
   select(variable, simulated, q5, q95) |>
-  filter(simulated > q95)
+  filter(simulated < q5)
 # Area plots (NOT SURE IF IʻLL USE FOR SIMULATED DATA, BUT MIGHT BE USEFUL FOR LATER)
 # pdf("figures/fit_sim_areaplot.pdf",
 #     width = 4,
