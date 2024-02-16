@@ -1,7 +1,62 @@
+# SCRATCH
+# 
+# Get local secoond derivative on A-gsw curve to identify linear portion
+# 
+# 1. fit linear regression
+# 2. simulate N synthetic data sets from fitted
+# 3. Fit smooth function to each synthetic dataset
+# 4. Calculate second derivative of each smooth function
+# 5. Calculate second derivative cutoff based on null distribution
+# Get error autocorrelation
+get_ac1 = function(x) {
+  cor(x[1:(length(x) - 1)], x[2:length(x)])
+}
+
+rh_curves |>
+  filter(acc_id == "LA2172-AA") |>
+  reframe(resid = resid(lm(A ~ log(gsw))),
+          .by = c("acc", "acc_id", "light_treatment", "light_intensity", "curve_type")) |>
+  summarize(r = get_ac1(resid),
+            .by = c("acc", "acc_id", "light_treatment", "light_intensity", "curve_type"))
+
+ggplot(filter(rh_curves, acc_id == "LA2172-AA"), aes(gsw, A, color = curve_type)) +
+  geom_point() +
+  scale_x_log10()
+
+A = V * a / (K + a)
+A (K + a) = V * a 
+(A * K + A * a)/a = V
+A*K/a + A = V
+A*K/a = V - A
+
+
 # Define hyperparameters for simulate synthetic data sets
 source("r/header.R")
 
+rh_curves = read_rds("data/rh_curves.rds") |>
+  mutate(acc = str_replace(acc_id, id_string, "\\1")) |>
+  # Focus on LA2172 as an example for now
+  filter(acc == "LA2172", assumed_K == 0.5)
+fit_preliminary = read_rds("objects/fit_preliminary.rds")
+
 set.seed(20240202)
+
+# Calculate realistic quantities from data
+n_id = rh_curves |>
+  summarise(n_id = length(unique(acc_id)),
+            .by = c("acc", "light_treatment")) |>
+  pull(n_id) |>
+  mean() |>
+  round()
+
+n_pts = rh_curves |>
+  summarise(n_pts = n(),
+            .by = c("acc", "acc_id", "light_treatment", "light_intensity")) |>
+  pull(n_pts) |>
+  mean() |>
+  round()
+
+
 
 # number of synthetic data sets
 n_sim = 3
@@ -11,8 +66,8 @@ aa_hyperpars = list(
   
   # Experimental design hyperparameters
   n_acc = 1, # number of accessions
-  n_id  = 1e1, # number of replicates per accession per treatment
-  n_pts = 1e1, # number of points per curve
+  n_id  = n_id, # number of replicates per accession per treatment
+  n_pts = n_pts, # number of points per curve
   
   # Chamber environment hyperparameters
   c_a = 415, # CO2 [umol / mol]

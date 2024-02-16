@@ -61,13 +61,11 @@ df1 |>
   facet_wrap(light_intensity ~ name) +
   geom_density(alpha = 0.5)
 
-# Conclusion 2: Is M-M better?
-
-
+# Conclusion 2: Some evidence that M-M fits better at high light intensity
 df1 = rh_curves |>
   filter(assumed_K == 0.5, !is.na(gsw)) |>
   summarise(
-    # fit1 = list(try(nls(A ~ V * gsw / (Km + gsw)))),
+    fit1 = list(try(nls(A ~ V * gsw / (Km + gsw)))),
     fit2 = list(lm(A ~ log(gsw))),
     keep = inherits(fit1[[1]], "nls"),
     .by = c("curve_type", "light_intensity", "acc_id")
@@ -88,6 +86,38 @@ df1 |>
   geom_histogram() +
   geom_vline(xintercept = 0)
 
+# Conclusion 3: brm produces rough-and-ready estimates of slope and intercept
+df1 = rh_curves |>
+  filter(assumed_K == 0.5, !is.na(gsw)) |>
+  reframe(
+    name = c("intercept", "slope"),
+    value = coef(lm(A ~ log(gsw))),
+    .by = c("curve_type", "light_intensity", "acc_id", "acc", "light_treatment")
+  ) |>
+  pivot_wider()
+
+ggplot(df1, aes(intercept, slope, color = curve_type, shape = light_intensity,
+             fill = light_treatment)) +
+  facet_wrap(~acc) +
+  geom_point() +
+  scale_shape_discrete()
+  
+fit_preliminary = brm(
+  bf(
+    mvbind(intercept, slope) ~
+      curve_type * light_intensity * light_treatment +
+      (curve_type * light_intensity * light_treatment |
+         acc)
+  ) +
+    set_rescor(TRUE),
+  data = df1,
+  backend = "cmdstanr",
+  chains = 1
+)
+
+conditional_effects(fit_preliminary)
+
+write_rds(fit_preliminary, "objects/fit_preliminary.rds")
 
 # OLD
 # fit1 = brm(A ~ curve_type + light_treatment + light_intensity + log(gsw) +
