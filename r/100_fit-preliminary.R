@@ -1,4 +1,5 @@
 # Preliminary fit to inform simulations
+message("still a lot of messiness that needs to be cleaned up")
 source("r/header.R")
 rh_curves = read_rds("data/rh_curves.rds") |>
   separate_wider_delim(acc_id, "-", names = c("acc", "id"), cols_remove = FALSE)
@@ -61,7 +62,7 @@ df1 |>
   facet_wrap(light_intensity ~ name) +
   geom_density(alpha = 0.5)
 
-# Conclusion 2: Some evidence that M-M fits better at high light intensity
+# Conclusion 2: Some evidence that M-M fits better at high light intensity ----
 df1 = rh_curves |>
   filter(assumed_K == 0.5, !is.na(gsw)) |>
   summarise(
@@ -86,7 +87,40 @@ df1 |>
   geom_histogram() +
   geom_vline(xintercept = 0)
 
-# Conclusion 3: brm produces rough-and-ready estimates of slope and intercept
+# Conclusion 3: poly curves
+df1 = rh_curves |>
+  filter(assumed_K == 0.5, !is.na(gsw)) |>
+  summarise(
+    fit1 = list(lm(A ~ log(gsw))),
+    fit2 = list(lm(A ~ poly(log(gsw), 2))),
+    fit3 = list(lm(A ~ poly(log(gsw), 3))),
+    .by = c("light_treatment", "curve_type", "light_intensity", "acc_id")
+  )
+
+df1$aic1 = sapply(seq_len(nrow(df1)), \(.i) AIC(df1$fit1[.i][[1]]))
+df1$aic2 = sapply(seq_len(nrow(df1)), \(.i) AIC(df1$fit2[.i][[1]]))
+df1$aic3 = sapply(seq_len(nrow(df1)), \(.i) AIC(df1$fit3[.i][[1]]))
+
+df1 = df1 |>
+  mutate(
+    daic12 = aic2 - aic1,
+    daic23 = aic3 - aic2
+  ) 
+
+df1 |>
+  summarize(
+    across(starts_with("daic"), median), 
+    .by = c("light_treatment", "curve_type", "light_intensity")
+  )
+
+df1 |>
+  select(curve_type, light_intensity, acc_id, starts_with("daic")) |>
+  pivot_longer(starts_with("daic")) |>
+  ggplot(aes(value)) +
+  facet_wrap(~name, scales = "free") +
+  geom_histogram()
+
+# Conclusion 4: brm produces rough-and-ready estimates of slope and intercept ----
 df1 = rh_curves |>
   filter(assumed_K == 0.5, !is.na(gsw)) |>
   reframe(
