@@ -10,12 +10,21 @@ list.files("synthetic-data", pattern = "stan_sim[0-9]{4}.rds", full.names = TRUE
     n = str_extract(.x, "[0-9]{4}")
     stan_sim = read_rds(.x)
     
+    # This could be useful if I want to pre-scale variables rather than calculate in Stan
+    # stan_sim$sd_A = sd(stan_sim$A)
+    # stan_sim$mean_A = mean(stan_sim$A)
+    # stan_sim$sd_log_gsw = sd(log(stan_sim$g_sw))
+    # stan_sim$mean_log_gsw = mean(log(stan_sim$g_sw))
+
     fit_sim = solanum_aa$sample(
       data = stan_sim,
       chains = 1L,
       parallel_chains = 1L,
       init = list(
-        list(c_a = stan_sim$CO2_s, log_gsw = log(stan_sim$g_sw))
+        list(
+          c_a = stan_sim$CO2_s, log_gsw = log(stan_sim$g_sw),
+          sd_A = sd(stan_sim$A), mean_A = mean(stan_sim$A)
+        )
       ),
       seed = 20240203
     )

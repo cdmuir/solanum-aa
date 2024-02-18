@@ -38,6 +38,60 @@ functions {
   real li6800_c0(real A, real c_a, real flow, real s, real w_a, real w_0) {
     return 1000 * (s * A * 100) / (1000 * flow) + c_a * ((1000 - w_0) / (1000 - w_a));
   }
+
+  // Function to calculate the mean of an 4-dimensional array
+  real array_mean_4d(array[,,,] real x) {
+    int n_dim1 = dims(x)[1];
+    int n_dim2 = dims(x)[2];
+    int n_dim3 = dims(x)[3];
+    int n_dim4 = dims(x)[4];
+
+    real mu = 0.0;
+
+    // Calculate the mean
+    for (i in 1:n_dim1) {
+      for (j in 1:n_dim2) {
+        for (k in 1:n_dim3) {
+          for (l in 1:n_dim4) {
+            mu += x[i, j, k, l];
+          }
+        }
+      }
+    }
+    mu /= (n_dim1 * n_dim2 * n_dim3 * n_dim4);
+
+    return mu;
+    
+  }
+
+  // Function to calculate the sd of an 4-dimensional array
+  real array_sd_4d(array[,,,] real x) {
+    int n_dim1 = dims(x)[1];
+    int n_dim2 = dims(x)[2];
+    int n_dim3 = dims(x)[3];
+    int n_dim4 = dims(x)[4];
+
+    real sum_sq_diff = 0.0;
+    real mu = array_mean_4d(x);
+
+    // Calculate the sum of squared differences
+    for (i in 1:n_dim1) {
+      for (j in 1:n_dim2) {
+        for (k in 1:n_dim3) {
+          for (l in 1:n_dim4) {
+            sum_sq_diff += (x[i, j, k, l] - mu) ^ 2;
+          }
+        }
+      }
+    }
+
+    // Calculate the standard deviation
+    real std_dev = sqrt(sum_sq_diff / (n_dim1 * n_dim2 * n_dim3 * n_dim4));
+
+    return std_dev;
+    
+  }
+
 }
 data {
   int<lower=0> n_pts;
@@ -59,6 +113,10 @@ data {
   array[n_pts,n_id,n_leaf_type,n_light_treatment] real H2O_s;
 }
 parameters {
+  // variable scaling
+  real<lower=0> sd_A;
+  real mean_A;
+  
   // hyperparameters
   real<lower=0> b_autocorr_c; 
   real<lower=0> b_autocorr_w; 
@@ -91,7 +149,13 @@ parameters {
 transformed parameters {
   
   array[n_pts,n_id,n_leaf_type,n_light_treatment] real A;
-  array[n_pts,n_id,n_leaf_type,n_light_treatment] real g_sw  = exp(log_gsw);
+  array[n_pts,n_id,n_leaf_type,n_light_treatment] real g_sw = exp(log_gsw);
+  // real sd_A = array_sd_4d(A);
+  // real mean_A = array_mean_4d(A);
+  real sd_log_gsw = array_sd_4d(log_gsw);
+  real mean_log_gsw = array_mean_4d(log_gsw);
+  array[n_pts,n_id,n_leaf_type,n_light_treatment] real scaled_log_gsw;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment] real scaled_A;
   
   // calculated quantities
   array[n_pts,n_id,n_leaf_type,n_light_treatment] real w_i;
@@ -114,11 +178,15 @@ transformed parameters {
       for (j in 1:n_id) {
         for (i2 in 1:n_pts) {
         
-          A[i2,j,k,l] = mu_intercept + 
+          scaled_log_gsw[i2,j,k,l] = (log_gsw[i2,j,k,l] - mean_log_gsw) / sd_log_gsw;
+          
+          scaled_A[i2,j,k,l] = mu_intercept + 
             (mu_intercept_low_light + b_intercept_low_light_id[j]) * (l - 1) +
             b_intercept_id[j] + b_intercept_error[j,k,l] + 
             (mu_slope + (mu_slope_low_light + b_slope_low_light_id[j]) * (l - 1) + 
-              b_slope_id[j]) * log_gsw[i2,j,k,l];
+              b_slope_id[j]) * scaled_log_gsw[i2,j,k,l];
+
+          A[i2,j,k,l] = scaled_A[i2,j,k,l] * sd_A + mean_A;
 
           w_i[i2,j,k,l]  = li6800_svp(T_leaf[i2,j,k,l], P[i2,j,k,l]);
           w_a[i2,j,k,l]  = RH[i2,j,k,l] * li6800_svp(T_air[i2,j,k,l], P[i2,j,k,l]);
@@ -152,6 +220,10 @@ model {
   // placeholders
   // nothing right now
   
+  // priors on variable scaling
+  sd_A ~ normal(0, 10);
+  mean_A ~ normal(15, 10);
+  
   // priors on hyperparameters
   b_autocorr_c ~ normal(0, 1); 
   b_autocorr_w ~ normal(0, 1); 
@@ -159,13 +231,17 @@ model {
   sigma_c ~ normal(0, 1); 
   sigma_w ~ normal(0, 1); 
   
-  mu_intercept ~ normal(30, 10);
-  mu_intercept_low_light ~ normal(0, 20);
+  // priors for unstandardized variables
+  // mu_intercept ~ normal(30, 10);
+  // mu_intercept_low_light ~ normal(0, 20);
+  mu_intercept ~ normal(0, 10);
+  mu_intercept_low_light ~ normal(0, 10);
   sigma_intercept_id ~ normal(0, 10);
   sigma_intercept_low_light_id ~ normal(0, 10);
   sigma_intercept_error ~ normal(0, 10);
 
-  mu_slope ~ normal(10, 5);
+  // mu_slope ~ normal(10, 5); // priors for unstandardized variables
+  mu_slope ~ normal(0, 10); // priors for unstandardized variables
   mu_slope_low_light ~ normal(0, 5);
   sigma_slope_id ~ normal(0, 10);
   sigma_slope_low_light_id ~ normal(0, 10);

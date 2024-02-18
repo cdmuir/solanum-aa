@@ -2,8 +2,14 @@
 # NOT SURE HOW/IF I SHOULD SCALE THIS UP FOR MANY SIMULATIONS
 source("r/header.R")
 
-df_sim = read_rds("synthetic-data/df_sim0002.rds")
+df_sim = read_rds("synthetic-data/df_sim0002.rds") |>
+  mutate(scaled_log_gsw = scale(log(g_sw))[,1])
 fit_sim = read_rds("objects/fit_sim0002.rds")
+
+# Scaling parameters
+df_scale = c("sd_A", "mean_A") |>
+  fit_sim$draws() |>
+  as_draws_df()
 
 # Overall slope and intercept
 df_mu = c("mu_intercept",
@@ -41,18 +47,21 @@ df_curve = fit_sim$draws("b_intercept_error") |>
   ) |>
   select(-name, -lt1, -lt2)
 
-df_pred = df_mu |>
+df_pred = df_scale |>
+  full_join(df_mu, by = join_by(.chain, .iteration, .draw)) |>
   full_join(df_id, by = join_by(.chain, .iteration, .draw)) |>
   full_join(df_curve, by = join_by(id, .chain, .iteration, .draw)) |>
-  full_join(select(df_sim, id, pts, leaf_type, light_treatment, g_sw), 
+  full_join(select(df_sim, id, pts, leaf_type, light_treatment, g_sw,
+                   scaled_log_gsw), 
             by = join_by(id, leaf_type, light_treatment),
             relationship = "many-to-many") |>
   mutate(
-    A = mu_intercept + b_intercept_id + b_intercept_error + 
+    A_scaled = mu_intercept + b_intercept_id + b_intercept_error + 
       (mu_intercept_low_light + b_intercept_low_light_id) * 
         (light_treatment == "low") +
       (mu_slope + b_slope_id + (mu_slope_low_light + b_slope_low_light_id) * 
-         (light_treatment == "low")) * log(g_sw)
+         (light_treatment == "low")) * scaled_log_gsw,
+    A = A_scaled * sd_A + mean_A
   ) |>
   summarize(
     g_sw = first(g_sw),

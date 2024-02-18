@@ -29,7 +29,8 @@ list.files("synthetic-data", pattern = "df_sim[0-9]{4}.rds", full.names = TRUE) 
       "CO2_r",
       "CO2_s",
       "H2O_r",
-      "H2O_s"
+      "H2O_s",
+      "A"
     ) |>
       map(\(var) {
         glue(

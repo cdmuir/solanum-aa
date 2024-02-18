@@ -1,12 +1,12 @@
 # Preliminary fit to inform simulations
-message("still a lot of messiness that needs to be cleaned up")
+message("still a lot of messiness in the code that needs to be cleaned up")
 source("r/header.R")
-rh_curves = read_rds("data/rh_curves.rds") |>
+rh_curves = read_rds("data/thinned_rh_curves.rds") |>
   separate_wider_delim(acc_id, "-", names = c("acc", "id"), cols_remove = FALSE)
   
 # Example curve to test with
 tmp = rh_curves |>
-  filter(acc_id == "LA1777-E", assumed_K == 0.5)
+  filter(acc_id == "LA1777-E")
 
 # M-M not working
 pars = nls(
@@ -89,7 +89,6 @@ df1 |>
 
 # Conclusion 3: poly curves
 df1 = rh_curves |>
-  filter(assumed_K == 0.5, !is.na(gsw)) |>
   summarise(
     fit1 = list(lm(A ~ log(gsw))),
     fit2 = list(lm(A ~ poly(log(gsw), 2))),
@@ -122,7 +121,6 @@ df1 |>
 
 # Conclusion 4: brm produces rough-and-ready estimates of slope and intercept ----
 df1 = rh_curves |>
-  filter(assumed_K == 0.5, !is.na(gsw)) |>
   reframe(
     name = c("intercept", "slope"),
     value = coef(lm(A ~ log(gsw))),
