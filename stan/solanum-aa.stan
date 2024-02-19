@@ -98,6 +98,7 @@ data {
   int<lower=0> n_id;
   int<lower=0> n_leaf_type;  
   int<lower=0> n_light_treatment;  
+  int<lower=0> n_comp;  
   array[n_pts,n_id,n_leaf_type,n_light_treatment] real elapsed;
   array[n_pts,n_id,n_leaf_type,n_light_treatment] real flow;
   array[n_pts,n_id,n_leaf_type,n_light_treatment] real g_bw;
@@ -114,101 +115,128 @@ data {
 }
 parameters {
   // variable scaling
-  real<lower=0> sd_A;
-  real mean_A;
+  vector<lower=0>[n_comp] sd_A;
+  vector<lower=0>[n_comp] mean_A;
   
   // hyperparameters
-  real<lower=0> b_autocorr_c; 
-  real<lower=0> b_autocorr_w; 
-  real<lower=0> sigma_c; 
-  real<lower=0> sigma_w; 
+  vector<lower=0>[n_comp] b_autocorr_c; 
+  vector<lower=0>[n_comp] b_autocorr_w; 
+  vector<lower=0>[n_comp] sigma_c; 
+  vector<lower=0>[n_comp] sigma_w; 
 
-  real mu_intercept;
-  real mu_intercept_low_light;
-  real<lower=0> sigma_intercept_id;
-  real<lower=0> sigma_intercept_low_light_id;
-  real<lower=0> sigma_intercept_error;
+  vector[n_comp] mu_intercept;
+  vector[n_comp] mu_intercept_low_light;
+  vector<lower=0>[n_comp] sigma_intercept_id;
+  vector<lower=0>[n_comp] sigma_intercept_low_light_id;
+  vector<lower=0>[n_comp] sigma_intercept_error;
 
-  real mu_slope;
-  real mu_slope_low_light;
-  real<lower=0> sigma_slope_id;
-  real<lower=0> sigma_slope_low_light_id;
+  vector[n_comp] mu_slope;
+  vector[n_comp] mu_slope_low_light;
+  vector<lower=0>[n_comp] sigma_slope_id;
+  vector<lower=0>[n_comp] sigma_slope_low_light_id;
   
   // parameters
-  array[n_id] real b_intercept_id;
-  array[n_id] real b_intercept_low_light_id;
-  array[n_id,n_leaf_type,n_light_treatment] real b_intercept_error;
+  array[n_id,n_comp] real b_intercept_id;
+  array[n_id,n_comp] real b_intercept_low_light_id;
+  array[n_id,n_leaf_type,n_light_treatment,n_comp] real b_intercept_error;
 
-  array[n_id] real b_slope_id;
-  array[n_id] real b_slope_low_light_id;
+  array[n_id,n_comp] real b_slope_id;
+  array[n_id,n_comp] real b_slope_low_light_id;
 
-  array[n_pts,n_id,n_leaf_type,n_light_treatment] real log_gsw;
-  array[n_pts,n_id,n_leaf_type,n_light_treatment] real c_a;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment,n_comp] real log_gsw;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment,n_comp] real c_a;
+ 
+  // Component 2 parameters
+  real mu_b2;
+  real mu_b2_low_light;
+  vector[n_id] b_b2_low_light_id;
+  vector[n_id] b_b2_id;
+  real<lower=0> sigma_b2_id;
+  real<lower=0> sigma_b2_low_light_id;
+
+  // component weights
+  array[n_id,n_leaf_type,n_light_treatment,n_comp] simplex[n_comp] w;
   
 }
 transformed parameters {
   
-  array[n_pts,n_id,n_leaf_type,n_light_treatment] real A;
-  array[n_pts,n_id,n_leaf_type,n_light_treatment] real g_sw = exp(log_gsw);
-  // real sd_A = array_sd_4d(A);
-  // real mean_A = array_mean_4d(A);
-  real sd_log_gsw = array_sd_4d(log_gsw);
-  real mean_log_gsw = array_mean_4d(log_gsw);
-  array[n_pts,n_id,n_leaf_type,n_light_treatment] real scaled_log_gsw;
-  array[n_pts,n_id,n_leaf_type,n_light_treatment] real scaled_A;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment,n_comp] real A;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment,n_comp] real g_sw = exp(log_gsw);
+  real sd_log_gsw[n_comp];
+  real mean_log_gsw[n_comp];
+  array[n_pts,n_id,n_leaf_type,n_light_treatment,n_comp] real scaled_log_gsw;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment,n_comp] real scaled_A;
   
   // calculated quantities
-  array[n_pts,n_id,n_leaf_type,n_light_treatment] real w_i;
-  array[n_pts,n_id,n_leaf_type,n_light_treatment] real g_tc;
-  array[n_pts,n_id,n_leaf_type,n_light_treatment] real g_tw;
-  array[n_pts,n_id,n_leaf_type,n_light_treatment] real E;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment,n_comp] real w_i;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment,n_comp] real g_tc;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment,n_comp] real g_tw;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment,n_comp] real E;
 
   // real [CO2] and [H2O]
-  array[n_pts,n_id,n_leaf_type,n_light_treatment] real c_0;
-  array[n_pts,n_id,n_leaf_type,n_light_treatment] real w_0;
-  array[n_pts,n_id,n_leaf_type,n_light_treatment] real w_a;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment,n_comp] real c_0;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment,n_comp] real w_0;
+  array[n_pts,n_id,n_leaf_type,n_light_treatment,n_comp] real w_a;
   
   // error covariance matrices
-  array[n_pts,n_pts,n_id,n_leaf_type,n_light_treatment] real R_c;
-  array[n_pts,n_pts,n_id,n_leaf_type,n_light_treatment] real R_w;
+  array[n_pts,n_pts,n_id,n_leaf_type,n_light_treatment,n_comp] real R_c;
+  array[n_pts,n_pts,n_id,n_leaf_type,n_light_treatment,n_comp] real R_w;
   
   // calculations
-  for (l in 1:n_light_treatment) {
-    for (k in 1:n_leaf_type) {
-      for (j in 1:n_id) {
-        for (i2 in 1:n_pts) {
+  for (z in 1:n_comp) {
+    sd_log_gsw[z] = array_sd_4d(log_gsw[,,,,z]);
+    mean_log_gsw[z] = array_mean_4d(log_gsw[,,,,z]);
+    for (l in 1:n_light_treatment) {
+      for (k in 1:n_leaf_type) {
+        for (j in 1:n_id) {
+          for (i2 in 1:n_pts) {
         
-          scaled_log_gsw[i2,j,k,l] = (log_gsw[i2,j,k,l] - mean_log_gsw) / sd_log_gsw;
-          
-          scaled_A[i2,j,k,l] = mu_intercept + 
-            (mu_intercept_low_light + b_intercept_low_light_id[j]) * (l - 1) +
-            b_intercept_id[j] + b_intercept_error[j,k,l] + 
-            (mu_slope + (mu_slope_low_light + b_slope_low_light_id[j]) * (l - 1) + 
-              b_slope_id[j]) * scaled_log_gsw[i2,j,k,l];
-
-          A[i2,j,k,l] = scaled_A[i2,j,k,l] * sd_A + mean_A;
-
-          w_i[i2,j,k,l]  = li6800_svp(T_leaf[i2,j,k,l], P[i2,j,k,l]);
-          w_a[i2,j,k,l]  = RH[i2,j,k,l] * li6800_svp(T_air[i2,j,k,l], P[i2,j,k,l]);
+            scaled_log_gsw[i2,j,k,l,z] = (log_gsw[i2,j,k,l,z] - mean_log_gsw[z]) / sd_log_gsw[z];
         
-          // amphi leaves
-          if (k == 1) {
-            g_tc[i2,j,k,l] = li6800_gtc_amphi(g_bw[i2,j,k,l], g_sw[i2,j,k,l], K[i2,j,k,l]);
-            g_tw[i2,j,k,l] = li6800_gtw_amphi(g_bw[i2,j,k,l], g_sw[i2,j,k,l], K[i2,j,k,l]);
-          } 
-          // pseudohypo leaves
-          if (k == 2) {
-            g_tc[i2,j,k,l] = li6800_gtc_hypo(g_bw[i2,j,k,l], g_sw[i2,j,k,l]);
-            g_tw[i2,j,k,l] = li6800_gtw_hypo(g_bw[i2,j,k,l], g_sw[i2,j,k,l]);
-          } 
+            // Component 1: linear A-log(gsw)
+            if (z == 1) {
+              scaled_A[i2,j,k,l,z] = mu_intercept[z] + 
+                (mu_intercept_low_light[z] + b_intercept_low_light_id[j,z]) * (l - 1) +
+                b_intercept_id[j,z] + b_intercept_error[j,k,l,z] + 
+                (mu_slope[z] + (mu_slope_low_light[z] + b_slope_low_light_id[j,z]) * (l - 1) + 
+                  b_slope_id[j,z]) * scaled_log_gsw[i2,j,k,l,z];
+            }
 
-          E[i2,j,k,l]    = li6800_E(g_tw[i2,j,k,l], w_a[i2,j,k,l], w_i[i2,j,k,l]);
-          w_0[i2,j,k,l]  = li6800_w0(E[i2,j,k,l], flow[i2,j,k,l], s[i2,j,k,l], w_a[i2,j,k,l]);
-          c_0[i2,j,k,l]  = li6800_c0(A[i2,j,k,l], c_a[i2,j,k,l], flow[i2,j,k,l], s[i2,j,k,l], w_a[i2,j,k,l], w_0[i2,j,k,l]);
+            // Component 2: quadratic A-log(gsw)
+            if (z == 2) {
+              scaled_A[i2,j,k,l,z] = mu_intercept[z] + 
+                (mu_intercept_low_light[z] + b_intercept_low_light_id[j,z]) * (l - 1) +
+                b_intercept_id[j,z] + b_intercept_error[j,k,l,z] + 
+                (mu_slope[z] + (mu_slope_low_light[z] + b_slope_low_light_id[j,z]) * (l - 1) + 
+                  b_slope_id[j,z]) * scaled_log_gsw[i2,j,k,l,z] +
+                (mu_b2 + (mu_b2_low_light + b_b2_low_light_id[j]) * (l - 1) + 
+                  b_b2_id[j]) * scaled_log_gsw[i2,j,k,l,z] ^ 2;
+            }
 
-          for (i1 in 1:n_pts) {
-            R_c[i1, i2, j, k, l] = exp(-b_autocorr_c * abs(elapsed[i2, j, k, l] - elapsed[i1, j, k, l]));
-            R_w[i1, i2, j, k, l] = exp(-b_autocorr_w * abs(elapsed[i2, j, k, l] - elapsed[i1, j, k, l]));
+            A[i2,j,k,l,z] = scaled_A[i2,j,k,l,z] * sd_A[z] + mean_A[z];
+            
+            w_i[i2,j,k,l,z] = li6800_svp(T_leaf[i2,j,k,l], P[i2,j,k,l]);
+            w_a[i2,j,k,l,z] = RH[i2,j,k,l] * li6800_svp(T_air[i2,j,k,l], P[i2,j,k,l]);
+        
+            // amphi leaves
+            if (k == 1) {
+              g_tc[i2,j,k,l,z] = li6800_gtc_amphi(g_bw[i2,j,k,l], g_sw[i2,j,k,l,z], K[i2,j,k,l]);
+              g_tw[i2,j,k,l,z] = li6800_gtw_amphi(g_bw[i2,j,k,l], g_sw[i2,j,k,l,z], K[i2,j,k,l]);
+            } 
+            // pseudohypo leaves
+            if (k == 2) {
+              g_tc[i2,j,k,l,z] = li6800_gtc_hypo(g_bw[i2,j,k,l], g_sw[i2,j,k,l,z]);
+              g_tw[i2,j,k,l,z] = li6800_gtw_hypo(g_bw[i2,j,k,l], g_sw[i2,j,k,l,z]);
+            } 
+
+            E[i2,j,k,l,z]    = li6800_E(g_tw[i2,j,k,l,z], w_a[i2,j,k,l,z], w_i[i2,j,k,l,z]);
+            w_0[i2,j,k,l,z]  = li6800_w0(E[i2,j,k,l,z], flow[i2,j,k,l], s[i2,j,k,l], w_a[i2,j,k,l,z]);
+            c_0[i2,j,k,l,z]  = li6800_c0(A[i2,j,k,l,z], c_a[i2,j,k,l,z], flow[i2,j,k,l], s[i2,j,k,l], w_a[i2,j,k,l,z], w_0[i2,j,k,l,z]);
+
+            for (i1 in 1:n_pts) {
+              R_c[i1, i2, j, k, l, z] = exp(-b_autocorr_c[z] * abs(elapsed[i2, j, k, l] - elapsed[i1, j, k, l]));
+              R_w[i1, i2, j, k, l, z] = exp(-b_autocorr_w[z] * abs(elapsed[i2, j, k, l] - elapsed[i1, j, k, l]));
+            }
           }
         }
       }
@@ -247,11 +275,13 @@ model {
   sigma_slope_low_light_id ~ normal(0, 10);
 
   // priors on parameters
-  b_intercept_id ~ normal(0, sigma_intercept_id);
-  b_intercept_low_light_id ~ normal(0, sigma_intercept_low_light_id);
-  b_slope_id ~ normal(0, sigma_slope_id);
-  b_slope_low_light_id ~ normal(0, sigma_slope_low_light_id);
-
+  for (z in 1:n_comp) {
+    b_intercept_id[z] ~ normal(0, sigma_intercept_id[z]);
+    b_intercept_low_light_id[z] ~ normal(0, sigma_intercept_low_light_id[z]);
+    b_slope_id[z] ~ normal(0, sigma_slope_id[z]);
+    b_slope_low_light_id[z] ~ normal(0, sigma_slope_low_light_id[z]);
+  }
+  
   for (l in 1:n_light_treatment) {
     for (k in 1:n_leaf_type) {
       b_intercept_error[,k,l] ~ normal(0, sigma_intercept_error);
