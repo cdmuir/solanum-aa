@@ -15,17 +15,19 @@ list.files("synthetic-data", pattern = "stan_sim[0-9]{4}.rds", full.names = TRUE
     # stan_sim$mean_A = mean(stan_sim$A)
     # stan_sim$sd_log_gsw = sd(log(stan_sim$g_sw))
     # stan_sim$mean_log_gsw = mean(log(stan_sim$g_sw))
-
+    stan_sim$n_comp = 2 # add this to previous script
     fit_sim = solanum_aa$sample(
       data = stan_sim,
       chains = 1L,
       parallel_chains = 1L,
-      init = list(
-        list(
-          c_a = stan_sim$CO2_s, log_gsw = log(stan_sim$g_sw),
-          sd_A = sd(stan_sim$A), mean_A = mean(stan_sim$A)
-        )
-      ),
+      # init = list(
+      #   list(
+      #     c_a = rep(stan_sim$CO2_s, stan_sim$n_comp),
+      #     log_gsw = rep(log(stan_sim$g_sw), stan_sim$n_comp),
+      #     sd_A = rep(sd(stan_sim$A), stan_sim$n_comp), 
+      #     mean_A = rep(mean(stan_sim$A), stan_sim$n_comp)
+      #   )
+      # ),
       seed = 20240203
     )
     
