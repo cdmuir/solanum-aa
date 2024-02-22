@@ -1,3 +1,7 @@
+// This version works with 'square' arrays where each curve has same number of 
+// points. I think this will be a problem with the actual data which have 
+// different numbers of points in each curve. Pausing and copying to another 
+// file in case I want to come back to this version.
 functions {
   // Calculate saturating vapor pressure following the LI6800 manual
   real li6800_svp(real T_degreeC, real P_kPa) {
