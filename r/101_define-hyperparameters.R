@@ -1,6 +1,6 @@
 # SCRATCH
 # 
-# Get local secoond derivative on A-gsw curve to identify linear portion
+# Get local second derivative on A-gsw curve to identify linear portion
 # 
 # 1. fit linear regression
 # 2. simulate N synthetic data sets from fitted
