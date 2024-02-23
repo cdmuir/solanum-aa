@@ -143,12 +143,13 @@ aa_hyperpars = list(
   `b_slope_pseudohypo_high_intensity_high_light` = 
     post$`b_slope_leaf_typepseudohypo:light_intensity2000:light_treatmenthigh`[seq_len(n_sim)],
   
-  # Need to get from next fit_preliminary
-  mu_sigma_intercept_id = post$sigma_intercept[seq_len(n_sim)],
-  b_sigma_intercept_high_light_id = 3,
+  mu_sigma_intercept_id = post$b_sigma_intercept_Intercept[seq_len(n_sim)],
+  b_sigma_intercept_high_light_id =
+    post$b_sigma_intercept_light_intensity2000[seq_len(n_sim)],
 
-  mu_sigma_slope_id = post$sigma_intercept[seq_len(n_sim)],
-  b_sigma_slope_high_light_id = 1,
+  mu_sigma_slope_id = post$b_sigma_slope_Intercept[seq_len(n_sim)],
+  b_sigma_slope_high_light_id = 
+    post$b_sigma_slope_light_intensity2000[seq_len(n_sim)],
   
   # No fit in model
   # day-to-day variation in intercept affecting both high and low light intensity

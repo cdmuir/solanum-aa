@@ -37,7 +37,90 @@ aa_hyperpars = read_rds("objects/aa_hyperpars.rds")
         pts = pts_vector
       )
     
-    # light_treatment:id parameters (should change to acc_id when acc is added)
+    # WORKING HERE
+    # log_gsw ranges
+    .hpar[str_detect(names(.hpar), "^m(ax|in)_log_gsw_")] |>
+      as_tibble() |>
+      pivot_longer(everything()) |>
+      separate_wider_regex(name, c(x = "^m(?:ax|in)_log_gsw"))
+    # [41] "min_log_gsw_high_150_pseudohypo"                 
+    # [42] "max_log_gsw_high_150_pseudohypo"                 
+    # [43] "min_log_gsw_low_150_pseudohypo"                  
+    # [44] "max_log_gsw_low_150_pseudohypo"                  
+    # [45] "min_log_gsw_high_150_amphi"                      
+    # [46] "max_log_gsw_high_150_amphi"                      
+    # [47] "min_log_gsw_low_150_amphi"                       
+    # [48] "max_log_gsw_low_150_amphi"                       
+    # [49] "min_log_gsw_high_2000_pseudohypo"                
+    # [50] "max_log_gsw_high_2000_pseudohypo"                
+    # [51] "min_log_gsw_low_2000_pseudohypo"                 
+    # [52] "max_log_gsw_low_2000_pseudohypo"                 
+    # [53] "min_log_gsw_high_2000_amphi"                     
+    # [54] "max_log_gsw_high_2000_amphi"                     
+    # [55] "min_log_gsw_low_2000_amphi"                      
+    # [56] "max_log_gsw_low_2000_amphi"                      
+    
+    # main effect parameters
+    main_pars = with(
+      .hpar,
+      crossing(
+        light_treatment = light_treatment_vector,
+        leaf_type = leaf_type_vector,
+        light_intensity = light_intensity_vector,
+        
+        mu_intercept,
+        b_intercept_pseudohypo,
+        b_intercept_high_light,
+        b_intercept_high_intensity,
+        `b_intercept_pseudohypo:high_intensity`,
+        `b_intercept_pseudohypo:high_light`,
+        `b_intercept_high_intensity:high_light`,
+        `b_intercept_pseudohypo_high_intensity_high_light`,
+        
+        mu_slope,
+        b_slope_pseudohypo,
+        b_slope_high_light,
+        b_slope_high_intensity,
+        `b_slope_pseudohypo:high_intensity`,
+        `b_slope_pseudohypo:high_light`,
+        `b_slope_high_intensity:high_light`,
+        `b_slope_pseudohypo_high_intensity_high_light`
+      
+      )
+    ) |>
+      mutate(
+        intercept = mu_intercept +
+          b_intercept_pseudohypo * (leaf_type == "pseudohypo") +
+          b_intercept_high_light * (light_treatment == "high") +
+          b_intercept_high_intensity * (light_intensity == "2000") +
+          `b_intercept_pseudohypo:high_intensity` * 
+            (leaf_type == "pseudohypo" & light_intensity == "2000") +
+          `b_intercept_pseudohypo:high_light` *
+            (leaf_type == "pseudohypo" & light_treatment == "high") + 
+          `b_intercept_high_intensity:high_light` * 
+            (light_intensity == "2000" & light_treatment == "high") +
+          `b_intercept_pseudohypo_high_intensity_high_light` * 
+            (leaf_type == "pseudohypo" & light_intensity == "2000" & 
+               light_treatment == "high"),
+        
+        slope = mu_slope +
+          b_slope_pseudohypo * (leaf_type == "pseudohypo") +
+          b_slope_high_light * (light_treatment == "high") +
+          b_slope_high_intensity * (light_intensity == "2000") +
+          `b_slope_pseudohypo:high_intensity` * 
+          (leaf_type == "pseudohypo" & light_intensity == "2000") +
+          `b_slope_pseudohypo:high_light` *
+          (leaf_type == "pseudohypo" & light_treatment == "high") + 
+          `b_slope_high_intensity:high_light` * 
+          (light_intensity == "2000" & light_treatment == "high") +
+          `b_slope_pseudohypo_high_intensity_high_light` * 
+          (leaf_type == "pseudohypo" & light_intensity == "2000" & 
+             light_treatment == "high")
+        
+      )
+    
+    # random effects
+    ## light_treatment:id parameters (should change to acc_id when acc is added)
     light_treatment_x_id_pars = with(
       .hpar,
       tibble(
@@ -48,10 +131,10 @@ aa_hyperpars = read_rds("objects/aa_hyperpars.rds")
           each = length(id_vector) / length(light_treatment_vector)
         ),
         
-        s1 = mu_sigma_intercept_id + b_sigma_intercept_high_light_id * 
-          (light_treatment == "high"),
-        s2 = mu_sigma_slope_id + b_sigma_slope_high_light_id * 
-          (light_treatment == "high"),
+        s1 = exp(mu_sigma_intercept_id + b_sigma_intercept_high_light_id * 
+          (light_treatment == "high")),
+        s2 = exp(mu_sigma_slope_id + b_sigma_slope_high_light_id * 
+          (light_treatment == "high")),
         
         b_intercept_id = rnorm(n_id, 0, s1),
         b_slope_id = rnorm(n_id, 0, s2)
@@ -59,8 +142,8 @@ aa_hyperpars = read_rds("objects/aa_hyperpars.rds")
       )
     )
     
-    # leaf_type:id parameters (should change to leaf_type:acc_id when acc is 
-    # added)
+    ## leaf_type:id parameters (should change to leaf_type:acc_id when acc is 
+    ## added)
     leaf_type_x_id_pars = with(
       .hpar,
       crossing(id = id_vector,
@@ -71,13 +154,14 @@ aa_hyperpars = read_rds("objects/aa_hyperpars.rds")
         ))
     )
     
+    ## acc parameters (add later)
     
-    # acc parameters (add later)
-    
-    # [not sure what to call this]
+    # combine parameters
     aa_pars = with(
       .hpar,
       aa_pars_base |>
+        full_join(main_pars, by = join_by(light_treatment, leaf_type,
+                                          light_intensity)) |>
         full_join(light_treatment_x_id_pars, by = join_by(id, light_treatment)) |>
         full_join(leaf_type_x_id_pars, by = join_by(id, leaf_type)) |>
         split(~ id + leaf_type) |>
@@ -108,9 +192,8 @@ aa_hyperpars = read_rds("objects/aa_hyperpars.rds")
         })
     )
     
-    # WORKING HERE
+    # WORKING HERE - solving min/max log_gsw. thing above, then come back here
     # - need to add min/max log_gsw. These are effectively light_treatment:light_intensity:leaf_type interactions
-    # - need to also incorporate ʻmainʻ effects on intercept and slope
     df_sim = with(
       .hpar,
       crossing(
