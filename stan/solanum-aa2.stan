@@ -249,7 +249,7 @@ model {
     }
   }
 
-  // likelihood
+  // likelihood ----
   for (k in 1:n_curve) {
 
     // placeholders

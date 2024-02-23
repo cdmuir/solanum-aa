@@ -49,8 +49,7 @@ set.seed(20240202)
 
 # Calculate realistic quantities from data
 n_id = rh_curves |>
-  summarise(n_id = length(unique(acc_id)),
-            .by = c("acc", "light_treatment")) |>
+  summarise(n_id = length(unique(acc_id)), .by = "acc") |>
   pull(n_id) |>
   mean() |>
   round()
@@ -117,7 +116,7 @@ aa_hyperpars = list(
   
   # intercept is amphi, light intensity = 150, light treatment = high
   mu_intercept = post$b_intercept_Intercept[seq_len(n_sim)], 
-  b_intercept_pseudohypo = post$intercept_leaf_typepseudohypo[seq_len(n_sim)], 
+  b_intercept_pseudohypo = post$b_intercept_leaf_typepseudohypo[seq_len(n_sim)], 
   b_intercept_high_light = post$b_intercept_light_treatmenthigh[seq_len(n_sim)], 
   b_intercept_high_intensity = 
     post$b_intercept_light_intensity2000[seq_len(n_sim)], 
@@ -131,7 +130,7 @@ aa_hyperpars = list(
     post$`b_intercept_leaf_typepseudohypo:light_intensity2000:light_treatmenthigh`[seq_len(n_sim)],
 
   mu_slope = post$b_slope_Intercept[seq_len(n_sim)], 
-  b_slope_pseudohypo = post$slope_leaf_typepseudohypo[seq_len(n_sim)], 
+  b_slope_pseudohypo = post$b_slope_leaf_typepseudohypo[seq_len(n_sim)], 
   b_slope_high_light = post$b_slope_light_treatmenthigh[seq_len(n_sim)], 
   b_slope_high_intensity = 
     post$b_slope_light_intensity2000[seq_len(n_sim)], 
@@ -159,6 +158,19 @@ aa_hyperpars = list(
 
 aa_hyperpars$b_autocorr_c = with(aa_hyperpars, calculate_corr_decay(rho_error_c, interval))
 aa_hyperpars$b_autocorr_w = with(aa_hyperpars, calculate_corr_decay(rho_error_w, interval))
+
+aa_hyperpars = c(aa_hyperpars,
+                 aa_hyperpars$log_gsw_range |>
+  # only simulating one accession at the moment
+  dplyr::select(-acc) |>
+  unite("x", light_treatment, light_intensity, leaf_type) |>
+  pivot_longer(contains("log_gsw")) |>
+  unite("name", name, x) |>
+  pivot_wider() |>
+  as.list()
+) 
+
+aa_hyperpars = aa_hyperpars[which(names(aa_hyperpars) != "log_gsw_range")]
 
 lapply(aa_hyperpars, \(.x) {
   if (length(.x) == n_sim) {
