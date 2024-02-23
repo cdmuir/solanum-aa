@@ -137,14 +137,20 @@ ggplot(df1, aes(intercept, slope, color = curve_type, shape = light_intensity,
 fit_preliminary = brm(
   bf(
     mvbind(intercept, slope) ~
-      curve_type * light_intensity * light_treatment +
-      (curve_type * light_intensity * light_treatment |
-         acc)
+      leaf_type * light_intensity * light_treatment +
+      (leaf_type * light_intensity * light_treatment |
+         acc),
+    sigma ~ light_intensity
   ) +
     set_rescor(TRUE),
-  data = df1,
+  data = df1 |>
+    mutate(leaf_type = case_when(
+      curve_type == "1-sided RH" ~ "pseudohypo",
+      curve_type == "2-sided RH" ~ "amphi"
+  )),
   backend = "cmdstanr",
-  chains = 1
+  chains = 1,
+  silent = 0
 )
 
 conditional_effects(fit_preliminary)
