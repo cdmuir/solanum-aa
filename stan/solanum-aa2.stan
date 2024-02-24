@@ -45,7 +45,6 @@ data {
   // total number of rows
   int<lower=0> n;
   // total number of curves
-  // this should be n_id * n_leaf_type * n_light_treatment if perfectly balanced
   int<lower=0> n_curve; 
   
   int<lower=0> n_id;
@@ -55,11 +54,11 @@ data {
   int<lower=1> n_comp;  
   
   // vector of integer lengths per curve
-  int<lower=0> n_pts[n_curve]; 
+  array[n_curve] int<lower=0> n_pts; 
   
-  int<lower=1,upper=n_id> id[n];
-  int<lower=1,upper=n_leaf_type> leaf_type[n];
-  int<lower=1,upper=n_light_treatment> light_treatment[n];
+  array[n] int<lower=1,upper=n_id> id;
+  array[n] int<lower=1,upper=n_leaf_type> leaf_type;
+  array[n] int<lower=1,upper=n_light_treatment> light_treatment;
   
   vector[n] elapsed;
   vector[n] flow;
@@ -153,7 +152,7 @@ model {
       for (j in 1:n_pts[k]) {
             
         // row position
-        ir = sum(n_pts[0:(k - 1)]) + j;
+        ir = cumulative_sum(n_pts[1:k])[k] - n_pts[k] + j;
             
         scaled_log_gsw[ir,z] = (log_gsw[ir,z] - mean_log_gsw[z]) / sd_log_gsw[z];
         
@@ -243,8 +242,8 @@ model {
       b_intercept_error[k,z] ~ normal(0, sigma_intercept_error[z]);
       w[k] ~ dirichlet(alpha);
       for (j in 1:n_pts[k]) {
-        c_a[sum(n_pts[0:(k - 1)]) + j,z] ~ normal(415, 1);
-        log_gsw[sum(n_pts[0:(k - 1)]) + j,z] ~ normal(-1, 1); // is this the right choice?
+        c_a[cumulative_sum(n_pts[1:k])[k] - n_pts[k] + j,z] ~ normal(415, 1);
+        log_gsw[cumulative_sum(n_pts[1:k])[k] - n_pts[k] + j,z] ~ normal(-1, 1); // is this the right choice?
       }
     }
   }
@@ -267,7 +266,7 @@ model {
         y[z,j] = CO2_r[j];
         s_vec[z,j] = sigma_c[z];
         for (i in 1:n_pts[k]) {
-          R[z,i,j] = exp(-b_autocorr_c[z] * abs(elapsed[sum(n_pts[0:(k - 1)]) + j] - elapsed[sum(n_pts[0:(k - 1)]) + i]));
+          R[z,i,j] = exp(-b_autocorr_c[z] * abs(elapsed[cumulative_sum(n_pts[1:k])[k] - n_pts[k] + j] - elapsed[cumulative_sum(n_pts[1:k])[k] - n_pts[k] + i]));
         }
       }
     }
@@ -286,7 +285,7 @@ model {
         y[z,j] = CO2_s[j];
         s_vec[z,j] = sigma_c[z];
         for (i in 1:n_pts[k]) {
-          R[z,i,j] = exp(-b_autocorr_c[z] * abs(elapsed[sum(n_pts[0:(k - 1)]) + j] - elapsed[sum(n_pts[0:(k - 1)]) + i]));
+          R[z,i,j] = exp(-b_autocorr_c[z] * abs(elapsed[cumulative_sum(n_pts[1:k])[k] - n_pts[k] + j] - elapsed[cumulative_sum(n_pts[1:k])[k] - n_pts[k] + i]));
         }
       }
     }
@@ -305,7 +304,7 @@ model {
         y[z,j] = H2O_r[j];
         s_vec[z,j] = sigma_w[z];
         for (i in 1:n_pts[k]) {
-          R[z,i,j] = exp(-b_autocorr_w[z] * abs(elapsed[sum(n_pts[0:(k - 1)]) + j] - elapsed[sum(n_pts[0:(k - 1)]) + i]));
+          R[z,i,j] = exp(-b_autocorr_w[z] * abs(elapsed[cumulative_sum(n_pts[1:k])[k] - n_pts[k] + j] - elapsed[cumulative_sum(n_pts[1:k])[k] - n_pts[k] + i]));
         }
       }
     }
@@ -324,7 +323,7 @@ model {
         y[z,j] = H2O_s[j];
         s_vec[z,j] = sigma_w[z];
         for (i in 1:n_pts[k]) {
-          R[z,i,j] = exp(-b_autocorr_w[z] * abs(elapsed[sum(n_pts[0:(k - 1)]) + j] - elapsed[sum(n_pts[0:(k - 1)]) + i]));
+          R[z,i,j] = exp(-b_autocorr_w[z] * abs(elapsed[cumulative_sum(n_pts[1:k])[k] - n_pts[k] + j] - elapsed[cumulative_sum(n_pts[1:k])[k] - n_pts[k] + i]));
         }
       }
     }
