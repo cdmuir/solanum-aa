@@ -4,6 +4,10 @@ set.seed(20231227)
 
 aa_hyperpars = read_rds("objects/aa_hyperpars.rds")
 
+# .hpar = aa_hyperpars |>
+#   transpose() |>
+#   extract2(1)
+
 aa_hyperpars |>
   transpose() |>
   iwalk(\(.hpar, .i) {
@@ -11,9 +15,6 @@ aa_hyperpars |>
     light_treatment_vector = c("low", "high")
     leaf_type_vector = c("amphi", "pseudohypo")
     light_intensity_vector = c("150", "2000")
-    pts_vector = with(.hpar, str_c("p", str_pad(
-      seq_len(n_pts), floor(log10(n_pts)) + 1, "left", "0"
-    )))
     
     aa_pars_base = tibble(
       id = id_vector,
@@ -23,8 +24,13 @@ aa_hyperpars |>
       )
     ) |>
       crossing(leaf_type = leaf_type_vector,
-               light_intensity = light_intensity_vector,
-               pts = pts_vector)
+               light_intensity = light_intensity_vector) %>%
+      split(~ seq_len(nrow(.))) |>
+      map_dfr(\(.x, lambda) {
+        n_pts = rpois(1, lambda)
+        .x |>
+          reframe(across(everything(), ~ rep(.x, n_pts)))
+      }, lambda = .hpar$lambda)
     
     log_gsw_ranges = .hpar[str_detect(names(.hpar), "^m(ax|in)_log_gsw_")] |>
       as_tibble() |>

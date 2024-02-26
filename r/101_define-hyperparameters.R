@@ -48,13 +48,13 @@ post = as_draws(fit_preliminary)[[1]]
 set.seed(20240202)
 
 # Calculate realistic quantities from data
-n_id = rh_curves |>
-  summarise(n_id = length(unique(acc_id)), .by = "acc") |>
-  pull(n_id) |>
-  mean() |>
-  round()
+n_id = 10 #rh_curves |>
+  # summarise(n_id = length(unique(acc_id)), .by = "acc") |>
+  # pull(n_id) |>
+  # mean() |>
+  # round()
 
-n_pts = 20 #rh_curves |>
+lambda = 10 #rh_curves |>
   # summarise(n_pts = n(),
   #           .by = c("acc", "acc_id", "light_treatment", "light_intensity")) |>
   # pull(n_pts) |>
@@ -93,7 +93,7 @@ aa_hyperpars = list(
   # Experimental design hyperparameters
   n_acc = 1, # number of accessions
   n_id  = n_id, # number of replicates per accession per treatment
-  n_pts = n_pts, # number of points per curve
+  lambda = lambda, # average number of points per curve
   
   # Chamber environment hyperparameters
   c_a = 415, # CO2 [umol / mol]

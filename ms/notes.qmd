@@ -1,0 +1,31 @@
+---
+title: "Notes"
+format: html
+editor: visual
+execute:
+  enabled: true
+---
+
+Making some notes on methods that might be useful for writing later
+
+## 2024-02-25
+
+Actually, I did this profiling wrong, but I'm going to try model without autocorrelation anyway to compare.
+
+I profiled the `solanum-aa` code and found that most (90.6%) of the time is spent on the `multi_normal` calculations. 
+
+Next, I profiled the same model, ignoring residual autocorrelation. The speed-up is substantial (80\%). The time in this model is pretty evenly divided among various calculations and likelihood.
+
+Note that total runtime was 5871.4 seconds for 400 iterations
+
+| name         | total_time |
+|--------------|------------|
+| CO2_r likelihood | 297.691 |
+| CO2_s likelihood | 238.332 |
+| H2O_r likelihood | 304.786 |
+| H2O_s likelihood | 306.439 |
+| LICOR calcs | 1047.940 |
+| priors | 749.983 |  
+| regression | 645.282 |
+
+Given the efficiency of model without residual autocorrelatiln, I will try fitting actual data with uncorrelated residuals first. If the residuals are highly correlated, then I will try a combination of thinning or accounting for autocorrelation, perhaps finding a more efficient approach.

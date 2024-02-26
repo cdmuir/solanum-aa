@@ -64,7 +64,6 @@ data {
   array[n] int<lower=1,upper=n_light_treatment> light_treatment;
   array[n] int<lower=1,upper=n_light_intensity> light_intensity;
   
-  vector[n] elapsed;
   vector[n] flow;
   vector[n] g_bw;
   vector[n] K;
@@ -86,8 +85,6 @@ parameters {
   vector<lower=0>[n_comp] mean_A;
   
   // hyperparameters
-  vector<lower=0>[n_comp] b_autocorr_c; 
-  vector<lower=0>[n_comp] b_autocorr_w; 
   vector<lower=0>[n_comp] sigma_c; 
   vector<lower=0>[n_comp] sigma_w; 
 
@@ -166,7 +163,6 @@ transformed parameters{
   array[n,n_comp] real w_a;
   
   // calculations ----
-  profile("calculations") {
   for (z in 1:n_comp) {
     sd_log_gsw[z] = sd(log_gsw[1:n,z]);
     mean_log_gsw[z] = mean(log_gsw[1:n,z]);
@@ -174,6 +170,7 @@ transformed parameters{
 
         scaled_log_gsw[ir,z] = (log_gsw[ir,z] - mean_log_gsw[z]) / sd_log_gsw[z];
         
+  profile("regression") {
         // Component 1: linear A-log(gsw)
         intercept = mu_intercept[z] + 
           b_intercept_pseudohypo[z] * (leaf_type[ir] == 2) +
@@ -202,7 +199,7 @@ transformed parameters{
           b_slope_pseudohypo__high_intensity__high_light[z] * 
             (leaf_type[ir] == 2 && light_intensity[ir] == 2 && light_treatment[ir] == 2) +
           b_slope_id[id[ir],z] + b_slope_curve[curve[ir],z];
-        
+  }
         scaled_A[ir,z] = intercept + slope * scaled_log_gsw[ir,z];
 
         // Component 2: quadratic A-log(gsw)
@@ -215,6 +212,8 @@ transformed parameters{
         }
 
         A[ir,z] = scaled_A[ir,z] * sd_A[z] + mean_A[z];
+
+  profile("LICOR calcs") {
             
         w_i[ir,z] = li6800_svp(T_leaf[ir], P[ir]);
         w_a[ir,z] = RH[ir] * li6800_svp(T_air[ir], P[ir]);
@@ -233,22 +232,20 @@ transformed parameters{
         E[ir,z]    = li6800_E(g_tw[ir,z], w_a[ir,z], w_i[ir,z]);
         w_0[ir,z]  = li6800_w0(E[ir,z], flow[ir], s[ir], w_a[ir,z]);
         c_0[ir,z]  = li6800_c0(A[ir,z], c_a[ir,z], flow[ir], s[ir], w_a[ir,z], w_0[ir,z]);
-
+}
       }
     }
+
   }
-  
-}
 model {
   
+  profile("priors") {
   // priors ----
   // priors on variable scaling
   sd_A ~ normal(0, 10);
   mean_A ~ normal(15, 10);
   
   // priors on hyperparameters
-  b_autocorr_c ~ normal(0, 1); 
-  b_autocorr_w ~ normal(0, 1); 
   // sigma_c ~ gamma(2, 0); // https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations
   sigma_c ~ normal(0, 1); 
   sigma_w ~ normal(0, 1); 
@@ -310,96 +307,49 @@ model {
       }
     }
   }
-
+}
   // likelihood ----
-  for (k in 1:n_curve) {
+  for (i in 1:n) {
 
     // placeholders
-    array[n_comp] real lambda;
-    array[n_comp] row_vector[n_pts[k]] x;
-    array[n_comp] row_vector[n_pts[k]] y;
-    array[n_comp] matrix[n_pts[k], n_pts[k]] R;
-    array[n_comp] vector[n_pts[k]] s_vec;
-    
-    profile("multinormal") {  
+    real lambda;
+
+    profile("CO2_r likelihood") {  
     // CO2_r
-    for (z in 1:n_comp) {
-      lambda[z] = w[k,z];
-      for (j in 1:n_pts[k]) {
-        x[z,j] = c_0[j,z];
-        y[z,j] = CO2_r[j];
-        s_vec[z,j] = sigma_c[z];
-        for (i in 1:n_pts[k]) {
-          R[z,i,j] = exp(-b_autocorr_c[z] * abs(elapsed[cumulative_sum(n_pts[1:k])[k] - n_pts[k] + j] - elapsed[cumulative_sum(n_pts[1:k])[k] - n_pts[k] + i]));
-        }
-      }
-    }
-        
     target += log_mix(
-      lambda[1],
-      multi_normal_lpdf(y[1] | x[1], quad_form_diag(R[1], s_vec[1])),
-      multi_normal_lpdf(y[2] | x[2], quad_form_diag(R[2], s_vec[2]))
+      w[curve[i], 1],
+      normal_lpdf(CO2_r[i] | c_0[i,1], sigma_c[1]),
+      normal_lpdf(CO2_r[i] | c_0[i,2], sigma_c[2])
     );
-
-    // CO2_s
-    for (z in 1:n_comp) {
-      lambda[z] = w[k,z];
-      for (j in 1:n_pts[k]) {
-        x[z,j] = c_a[j,z];
-        y[z,j] = CO2_s[j];
-        s_vec[z,j] = sigma_c[z];
-        for (i in 1:n_pts[k]) {
-          R[z,i,j] = exp(-b_autocorr_c[z] * abs(elapsed[cumulative_sum(n_pts[1:k])[k] - n_pts[k] + j] - elapsed[cumulative_sum(n_pts[1:k])[k] - n_pts[k] + i]));
-        }
-      }
-    }
-
-    target += log_mix(
-      lambda[1],
-      multi_normal_lpdf(y[1] | x[1], quad_form_diag(R[1], s_vec[1])),
-      multi_normal_lpdf(y[2] | x[2], quad_form_diag(R[2], s_vec[2]))
-    );
-
-    // H2O_r
-    for (z in 1:n_comp) {
-      lambda[z] = w[k,z];
-      for (j in 1:n_pts[k]) {
-        x[z,j] = w_0[j,z];
-        y[z,j] = H2O_r[j];
-        s_vec[z,j] = sigma_w[z];
-        for (i in 1:n_pts[k]) {
-          R[z,i,j] = exp(-b_autocorr_w[z] * abs(elapsed[cumulative_sum(n_pts[1:k])[k] - n_pts[k] + j] - elapsed[cumulative_sum(n_pts[1:k])[k] - n_pts[k] + i]));
-        }
-      }
-    }
-
-    target += log_mix(
-      lambda[1],
-      multi_normal_lpdf(y[1] | x[1], quad_form_diag(R[1], s_vec[1])),
-      multi_normal_lpdf(y[2] | x[2], quad_form_diag(R[2], s_vec[2]))
-    );
-
-    // H2O_s
-    for (z in 1:n_comp) {
-      lambda[z] = w[k,z];
-      for (j in 1:n_pts[k]) {
-        x[z,j] = w_a[j,z];
-        y[z,j] = H2O_s[j];
-        s_vec[z,j] = sigma_w[z];
-        for (i in 1:n_pts[k]) {
-          R[z,i,j] = exp(-b_autocorr_w[z] * abs(elapsed[cumulative_sum(n_pts[1:k])[k] - n_pts[k] + j] - elapsed[cumulative_sum(n_pts[1:k])[k] - n_pts[k] + i]));
-        }
-      }
-    }
     }
     
-    profile("mix") {  
+    profile("CO2_s likelihood") {  
+    // CO2_s
     target += log_mix(
-      lambda[1],
-      multi_normal_lpdf(y[1] | x[1], quad_form_diag(R[1], s_vec[1])),
-      multi_normal_lpdf(y[2] | x[2], quad_form_diag(R[2], s_vec[2]))
+      w[curve[i], 1],
+      normal_lpdf(CO2_s[i] | c_a[i,1], sigma_c[1]),
+      normal_lpdf(CO2_s[i] | c_a[i,2], sigma_c[2])
     );
-    }    
+    }
+
+    profile("H2O_r likelihood") {  
+    // H2O_r
+    target += log_mix(
+      w[curve[i], 1],
+      normal_lpdf(H2O_r[i] | w_0[i,1], sigma_w[1]),
+      normal_lpdf(H2O_r[i] | w_0[i,2], sigma_w[2])
+    );
+    }
+    
+    profile("H2O_s likelihood") {  
+    // H2O_s
+    target += log_mix(
+      w[curve[i], 1],
+      normal_lpdf(H2O_s[i] | w_a[i,1], sigma_w[1]),
+      normal_lpdf(H2O_s[i] | w_a[i,2], sigma_w[2])
+    );
+    }
+    
   }
 }
 
