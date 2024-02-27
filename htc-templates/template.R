@@ -5,7 +5,7 @@ library(stringr)
 
 set_cmdstan_path("cmdstan-2.34.1")
 
-solanum_aa = cmdstan_model("solanum-aa2.stan")
+solanum_aa = cmdstan_model("solanum-aa3.stan")
 
 stan_sim = read_rds("stan_sim{n}.rds")
     

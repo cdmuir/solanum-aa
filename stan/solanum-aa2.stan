@@ -1,3 +1,10 @@
+// This model uses multinormal distribution to account for residual autocorrelation.
+// However, the regression model is not totally correct and would need to be updated
+// to match that in solanum-aa3.stan.
+// Currently, I am preparing solanum-aa3.stan to do preliminary analysis of real data
+// to see how serious residual autocorrelation is. If it is minimal, I will continue
+// with that code and archive this version. If autocorrelation is large, I will return
+// to working with the code, but correcting the model and trying to speed up fitting.
 functions {
   // Calculate saturating vapor pressure following the LI6800 manual
   real li6800_svp(real T_degreeC, real P_kPa) {

@@ -49,6 +49,7 @@ data {
   
   int<lower=0> n_id;
   int<lower=0> n_leaf_type;  
+  int<lower=0> n_leaftype_x_id;
   int<lower=0> n_light_treatment;  
   int<lower=0> n_light_intensity;  
   
@@ -61,6 +62,7 @@ data {
   
   array[n] int<lower=1,upper=n_id> id;
   array[n] int<lower=1,upper=n_leaf_type> leaf_type;
+  array[n] int<lower=1,upper=n_leaftype_x_id> leaftype_x_id;
   array[n] int<lower=1,upper=n_light_treatment> light_treatment;
   array[n] int<lower=1,upper=n_light_intensity> light_intensity;
   
@@ -91,7 +93,7 @@ parameters {
   vector[n_comp] mu_intercept;
   vector<lower=0>[n_comp] sigma_intercept_id;
   vector<lower=0>[n_comp] sigma_intercept_curve;
-  // vector<lower=0>[n_comp] sigma_intercept_error;
+  vector<lower=0>[n_comp] sigma_intercept_leaftype_x_id;
 
   vector[n_comp] mu_slope;
   vector<lower=0>[n_comp] sigma_slope_id;
@@ -118,7 +120,10 @@ parameters {
   // parameters
   array[n_id,n_comp] real b_intercept_id;
   array[n_curve,n_comp] real b_intercept_curve;
-  // array[n_curve,n_comp] real b_intercept_error;
+  // This is the 'error' associated with day-to-day changes in leaf physiology,
+  // leaf area in the chamber, etc. that affect both high and low intensity curves,
+  // but are not actually caused by amphi advantage/disadvantage.
+  array[n_leaftype_x_id,n_comp] real b_intercept_leaftype_x_id;
 
   array[n_id,n_comp] real b_slope_id;
   array[n_curve,n_comp] real b_slope_curve;
@@ -184,7 +189,8 @@ transformed parameters{
             (light_intensity[ir] == 2 && light_treatment[ir] == 2) +
           b_intercept_pseudohypo__high_intensity__high_light[z] *
             (leaf_type[ir] == 2 && light_intensity[ir] == 2 && light_treatment[ir] == 2) +
-          b_intercept_id[id[ir],z] + b_intercept_curve[curve[ir],z]; //b_intercept_error[k,z];
+          b_intercept_id[id[ir],z] + b_intercept_curve[curve[ir],z] +
+          b_intercept_leaftype_x_id[leaftype_x_id[ir],z];
         
         slope = mu_slope[z] + 
           b_slope_pseudohypo[z] * (leaf_type[ir] == 2) +
@@ -253,7 +259,7 @@ model {
   mu_intercept ~ normal(0, 10);
   sigma_intercept_id ~ normal(0, 10);
   sigma_intercept_curve ~ normal(0, 10);
-  // sigma_intercept_error ~ normal(0, 10);
+  sigma_intercept_leaftype_x_id ~ normal(0, 10);
 
   mu_slope ~ normal(0, 10);
   sigma_slope_id ~ normal(0, 10);
@@ -295,7 +301,7 @@ model {
 
     b_intercept_id[z] ~ normal(0, sigma_intercept_id[z]);
     b_intercept_curve[z] ~ normal(0, sigma_intercept_curve[z]);
-    b_slope_id[z] ~ normal(0, sigma_slope_id[z]);
+    b_intercept_leaftype_x_id[z] ~ normal(0, sigma_intercept_leaftype_x_id[z]);
     b_slope_curve[z] ~ normal(0, sigma_slope_curve[z]);
 
     for (k in 1:n_curve) {
