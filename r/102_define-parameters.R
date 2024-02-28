@@ -197,7 +197,7 @@ aa_hyperpars |>
         K = .hpar$K_amphi * 1 / (leaf_type == "amphi")
       )
     
-    
+    # Add LI-COR style estimates
     df_sim = df_sim |>
       li6800_simulate() |>
       # add autocorrelated error
@@ -208,6 +208,15 @@ aa_hyperpars |>
         H2O_s = w_a + error_H2Os
       ) |>
       li6800_estimate()
+    
+    # Add indexing information
+    df_sim = df_sim |>
+      # make unique ID for each leaf_type within id (change to acc_id later)
+      unite("leaftype_x_id", id, leaf_type, remove = FALSE) |>
+      # make unique ID for each curve
+      unite("curve", id, leaf_type, light_intensity, remove = FALSE) |>
+      mutate(curve_number = as.character(as.numeric(as.factor(curve))),
+             row = row_number())
     
     # Quick plot for checking
     # ggplot(df_sim, aes(gsw_hat, A_hat)) +

@@ -33,7 +33,7 @@ cd ..
 tar -czf cmdstan-2.34.1.tar.gz cmdstan-2.34.1/
 
 
-
+# SYNTHETIC DATA
 
 # 1. Compress local directory before transfering
 tar --exclude='packages.tar.gz' -czf solanum-aa.tar.gz htc/
@@ -57,6 +57,30 @@ condor_submit solanum-aa/htc/fit_0001.sub # 19164174
 condor_submit solanum-aa/htc/fit_0002.sub # 19164175
 condor_submit solanum-aa/htc/fit_0003.sub # 19164176
 
-
 # check status
 condor_q 19164174
+
+# 8. Retrieve results
+scp cdmuir@submit2.chtc.wisc.edu:/home/cdmuir/fit_sim* objects/
+
+# clean up on submit node
+rm fit_*
+
+# ACTUAL DATA
+
+# 1. Transfer files before logging in using scp
+scp data/stan_rh_curves.rds htc/fit_dat.R htc/fit_dat.sh htc/fit_dat.sub stan/solanum-aa3.stan cdmuir@submit2.chtc.wisc.edu:/home/cdmuir/solanum-aa/htc
+
+# 2. Login to submit node
+
+# 3. Submit jobs
+condor_submit solanum-aa/htc/fit_dat.sub
+
+# check status
+condor_q 19228592
+
+# 4. Retrieve results
+scp cdmuir@submit2.chtc.wisc.edu:/home/cdmuir/fit_dat.rds objects/
+
+# clean up on submit node
+rm fit_*

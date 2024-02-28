@@ -29,3 +29,9 @@ Note that total runtime was 5871.4 seconds for 400 iterations
 | regression | 645.282 |
 
 Given the efficiency of model without residual autocorrelatiln, I will try fitting actual data with uncorrelated residuals first. If the residuals are highly correlated, then I will try a combination of thinning or accounting for autocorrelation, perhaps finding a more efficient approach.
+
+## 2024-02-27
+
+Current model (no autocorrelation) is taking less than two hours to run on HTC, with average of 10 points per curve. 40 total curves.
+
+Current model (no autocorrelation) took ~8.33 hours to run LA2172 data on HTC, with average of 29 points per curve. 80 total curves.

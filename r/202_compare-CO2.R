@@ -8,41 +8,67 @@ n_fit = str_extract(fit, "[0-9]{4}")
 
 assert_set_equal(n_dat, n_fit)
 
-# c_0 and CO2_r ----
 n_dat |>
   map_dfr(\(.x) {
     df_sim = read_rds(glue("synthetic-data/df_sim{.x}.rds"))
+    stan_sim = read_rds(glue("synthetic-data/stan_sim{.x}.rds"))
+    
+    # check order
+    assert_true(all(df_sim$curve_number == stan_sim$curve))
+    
     fit_sim = read_rds(glue("objects/fit_sim{.x}.rds"))
     
-    par_string = "^c_0\\[([0-9]+),([0-9]+),([0-9]+),([0-9]+)\\]$"
+    par_string = "^(w|c_0)\\[([0-9]+),([0-9]+)\\]$"
     
+    # Component weights per each curve
+    df_w = fit_sim$draws("w") |>
+      as_draws_df() |>
+      pivot_longer(matches(par_string), values_to = "w") |>
+      mutate(
+        curve_number = str_replace(name, par_string, "\\2"),
+        comp = str_replace(name, par_string, "\\3")
+      ) |>
+      select(-name) |>
+      full_join(
+        select(df_sim, row, curve_number),
+        by = join_by(curve_number),
+        relationship = "many-to-many"
+      )
+    
+    # c_0 estimates
+    df_c0_est = fit_sim$draws("c_0") |>
+      as_draws_df() |>
+      pivot_longer(matches(par_string), values_to = "c_0") |>
+      mutate(# parameter = str_replace(name, par_string, "\\1"),
+        row = as.integer(str_replace(name, par_string, "\\2")),
+        comp = str_replace(name, par_string, "\\3")) |>
+      select(-name) |>
+      full_join(select(df_sim, row, curve_number),
+                by = join_by(row),
+                relationship = "many-to-many")
+    
+    # Join weights and c_0 estimates
+    df_w_c0 = full_join(df_w,
+                        df_c0_est,
+                        join_by(.chain, .iteration, .draw, curve_number, comp, row)) |>
+      pivot_wider(
+        id_cols = c(starts_with("."), "row"),
+        names_from = "comp",
+        values_from = c("w", "c_0")
+      ) |>
+      mutate(c0_est = (w_1 * c_0_1 + w_2 * c_0_2) / (w_1 + w_2)) |>
+      group_by(row) |>
+      point_interval(c0_est)
+    
+    # Join c_0 estimates with simulated values
     df_c0 = full_join(
-      # Simulated c_0
       df_sim |>
-        select(light_treatment, leaf_type, id, pts, c_0, CO2r_sim = CO2_r),
+        # Simulated c_0
+        select(light_treatment, leaf_type, id, c_0, CO2r_sim = CO2_r) |>
+        mutate(row = row_number()),
       
-      # Estimated c_0
-      fit_sim$draws("c_0") |>
-        as_draws_df() |>
-        pivot_longer(starts_with("c_0"), values_to = "c_0") |>
-        mutate(
-          pts = str_c(
-            "p",
-            str_replace(name, par_string, "\\1") |>
-              str_pad(2L, "left", "0")
-          ),
-          id = LETTERS[str_replace(name, par_string, "\\2") |>
-                         as.numeric()],
-          lt1 = str_replace(name, par_string, "\\3"),
-          leaf_type = case_when(lt1 == 1 ~  "amphi",
-                                lt1 == 2 ~ "pseudohypo"),
-          lt2 = str_replace(name, par_string, "\\4"),
-          light_treatment = case_when(lt2 == 1 ~  "high",
-                                lt2 == 2 ~ "low")
-        ) |>
-        select(-name, -lt1, -lt2) |>
-        summarize(c0_est = median(c_0), .by = c(pts, id, leaf_type, light_treatment)),
-      by = join_by(light_treatment, leaf_type, id, pts)
+      df_w_c0,
+      by = join_by(row)
     )
     
     # Summarize fit
@@ -60,77 +86,3 @@ n_dat |>
     
   }) |>
   write_rds("objects/fit_sim_summary_c0.rds")
-
-
-# Plot
-# True c_0 versus simulated CO2_r
-# ggplot(df_c0, aes(c_0, CO2r_sim, color = leaf_type)) +
-#   facet_wrap(~ rep) +
-#   geom_abline(slope = 1, intercept = 0) +
-#   geom_point() +
-#   coord_equal()
-
-# Simulated CO2_s versus estimated c_a
-# ggplot(df_c0, aes(CO2r_sim, c0_est, color = leaf_type)) +
-#   facet_wrap(~ rep) +
-#   geom_abline(slope = 1, intercept = 0) +
-#   geom_point()
-
-# True c_0 versus estimated c_0
-# ggplot(df_c0, aes(c_0, c0_est, color = leaf_type)) +
-#   facet_wrap(~ rep) +
-#   geom_abline(slope = 1, intercept = 0) +
-#   geom_point() +
-#   coord_equal()
-
-# c_a and CO2_s ----
-# This is not that informative since c_a is fixed, but code might be useful for
-# debugging later
-# df_ca = full_join(
-#   # Simulated c_a
-#   df_sim |>
-#     select(leaf_type, rep, pts, c_a, CO2s_sim = CO2_s),
-#   
-#   # Estimated c_a
-#   fit_sim$draws("c_a") |>
-#     as_draws_df() |>
-#     pivot_longer(starts_with("c_a"), values_to = "c_a") |>
-#     mutate(
-#       pts = str_c(
-#         "p",
-#         str_replace(name, par_string, "\\1") |>
-#           str_pad(2L, "left", "0")
-#       ),
-#       rep = str_c(
-#         "r",
-#         str_replace(name, par_string, "\\2") |>
-#           str_pad(2L, "left", "0")
-#       ),
-#       lt = str_replace(name, par_string, "\\3"),
-#       leaf_type = case_when(lt == 1 ~  "amphi",
-#                             lt == 2 ~ "pseudohypo")
-#     ) |>
-#     select(-name, -lt) |>
-#     summarize(ca_est = median(c_a), .by = c(pts, rep, leaf_type)),
-#   by = join_by(leaf_type, rep, pts)
-# )
-# 
-# # True c_a versus simulated CO2_s
-# ggplot(df_ca, aes(c_a, CO2s_sim, color = leaf_type)) +
-#   facet_wrap(~ rep) +
-#   geom_abline(slope = 1, intercept = 0) +
-#   geom_point() +
-#   coord_equal()
-# 
-# # Simulated CO2_s versus estimated c_a
-# ggplot(df_ca, aes(CO2s_sim, ca_est, color = leaf_type)) +
-#   facet_wrap(~ rep) +
-#   geom_abline(slope = 1, intercept = 0) +
-#   geom_point()
-# 
-# # True c_a versus estimated c_a
-# ggplot(df_ca, aes(c_a, ca_est, color = leaf_type)) +
-#   facet_wrap(~ rep) +
-#   geom_abline(slope = 1, intercept = 0) +
-#   geom_point() +
-#   coord_equal()

@@ -5,11 +5,7 @@ source("r/header.R")
 list.files("synthetic-data", pattern = "df_sim[0-9]{4}.rds", full.names = TRUE) |>
   walk(\(.x) {
     n = str_extract(.x, "[0-9]{4}")
-    df_sim = read_rds(.x) |>
-      # make unique ID for each leaf_type within id (change to acc_id later)
-      unite("leaftype_x_id", id, leaf_type, remove = FALSE) |>
-      # make unique ID for each curve
-      unite("curve", id, leaf_type, light_intensity, remove = FALSE)
+    df_sim = read_rds(.x)
     
     stan_sim = df_sim |>
       # select variables needed for Stan
