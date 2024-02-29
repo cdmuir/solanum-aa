@@ -16,9 +16,8 @@ pars = c("A", "c_0", "g_sw", "w_0")
 hats = c(A = "A_hat", c_0 = "CO2_r", g_sw = "gsw_hat", w_0 = "H2O_r")
 assert_set_equal(pars, names(hats))
 
-.x = "0001"
-# n_dat |>
-  # map_dfr(\(.x) {
+n_dat |>
+  map_dfr(\(.x) {
     df_sim = read_rds(glue("synthetic-data/df_sim{.x}.rds"))
     stan_sim = read_rds(glue("synthetic-data/stan_sim{.x}.rds"))
     
@@ -86,31 +85,32 @@ assert_set_equal(pars, names(hats))
       group_by(name, row) |>
       point_interval(value)
     
-    # Join parameter estimates with simulated values
-    df_par = pars |>
-      map(\(.p) {
-        full_join(
+    # Join parameter estimates with simulated values and summarize fit
+    pars |>
+      map_dfr(\(.p){
+        .d = full_join(
           df_w_par |>
-           filter(name == paste0(.p, "_est")),
-          df_sim |>
-            select(row, light_treatment, leaf_type, id, all_of(c(.p, hats[[.p]]))),
-          by = join_by(row)
+          filter(name == paste0(.p, "_est")),
+        df_sim |>
+          select(row, light_treatment, leaf_type, id, all_of(c(.p, hats[[.p]]))),
+        by = join_by(row)
+        )
+        truth = .d[.p] # true value
+        hat = .d[hats[.p]] # LICOR estimate (simulated)
+        est = .d$value # stan estimate
+        
+        tibble(
+          sim = glue("sim{.x}"),
+          var = rep(.p, 3),
+          q1 = c("true", "true", "simulated"),
+          q2 = c("simulated", "estimated", "estimated"),
+          r = c(
+            cor(truth, hat),
+            cor(truth, est),
+            cor(hat, est)
+          )
         )
       })
-
-    # WORKING HERE
-    # Summarize fit
-    tibble(
-      sim = glue("sim{.x}"),
-      var = rep("w_0", 3),
-      q1 = c("true", "true", "simulated"),
-      q2 = c("simulated", "estimated", "estimated"),
-      r = c(
-        cor(df_w0$w_0, df_w0$H2Or_sim),
-        cor(df_w0$w_0, df_w0$w0_est),
-        cor(df_w0$H2Or_sim, df_w0$w0_est)
-      )
-    )
     
-  # }) |>
-  # write_rds("objects/fit_sim_summary_pars.rds")
+  }) |>
+  write_rds("objects/fit_sim_summary_pars.rds")
