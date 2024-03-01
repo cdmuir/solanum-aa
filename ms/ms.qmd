@@ -1,0 +1,30 @@
+---
+title: "Untitled"
+format: pdf
+editor: visual
+---
+
+Stomata are important
+Stomatal ratio is important unsolved problem
+Amphi leaves are more common in sunny habitats and confer a great benefit. (this pattern is also true in Solanum? could we analyze herbarium data here?)
+
+[maybe make distinction between amphi leaves and var in SR here since all tomato species are amphi]
+
+Leaves will greater stomatal density ratio are more in open, sunny habitats because they deliver the greatest benefit in those circumstances. An amphistomatous leaf increases photosynthetic carbon gain compared to an otherwise identical hypostomatous leaf by increasing conductance through the leaf intercellular airspaces and boudary layers; the additional water loss through a second boundary layer is typically small [cites]. We quantify this benefit as the amphistomy advantage (AA = log(Aamphi/Ahypo). Why would AA be greater in sun than shade? There are three nonmutually exclusive hypotheses 
+
+
+[conceptual figure could also show differential benefit of amphi leaves in sun/shade]
+
+to plants growing there.  in those
+It has been hypothesized that amphistomy increases photosynthesis more in sunny places. Three nonmutually exclusive adaptive explanations for why amphi leaves:
+
+Conceptual figure explaining each hypothesis
+
+- acclimation: greater demand, higher gs increase AA
+- developmental plasticity: light-induced changes in leaf anatomy modulate AA
+- constitutive: genetic differences in leaves adapted to different light habitats 
+
+We distinguished among these hypotheses by comparing AA among wild tomato species from different native light habitats, grown under simulated sun and shade, and measured under contrasting light intenstiy (Figure of hypotheses and predictions).
+
+[discussion]
+- sun/shade has long been appreciated and this shows new trait that should be considered and that CO2 diffusion becomes major limitation

@@ -77,7 +77,7 @@ scp data/stan_rh_curves.rds htc/fit_dat.R htc/fit_dat.sh htc/fit_dat.sub stan/so
 condor_submit solanum-aa/htc/fit_dat.sub
 
 # check status
-condor_q 19228592
+condor_q 19234376 # max tree depth, iterations, and adapt delta increased
 
 # 4. Retrieve results
 scp cdmuir@submit2.chtc.wisc.edu:/home/cdmuir/fit_dat.rds objects/
