@@ -7,10 +7,6 @@ stan_rh_curves = read_rds("data/stan_rh_curves.rds")
 
 ad = c(stan_rh_curves$n, stan_rh_curves$n_comp)
 
-# started at 9:52 PM
-# 1% at 9:55 PM, 11.1 hours
-# 2% at 10:04 PM, 10 hours
-# 3% at 10:16 PM, 13.3 hours
 fit_dat = solanum_aa$sample(
   data = stan_rh_curves,
   chains = 2L,

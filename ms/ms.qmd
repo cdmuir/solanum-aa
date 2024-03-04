@@ -4,27 +4,38 @@ format: pdf
 editor: visual
 ---
 
+Terminology to standardize:
+
+-   the native light habitat or environment
+
+-   growth condition versus measurement conditions
+
+-   ?
+
 Stomata are important
+
 Stomatal ratio is important unsolved problem
+
 Amphi leaves are more common in sunny habitats and confer a great benefit. (this pattern is also true in Solanum? could we analyze herbarium data here?)
 
-[maybe make distinction between amphi leaves and var in SR here since all tomato species are amphi]
+\[maybe make distinction between amphi leaves and var in SR here since all tomato species are amphi\]
 
-Leaves will greater stomatal density ratio are more in open, sunny habitats because they deliver the greatest benefit in those circumstances. An amphistomatous leaf increases photosynthetic carbon gain compared to an otherwise identical hypostomatous leaf by increasing conductance through the leaf intercellular airspaces and boudary layers; the additional water loss through a second boundary layer is typically small [cites]. We quantify this benefit as the amphistomy advantage (AA = log(Aamphi/Ahypo). Why would AA be greater in sun than shade? There are three nonmutually exclusive hypotheses 
+Leaves with greater stomatal density ratio are more in open, sunny habitats because they deliver the greatest benefit in those circumstances. An amphistomatous leaf increases photosynthetic carbon gain compared to an otherwise identical hypostomatous leaf by increasing conductance through the leaf intercellular airspaces and boudary layers; the additional water loss through a second boundary layer is typically small \[cites\]. We quantify this benefit as the amphistomy advantage (AA = log(Aamphi/Ahypo). Why would AA be greater in sun than shade? There are three nonmutually exclusive hypotheses that we classify as 'acclimatory', 'plastic', and 'constitutive'.
 
+Acclimatory hypothesis: Leaves acclimated to high light intensity typically increase total leaf stomatal conductance (increased CO\$\_2\$ supply) and upregulate Rubisco activation <!--# I don't love the wording here. Is it just Rubisco activation, or are there are other things? --> (increased CO\$*2\$* demand). A one-dimensional circuit model using the Farquhar-von Caemmerer-Berry biochemical model of C\$\_3\$ photosynthesis shows that both increased stomatal conductance and Rubisco activity should increase AA, all else being equal (Supporting Information). If the acclimatory hypothesis is correct, we predict that AAhigh \> AAlow for all species regardless of native habitat or growth environment. Plants adapted to sunny, open habitats will evolve greater stomatal density ratio to take advantage of regular exposure to high light intensity.
 
-[conceptual figure could also show differential benefit of amphi leaves in sun/shade]
+Plastic hypothesis: Individuals of the same genotype often develop dramatically different leaves in sun and shade conditions (cite). Plastic responses are likely adaptations to optimize photosynthesis at different light intensities (cites), but changes in leaf anatomy and biochemistry could modulate AA as a byproduct. Thicker or less porous leaves, both of which are associated with high leaf mass per area (LMA), will have lower g_ias; leaves with increased total stomatal density and Rubisco concentration have greater potential CO2 supply and demand. Under the plastic hypothesis, we predict that AAsun \> AAshade for all species and light intensities. AAsun and gsmax,sun should be positively associated with native light habitat. \[transition\] We assume that genotypes adapted to sunny, open habitats will express a phenotype best adapted to that environment when leaves develop under high light intensity; genotypes adapted to shaded closed habitats may be plastic, but suboptimal for light intensities they do not regularly experience in nature.
 
-to plants growing there.  in those
-It has been hypothesized that amphistomy increases photosynthesis more in sunny places. Three nonmutually exclusive adaptive explanations for why amphi leaves:
+\[conceptual figure could also show differential benefit of amphi leaves in sun/shade\]
+
+to plants growing there. in those It has been hypothesized that amphistomy increases photosynthesis more in sunny places. Three nonmutually exclusive adaptive explanations for why amphi leaves:
 
 Conceptual figure explaining each hypothesis
 
-- acclimation: greater demand, higher gs increase AA
-- developmental plasticity: light-induced changes in leaf anatomy modulate AA
-- constitutive: genetic differences in leaves adapted to different light habitats 
+-   acclimation: greater demand, higher gs increase AA
+-   developmental plasticity: light-induced changes in leaf anatomy modulate AA
+-   constitutive: genetic differences in leaves adapted to different light habitats
 
 We distinguished among these hypotheses by comparing AA among wild tomato species from different native light habitats, grown under simulated sun and shade, and measured under contrasting light intenstiy (Figure of hypotheses and predictions).
 
-[discussion]
-- sun/shade has long been appreciated and this shows new trait that should be considered and that CO2 diffusion becomes major limitation
+\[discussion\] - sun/shade has long been appreciated and this shows new trait that should be considered and that CO2 diffusion becomes major limitation
