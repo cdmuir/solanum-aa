@@ -4,6 +4,9 @@ format: pdf
 editor: visual
 ---
 
+In preamble:
+- short codes for commonly used symbols
+
 Stomata are important
 Stomatal ratio is important unsolved problem
 Amphi leaves are more common in sunny habitats and confer a great benefit. (this pattern is also true in Solanum? could we analyze herbarium data here?)
@@ -24,7 +27,12 @@ Conceptual figure explaining each hypothesis
 - developmental plasticity: light-induced changes in leaf anatomy modulate AA
 - constitutive: genetic differences in leaves adapted to different light habitats 
 
-We distinguished among these hypotheses by comparing AA among wild tomato species from different native light habitats, grown under simulated sun and shade, and measured under contrasting light intenstiy (Figure of hypotheses and predictions).
+We distinguished among these hypotheses by comparing AA among wild tomato species from different native light habitats, grown under simulated sun and shade, and measured under contrasting light intenstiy (Figure of hypotheses and predictions). We measured AA on XXX individual plants from XXX accessions (average of X replicates per light treatment) using a recently developed method [@triplett_amphistomy_2024]. With this method, we directly compare the photosynthetic rate of an untreated amphistomatous leaf to that of the same leaf with gas exchange blocked through the adaxial (upper) surface by transparent plastic, which we refer to as 'pseudohypostomy'. To compare amphi- and pseudohypostomatous leaves at identical whole-leaf $g_\text{sc}$, we measure $A$ over a range of $g_\text{sc}$, inducing stomatal opening and closure by modulating humidity (see Materials and Methods for further details).
+
+[results]
+Amphistomy increases $A$ in all accessions, in both sun and shade leaves, and light intensities. We infer this from the fact that blocking gas exchange in pseudohypostomatous leaves reduced $A$ by X-X% depending on the accession, light treatment, and light intensity (Table/figure). The AA is equivalent to an X-X% change in total $g_\text{sc}$ (see SI section gs equivalency). But whereas increasing $g_\text{sc}$ would increase water loss as a necessary by-product, amphistomy can increase $A$ without any appreciable affect on transpiration.
+
+Sun leaves from high light habitats [not sure if htis result is true yet] benefit the most from amphistomy because of a both developmental plasticity and constitutive differences among accessions. [quantify difference in AA and contribution of different affects]. Surprisingly, light intensity had a little effect... (should this be in this paragraph, or it's own?).
 
 [discussion]
 - sun/shade has long been appreciated and this shows new trait that should be considered and that CO2 diffusion becomes major limitation
