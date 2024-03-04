@@ -4,16 +4,32 @@ format: pdf
 editor: visual
 ---
 
+```{r load-objects, echo=FALSE, eval=TRUE}
+
+# I am mostly putting placeholders here for objects/values that will need to be
+# loaded eventually to use in paper.
+n_plant = 600
+n_acc = 30
+mean_n_rep = 10 # average number of individual replicates for accession per light treatment
+
+# environmental condition in growth room
+```
+
+## Notes
+
 In preamble:
 - short codes for commonly used symbols
+- ?
 
 Terminology to standardize:
 
--   the native light habitat or environment
+-   the native light habitat or environment: the SPLASH paper refers to what they calculated as 'habitat' PPFD, so I am going to use that terminology
 
 -   growth condition versus measurement conditions
 
 -   ?
+
+## Main
 
 [introduction]
 Stomata are important
@@ -40,7 +56,19 @@ Conceptual figure explaining each hypothesis
 -   developmental plasticity: light-induced changes in leaf anatomy modulate AA
 -   constitutive: genetic differences in leaves adapted to different light habitats
 
-We distinguished among these hypotheses by comparing AA among wild tomato species from different native light habitats, grown under simulated sun and shade, and measured under contrasting light intenstiy (Figure of hypotheses and predictions). We measured AA on XXX individual plants from XXX accessions (average of X replicates per light treatment) using a recently developed method [@triplett_amphistomy_2024]. With this method, we directly compare the photosynthetic rate of an untreated amphistomatous leaf to that of the same leaf with gas exchange blocked through the adaxial (upper) surface by transparent plastic, which we refer to as 'pseudohypostomy'. To compare amphi- and pseudohypostomatous leaves at identical whole-leaf $g_\text{sc}$, we measure $A$ over a range of $g_\text{sc}$, inducing stomatal opening and closure by modulating humidity (see Materials and Methods for further details).
+We distinguished among these hypotheses by comparing AA among wild tomato species from different native light habitats, grown under simulated sun and shade light treatments, and measured under contrasting light intensity (Figure of hypotheses and predictions). We measured AA on `r n_plant` individual plants from `r n_acc` accessions (average of `r mean_n_rep` replicates per light treatment) using a recently developed method [@triplett_amphistomy_2024]. With this method, we directly compare the photosynthetic rate of an untreated amphistomatous leaf to that of the same leaf with gas exchange blocked through the adaxial (upper) surface by transparent plastic, which we refer to as 'pseudohypostomy'. To compare amphi- and pseudohypostomatous leaves at identical whole-leaf $g_\text{sc}$, we measure $A$ over a range of $g_\text{sc}$, inducing stomatal opening and closure by modulating humidity (see Materials and Methods for further details).
+
+Table of directional predictions (with table summarizing results? part of conceptual figure? in supplement?)
+
+caption: Directional predictions associated with each hypothesis explaining why amphistomy advantage (AA) might be greater for leaves in sunny, open habitats. For each hypothesis, we make predictions for how native light habitat, light treatment, and light intensity would affect AA.
+
+| hypothesis | native light habitat | light treatment | light intensity |
+|:----------:|:--------------------:|:---------------:|:---------------:|
+| acclimatory | cor(PAR, AA) = 0 | AAsun = AAshade | AA2000 > AA150 |
+| plastic | cor(PAR, AAsun) > 0 | AAsun > AAshade | AA2000 = AA150 |
+| constitutive | cor(PAR, AA) > 0 | AAsun = AAshade | AA2000 = AA150 |
+
+[add rows for when multiple hypotheses are supported simultaneously? or put that in SI?]
 
 [results]
 Amphistomy increases $A$ in all accessions, in both sun and shade leaves, and light intensities. We infer this from the fact that blocking gas exchange in pseudohypostomatous leaves reduced $A$ by X-X% depending on the accession, light treatment, and light intensity (Table/figure). The AA is equivalent to an X-X% change in total $g_\text{sc}$ (see SI section gs equivalency). But whereas increasing $g_\text{sc}$ would increase water loss as a necessary by-product, amphistomy can increase $A$ without any appreciable affect on transpiration.
@@ -48,3 +76,18 @@ Amphistomy increases $A$ in all accessions, in both sun and shade leaves, and li
 Sun leaves from high light habitats [not sure if htis result is true yet] benefit the most from amphistomy because of a both developmental plasticity and constitutive differences among accessions. [quantify difference in AA and contribution of different affects]. Surprisingly, light intensity had a little effect... (should this be in this paragraph, or it's own?).
 
 \[discussion\] - sun/shade has long been appreciated and this shows new trait that should be considered and that CO2 diffusion becomes major limitation
+
+## Materials and Methods
+
+[this will be moved to SI eventually]
+
+<!-- work until 10:15, then email Sarah about scheduling meeting -->
+
+### Accessions
+
+We compared AA among `r n_acc` ecologically diverse accessions of wild tomato, including representatives of all described species of *Solanum* sect. *Lycopersicon* and sect. *Lycopersicoides* [@peralta_taxonomy_2008] and the cultivated tomato *S. lycopersicum* var. *lycopersicum* (tab:accessions). Seeds provided by the Tomato Genetics Resource Center germinated on moist paper in plastic boxes after soaking for 30-60 minutes in a 50\% (volume per volume) solution of household bleach and water, followed by a thorough rinse. We transferred seedlings to cell-pack flats containing Pro-Mix BX potting mix (Premier Tech, Rivière-du-Loup, Quebec, Canada) once cotyledons fully emerged, typically within 1-2 weeks of sowing. After seedlings established in cell-pack flats for $\approx 2$ weeks, we transplanted them to 3.78 L plastic pots containing Pro-Mix BX potting mix, coral sand (Pro-Pak, Honolulu, Hawaiʻi, USA), and cinders (Niu Nursery, Honolulu, Hawaiʻi, USA) [look up exact proportions of each].
+
+outline of tab:accessions
+LA number,Species name, lat, lon, elev, SPLASH light value
+
+
