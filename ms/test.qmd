@@ -1,0 +1,20 @@
+---
+title: Unknown
+format:
+  pdf:
+    keep-tex: true  
+    toc: false
+header-includes: |
+  \addtokomafont{disposition}{\rmfamily}
+  \usepackage{siunitx}
+mainfont: Times New Roman
+csl: https://www.zotero.org/styles/american-journal-of-botany
+---
+
+words $\qty{4}{\micro\meter}$
+
+(12:12 $\qty{25}{\degreeCelsius}$
+
+and then this $\qty{200}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$ 
+
+$\qty{0.1}{\hertz}$ 

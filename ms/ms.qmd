@@ -1,7 +1,14 @@
 ---
-title: "Untitled"
-format: pdf
-editor: visual
+title: Unknown
+format:
+  pdf:
+    keep-tex: true  
+    toc: false
+header-includes: |
+  \addtokomafont{disposition}{\rmfamily}
+  \usepackage{siunitx}
+mainfont: Times New Roman
+csl: https://www.zotero.org/styles/science
 ---
 
 ```{r load-objects, echo=FALSE, eval=TRUE}
@@ -12,14 +19,29 @@ n_plant = 600
 n_acc = 30
 mean_n_rep = 10 # average number of individual replicates for accession per light treatment
 
-# environmental condition in growth room
+n_weeks = 80 # number of weeks for LICOR measurements
+start_licor_date = "May 1, 2022"
+end_licor_date = "October 31, 2023"
+
+# environmental condition in germination room
+germ_temp_day = 25
+germ_temp_night = 20
+germ_rh_day = 40
+germ_rh_night = 60
+germ_ppfd = 200
+
+ppfd_sun = 800
+ppfd_shade = 125
+temp_diff = 1 # degrees warmer that the sun treatment air was
+rh_diff = 5 # rh_sun - rh_shade
+leaf_temp_diff = 1 # difference in leaf temperature between treatments
+n_leaf_temp = 600 # number of leaves for which we have measured leaf temp under ambient conditions
+
 ```
 
 ## Notes
 
-In preamble:
-- short codes for commonly used symbols
-- ?
+In preamble: - short codes for commonly used symbols - ?
 
 Terminology to standardize:
 
@@ -31,8 +53,7 @@ Terminology to standardize:
 
 ## Main
 
-[introduction]
-Stomata are important
+\[introduction\] Stomata are important
 
 Stomatal ratio is important unsolved problem
 
@@ -62,32 +83,40 @@ Table of directional predictions (with table summarizing results? part of concep
 
 caption: Directional predictions associated with each hypothesis explaining why amphistomy advantage (AA) might be greater for leaves in sunny, open habitats. For each hypothesis, we make predictions for how native light habitat, light treatment, and light intensity would affect AA.
 
-| hypothesis | native light habitat | light treatment | light intensity |
-|:----------:|:--------------------:|:---------------:|:---------------:|
-| acclimatory | cor(PAR, AA) = 0 | AAsun = AAshade | AA2000 > AA150 |
-| plastic | cor(PAR, AAsun) > 0 | AAsun > AAshade | AA2000 = AA150 |
-| constitutive | cor(PAR, AA) > 0 | AAsun = AAshade | AA2000 = AA150 |
+|  hypothesis  | native light habitat | light treatment  | light intensity |
+|:------------:|:--------------------:|:----------------:|:---------------:|
+| acclimatory  |   cor(PAR, AA) = 0   | AAsun = AAshade  | AA2000 \> AA150 |
+|   plastic    | cor(PAR, AAsun) \> 0 | AAsun \> AAshade | AA2000 = AA150  |
+| constitutive |  cor(PAR, AA) \> 0   | AAsun = AAshade  | AA2000 = AA150  |
 
-[add rows for when multiple hypotheses are supported simultaneously? or put that in SI?]
+\[add rows for when multiple hypotheses are supported simultaneously? or put that in SI?\]
 
-[results]
-Amphistomy increases $A$ in all accessions, in both sun and shade leaves, and light intensities. We infer this from the fact that blocking gas exchange in pseudohypostomatous leaves reduced $A$ by X-X% depending on the accession, light treatment, and light intensity (Table/figure). The AA is equivalent to an X-X% change in total $g_\text{sc}$ (see SI section gs equivalency). But whereas increasing $g_\text{sc}$ would increase water loss as a necessary by-product, amphistomy can increase $A$ without any appreciable affect on transpiration.
+\[results\] Amphistomy increases $A$ in all accessions, in both sun and shade leaves, and light intensities. We infer this from the fact that blocking gas exchange in pseudohypostomatous leaves reduced $A$ by X-X% depending on the accession, light treatment, and light intensity (Table/figure). The AA is equivalent to an X-X% change in total $g_\text{sc}$ (see SI section gs equivalency). But whereas increasing $g_\text{sc}$ would increase water loss as a necessary by-product, amphistomy can increase $A$ without any appreciable affect on transpiration.
 
-Sun leaves from high light habitats [not sure if htis result is true yet] benefit the most from amphistomy because of a both developmental plasticity and constitutive differences among accessions. [quantify difference in AA and contribution of different affects]. Surprisingly, light intensity had a little effect... (should this be in this paragraph, or it's own?).
+Sun leaves from high light habitats \[not sure if htis result is true yet\] benefit the most from amphistomy because of a both developmental plasticity and constitutive differences among accessions. \[quantify difference in AA and contribution of different affects\]. Surprisingly, light intensity had a little effect... (should this be in this paragraph, or it's own?).
 
 \[discussion\] - sun/shade has long been appreciated and this shows new trait that should be considered and that CO2 diffusion becomes major limitation
 
 ## Materials and Methods
 
-[this will be moved to SI eventually]
-
-<!-- work until 10:15, then email Sarah about scheduling meeting -->
+\[this will be moved to SI eventually\]
 
 ### Accessions
 
-We compared AA among `r n_acc` ecologically diverse accessions of wild tomato, including representatives of all described species of *Solanum* sect. *Lycopersicon* and sect. *Lycopersicoides* [@peralta_taxonomy_2008] and the cultivated tomato *S. lycopersicum* var. *lycopersicum* (tab:accessions). Seeds provided by the Tomato Genetics Resource Center germinated on moist paper in plastic boxes after soaking for 30-60 minutes in a 50\% (volume per volume) solution of household bleach and water, followed by a thorough rinse. We transferred seedlings to cell-pack flats containing Pro-Mix BX potting mix (Premier Tech, Rivière-du-Loup, Quebec, Canada) once cotyledons fully emerged, typically within 1-2 weeks of sowing. After seedlings established in cell-pack flats for $\approx 2$ weeks, we transplanted them to 3.78 L plastic pots containing Pro-Mix BX potting mix, coral sand (Pro-Pak, Honolulu, Hawaiʻi, USA), and cinders (Niu Nursery, Honolulu, Hawaiʻi, USA) [look up exact proportions of each].
+We compared AA among `r n_acc` ecologically diverse accessions of wild tomato, including representatives of all described species of *Solanum* sect. *Lycopersicon* and sect. *Lycopersicoides* [@peralta_taxonomy_2008] and the cultivated tomato *S. lycopersicum* var. *lycopersicum* (tab:accessions). Due to constraints on growth space and time, we spread out measurements over `r n_weeks` weeks from `r start_licor_date` to `r end_licor_date`. Replicates within accession were evenly spread out over this period to prevent confounding of temporal variation in growth conditions with accession. [anything else to say here? maybe explain accession selection and phylogeny?]
 
-outline of tab:accessions
-LA number,Species name, lat, lon, elev, SPLASH light value
+### Plant growth conditions
 
+In all growth spaces, we recorded $\mathrm{PPFD}$ using full spectrum quantum sensors (SQ-500-SS, Apogee Instruments, Logan, Utah, USA); we recorded temperature, RH, and [CO$_2$] using an EE894 sensor (E+E Elektronik, Engerwitzdorf, Austria) protected by a radiation shield. All environmental measurements were taken every 10 minutes from the middle of plants racks at approximately the same height as the leaves we measured. We measured leaf temperature of focal leaves prior to measurement using an infrared radiometer (SI-111-SS, Apogee Instruments, Logan, Utah, USA).
 
+#### Germination and seedling stage
+
+Seeds provided by the Tomato Genetics Resource Center germinated on moist paper in plastic boxes after soaking for 30-60 minutes in a 50% (volume per volume) solution of household bleach and water, followed by a thorough rinse. We transferred seedlings to cell-pack flats containing Pro-Mix BX potting mix (Premier Tech, Rivière-du-Loup, Quebec, Canada) once cotyledons fully emerged, typically within 1-2 weeks of sowing. We grew seeds and seedlings for both sun and shade treatments under the same environmental conditions (12:12 h, `r germ_temp_day`:$\qty{`r germ_temp_night`}{\degreeCelsius}$, `r germ_rh_day`:`r germ_rh_night` RH day:night cycle). LED light provided $\mathrm{PPFD} = \qty{`r germ_ppfd`}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$ (Fluence RAZRx, Austin, Texas, USA).
+
+#### Light treatments
+
+Seedlings were randomly assigned in alternating order within accession to the sun or shade treatment during transplanting. After seedlings established in cell-pack flats for $\approx 2$ weeks, we transplanted them to 3.78 L plastic pots containing 60% Pro-Mix BX potting mix, 20% coral sand (Pro-Pak, Honolulu, Hawaiʻi, USA), and 20% cinders (Niu Nursery, Honolulu, Hawaiʻi, USA). Percentage composition is on a volume basis. The soil mixture contained slow release NPK fertilizer following manufacturer instructions (Osmocote Smart-Release Plant Food Flower & Vegetable, The Scotts Company, Marysville, Ohio, USA). We determined pot field capacity one week after transplanting using a scale (Ohaus V12P15 Valor 1000, Parsippany, New Jersey, USA) and watered to field capacity three times per week to prevent drought stress. 
+
+We assigned sun and shade treatment to lower and upper racks of a $\qty{1.22}{\meter} \times \qty{2.44}{\meter}$ shelving unit in a climate-controlled growth room. We assigned the sun treatment to the lower rack to limit diffuse light from reaching the shade treatment. The average daytime $\mathrm{PPFD}$ was $\qty{`r ppfd_sun`}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$ and $\qty{`r ppfd_shade`}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$ for sun and shade treatments, respectively. To isolate the effect of light intensity from quality, we used the same LED model with the the same spectrum (Fluence SPYDR 2i, Austin, Texas, USAS), but dimmed the lights in the shade treatment. To maintain homogeneous environmental conditions other than light, we mixed air within the growth room using an air circulator (Vornado 693DC, Andover, Kansas, USA) and within racks using a miniature oscillating air circulator (Vornado Atom 1, Andover, Kansas, USA). Despite these efforts, the air in the sun treatment was on average $\qty{`r temp_diff`}{\degreeCelsius}$ warmer and the average RH was consequently `r rh_diff` lower. However, because of evaporative cooling, the leaves in the sun treatment were only $\qty{`r leaf_temp_diff`}{\degreeCelsius}$ on average ($n = `r n_leaf_temp`$ leaves).
+
+outline of tab:accessions LA number,Species name, lat, lon, elev, SPLASH light value
