@@ -82,6 +82,7 @@
 \KOMAoption{captions}{tableheading}
 \addtokomafont{disposition}{\rmfamily}
 \usepackage{siunitx}
+\newcommand{\gsc}{$\g_text{sc}$}
 \makeatletter
 \makeatother
 \makeatletter
@@ -156,7 +157,7 @@
 
 \begin{document}
 \maketitle
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, borderline west={3pt}{0pt}{shadecolor}, breakable, boxrule=0pt, interior hidden, enhanced, sharp corners]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, sharp corners, enhanced, breakable, borderline west={3pt}{0pt}{shadecolor}, frame hidden, boxrule=0pt]}{\end{tcolorbox}}\fi
 
 \hypertarget{notes}{%
 \subsection{Notes}\label{notes}}
@@ -338,29 +339,176 @@ We compared AA among 30 ecologically diverse accessions of wild tomato,
 including representatives of all described species of \emph{Solanum}
 sect. \emph{Lycopersicon} and sect. \emph{Lycopersicoides}
 {[}@peralta\_taxonomy\_2008{]} and the cultivated tomato \emph{S.
-lycopersicum} var. \emph{lycopersicum} (tab:accessions). Seeds provided
-by the Tomato Genetics Resource Center germinated on moist paper in
-plastic boxes after soaking for 30-60 minutes in a 50\% (volume per
-volume) solution of household bleach and water, followed by a thorough
-rinse. We transferred seedlings to cell-pack flats containing Pro-Mix BX
-potting mix (Premier Tech, Rivière-du-Loup, Quebec, Canada) once
-cotyledons fully emerged, typically within 1-2 weeks of sowing. We grew
-seeds and seedlings for both sun and shade treatments under the same
-environmental conditions (12:12 h, 25:\(\qty{20}{\degreeCelsius}\),
+lycopersicum} var. \emph{lycopersicum} (tab:accessions). Due to
+constraints on growth space and time, we spread out measurements over 80
+weeks from May 1, 2022 to October 31, 2023. Replicates within accession
+were evenly spread out over this period to prevent confounding of
+temporal variation in growth conditions with accession. {[}anything else
+to say here? maybe explain accession selection and phylogeny?{]}
+
+\begin{table}
+
+\end{table}
+
+\hypertarget{plant-growth-conditions}{%
+\subsubsection{Plant growth conditions}\label{plant-growth-conditions}}
+
+In all growth spaces, we recorded \(\mathrm{PPFD}\) using full spectrum
+quantum sensors (SQ-500-SS, Apogee Instruments, Logan, Utah, USA); we
+recorded temperature, RH, and {[}CO\(_2\){]} using an EE894 sensor (E+E
+Elektronik, Engerwitzdorf, Austria) protected by a radiation shield. All
+environmental measurements were taken every 10 minutes from the middle
+of plants racks at approximately the same height as the leaves we
+measured. We measured leaf temperature of focal leaves prior to
+measurement using an infrared radiometer (SI-111-SS, Apogee Instruments,
+Logan, Utah, USA).
+
+\hypertarget{germination-and-seedling-stage}{%
+\paragraph{Germination and seedling
+stage}\label{germination-and-seedling-stage}}
+
+Seeds provided by the Tomato Genetics Resource Center germinated on
+moist paper in plastic boxes after soaking for 30-60 minutes in a 50\%
+(volume per volume) solution of household bleach and water, followed by
+a thorough rinse. We transferred seedlings to cell-pack flats containing
+Pro-Mix BX potting mix (Premier Tech, Rivière-du-Loup, Quebec, Canada)
+once cotyledons fully emerged, typically within 1-2 weeks of sowing. We
+grew seeds and seedlings for both sun and shade treatments under the
+same environmental conditions (12:12 h, 25:\(\qty{20}{\degreeCelsius}\),
 40:60 RH day:night cycle). LED light provided
-\(\mathrm{PPFD} = \qty{200}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}\).
+\(\mathrm{PPFD} = \qty{200}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}\)
+(Fluence RAZRx, Austin, Texas, USA).
 
-After seedlings established in cell-pack flats for \(\approx 2\) weeks,
-we transplanted them to 3.78 L plastic pots containing 60\% Pro-Mix BX
-potting mix, 20\% coral sand (Pro-Pak, Honolulu, Hawaiʻi, USA), and 20\%
-cinders (Niu Nursery, Honolulu, Hawaiʻi, USA). Percentage composition is
-on a volume basis. The soil mixture contained slow release NPK
-fertilizer following manufacturer instructions (Osmocote Smart-Release
-Plant Food Flower \& Vegetable, The Scotts Company, Marysville, Ohio,
-USA).
+\hypertarget{light-treatments}{%
+\paragraph{Light treatments}\label{light-treatments}}
 
-outline of tab:accessions LA number,Species name, lat, lon, elev, SPLASH
-light value
+Seedlings were randomly assigned in alternating order within accession
+to the sun or shade treatment during transplanting. After seedlings
+established in cell-pack flats for \(\approx 2\) weeks, we transplanted
+them to 3.78 L plastic pots containing 60\% Pro-Mix BX potting mix, 20\%
+coral sand (Pro-Pak, Honolulu, Hawaiʻi, USA), and 20\% cinders (Niu
+Nursery, Honolulu, Hawaiʻi, USA). Percentage composition is on a volume
+basis. The soil mixture contained slow release NPK fertilizer following
+manufacturer instructions (Osmocote Smart-Release Plant Food Flower \&
+Vegetable, The Scotts Company, Marysville, Ohio, USA). We determined pot
+field capacity one week after transplanting using a scale (Ohaus V12P15
+Valor 1000, Parsippany, New Jersey, USA) and watered to field capacity
+three times per week to prevent drought stress.
+
+We assigned sun and shade treatment to lower and upper racks of a
+\(\qty{1.22}{\meter} \times \qty{2.44}{\meter}\) shelving unit in a
+climate-controlled growth room. We assigned the sun treatment to the
+lower rack to limit diffuse light from reaching the shade treatment. The
+average daytime \(\mathrm{PPFD}\) was
+\(\qty{800}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}\) and
+\(\qty{125}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}\) for sun
+and shade treatments, respectively. To isolate the effect of light
+intensity from quality, we used the same LED model with the the same
+spectrum (Fluence SPYDR 2i, Austin, Texas, USAS), but dimmed the lights
+in the shade treatment. To maintain homogeneous environmental conditions
+other than light, we mixed air within the growth room using an air
+circulator (Vornado 693DC, Andover, Kansas, USA) and within racks using
+a miniature oscillating air circulator (Vornado Atom 1, Andover, Kansas,
+USA). Despite these efforts, the air in the sun treatment was on average
+\(\qty{1}{\degreeCelsius}\) warmer and the average RH was consequently 5
+lower. However, because of evaporative cooling, the leaves in the sun
+treatment were only \(\qty{1}{\degreeCelsius}\) on average (\(n = 600\)
+leaves).
+
+\hypertarget{leaf-trait-measurements}{%
+\subsubsection{Leaf trait measurements}\label{leaf-trait-measurements}}
+
+We selected a fully expanded, unshaded leaf at least six leaves above
+the cotyledons during early vegetative growth. This typically meant that
+plants had grown in light treatments for \(\approx\) 4 weeks, ensuring
+they had time to sense and respond developmentally to the light
+intensity of the treatment rather than the seedling conditions
+{[}@schoch\_dependence\_1980{]}. Shade plants grew slower than sun
+plants, hence leaves at the same developmental stage were measured on
+chronologically older plants in the shade treatment. In some sun plants,
+we had to use leaves higher on the stem because short internodes made
+lower leaves inaccessible with the gas exchange equipment. We measured
+terminal leaflets in 70.0\% of cases, but used the lateral leaflet
+closest to the terminal leaflet when it was damaged or difficult to
+clamp into the gas exchange chamber. When a leaflet was damanged during
+gas exchange measurements, we collected anatomical data from the nearest
+leaflet on the same leaf (10.0)\%. We measured chlorophyll concentration
+index (CCI) using a chrolophyll concentration meter (MC-100, Apogee
+Instruments, Logan, Utah, USA) on the lamina of focal leaflets before
+gas exchange measurements at the same time we measured leaf temperature.
+
+\hypertarget{amphistomy-advantage}{%
+\paragraph{Amphistomy advantage}\label{amphistomy-advantage}}
+
+We estimated `amphistomy advantage' (\(\mathrm{AA}\)) \emph{sensu}
+@parkhurst\_adaptive\_1978, but with modifications previously described
+in @triplett\_amphistomy\_2024. \(\mathrm{AA}\) is calculated as the
+log-response ratio of \(A\) compared at the same total \(g_\text{sw}\):
+
+\[\mathrm{AA} = \mathrm{log}(A_{\mathrm{amphi}} / A_{\mathrm{hypo}})\]
+
+We measured the photosynthetic rate of an untreated amphistomatous leaf
+(\(A_{\mathrm{amphi}}\)) over a range of \(g_\text{sw}\) values. We
+refer to this as an \(A \textendash g_\text{sw}\) curve. We compared the
+\(A \textendash g_\text{sw}\) curve of the untreated leaf to the
+photosynthetic rate of pseudohypostomatous leaf (\(A_\mathrm{hypo}\)),
+which is the same leaf but with gas exchange through the upper surface
+blocked by a neutral density plastic (propafilm).
+
+We measured \(A \textendash g_\text{sw}\) curves using a portable
+infrared gas analyzer (LI-6800PF, LI-COR Biosciences, Lincoln, Nebraska,
+USA). Light-acclimated plants were placed under LEDs dimmed to match
+their light treatment during gas exchange measurements. We estimated the
+photosynthetic rate (\(A\)) and stomatal conductance to water vapor
+(\(g_\text{sw}\)) at ambient CO\(_2\) (415 ppm) and
+\(T_\mathrm{leaf} = \qty{25.0}{\degreeCelsius}\). The irradiance of the
+light source in the pseudohypo leaf was higher because the propafilm
+reduces transmission. To compensate for reduced transmission, we
+increased incident \(\mathrm{PPFD}\) for pseudohypo leaves by a factor
+1/0.91, the inverse of the measured transmissivity of the propafilm. We
+also set the stomatal conductance ratio, for purposes of calculating
+boundary layer conductance, to 0 for pseudohypo leaves following
+manufacturer directions.
+
+We collected four \(A \textendash g_\text{sc}\) curves per leaf, an
+amphi (untreated) curve and a pseudohypo (treated) curve at high
+light-intensity
+(\(\mathrm{PPFD} = \qty{2000}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}\))
+and low light-intensity
+(\(\mathrm{PPFD} = \qty{150}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}\)).
+We always measured high light-intensity curves first because
+photosynthetic downregulation is faster than upregulation in these
+species. To control for order effects, we alternated between starting
+with amphi or pseudohypo leaf measurements. Unlike
+@triplett\_amphistomy\_2024, preliminary experiments with \emph{Solanum}
+indicated a strong order effect in that \(A\) declined in the second
+curve. Therefore, we made measurements over two days. On the first day,
+we measured high and low light-intensity curves for either amphi or
+pseudohypo leaves; on the second day, we measured high and low
+light-intensity curves on the other leaf type.
+
+In all cases, we acclimated the focal leaf to high light
+(\(\mathrm{PPFD} = \qty{2000}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}\))
+and high relative humidity (\(\mathrm{RH} = 70\%\)) until \(A\) and
+\(g_\text{sw}\) reach their maximum. After that, we decreased
+\(\mathrm{RH}\) to \(\approx 10\%\) to induce rapid stomatal closure
+without biochemical downregulation. Hence, \(A_\text{amphi}\) and
+\(A_\text{hypo}\) were both measured at low chamber humidity after the
+leaf had acclimated to high humidity. All other environmental conditions
+in the leaf chamber remained the same. We logged data until
+\(g_\text{sc}\) reached its nadir. We then acclimated the leaf to low
+light
+(\(\mathrm{PPFD} = \qty{150}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}\))
+and 70\% \(\mathrm{RH}\) before inducing stomatal closure with low
+\(\mathrm{RH}\) and logging data as described above.
+
+\hypertarget{light-response-curves}{%
+\paragraph{Light-response curves}\label{light-response-curves}}
+
+We measured light-response curves on the same leaflets as
+\(A \textendash g_\text{sc}\)
+
+testing \gsc
 
 
 

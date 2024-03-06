@@ -7,14 +7,12 @@ format:
 header-includes: |
   \addtokomafont{disposition}{\rmfamily}
   \usepackage{siunitx}
+  \newcommand{\gsc}{$g_\text{sc}$}
+  \newcommand{\ppfd}[1]{$\mathrm{PPFD} = \qty{#1}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$}
 mainfont: Times New Roman
 csl: https://www.zotero.org/styles/american-journal-of-botany
 ---
 
-words $\qty{4}{\micro\meter}$
+words \gsc
 
-(12:12 $\qty{25}{\degreeCelsius}$
-
-and then this $\qty{200}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$ 
-
-$\qty{0.1}{\hertz}$ 
+this \ppfd{2000}
