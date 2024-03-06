@@ -7,12 +7,19 @@ format:
 header-includes: |
   \addtokomafont{disposition}{\rmfamily}
   \usepackage{siunitx}
-  \newcommand{\agcurve}{$A \textendash g_\text{sc}$}
-  \newcommand{\gsc}{$g_\text{sc}$}
+  \newcommand{\aax}{$\mathrm{AA}$}
+  \newcommand{\Aamphi}{$A_{\mathrm{amphi}}$}
+  \newcommand{\Ahypo}{$A_{\mathrm{hypo}}$}
+  \newcommand{\agcurve}{$A \textendash g_\text{sw}$}
+  \newcommand{\caequals}[1]{$C_\mathrm{a} = \qty{#1}{\micro\mol\raiseto{-1}\mol}$}
+  \newcommand{\gsw}{$g_\text{sw}$}
   \newcommand{\ppfd}{$\mathrm{PPFD}$}
   \newcommand{\ppfdequals}[1]{$\mathrm{PPFD} = \qty{#1}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$}
   \newcommand{\rh}{$\mathrm{RH}$}
+  \newcommand{\rhequals}[1]{$\mathrm{RH} = #1\%$}
+  \newcommand{\tleafequals}[1]{$T_\mathrm{leaf} = \qty{#1}{\degreeCelsius}$}
 mainfont: Times New Roman
+bibliography: solanum-aa.bib
 csl: https://www.zotero.org/styles/science
 ---
 
@@ -45,6 +52,15 @@ n_leaf_temp = 600 # number of leaves for which we have measured leaf temp under 
 percent_terminal = "70.0" # percent of LICOR measurements on terminal leaflet
 percent_lateral = "30.0"
 percent_change_leaflet = "10.0" # percent of time that anatomical traits were measured on different leaflet than LICOR measurements
+percent_aa_and_aq = "90.0" # percent of times where AA and AQ curves were done on same leaflet
+p_red_high = "97.7" # percent red LED in high light-intensity treatment
+p_blue_high = "2.3"
+p_red_low = "87.0"
+p_blue_low = "13.0"
+
+percent_lma_switch = "5.0" # percent measure LMA on alternate leaflet
+percent_lma_missing = "3.0" # percent leaves missing LMA
+
 ```
 
 ## Notes
@@ -153,28 +169,43 @@ Seeds provided by the Tomato Genetics Resource Center germinated on moist paper 
 
 Seedlings were randomly assigned in alternating order within accession to the sun or shade treatment during transplanting. After seedlings established in cell-pack flats for $\approx 2$ weeks, we transplanted them to 3.78 L plastic pots containing 60% Pro-Mix BX potting mix, 20% coral sand (Pro-Pak, Honolulu, Hawaiʻi, USA), and 20% cinders (Niu Nursery, Honolulu, Hawaiʻi, USA). Percentage composition is on a volume basis. The soil mixture contained slow release NPK fertilizer following manufacturer instructions (Osmocote Smart-Release Plant Food Flower & Vegetable, The Scotts Company, Marysville, Ohio, USA). We determined pot field capacity one week after transplanting using a scale (Ohaus V12P15 Valor 1000, Parsippany, New Jersey, USA) and watered to field capacity three times per week to prevent drought stress. 
 
-We assigned sun and shade treatment to lower and upper racks of a $\qty{1.22}{\meter} \times \qty{2.44}{\meter}$ shelving unit in a climate-controlled growth room. We assigned the sun treatment to the lower rack to limit diffuse light from reaching the shade treatment. The average daytime $\mathrm{PPFD}$ was $\qty{`r ppfd_sun`}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$ and $\qty{`r ppfd_shade`}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$ for sun and shade treatments, respectively. To isolate the effect of light intensity from quality, we used the same LED model with the the same spectrum (Fluence SPYDR 2i, Austin, Texas, USAS), but dimmed the lights in the shade treatment. To maintain homogeneous environmental conditions other than light, we mixed air within the growth room using an air circulator (Vornado 693DC, Andover, Kansas, USA) and within racks using a miniature oscillating air circulator (Vornado Atom 1, Andover, Kansas, USA). Despite these efforts, the air in the sun treatment was on average $\qty{`r temp_diff`}{\degreeCelsius}$ warmer and the average RH was consequently `r rh_diff` lower. However, because of evaporative cooling, the leaves in the sun treatment were only $\qty{`r leaf_temp_diff`}{\degreeCelsius}$ on average ($n = `r n_leaf_temp`$ leaves).
+We assigned sun and shade treatment to lower and upper racks of a $\qty{1.22}{\meter} \times \qty{2.44}{\meter}$ shelving unit in a climate-controlled growth room. We assigned the sun treatment to the lower rack to limit diffuse light from reaching the shade treatment. The average daytime \ppfd{} was \ppfdequals{`r ppfd_sun`} ($\qty{`r ppfd_sun`}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$) and \ppfdequals{`r ppfd_shade`} ($\qty{`r ppfd_shade`}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$) for sun and shade treatments, respectively. To isolate the effect of light intensity from quality, we used the same LED model with the the same spectrum (Fluence SPYDR 2i, Austin, Texas, USAS), but dimmed the lights in the shade treatment. To maintain homogeneous environmental conditions other than light, we mixed air within the growth room using an air circulator (Vornado 693DC, Andover, Kansas, USA) and within racks using a miniature oscillating air circulator (Vornado Atom 1, Andover, Kansas, USA). Despite these efforts, the air in the sun treatment was on average $\qty{`r temp_diff`}{\degreeCelsius}$ warmer and the average RH was consequently `r rh_diff` lower. However, because of evaporative cooling, the leaves in the sun treatment were only $\qty{`r leaf_temp_diff`}{\degreeCelsius}$ on average ($n = `r n_leaf_temp`$ leaves).
 
 ### Leaf trait measurements
 
-We selected a fully expanded, unshaded leaf at least six leaves above the cotyledons during early vegetative growth. This typically meant that plants had grown in light treatments for $\approx$ 4 weeks, ensuring they had time to sense and respond developmentally to the light intensity of the treatment rather than the seedling conditions [@schoch_dependence_1980]. Shade plants grew slower than sun plants, hence leaves at the same developmental stage were measured on chronologically older plants in the shade treatment. In some sun plants, we had to use leaves higher on the stem because short internodes made lower leaves inaccessible with the gas exchange equipment. We measured terminal leaflets in `r percent_terminal`\% of cases, but used the lateral leaflet closest to the terminal leaflet when it was damaged or difficult to clamp into the gas exchange chamber. When a leaflet was damanged during gas exchange measurements, we collected anatomical data from the nearest leaflet on the same leaf (`r percent_change_leaflet`)\%. We measured chlorophyll concentration index (CCI) using a chrolophyll concentration meter (MC-100, Apogee Instruments, Logan, Utah, USA) on the lamina of focal leaflets before gas exchange measurements at the same time we measured leaf temperature.
+We selected a fully expanded, unshaded leaf at least six leaves above the cotyledons during early vegetative growth. This typically meant that plants had grown in light treatments for $\approx$ 4 weeks, ensuring they had time to sense and respond developmentally to the light intensity of the treatment rather than the seedling conditions [@schoch_dependence_1980]. Shade plants grew slower than sun plants, hence leaves at the same developmental stage were measured on chronologically older plants in the shade treatment. In some sun plants, we had to use leaves higher on the stem because short internodes made lower leaves inaccessible with the gas exchange equipment. We measured terminal leaflets in `r percent_terminal`\% of cases, but used the lateral leaflet closest to the terminal leaflet when it was damaged or difficult to clamp into the gas exchange chamber. When a leaflet was damaged during gas exchange measurements, we collected anatomical data from the nearest leaflet on the same leaf (`r percent_change_leaflet`)\%. We measured chlorophyll concentration index (CCI) using a chrolophyll concentration meter (MC-100, Apogee Instruments, Logan, Utah, USA) on the lamina of focal leaflets before gas exchange measurements at the same time we measured leaf temperature.
 
 #### Amphistomy advantage
 
-We estimated 'amphistomy advantage' ($\mathrm{AA}$) *sensu* @parkhurst_adaptive_1978, but with modifications previously described in @triplett_amphistomy_2024. $\mathrm{AA}$ is calculated as the log-response ratio of $A$ compared at the same total \gsc:
+We estimated 'amphistomy advantage' (\aax) *sensu* @parkhurst_adaptive_1978, but with modifications previously described in @triplett_amphistomy_2024. \aax{} is calculated as the log-response ratio of $A$ compared at the same total \gsw:
 
 $$\mathrm{AA} = \mathrm{log}(A_{\mathrm{amphi}} / A_{\mathrm{hypo}})$$
 
-We measured the photosynthetic rate of an untreated amphistomatous leaf ($A_{\mathrm{amphi}}$) over a range of \gsc values. We refer to this as an \agcurve curve. We compared the \agcurve curve of the untreated leaf to the photosynthetic rate of pseudohypostomatous leaf ($A_\mathrm{hypo}$), which is the same leaf but with gas exchange through the upper surface blocked by a neutral density plastic (propafilm).
+We measured the photosynthetic rate of an untreated amphistomatous leaf (\Aamphi) over a range of \gsw{} values. We refer to this as an \agcurve{} curve. We compared the \agcurve{} curve of the untreated leaf to the photosynthetic rate of pseudohypostomatous leaf (\Ahypo), which is the same leaf but with gas exchange through the upper surface blocked by a neutral density plastic (propafilm).
 
-We measured \agcurve curves using a portable infrared gas analyzer (LI-6800PF, LI-COR Biosciences, Lincoln, Nebraska, USA). Light-acclimated plants were placed under LEDs dimmed to match their light treatment during gas exchange measurements. We estimated the photosynthetic rate ($A$) and stomatal conductance to CO$_2$ (\gsc) at ambient CO$_2$ (415 ppm) and $T_\mathrm{leaf} = \qty{25.0}{\degreeCelsius}$. The irradiance of the light source in the pseudohypo leaf was higher because the propafilm reduces transmission. To compensate for reduced transmission, we increased incident \ppfd for pseudohypo leaves by a factor 1/0.91, the inverse of the measured transmissivity of the propafilm. We also set the stomatal conductance ratio, for purposes of calculating boundary layer conductance, to 0 for pseudohypo leaves following manufacturer directions.
+We measured \agcurve{} curves using a portable infrared gas analyzer (LI-6800PF, LI-COR Biosciences, Lincoln, Nebraska, USA). Light-acclimated plants were placed under LEDs dimmed to match their light treatment during gas exchange measurements. We estimated the photosynthetic rate ($A$) and stomatal conductance to CO$_2$ (\gsw) at ambient CO$_2$ (\caequals{415}) and \tleafequals{25.0}. The irradiance of the light source in the pseudohypo leaf was higher because the propafilm reduces transmission. To compensate for reduced transmission, we increased incident \ppfd for pseudohypo leaves by a factor 1/0.91, the inverse of the measured transmissivity of the propafilm. We also set the stomatal conductance ratio, for purposes of calculating boundary layer conductance, to 0 for pseudohypo leaves following manufacturer directions.
 
-We collected four \agcurve curves per leaf, an amphi (untreated) curve and a pseudohypo (treated) curve at high light-intensity (\ppfdequals{2000}) and low light-intensity (\ppfdequals{150}). We always measured high light-intensity curves first because photosynthetic downregulation is faster than upregulation in these species. To control for order effects, we alternated between starting with amphi or pseudohypo leaf measurements. Unlike @triplett_amphistomy_2024, preliminary experiments with *Solanum* indicated a strong order effect in that $A$ declined in the second curve. Therefore, we made measurements over two days. On the first day, we measured high and low light-intensity curves for either amphi or pseudohypo leaves; on the second day, we measured high and low light-intensity curves on the other leaf type. 
+We collected four \agcurve{} curves per leaf, an amphi (untreated) curve and a pseudohypo (treated) curve at high light-intensity (\ppfdequals{2000}; `r p_red_high`:`r p_blue_high` red:blue) and low light-intensity (\ppfdequals{150}; `r p_red_low`:`r p_blue_low` red:blue). We always measured high light-intensity curves first because photosynthetic downregulation is faster than upregulation in these species. To control for order effects, we alternated between starting with amphi or pseudohypo leaf measurements. Unlike @triplett_amphistomy_2024, preliminary experiments with *Solanum* indicated a strong order effect in that $A$ declined in the second curve. Therefore, we made measurements over two days. On the first day, we measured high and low light-intensity curves for either amphi or pseudohypo leaves; on the second day, we measured high and low light-intensity curves on the other leaf type. 
 
-In all cases, we acclimated the focal leaf to high light (\ppfdequals{2000}) and high relative humidity ($\mathrm{RH} = 70\%$) until $A$ and \gsc reach their maximum. After that, we decreased \rh to $\approx 10\%$ to induce rapid stomatal closure without biochemical downregulation. Hence, $A_\text{amphi}$ and $A_\text{hypo}$ were both measured at low chamber humidity after the leaf had acclimated to high humidity. All other environmental conditions in the leaf chamber remained the same. We logged data until \gsc reached its nadir. We then acclimated the leaf to low light (\ppfdequals{150}) and 70\% \rh before inducing stomatal closure with low \rh and logging data as described above.
+In all cases, we acclimated the focal leaf to high light (\ppfdequals{2000}) and high relative humidity (\rhequals{70}) until $A$ and \gsw{} reach their maximum. After that, we decreased \rh{} to $\approx 10\%$ to induce rapid stomatal closure without biochemical downregulation. Hence, \Aamphi{} and \Ahypo{} were both measured at low chamber humidity after the leaf had acclimated to high humidity. All other environmental conditions in the leaf chamber remained the same. We logged data until \gsw{} reached its nadir. We then acclimated the leaf to low light (\ppfdequals{150}) and \rhequals{70} before inducing stomatal closure with low \rh and logging data as described above.
 
 #### Light-response curves
 
-We measured light-response curves on the same leaflets as \agcurve curves
+In `r percent_aa_and_aq`\% of plants, we measured light-response curves on the same leaflets as \agcurve{} curves. However, when a leaflet was damaged during \agcurve{} curves, we used the next closest leaflet for light-response curves. Leaves acclimated to high light-intensity (\ppfdequals{2000}), ambient CO$_2$ (\caequals{415}), \rhequals{50}, and \tleafequals{25}. After $A$ and \gsw{} stabilized, we measured $A$ at 20 light-intensity levels between $0$ and $\qty{2000}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$ in descending order.
 
-testing \gsc
+#### Stomatal anatomy
+
+<!-- are there any cases where we did not get stomatal anatomy data? -->
+
+We estimated the stomatal density and size on ab- and adaxial leaf surfaces from all leaves, using guard cell length as a proxy for stomatal size since it proportional to maximum conductance [@sack_developmental_2016]. We made surface impressions of leaf lamina from the same area used for gas exchange measurements using a-silicone impression material (Zhermack elite HD+, light body, fast set, Rovigo, Italy). We applied clear nail polish to make positive replicas of the impression. After nail polish dried, we mounted replicas on a microscope slide using transparent tape [@mott_amphistomy_1991]. We digitized a portion of each leaf surface replica using a brightfield microscope (Leica DM2000, Wetzlar, Germany). We counted and measured guard cell length on all stomata using the FIJI implementation of ImageJ2 version 2.3.0 [@schindelin_fiji_2012], then divided the count by the visible leaf area ($\qty{0.890}{\raiseto{2}\milli\meter}$) to estimate stomatal density.
+
+#### Internal leaf anatomy
+
+Add information on internal leaf anatomy, if using
+
+#### Leaf mass per area
+
+Leaf mass per area (LMA) is the dry mass divided by the leaflet area. We scanned fresh leaflets on a flat bed scanner (Epson V600, Los Alamitos, California. USA) and measured leaflet area from digital images using the FIJI implementation of ImageJ2 version 2.3.0 [@schindelin_fiji_2012]. We dried leaves for 72 hours at $\qty{74}{\degreeCelsius}$ in a food dehydrator (Cosori CP267-FD, Vesync Co., Anaheim, California, USA) and weighed using a benchtop analytical balance (Ohaus PR64 Analytical Balance, Parsippany, New Jersey, USA). In $`r percent_lma_switch`\%$ we measured LMA on the adjacent leaflet because the focal leaflet was damaged or wilted while making surface impressions and we could not reliably estimate area.
+ LMA data are missing from $`r percent_lma_missing`\%$ of individuals because the area or mass was not recorded at all or recorded incorrectly.
+
+## References
