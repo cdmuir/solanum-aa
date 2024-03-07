@@ -229,6 +229,15 @@ We fit Bayesian models using the *R* package **brms** version `r fit_aa$version$
 
 #### Parameter estimates (this is a provisional section)
 
+Base model (need to add indices):
+
+$$A = \beta_0 + \beta_1 \text{log}(g_\text{sw}) + \beta_2 \text{log}(g_\text{sw}) ^ 2 + \epsilon$$
+Estimate \aax{} by integrating over range of \gsw{} overlap (need to add indices for accession, replicate, light intensity):
+
+$$\mathrm{AA} = \int_{\text{min(log(}g_\text{sw}))}^{\text{max(log(}g_\text{sw}))} \text{log}\bigg(\frac{A_\text{amphi}(x; \theta_\text{amphi})}{A_\text{hypo}(x; \theta_\text{hypo})}\bigg) dx$$
+
+where $\text{min(log(}g_\text{sw}))$ and $\text{max(log(}g_\text{sw}))$ are the minumum and maximum values of $\text{log(}g_\text{sw})$ where amphi and pseudohypo curves overlap. \Aamphi{} is calculated from parameter estimates $\theta_\text{amphi} \in \{\beta_{0,\text{amphi}}, \beta_{1,\text{amphi}}, \beta_{2,\text{amphi}}\}$; \Ahypo{} is calculated from parameter estimates $\theta_\text{hypo} \in \{\beta_{0,\text{hypo}}, \beta_{1,\text{hypo}}, \beta_{2,\text{hypo}}\}$
+
 * Assimilatory: 
   + average AA2000 - AA150
   + among accession variation in AA2000 - AA150
