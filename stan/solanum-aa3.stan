@@ -1,3 +1,6 @@
+// Current working version using LICOR calculations, ragged arrays, but no autocorrelation.
+// Currently paused because I am trying out fitting on calculated A and g_sw rather
+// than recalculating during estimation
 functions {
   // Calculate saturating vapor pressure following the LI6800 manual
   real li6800_svp(real T_degreeC, real P_kPa) {
