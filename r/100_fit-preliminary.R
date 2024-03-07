@@ -1,9 +1,15 @@
 # Preliminary fit to inform simulations
 message("still a lot of messiness in the code that needs to be cleaned up")
 source("r/header.R")
+
 rh_curves = read_rds("data/thinned_rh_curves.rds") |>
   separate_wider_delim(acc_id, "-", names = c("acc", "id"), cols_remove = FALSE)
-  
+
+# dummy model just for drafting ms. erase later
+fit_dummy = brm(A ~ 1, data = rh_curves[1:100,], 
+                chains = 4L, cores = 4L, backend = "cmdstanr")
+write_rds(fit_dummy, "objects/fit_dummy.rds")
+
 # Example curve to test with
 tmp = rh_curves |>
   filter(acc_id == "LA1777-E")

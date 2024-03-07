@@ -25,8 +25,12 @@ csl: https://www.zotero.org/styles/science
 
 ```{r load-objects, echo=FALSE, eval=TRUE}
 
+library(readr)
 # I am mostly putting placeholders here for objects/values that will need to be
 # loaded eventually to use in paper.
+fit_aa = read_rds("../objects/fit_dummy.rds")
+dim_fit_aa = dim(fit_aa$fit)
+
 n_plant = 600
 n_acc = 30
 mean_n_rep = 10 # average number of individual replicates for accession per light treatment
@@ -75,6 +79,11 @@ Terminology to standardize:
 
 -   ?
 
+## Authors
+
+definite: Wei Shen Lim, Dachuan Wang, Chris Muir
+question: Sam McKlin, Tom Buckley
+
 ## Main
 
 \[introduction\] Stomata are important
@@ -109,9 +118,9 @@ caption: Directional predictions associated with each hypothesis explaining why 
 
 |  hypothesis  | native light habitat | light treatment  | light intensity |
 |:------------:|:--------------------:|:----------------:|:---------------:|
-| acclimatory  |   cor(PAR, AA) = 0   | AAsun = AAshade  | AA2000 \> AA150 |
-|   plastic    | cor(PAR, AAsun) \> 0 | AAsun \> AAshade | AA2000 = AA150  |
-| constitutive |  cor(PAR, AA) \> 0   | AAsun = AAshade  | AA2000 = AA150  |
+| acclimatory  | cor(PAR, AA) = 0   | AAsun = AAshade  | AA2000 \> AA150 |
+|   plastic    | cor(PAR, AA) = 0 | AAsun \> AAshade | AA2000 = AA150  |
+| constitutive | cor(PAR, AA) \> 0   | AAsun = AAshade  | AA2000 = AA150  |
 
 \[add rows for when multiple hypotheses are supported simultaneously? or put that in SI?\]
 
@@ -199,13 +208,60 @@ In `r percent_aa_and_aq`\% of plants, we measured light-response curves on the s
 
 We estimated the stomatal density and size on ab- and adaxial leaf surfaces from all leaves, using guard cell length as a proxy for stomatal size since it proportional to maximum conductance [@sack_developmental_2016]. We made surface impressions of leaf lamina from the same area used for gas exchange measurements using a-silicone impression material (Zhermack elite HD+, light body, fast set, Rovigo, Italy). We applied clear nail polish to make positive replicas of the impression. After nail polish dried, we mounted replicas on a microscope slide using transparent tape [@mott_amphistomy_1991]. We digitized a portion of each leaf surface replica using a brightfield microscope (Leica DM2000, Wetzlar, Germany). We counted and measured guard cell length on all stomata using the FIJI implementation of ImageJ2 version 2.3.0 [@schindelin_fiji_2012], then divided the count by the visible leaf area ($\qty{0.890}{\raiseto{2}\milli\meter}$) to estimate stomatal density.
 
+<!-- 
 #### Internal leaf anatomy
 
-Add information on internal leaf anatomy, if using
+Add information on internal leaf anatomy, if using 
+-->
 
 #### Leaf mass per area
 
-Leaf mass per area (LMA) is the dry mass divided by the leaflet area. We scanned fresh leaflets on a flat bed scanner (Epson V600, Los Alamitos, California. USA) and measured leaflet area from digital images using the FIJI implementation of ImageJ2 version 2.3.0 [@schindelin_fiji_2012]. We dried leaves for 72 hours at $\qty{74}{\degreeCelsius}$ in a food dehydrator (Cosori CP267-FD, Vesync Co., Anaheim, California, USA) and weighed using a benchtop analytical balance (Ohaus PR64 Analytical Balance, Parsippany, New Jersey, USA). In $`r percent_lma_switch`\%$ we measured LMA on the adjacent leaflet because the focal leaflet was damaged or wilted while making surface impressions and we could not reliably estimate area.
- LMA data are missing from $`r percent_lma_missing`\%$ of individuals because the area or mass was not recorded at all or recorded incorrectly.
+Leaf mass per area (LMA) is the dry mass divided by the leaflet area. We scanned fresh leaflets on a flat bed scanner (Epson V600, Los Alamitos, California. USA) and measured leaflet area from digital images using the FIJI implementation of ImageJ2 version 2.3.0 [@schindelin_fiji_2012]. We dried leaves for 72 hours at $\qty{74}{\degreeCelsius}$ in a food dehydrator (Cosori CP267-FD, Vesync Co., Anaheim, California, USA) and weighed using a benchtop analytical balance (Ohaus PR64 Analytical Balance, Parsippany, New Jersey, USA). In $`r percent_lma_switch`\%$ we measured LMA on the adjacent leaflet because the focal leaflet was damaged or wilted while making surface impressions and we could not reliably estimate area. LMA data are missing from $`r percent_lma_missing`\%$ of individuals because the area or mass was not recorded at all or recorded incorrectly.
+
+### Data analysis
+
+#### General points (not sure where this goes yet)
+
+- models fit in Stan/brms
+- warmup and sampling iterations were chosen so that parameter ESS > 1000 and  $\hat{R} < 1.01$ [@gelman_inference_1992] and the effective sample size (ESS) was greater than $10^3$.
+
+We fit Bayesian models using the *R* package **brms** version `r fit_aa$version$brms` [@burkner_brms_2017] with MCMC sampling in *Stan* [@stan_development_team_stan_2023]. We used CmdStan version `r fit_aa$version$cmdstan` and **cmdstanr** version `r fit_aa$version$cmdstanr` [@gabry_cmdstanr_2023] to interface with *R* version `r getRversion()` [@r_core_team_r:_2023]. We sampled the posterior distribution from `r dim_fit_aa[2]` chains with `r dim_fit_aa[1]` iterations each after `r dim_fit_aa[1]` warmup iterations per chain. We estimated parameters and confidence intervals as the median and 95% quantile intervals of the posterior, respectively. 
+
+#### Parameter estimates (this is a provisional section)
+
+* Assimilatory: 
+  + average AA2000 - AA150
+  + among accession variation in AA2000 - AA150
+* Plastic
+  + average AAsun - AAshade
+  + among accession variation in AAsun - AAshade
+* Constitutive
+  + cor(PAR, AA) at accession level
+  
+Reinforcing interactions (we only consider these because these are ones which could explain why amphi leaves occur in high light habitats)
+
+* Assimilatory * Plastic (reinforcing interaction)
+  + AAsun - AAshade greater at 2000 than 150
+  + AA2000 - AA150 greater in sun leaves than shade leaves
+  + there may be var among accessions, but not correlated with PAR
+  
+* Assimilatory * Constitutive (reinforcing interaction)
+  + cor(AA2000, PAR) > 0; cor(AA150, PAR) = 0
+  + AA2000 - AA150 varies among accessions, correlated with PAR
+  
+* Plastic * Constitutive (reinforcing interaction)
+  + cor(AAsun, PAR) > 0; cor(AAshade, PAR) = 0
+  + AAsun - AAshade varies among accessions, correlated with PAR
+  
+* Assimilatory * Plastic * Constitutive (reinforcing interaction)
+  + AAsun - AAshade greater at 2000 than 150
+  + AA2000 - AA150 greater in sun leaves than shade leaves
+  + AAsun - AAshade varies among accession, correlated with PAR
+  + AA2000 - AA150 varies among accession, correlated with PAR
+  + cor(AAsun2000, PAR) > cor(AAsun150, PAR) and > cor(AAshade2000, PAR) and > cor(AAshade150, PAR) in nonadditive way
+## Acknowledgements
+
+Justin Alter, Max Gatlin, Joana Kim, Jenna Matsuyama, Brandon Najarian, Kai Yasuda
+
 
 ## References
