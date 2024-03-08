@@ -15,6 +15,7 @@ data {
   int<lower=0> n_leaf_type;  
   int<lower=0> n_light_intensity;  
   int<lower=0> n_lightintensity_x_id;
+  int<lower=0> n_light_treatment;  
   
   // vector of integer lengths per curve
   array[n_curve] int<lower=0> n_pts; 
@@ -23,7 +24,6 @@ data {
   
   array[n] int<lower=1,upper=n_id> id;
   array[n] int<lower=1,upper=n_leaf_type> leaf_type;
-  array[n] int<lower=1,upper=n_light_intensity> light_intensity;
   array[n] int<lower=1,upper=n_lightintensity_x_id> lightintensity_x_id;
   
   vector[n] A;
@@ -32,6 +32,10 @@ data {
   // index of amphi and pseudohypo curves for each light_intensity x id combination
   array[n_lightintensity_x_id] int<lower=0,upper=n_curve> amphi;
   array[n_lightintensity_x_id] int<lower=0,upper=n_curve> pseudohypo;
+
+  // variables indexed by lightintensity_x_id groups
+  array[n_lightintensity_x_id] int<lower=1,upper=n_light_intensity> light_intensity;
+  array[n_lightintensity_x_id] int<lower=1,upper=n_light_treatment> light_treatment;
 
   // min and max scaled_log_gsw by curve
   array[n_curve] real min_scaled_log_gsw;
@@ -48,29 +52,36 @@ parameters {
   vector[n_curve] b1;
   vector[n_curve] b2;
 
-  real<lower=0> sigma;
+  real<lower=0> sigma_resid;
 
-  // vector[n_lightintensity_x_id] aa;
+  // regression on aa
+  real b0_aa;
+  real b_aa_light_treatment_high;
   
-  // hyperparameters
-  real mu_aa;
-  real<lower=0> sigma_aa;
+  // regression on sigma_aa
+  real b0_log_sigma_aa;
+  real b_log_sigma_aa_light_intensity_2000;
   
 }
 model {
   
-  vector[n_lightintensity_x_id] aa_out;
-
   profile("priors") {
   // priors ----
+    
+    // quadratic regression coefficients
     b0 ~ normal(0, 10);
     b1 ~ normal(0, 10);
     b2 ~ normal(0, 10);
   
-    sigma ~ normal(0, 1); 
+    sigma_resid ~ normal(0, 1); 
     
-    mu_aa ~ normal(0, 1);
-    sigma_aa ~ normal(0, 1);
+    // regression on aa
+    b0_aa ~ normal(0, 1);
+    b_aa_light_treatment_high ~ normal(0, 1);
+
+    // regression on sigma_aa
+    b0_log_sigma_aa ~ normal(0, 1);
+    b_log_sigma_aa_light_intensity_2000 ~ normal(0, 1);
     
   }
   
@@ -79,6 +90,17 @@ model {
   
   for (i in 1:n_lightintensity_x_id) {
     
+    real mu1;
+    real sigma;
+
+    // regression on aa
+    mu1 = b0_aa + 
+      b_aa_light_treatment_high * (light_treatment[i] == 2);
+    
+    // regression on sigma_aa
+    sigma = b0_log_sigma_aa +
+      b_log_sigma_aa_light_intensity_2000 * (light_intensity[i] == 2);
+
     real aa_i;
     int amphi_curve; 
     int pseudohypo_curve;
@@ -100,16 +122,9 @@ model {
     theta[5] = b1[pseudohypo_curve]; // b1_hypo;
     theta[6] = b2[pseudohypo_curve]; // b2_hypo;
     
-    // print("amphi_curve: ", amphi_curve);
-    // print("pseudohypo_curve: ", pseudohypo_curve);
-    // print("a: ", a);
-    // print("b: ", b);
-    // print("theta: ", theta);
     aa_i = integrate_1d(aa_int, a, b, theta, d1, d2);
-    aa_out[i] = aa_i;
-    // print(i, ", aa[i]: ", aa[i]);
 
-    target += normal_lpdf(aa_i | mu_aa, sigma_aa);
+    target += normal_lpdf(aa_i | mu1, sigma);
 
   }
   }
@@ -118,11 +133,11 @@ model {
   // likelihood ----
     for (i in 1:n) {
       
-      real mu;
-      mu = b0[curve[i]] + 
+      real mu2;
+      mu2 = b0[curve[i]] + 
         b1[curve[i]] * scaled_log_gsw[i] +
         b2[curve[i]] * scaled_log_gsw[i] ^ 2;
-      target += normal_lpdf(A[i] | mu, sigma);
+      target += normal_lpdf(A[i] | mu2, sigma_resid);
   
     }
   }

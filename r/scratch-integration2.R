@@ -29,7 +29,8 @@ rh_curves = read_rds("data/thinned_rh_curves.rds") |>
     id,
     leaf_type,
     light_intensity,
-    lightintensity_x_id
+    lightintensity_x_id,
+    light_treatment
   ) 
 
 # check
@@ -41,6 +42,10 @@ sd(rh_curves$scaled_log_gsw)
 stan_rh_curves = rh_curves |>
   compose_data()
 
+# drop variables that will be indexed by higher-level groups
+stan_rh_curves$light_intensity = NULL
+stan_rh_curves$light_treatment = NULL
+
 # Manual changes
 stan_rh_curves = c(
   stan_rh_curves,
@@ -48,15 +53,20 @@ stan_rh_curves = c(
   ## Mapping of lightintensity_x_id to curve
   rh_curves |>
   mutate(
-    across(c("lightintensity_x_id", "curve"), \(.x) as.numeric(as.factor(.x)))
+    # character to numeric
+    across(c("lightintensity_x_id", "curve", "light_intensity"), \(.x) as.numeric(as.factor(.x))),
+    # factor to numeric
+    across(c("light_treatment"), as.numeric),
   ) |>
   summarize(
     curve = first(curve),
+    light_intensity = first(light_intensity),
+    light_treatment = first(light_treatment),
     .by = c(lightintensity_x_id, leaf_type)
   ) |>
   pivot_wider(names_from = "leaf_type", values_from = "curve") |>
   arrange(lightintensity_x_id) |>
-  dplyr::select(amphi, pseudohypo) |>
+  dplyr::select(amphi, pseudohypo, light_intensity, light_treatment) |>
   as.list(),
 
   ## min and max scaled_log_gsw by curve
@@ -122,16 +132,7 @@ fit = m$sample(
   init = list(init, init)
 )
 
+fit$save_object("objects/test-integration.rds")
+
+fit = read_rds("objects/test-integration.rds")
 fit$profiles()
-
-tmp = fit$summary("aa") |>
-  dplyr::select(variable, median, q5, q95) |>
-  arrange(median) |>
-  mutate(n = row_number())
-  print(n = 40)
-
-ggplot(tmp, aes(n, median, ymin = q5, ymax = q95)) +
-  geom_pointinterval() +
-  geom_hline(yintercept = 0)
-
-fit1 = fit
