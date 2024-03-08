@@ -93,14 +93,14 @@ stan_rh_curves$d2 = 0L
 # Fit
 m = cmdstan_model("stan/solanum-aa4.stan", dir = "stan/bin")
 
-init = list(
-  b0 = stan_rh_curves$tmp,
-  b1 = rep(0, stan_rh_curves$n_curve),
-  b2 = rep(0, stan_rh_curves$n_curve),
-  mu_aa = 0,
-  sigma_aa = 0.1,
-  aa = rep(0, stan_rh_curves$n_lightintensity_x_id)
-)
+# init = list(
+#   b0 = stan_rh_curves$tmp,
+#   b1 = rep(0, stan_rh_curves$n_curve),
+#   b2 = rep(0, stan_rh_curves$n_curve),
+#   mu_aa = 0,
+#   sigma_aa = 0.1,
+#   aa = rep(0, stan_rh_curves$n_lightintensity_x_id)
+# )
 
 init = rh_curves |>
   mutate(across(c("curve"), \(.x) as.numeric(as.factor(.x)))) |>
@@ -123,6 +123,7 @@ fit = m$sample(
 )
 
 fit$profiles()
+
 tmp = fit$summary("aa") |>
   dplyr::select(variable, median, q5, q95) |>
   arrange(median) |>

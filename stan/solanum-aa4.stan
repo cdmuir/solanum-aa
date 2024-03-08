@@ -59,6 +59,8 @@ parameters {
 }
 model {
   
+  vector[n_lightintensity_x_id] aa_out;
+
   profile("priors") {
   // priors ----
     b0 ~ normal(0, 10);
@@ -104,6 +106,7 @@ model {
     // print("b: ", b);
     // print("theta: ", theta);
     aa_i = integrate_1d(aa_int, a, b, theta, d1, d2);
+    aa_out[i] = aa_i;
     // print(i, ", aa[i]: ", aa[i]);
 
     target += normal_lpdf(aa_i | mu_aa, sigma_aa);
