@@ -2,11 +2,11 @@
 source("r/header.R")
 
 rh_curves = read_rds("data/rh_curves.rds") |>
-  filter(assumed_K == 0.5, !is.na(gsw))
+  filter(assumed_K == 0.5)
 
 thinned_rh_curves = rh_curves |>
   split( ~ acc_id + curve_type + light_intensity) |>
-  map_dfr(thin_data, bin_width = 0.05)
+  map_dfr(thin_data, bin_width = 0.05, .progress = TRUE)
 
 # stats on thinning
 thinning_summary = thinned_rh_curves |>

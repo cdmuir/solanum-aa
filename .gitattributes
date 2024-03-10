@@ -3,3 +3,4 @@ data/rh_curves.rds filter=lfs diff=lfs merge=lfs -text
 objects/fit_preliminary.rds filter=lfs diff=lfs merge=lfs -text
 data/thinned_rh_curves.rds filter=lfs diff=lfs merge=lfs -text
 data/stan_rh_curves.rds filter=lfs diff=lfs merge=lfs -text
+data/prepared_rh_curves.rds filter=lfs diff=lfs merge=lfs -text
