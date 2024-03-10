@@ -192,3 +192,18 @@ make_autocorr_matrix = function(elapsed, b_autocorr) {
   R
   
 }
+
+# 3. Fit data ----
+
+# Calculate AA from parameter estimates:
+# log(A_amphi) = b0_a + b1_a * log(gsw) + b2_a * log(gsw) ^ 2
+# log(A_hypo)  = b0_h + b1_h * log(gsw) + b2_h * log(gsw) ^ 2
+# Indefinite integral of log(A_amphi / A_hypo) when log(A) is a quadratic 
+# function of log(gsw)
+aa_int = function(log_gsw, b0_a, b0_h, b1_a, b1_h, b2_a, b2_h) {
+  
+  log_gsw ^ 3 * (b2_a / 3 - b2_h / 3) + 
+    log_gsw ^ 2 * (b1_a / 2 - b1_h / 2) + 
+    log_gsw * (b0_a - b0_h)
+  
+}
