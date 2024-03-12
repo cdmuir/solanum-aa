@@ -1,13 +1,12 @@
 # Compare measured to estimated parameter values
 source("r/header.R")
 
-pars = c("A", "c_0", "g_sw", "w_0")
+# NEED TO UPDATE
+pars = c("A")
 
 fit_dat = read_rds("objects/fit_dat.rds")
 
-thinned_rh_curves = read_rds("data/thinned_rh_curves.rds") |>
-  # for now, filter to just LA2172
-  filter(str_detect(acc_id, "LA2172"))
+rh_curves = read_rds("data/prepared_rh_curves.rds")
 stan_rh_curves = read_rds("data/stan_rh_curves.rds")
     
 assert_true(stan_rh_curves$n == nrow(thinned_rh_curves))

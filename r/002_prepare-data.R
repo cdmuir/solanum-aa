@@ -14,7 +14,11 @@ read_rds("data/thinned_rh_curves.rds") |>
                        names = c("acc", "id"),
                        cols_remove = FALSE) |>
   # make unique ID for each leaf_type within acc_id
-  unite("leaftype_x_acc_id", acc_id, leaf_type, remove = FALSE) |>
+  unite("lightintensity_x_acc_id", acc_id, light_intensity, remove = FALSE) |>
   # make unique ID for each curve
   unite("curve", acc_id, leaf_type, light_intensity, remove = FALSE) |>
+  mutate(
+    log_gsw = log(gsw),
+    scaled_log_gsw = (log_gsw - mean(log_gsw)) / sd(log_gsw)
+  ) |>
   write_rds("data/prepared_rh_curves.rds")

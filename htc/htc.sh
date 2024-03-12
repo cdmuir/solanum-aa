@@ -10,7 +10,7 @@
 
 # Preliminary: build R packages and Stan
 # 
-## Locally, transfer build jobs to submite node
+## Locally, transfer build jobs to submit node
 scp htc/build-r.sub cdmuir@submit2.chtc.wisc.edu:/home/cdmuir/solanum-aa
 scp htc/build-stan.sub cdmuir@submit2.chtc.wisc.edu:/home/cdmuir/solanum-aa
 
@@ -69,7 +69,7 @@ rm fit_*
 # ACTUAL DATA
 
 # 1. Transfer files before logging in using scp
-scp data/stan_rh_curves.rds htc/fit_dat.R htc/fit_dat.sh htc/fit_dat.sub stan/solanum-aa3.stan cdmuir@submit2.chtc.wisc.edu:/home/cdmuir/solanum-aa/htc
+scp data/prepared_rh_curves.rds data/stan_rh_curves.rds htc/fit_dat.R htc/fit_dat.sh htc/fit_dat.sub stan/solanum-aa.stan cdmuir@submit2.chtc.wisc.edu:/home/cdmuir/solanum-aa/htc
 
 # 2. Login to submit node
 
@@ -77,7 +77,7 @@ scp data/stan_rh_curves.rds htc/fit_dat.R htc/fit_dat.sh htc/fit_dat.sub stan/so
 condor_submit solanum-aa/htc/fit_dat.sub
 
 # check status
-condor_q 19234376 # max tree depth, iterations, and adapt delta increased
+condor_q 19307405
 
 # 4. Retrieve results
 scp cdmuir@submit2.chtc.wisc.edu:/home/cdmuir/fit_dat.rds objects/

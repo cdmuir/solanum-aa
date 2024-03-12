@@ -1,31 +1,32 @@
 # Fit model to actual data
 source("r/header.R")
 
-solanum_aa = cmdstan_model("stan/solanum-aa3.stan", dir = "stan/bin")
+solanum_aa = cmdstan_model("stan/solanum-aa.stan", dir = "stan/bin")
 
+rh_curves = read_rds("data/prepared_rh_curves.rds")
 stan_rh_curves = read_rds("data/stan_rh_curves.rds")
 
-ad = c(stan_rh_curves$n, stan_rh_curves$n_comp)
+init = rh_curves |>
+  mutate(across(c("curve"), \(.x) as.numeric(as.factor(.x)))) |>
+  split(~ curve) |>
+  map_dfr(\(.x) {
+    fit = lm(log(A) ~ scaled_log_gsw + I(scaled_log_gsw ^ 2), data = .x)
+    b = unname(coef(fit))
+    tibble(b0 = b[1], b1 = b[2], b2 = b[3])
+  }) |>
+  as.list()
 
+# Started 6:18
+# 15% at 7:48, ETA 10 hours
 fit_dat = solanum_aa$sample(
   data = stan_rh_curves,
   chains = 2L,
   parallel_chains = 2L,
-  init = list(list(
-    c_a = array(rep(stan_rh_curves$CO2_s, stan_rh_curves$n_comp), dim = ad),
-    log_gsw = array(rep(log(stan_rh_curves$g_sw), stan_rh_curves$n_comp), dim = ad),
-    sd_A = rep(sd(stan_rh_curves$A), stan_rh_curves$n_comp),
-    mean_A = rep(mean(stan_rh_curves$A), stan_rh_curves$n_comp)
-  )),
+  init = list(init, init),
   seed = 898932814,
   iter_warmup = 1e3,
   iter_sampling = 1e3,
   refresh = 2e1
-  
 )
 
 fit_dat$save_object("objects/fit_dat.rds")
-    # some checks I can remove later
-    # fit_sim$profiles()
-    # fit_sim$summary("w")$median -> tmp
-    # hist(tmp[80 + 1:80])

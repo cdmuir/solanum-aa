@@ -26,5 +26,3 @@ source("r/licor-functions.R")
 id_string = "^(LA[0-9]{4}A*|nelsonii|sandwicense)-[A-Z]{1}[A]{0,1}$"
 
 theme_set(theme_cowplot())
-
-message("there is some issue LA4126-B. all/some gsw are NA")
