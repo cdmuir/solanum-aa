@@ -19,15 +19,22 @@ ssh cdmuir@submit2.chtc.wisc.edu
 
 ## On submit node
 condor_submit -i build-r.sub
+tar -xzf R413.tar.gz
+export PATH=$PWD/R/bin:$PATH
+export RHOME=$PWD/R
+R --version # check that R is installed
+mkdir packages
+export R_LIBS=$PWD/packages
 # install packages, quit r
 tar -czf packages.tar.gz packages/
 # quit interactive job
 # R packages are ready
+scp cdmuir@submit2.chtc.wisc.edu:/home/cdmuir/solanum-aa/packages.tar.gz htc/ 
+
+
 condor_submit -i build-stan.sub
 tar -xzf cmdstan-2.34.1.tar.gz
 cd cmdstan-2.34.1
-# MAY NEED TO DO CONFIGURE STEP HERE?
-# ./configure --prefix=$_CONDOR_SCRATCH_DIR/cmdstan
 make build
 cd ..
 tar -czf cmdstan-2.34.1.tar.gz cmdstan-2.34.1/
@@ -72,12 +79,14 @@ rm fit_*
 scp data/prepared_rh_curves.rds data/stan_rh_curves.rds htc/fit_dat.R htc/fit_dat.sh htc/fit_dat.sub stan/solanum-aa.stan cdmuir@submit2.chtc.wisc.edu:/home/cdmuir/solanum-aa/htc
 
 # 2. Login to submit node
+ssh cdmuir@submit2.chtc.wisc.edu
 
 # 3. Submit jobs
 condor_submit solanum-aa/htc/fit_dat.sub
 
 # check status
 condor_q 19307405
+condor_q 19307413
 
 # 4. Retrieve results
 scp cdmuir@submit2.chtc.wisc.edu:/home/cdmuir/fit_dat.rds objects/
