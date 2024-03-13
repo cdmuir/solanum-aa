@@ -19,6 +19,11 @@ rh_curves = read_rds("data/prepared_rh_curves.rds") |>
 stan_rh_curves = rh_curves |>
   compose_data()
 
+# rh_curves$light_intensity[1:10]
+# stan_rh_curves$light_intensity[1:10]
+# rh_curves$light_treatment[1:10]
+# stan_rh_curves$light_treatment[1:10]
+
   # commented variables are needed for full IRGA model if I go back to that
     # elapsed,
     # flow = Flow,

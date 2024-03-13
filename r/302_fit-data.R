@@ -1,7 +1,7 @@
 # Fit model to actual data
 source("r/header.R")
 
-solanum_aa = cmdstan_model("stan/solanum-aa.stan", dir = "stan/bin")
+m = cmdstan_model("stan/solanum-aa1.stan", dir = "stan/bin")
 
 rh_curves = read_rds("data/prepared_rh_curves.rds")
 stan_rh_curves = read_rds("data/stan_rh_curves.rds")
@@ -16,9 +16,13 @@ init = rh_curves |>
   }) |>
   as.list()
 
-# Started 6:18
-# 15% at 7:48, ETA 10 hours
-fit_dat = solanum_aa$sample(
+# Started 6:02
+# 14% at 70 minutes, ETA 8h 20m
+# 28% at 133 minutes, ETA 7h 55m
+# 36% at 173 minutes, ETA 8h 0m
+# 41% at 200 minutes, ETA 8h 8m
+# 56% at 274 minutes, ETA 8h 9m
+fit_aa1 = m$sample(
   data = stan_rh_curves,
   chains = 2L,
   parallel_chains = 2L,
@@ -29,4 +33,4 @@ fit_dat = solanum_aa$sample(
   refresh = 2e1
 )
 
-fit_dat$save_object("objects/fit_dat.rds")
+fit_aa1$save_object("objects/fit_aa1.rds")

@@ -1,404 +1,280 @@
-// This version works with 'square' arrays where each curve has same number of 
-// points. I think this will be a problem with the actual data which have 
-// different numbers of points in each curve. Pausing and copying to another 
-// file in case I want to come back to this version.
+// This model fits a quadratic function of log_gsw to log_A for every curve, then
+// integrates overlapping region to estimate AA. Then we estimate parameters 
+// describing effects of variables on AA. 
 functions {
-  // Calculate saturating vapor pressure following the LI6800 manual
-  real li6800_svp(real T_degreeC, real P_kPa) {
-    return 1000 * 0.61365 * exp(17.502 * T_degreeC / (240.97 + T_degreeC)) / P_kPa;
-  }
-  
-  // Calculate total conductance to CO2 following the LI6800 manual
-  real li6800_gtc_amphi(real g_bw, real g_sw, real K) {
-    return 1 / ((1 + K) * (1.6 / g_sw) + (1.37 / g_bw)) + K / ((1 + K) * (1.6 / g_sw) + K * 1.37 / g_bw);
-  }
-  real li6800_gtc_hypo(real g_bw, real g_sw) {
-    return 1 / (1.6 / g_sw + 1.37 / g_bw);
-  }
-
-  // Calculate total conductance to water vapor following the LI6800 manual
-  real li6800_gtw_amphi(real g_bw, real g_sw, real K) {
-    real r_bw = 1 / g_bw;
-    real r_sw = 1 / g_sw;
-    return 1 / ((1 + K) * r_sw + r_bw) + K / ((1 + K) * r_sw + K / g_bw);
-  }
-  real li6800_gtw_hypo(real g_bw, real g_sw) {
-    real r_bw = 1 / g_bw;
-    real r_sw = 1 / g_sw;
-    return 1 / (r_sw + r_bw);
-  }
-
-  // Calculate transpiration per area following the LI6800 manual
-  real li6800_E(real g_tw, real w_a, real w_i) {
-    return 1000 * g_tw * (w_i - w_a) / (1000 - (w_i + w_a) / 2);
-  }
-
-  // Calculate 'true' reference [H2O] following the LI6800 manual
-  real li6800_w0(real E, real flow, real s, real w_a) {
-    return w_a - (s * E * 100) * (1000 - w_a) / (1000 * flow);
-  }
-
-  // Calculate 'true' reference [CO2] following the LI6800 manual
-  real li6800_c0(real A, real c_a, real flow, real s, real w_a, real w_0) {
-    return 1000 * (s * A * 100) / (1000 * flow) + c_a * ((1000 - w_0) / (1000 - w_a));
-  }
-
-  // Function to calculate the mean of an 4-dimensional array
-  real array_mean_4d(array[,,,] real x) {
-    int n_dim1 = dims(x)[1];
-    int n_dim2 = dims(x)[2];
-    int n_dim3 = dims(x)[3];
-    int n_dim4 = dims(x)[4];
-
-    real mu = 0.0;
-
-    // Calculate the mean
-    for (i in 1:n_dim1) {
-      for (j in 1:n_dim2) {
-        for (k in 1:n_dim3) {
-          for (l in 1:n_dim4) {
-            mu += x[i, j, k, l];
-          }
-        }
-      }
-    }
-    mu /= (n_dim1 * n_dim2 * n_dim3 * n_dim4);
-
-    return mu;
+  // indefinite integral of log(A_amphi) - log(A_hypo) based on parameters theta
+  real aa_int(real x, array[] real theta) {
+    
+    return x ^ 3 * (theta[3] / 3 - theta[6] / 3) + 
+      x ^ 2 * (theta[2] / 2 - theta[5] / 2) + 
+      x * (theta[1] - theta[4]);
     
   }
-
-  // Function to calculate the sd of an 4-dimensional array
-  real array_sd_4d(array[,,,] real x) {
-    int n_dim1 = dims(x)[1];
-    int n_dim2 = dims(x)[2];
-    int n_dim3 = dims(x)[3];
-    int n_dim4 = dims(x)[4];
-
-    real sum_sq_diff = 0.0;
-    real mu = array_mean_4d(x);
-
-    // Calculate the sum of squared differences
-    for (i in 1:n_dim1) {
-      for (j in 1:n_dim2) {
-        for (k in 1:n_dim3) {
-          for (l in 1:n_dim4) {
-            sum_sq_diff += (x[i, j, k, l] - mu) ^ 2;
-          }
-        }
-      }
-    }
-
-    // Calculate the standard deviation
-    real std_dev = sqrt(sum_sq_diff / (n_dim1 * n_dim2 * n_dim3 * n_dim4));
-
-    return std_dev;
-    
-  }
-
 }
 data {
-  int<lower=0> n_pts;
-  int<lower=0> n_id;
-  int<lower=0> n_leaf_type;  
+  
+  // total number of rows
+  int<lower=0> n;
+  // total number of curves
+  int<lower=0> n_curve; 
+  
+  int<lower=0> n_acc;
+  int<lower=0> n_acc_id;
+  int<lower=0> n_light_intensity;  
+  int<lower=0> n_lightintensity_x_acc_id;
   int<lower=0> n_light_treatment;  
-  int<lower=0> n_comp;  
-  array[n_pts,n_id,n_leaf_type,n_light_treatment] real elapsed;
-  array[n_pts,n_id,n_leaf_type,n_light_treatment] real flow;
-  array[n_pts,n_id,n_leaf_type,n_light_treatment] real g_bw;
-  array[n_pts,n_id,n_leaf_type,n_light_treatment] real K;
-  array[n_pts,n_id,n_leaf_type,n_light_treatment] real P;
-  array[n_pts,n_id,n_leaf_type,n_light_treatment] real RH;
-  array[n_pts,n_id,n_leaf_type,n_light_treatment] real s;
-  array[n_pts,n_id,n_leaf_type,n_light_treatment] real T_air;
-  array[n_pts,n_id,n_leaf_type,n_light_treatment] real T_leaf;
-  array[n_pts,n_id,n_leaf_type,n_light_treatment] real CO2_r;
-  array[n_pts,n_id,n_leaf_type,n_light_treatment] real CO2_s;
-  array[n_pts,n_id,n_leaf_type,n_light_treatment] real H2O_r;
-  array[n_pts,n_id,n_leaf_type,n_light_treatment] real H2O_s;
+  
+  // vector of integer lengths per curve
+  array[n_curve] int<lower=0> n_pts; 
+
+  // data indexed by row
+  array[n] int<lower=1,upper=n_curve> curve;
+  vector[n] A;
+  vector[n] scaled_log_gsw;
+
+  // index of amphi and pseudohypo curves for each light_intensity x id combination
+  array[n_lightintensity_x_acc_id] int<lower=0,upper=n_curve> amphi;
+  array[n_lightintensity_x_acc_id] int<lower=0,upper=n_curve> pseudohypo;
+
+  // variables indexed by lightintensity_x_id groups
+  array[n_lightintensity_x_acc_id] int<lower=1,upper=n_acc> acc;
+  array[n_lightintensity_x_acc_id] int<lower=1,upper=n_acc_id> acc_id;
+  array[n_lightintensity_x_acc_id] int<lower=1,upper=n_light_intensity> light_intensity;
+  array[n_lightintensity_x_acc_id] int<lower=1,upper=n_light_treatment> light_treatment;
+
+  // min and max scaled_log_gsw by curve
+  array[n_curve] real min_scaled_log_gsw;
+  array[n_curve] real max_scaled_log_gsw;
+  
+}
+transformed data {
+  vector[n] log_A;
+  log_A = log(A);
 }
 parameters {
-  // variable scaling
-  vector<lower=0>[n_comp] sd_A;
-  vector<lower=0>[n_comp] mean_A;
   
-  // hyperparameters
-  vector<lower=0>[n_comp] b_autocorr_c; 
-  vector<lower=0>[n_comp] b_autocorr_w; 
-  vector<lower=0>[n_comp] sigma_c; 
-  vector<lower=0>[n_comp] sigma_w; 
+  // quadratic regression coefficients
+  vector[n_curve] b0;
+  vector[n_curve] b1;
+  vector[n_curve] b2;
 
-  vector[n_comp] mu_intercept;
-  vector[n_comp] mu_intercept_low_light;
-  vector<lower=0>[n_comp] sigma_intercept_id;
-  vector<lower=0>[n_comp] sigma_intercept_low_light_id;
-  vector<lower=0>[n_comp] sigma_intercept_error;
-
-  vector[n_comp] mu_slope;
-  vector[n_comp] mu_slope_low_light;
-  vector<lower=0>[n_comp] sigma_slope_id;
-  vector<lower=0>[n_comp] sigma_slope_low_light_id;
+  real log_sigma_resid;
+  real<lower=-1,upper=1> rho_resid;
   
-  // parameters
-  array[n_id,n_comp] real b_intercept_id;
-  array[n_id,n_comp] real b_intercept_low_light_id;
-  array[n_id,n_leaf_type,n_light_treatment,n_comp] real b_intercept_error;
-
-  array[n_id,n_comp] real b_slope_id;
-  array[n_id,n_comp] real b_slope_low_light_id;
-
-  array[n_pts,n_id,n_leaf_type,n_light_treatment,n_comp] real log_gsw;
-  array[n_pts,n_id,n_leaf_type,n_light_treatment,n_comp] real c_a;
- 
-  // Component 2 parameters
-  real mu_b2;
-  real mu_b2_low_light;
-  vector[n_id] b_b2_low_light_id;
-  vector[n_id] b_b2_id;
-  real<lower=0> sigma_b2_id;
-  real<lower=0> sigma_b2_low_light_id;
-
-  // component weights
-  array[n_id,n_leaf_type,n_light_treatment] simplex[n_comp] w;
+  // regression on aa
+  real b0_aa;
+  real b_aa_light_intensity_2000;
+  vector[n_acc] b_aa_light_intensity_2000_acc;
+  vector[n_acc_id] b_aa_light_intensity_2000_acc_id;
+  real b_aa_light_treatment_high;
+  vector[n_acc] b_aa_light_treatment_high_acc;
+  vector[n_acc_id] b_aa_light_treatment_high_acc_id;
+  vector[n_acc] b_aa_acc;
+  vector[n_acc_id] b_aa_acc_id;
+  real log_sigma_aa_light_intensity_2000_acc;
+  real log_sigma_aa_light_intensity_2000_acc_id;
+  real log_sigma_aa_light_treatment_high_acc;
+  real log_sigma_aa_light_treatment_high_acc_id;
+  real log_sigma_aa_acc;
+  real log_sigma_aa_acc_id;
+  
+  // regression on sigma_aa
+  real b0_log_sigma_aa;
+  real b_log_sigma_aa_light_intensity_2000;
+  real b_log_sigma_aa_light_treatment_high;
   
 }
 transformed parameters {
+  real sigma_resid;
+  real sigma_aa_light_intensity_2000_acc;
+  real sigma_aa_light_intensity_2000_acc_id;
+  real sigma_aa_light_treatment_high_acc;
+  real sigma_aa_light_treatment_high_acc_id;
+  real sigma_aa_acc;
+  real sigma_aa_acc_id;
   
-  array[n_pts,n_id,n_leaf_type,n_light_treatment,n_comp] real A;
-  array[n_pts,n_id,n_leaf_type,n_light_treatment,n_comp] real g_sw = exp(log_gsw);
-  vector[n_comp] sd_log_gsw;
-  vector[n_comp] mean_log_gsw;
-  array[n_pts,n_id,n_leaf_type,n_light_treatment,n_comp] real scaled_log_gsw;
-  array[n_pts,n_id,n_leaf_type,n_light_treatment,n_comp] real scaled_A;
-  
-  // calculated quantities
-  array[n_pts,n_id,n_leaf_type,n_light_treatment,n_comp] real w_i;
-  array[n_pts,n_id,n_leaf_type,n_light_treatment,n_comp] real g_tc;
-  array[n_pts,n_id,n_leaf_type,n_light_treatment,n_comp] real g_tw;
-  array[n_pts,n_id,n_leaf_type,n_light_treatment,n_comp] real E;
-
-  // real [CO2] and [H2O]
-  array[n_pts,n_id,n_leaf_type,n_light_treatment,n_comp] real c_0;
-  array[n_pts,n_id,n_leaf_type,n_light_treatment,n_comp] real w_0;
-  array[n_pts,n_id,n_leaf_type,n_light_treatment,n_comp] real w_a;
-  
-  // error covariance matrices
-  array[n_pts,n_pts,n_id,n_leaf_type,n_light_treatment,n_comp] real R_c;
-  array[n_pts,n_pts,n_id,n_leaf_type,n_light_treatment,n_comp] real R_w;
-  
-  // calculations
-  for (z in 1:n_comp) {
-    sd_log_gsw[z] = array_sd_4d(log_gsw[,,,,z]);
-    mean_log_gsw[z] = array_mean_4d(log_gsw[,,,,z]);
-    for (l in 1:n_light_treatment) {
-      for (k in 1:n_leaf_type) {
-        for (j in 1:n_id) {
-          for (i2 in 1:n_pts) {
-        
-            scaled_log_gsw[i2,j,k,l,z] = (log_gsw[i2,j,k,l,z] - mean_log_gsw[z]) / sd_log_gsw[z];
-        
-            // Component 1: linear A-log(gsw)
-            if (z == 1) {
-              scaled_A[i2,j,k,l,z] = mu_intercept[z] + 
-                (mu_intercept_low_light[z] + b_intercept_low_light_id[j,z]) * (l - 1) +
-                b_intercept_id[j,z] + b_intercept_error[j,k,l,z] + 
-                (mu_slope[z] + (mu_slope_low_light[z] + b_slope_low_light_id[j,z]) * (l - 1) + 
-                  b_slope_id[j,z]) * scaled_log_gsw[i2,j,k,l,z];
-            }
-
-            // Component 2: quadratic A-log(gsw)
-            if (z == 2) {
-              scaled_A[i2,j,k,l,z] = mu_intercept[z] + 
-                (mu_intercept_low_light[z] + b_intercept_low_light_id[j,z]) * (l - 1) +
-                b_intercept_id[j,z] + b_intercept_error[j,k,l,z] + 
-                (mu_slope[z] + (mu_slope_low_light[z] + b_slope_low_light_id[j,z]) * (l - 1) + 
-                  b_slope_id[j,z]) * scaled_log_gsw[i2,j,k,l,z] +
-                (mu_b2 + (mu_b2_low_light + b_b2_low_light_id[j]) * (l - 1) + 
-                  b_b2_id[j]) * scaled_log_gsw[i2,j,k,l,z] ^ 2;
-            }
-
-            A[i2,j,k,l,z] = scaled_A[i2,j,k,l,z] * sd_A[z] + mean_A[z];
-            
-            w_i[i2,j,k,l,z] = li6800_svp(T_leaf[i2,j,k,l], P[i2,j,k,l]);
-            w_a[i2,j,k,l,z] = RH[i2,j,k,l] * li6800_svp(T_air[i2,j,k,l], P[i2,j,k,l]);
-        
-            // amphi leaves
-            if (k == 1) {
-              g_tc[i2,j,k,l,z] = li6800_gtc_amphi(g_bw[i2,j,k,l], g_sw[i2,j,k,l,z], K[i2,j,k,l]);
-              g_tw[i2,j,k,l,z] = li6800_gtw_amphi(g_bw[i2,j,k,l], g_sw[i2,j,k,l,z], K[i2,j,k,l]);
-            } 
-            // pseudohypo leaves
-            if (k == 2) {
-              g_tc[i2,j,k,l,z] = li6800_gtc_hypo(g_bw[i2,j,k,l], g_sw[i2,j,k,l,z]);
-              g_tw[i2,j,k,l,z] = li6800_gtw_hypo(g_bw[i2,j,k,l], g_sw[i2,j,k,l,z]);
-            } 
-
-            E[i2,j,k,l,z]    = li6800_E(g_tw[i2,j,k,l,z], w_a[i2,j,k,l,z], w_i[i2,j,k,l,z]);
-            w_0[i2,j,k,l,z]  = li6800_w0(E[i2,j,k,l,z], flow[i2,j,k,l], s[i2,j,k,l], w_a[i2,j,k,l,z]);
-            c_0[i2,j,k,l,z]  = li6800_c0(A[i2,j,k,l,z], c_a[i2,j,k,l,z], flow[i2,j,k,l], s[i2,j,k,l], w_a[i2,j,k,l,z], w_0[i2,j,k,l,z]);
-
-            for (i1 in 1:n_pts) {
-              R_c[i1, i2, j, k, l, z] = exp(-b_autocorr_c[z] * abs(elapsed[i2, j, k, l] - elapsed[i1, j, k, l]));
-              R_w[i1, i2, j, k, l, z] = exp(-b_autocorr_w[z] * abs(elapsed[i2, j, k, l] - elapsed[i1, j, k, l]));
-            }
-          }
-        }
-      }
-    }
-  }
+  sigma_resid = exp(log_sigma_resid);
+  sigma_aa_light_intensity_2000_acc = 
+    exp(log_sigma_aa_light_intensity_2000_acc);
+  sigma_aa_light_intensity_2000_acc_id = 
+    exp(log_sigma_aa_light_intensity_2000_acc_id);
+  sigma_aa_light_treatment_high_acc = 
+    exp(log_sigma_aa_light_treatment_high_acc);
+  sigma_aa_light_treatment_high_acc_id = 
+    exp(log_sigma_aa_light_treatment_high_acc_id);
+  sigma_aa_acc = exp(log_sigma_aa_acc);
+  sigma_aa_acc_id = exp(log_sigma_aa_acc_id);
 }
 model {
   
-  // placeholders
-  // nothing right now
+  profile("priors") {
+  // priors ----
+    
+    // quadratic regression coefficients
+    b0 ~ normal(0, 10);
+    b1 ~ normal(0, 10);
+    b2 ~ normal(0, 10);
   
-  // priors on variable scaling
-  sd_A ~ normal(0, 10);
-  mean_A ~ normal(15, 10);
-  
-  // priors on hyperparameters
-  b_autocorr_c ~ normal(0, 1); 
-  b_autocorr_w ~ normal(0, 1); 
-  // sigma_c ~ gamma(2, 0); // https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations
-  sigma_c ~ normal(0, 1); 
-  sigma_w ~ normal(0, 1); 
-  
-  mu_intercept ~ normal(0, 10);
-  mu_intercept_low_light ~ normal(0, 10);
-  sigma_intercept_id ~ normal(0, 10);
-  sigma_intercept_low_light_id ~ normal(0, 10);
-  sigma_intercept_error ~ normal(0, 10);
-
-  mu_slope ~ normal(0, 10);
-  mu_slope_low_light ~ normal(0, 5);
-  sigma_slope_id ~ normal(0, 10);
-  sigma_slope_low_light_id ~ normal(0, 10);
-
-  // priors on parameters and weights
-  mu_b2 ~ normal(0, 10);
-  mu_b2_low_light ~ normal(0, 10);
-  sigma_b2_id ~ normal(0, 10);
-  sigma_b2_low_light_id ~ normal(0, 10);
-
-  b_b2_id ~ normal(0, sigma_b2_id);
-  b_b2_low_light_id ~ normal(0, sigma_b2_low_light_id);
-
-  vector[n_comp] alpha;
-  for (z in 1:n_comp) {
-    alpha[z] = 1;
+    log_sigma_resid ~ normal(0, 1); 
+    rho_resid ~ normal(0, 1);
+    
+    // regression on aa
+    b0_aa ~ normal(0, 1);
+    b_aa_light_intensity_2000 ~ normal(0, 1);
+    b_aa_light_intensity_2000_acc ~ normal(0, sigma_aa_light_intensity_2000_acc);
+    b_aa_light_intensity_2000_acc_id ~ normal(0, sigma_aa_light_intensity_2000_acc_id);
+    b_aa_light_treatment_high ~ normal(0, 1);
+    b_aa_light_treatment_high_acc ~ normal(0, sigma_aa_light_treatment_high_acc);
+    b_aa_light_treatment_high_acc_id ~ normal(0, sigma_aa_light_treatment_high_acc_id);
+    b_aa_acc ~ normal(0, sigma_aa_acc);
+    b_aa_acc_id ~ normal(0, sigma_aa_acc_id);
+    log_sigma_aa_acc ~ normal(0, 1);
+    log_sigma_aa_acc_id ~ normal(0, 1);
+    
+    // regression on sigma_aa
+    b0_log_sigma_aa ~ normal(0, 1);
+    b_log_sigma_aa_light_intensity_2000 ~ normal(0, 1);
+    
   }
   
-  for (z in 1:n_comp) {
-    vector[n_comp] w1;
-    b_intercept_id[z] ~ normal(0, sigma_intercept_id[z]);
-    b_intercept_low_light_id[z] ~ normal(0, sigma_intercept_low_light_id[z]);
-    b_slope_id[z] ~ normal(0, sigma_slope_id[z]);
-    b_slope_low_light_id[z] ~ normal(0, sigma_slope_low_light_id[z]);
-
-    for (l in 1:n_light_treatment) {
-      for (k in 1:n_leaf_type) {
-        b_intercept_error[,k,l,z] ~ normal(0, sigma_intercept_error[z]);
-        for (j in 1:n_id) {
-          w[j,k,l] ~ dirichlet(alpha);
-          for (i in 1:n_pts) {
-            c_a[i,j,k,l,z] ~ normal(415, 1);
-            log_gsw[i,j,k,l,z] ~ normal(-1, 1); // is this the right choice?
-          }
-        }
-      }
-    }
-  }
+      profile("Estimate AA") {
+  // Estimate AA
   
-  // likelihood
-  for (l in 1:n_light_treatment) {
-    for (k in 1:n_leaf_type) {
-      for (j in 1:n_id) {
+  for (i in 1:n_lightintensity_x_acc_id) {
+    
+    real b_2000;
+    real b_high;
+    real mu1;
+    real sigma;
+    
+    // regression on aa
+    b_2000 = b_aa_light_intensity_2000 +
+      b_aa_light_intensity_2000_acc[acc[i]] +
+      b_aa_light_intensity_2000_acc_id[acc_id[i]];
+
+    b_high = b_aa_light_treatment_high +
+      b_aa_light_treatment_high_acc[acc[i]] +
+      b_aa_light_treatment_high_acc_id[acc_id[i]];
       
-        // placeholders
-        array[n_comp] real lambda;
-        array[n_comp] row_vector[n_pts] x;
-        array[n_comp] row_vector[n_pts] y;
-        array[n_comp] matrix[n_pts, n_pts] R;
-        array[n_comp] vector[n_pts] s_vec;
+    mu1 = b0_aa + 
+      b_2000 * (light_intensity[i] == 2) +
+      b_high * (light_treatment[i] == 2) +
+      b_aa_acc[acc[i]] +
+      b_aa_acc_id[acc_id[i]];
+    
+    // regression on sigma_aa
+    sigma = exp(b0_log_sigma_aa +
+      b_log_sigma_aa_light_intensity_2000 * (light_intensity[i] == 2) +
+      b_log_sigma_aa_light_treatment_high * (light_treatment[i] == 2));
+
+    real aa_i;
+    int amphi_curve; 
+    int pseudohypo_curve;
+    
+    real a; // min of amphi curve
+    real b; // max of hypo curve
+    array[6] real theta; // parameters
+    
+    amphi_curve = amphi[i];
+    pseudohypo_curve = pseudohypo[i];
+    
+    a = min_scaled_log_gsw[amphi_curve];
+    b = max_scaled_log_gsw[pseudohypo_curve];
+    
+    theta[1] = b0[amphi_curve];      // b0_amphi;
+    theta[2] = b1[amphi_curve];      // b1_amphi;
+    theta[3] = b2[amphi_curve];      // b2_amphi;
+    theta[4] = b0[pseudohypo_curve]; // b0_hypo;
+    theta[5] = b1[pseudohypo_curve]; // b1_hypo;
+    theta[6] = b2[pseudohypo_curve]; // b2_hypo;
+    
+    aa_i = aa_int(b, theta) - aa_int(a, theta);
+
+    target += normal_lpdf(aa_i | mu1, sigma);
+
+  }
+  }
+
+  profile("likelihood") {
+  // likelihood ----
+  vector[n] resid;
+  vector[n] mu2;
+  
+    for (i in 1:n) {
       
-        // CO2_r
-        for (z in 1:n_comp) {
-          lambda[z] = w[j,k,l,z];
-          for (i2 in 1:n_pts) {
-            x[z,i2] = c_0[i2,j,k,l,z];
-            y[z,i2] = CO2_r[i2,j,k,l];
-            s_vec[z,i2] = sigma_c[z];
-            for (i1 in 1:n_pts) {
-              R[z, i1, i2] = R_c[i1, i2, j, k, l, z];
-            }
-          }
-        }
-        
-        target += log_mix(
-          lambda[1],
-          multi_normal_lpdf(y[1] | x[1], quad_form_diag(R[1], s_vec[1])),
-          multi_normal_lpdf(y[2] | x[2], quad_form_diag(R[2], s_vec[2]))
-        );
-
-        // CO2_s
-        for (z in 1:n_comp) {
-          lambda[z] = w[j,k,l,z];
-          for (i2 in 1:n_pts) {
-            x[z,i2] = c_a[i2,j,k,l,z];
-            y[z,i2] = CO2_s[i2,j,k,l];
-            s_vec[z,i2] = sigma_c[z];
-            for (i1 in 1:n_pts) {
-              R[z, i1, i2] = R_c[i1, i2, j, k, l, z];
-            }
-          }
-        }
-        
-        target += log_mix(
-          lambda[1],
-          multi_normal_lpdf(y[1] | x[1], quad_form_diag(R[1], s_vec[1])),
-          multi_normal_lpdf(y[2] | x[2], quad_form_diag(R[2], s_vec[2]))
-        );
-
-        // H2O_r
-        for (z in 1:n_comp) {
-          lambda[z] = w[j,k,l,z];
-          for (i2 in 1:n_pts) {
-            x[z,i2] = w_0[i2,j,k,l,z];
-            y[z,i2] = H2O_r[i2,j,k,l];
-            s_vec[z,i2] = sigma_w[z];
-            for (i1 in 1:n_pts) {
-              R[z, i1, i2] = R_w[i1, i2, j, k, l, z];
-            }
-          }
-        }
-
-        target += log_mix(
-          lambda[1],
-          multi_normal_lpdf(y[1] | x[1], quad_form_diag(R[1], s_vec[1])),
-          multi_normal_lpdf(y[2] | x[2], quad_form_diag(R[2], s_vec[2]))
-        );
-
-        // H2O_s
-        for (z in 1:n_comp) {
-          lambda[z] = w[j,k,l,z];
-          for (i2 in 1:n_pts) {
-            x[z,i2] = w_a[i2,j,k,l,z];
-            y[z,i2] = H2O_s[i2,j,k,l];
-            s_vec[z,i2] = sigma_w[z];
-            for (i1 in 1:n_pts) {
-              R[z, i1, i2] = R_w[i1, i2, j, k, l, z];
-            }
-          }
-        }
-          
-        target += log_mix(
-          lambda[1],
-          multi_normal_lpdf(y[1] | x[1], quad_form_diag(R[1], s_vec[1])),
-          multi_normal_lpdf(y[2] | x[2], quad_form_diag(R[2], s_vec[2]))
-        );
-        
-      }
+      mu2[i] = b0[curve[i]] + 
+        b1[curve[i]] * scaled_log_gsw[i] +
+        b2[curve[i]] * scaled_log_gsw[i] ^ 2;
+  
     }
+    
+    resid[1] = log_A[1] - mu2[1];
+    for (i in 2:n) {
+      resid[i] = log_A[i] - mu2[i];
+      mu2[i] += rho_resid * resid[i - 1] * (curve[i] == curve[i - 1]);
+    }
+    
+  target += normal_lpdf(log_A | mu2, sigma_resid);
+  
   }
 }
+generated quantities {
+  
+  // calculated log-likelihood to estimate LOOIC for model comparison
+  vector[n_lightintensity_x_acc_id] log_lik;
+  
+    for (i in 1:n_lightintensity_x_acc_id) {
+    
+    real b_2000;
+    real b_high;
+    real mu1;
+    real sigma;
+    
+    // regression on aa
+    b_2000 = b_aa_light_intensity_2000 +
+      b_aa_light_intensity_2000_acc[acc[i]] +
+      b_aa_light_intensity_2000_acc_id[acc_id[i]];
 
+    b_high = b_aa_light_treatment_high +
+      b_aa_light_treatment_high_acc[acc[i]] +
+      b_aa_light_treatment_high_acc_id[acc_id[i]];
+      
+    mu1 = b0_aa + 
+      b_2000 * (light_intensity[i] == 2) +
+      b_high * (light_treatment[i] == 2) +
+      b_aa_acc[acc[i]] +
+      b_aa_acc_id[acc_id[i]];
+    
+    // regression on sigma_aa
+    sigma = exp(b0_log_sigma_aa +
+      b_log_sigma_aa_light_intensity_2000 * (light_intensity[i] == 2) +
+      b_log_sigma_aa_light_treatment_high * (light_treatment[i] == 2));
+
+    real aa_i;
+    int amphi_curve; 
+    int pseudohypo_curve;
+    
+    real a; // min of amphi curve
+    real b; // max of hypo curve
+    array[6] real theta; // parameters
+    
+    amphi_curve = amphi[i];
+    pseudohypo_curve = pseudohypo[i];
+    
+    a = min_scaled_log_gsw[amphi_curve];
+    b = max_scaled_log_gsw[pseudohypo_curve];
+    
+    theta[1] = b0[amphi_curve];      // b0_amphi;
+    theta[2] = b1[amphi_curve];      // b1_amphi;
+    theta[3] = b2[amphi_curve];      // b2_amphi;
+    theta[4] = b0[pseudohypo_curve]; // b0_hypo;
+    theta[5] = b1[pseudohypo_curve]; // b1_hypo;
+    theta[6] = b2[pseudohypo_curve]; // b2_hypo;
+    
+    aa_i = aa_int(b, theta) - aa_int(a, theta);
+
+    log_lik[i] = normal_lpdf(aa_i | mu1, sigma);
+
+  }
+
+}

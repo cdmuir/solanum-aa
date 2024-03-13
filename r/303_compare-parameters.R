@@ -1,6 +1,39 @@
 # Compare measured to estimated parameter values
 source("r/header.R")
 
+fit_aa1 = read_rds("objects/fit_aa1.rds")
+
+library("loo")
+options(mc.cores = 10)
+
+log_lik_aa1 = fit_aa1$draws("log_lik")
+reff_aa1 = relative_eff(exp(log_lik_aa1)) 
+loo_aa1 = loo(log_lik_aa1, r_eff = reff_aa1)
+print(loo_aa1)
+
+mcmc_trace(fit_aa1$draws("b_aa_light_treatment_high"))
+s = fit_aa1$summary()
+
+fit_aa1$summary(c( "rho_resid", "b0_aa",
+"b_aa_light_intensity_2000",
+"b_aa_light_treatment_high",
+"log_sigma_aa_light_intensity_2000_acc",
+"log_sigma_aa_light_intensity_2000_acc_id",
+"log_sigma_aa_light_treatment_high_acc",
+"log_sigma_aa_light_treatment_high_acc_id",
+"log_sigma_aa_acc",
+"log_sigma_aa_acc_id",
+"b0_log_sigma_aa",
+"b_log_sigma_aa_light_intensity_2000",
+"b_log_sigma_aa_light_treatment_high"
+)) |>
+  select(variable, median, q5, q95)
+
+fit_aa1$summary(c( "b_aa_light_treatment_high_acc"
+)) |>
+  select(variable, median, q5, q95) |>
+  print(n = 33)
+
 # NEED TO UPDATE
 pars = c("A")
 
