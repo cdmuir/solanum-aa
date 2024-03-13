@@ -1,6 +1,6 @@
 build-r.sub
 build-stan.sub
-fit_*
+fit_[0-9]*
 *.stan
 packages.tar.gz
 stan_*
