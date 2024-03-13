@@ -16,21 +16,20 @@ init = rh_curves |>
   }) |>
   as.list()
 
-# Started 6:02
-# 14% at 70 minutes, ETA 8h 20m
-# 28% at 133 minutes, ETA 7h 55m
-# 36% at 173 minutes, ETA 8h 0m
-# 41% at 200 minutes, ETA 8h 8m
-# 56% at 274 minutes, ETA 8h 9m
+# Started 8:59
+# 10% at 35 minutes, ETA 5h 50m
+# 35% at 123 minutes, ETA 5h 51m
+# 50% at 175 minutes, ETA 5h 50m
+# 72% at 284 minutes, ETA 6h 34m
 fit_aa1 = m$sample(
   data = stan_rh_curves,
   chains = 2L,
   parallel_chains = 2L,
   init = list(init, init),
   seed = 898932814,
-  iter_warmup = 1e3,
-  iter_sampling = 1e3,
-  refresh = 2e1
+  iter_warmup = 2e3,
+  iter_sampling = 2e3,
+  refresh = 4e1
 )
 
 fit_aa1$save_object("objects/fit_aa1.rds")

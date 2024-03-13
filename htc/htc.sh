@@ -86,8 +86,7 @@ ssh cdmuir@ap2002.chtc.wisc.edu
 condor_submit solanum-aa/htc/fit_aa1.sub
 
 # check status
-condor_q 226 # I think solanum-aa.stan was not uploaded when this was submitted
-condor_q 229
+condor_q 2087
 
 # 4. Retrieve results
 scp cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/fit_aa1.rds objects/
