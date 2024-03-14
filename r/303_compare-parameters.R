@@ -11,10 +11,10 @@ reff_aa1 = relative_eff(exp(log_lik_aa1))
 loo_aa1 = loo(log_lik_aa1, r_eff = reff_aa1)
 print(loo_aa1)
 
-mcmc_trace(fit_aa1$draws("b_aa_light_treatment_high"))
+mcmc_trace(fit_aa1$draws("lp__"))
 s = fit_aa1$summary()
 
-fit_aa1$summary(c( "rho_resid", "b0_aa",
+fit_aa1$summary(c( "log_sigma_resid", "rho_resid", "b0_aa",
 "b_aa_light_intensity_2000",
 "b_aa_light_treatment_high",
 "log_sigma_aa_light_intensity_2000_acc",
@@ -27,7 +27,7 @@ fit_aa1$summary(c( "rho_resid", "b0_aa",
 "b_log_sigma_aa_light_intensity_2000",
 "b_log_sigma_aa_light_treatment_high"
 )) |>
-  select(variable, median, q5, q95)
+  select(variable, median, q5, q95, rhat)
 
 fit_aa1$summary(c( "b_aa_light_treatment_high_acc"
 )) |>

@@ -1,6 +1,4 @@
 # Prepare actual data for Stan
-# Right now, just trying a single accession (LA2172)
-# Some changes to data should be made earlier on...
 source("r/header.R")
 
 rh_curves = read_rds("data/prepared_rh_curves.rds") |>
@@ -15,6 +13,13 @@ rh_curves = read_rds("data/prepared_rh_curves.rds") |>
     lightintensity_x_acc_id,
     light_treatment
   ) 
+
+accession_climate = read_rds("data/accession-climate.rds") |>
+  dplyr::select(acc1 = accession, ppfd_mol_m2) |>
+  dplyr::filter(acc1 %in% unique(rh_curves$acc)) |>
+  mutate(scaled_ppfd_mol_m2 = (ppfd_mol_m2 - mean(ppfd_mol_m2)) / sd(ppfd_mol_m2))
+
+assert_true(setequal(unique(rh_curves$acc), accession_climate$acc1))
 
 stan_rh_curves = rh_curves |>
   compose_data()
@@ -82,24 +87,17 @@ stan_rh_curves = c(
     arrange(curve) |>
     dplyr::select(min_scaled_log_gsw, max_scaled_log_gsw) |>
     as.list()
-  #,
   
-  # why do I have this?
-  # rh_curves |>
-  #   mutate(across(c("curve", "leaf_type"), \(.x) as.numeric(as.factor(.x)))) |>
-  #   summarize(
-  #     leaf_type = first(leaf_type),
-  #     .by = c(curve)
-  #   ) |>
-  #   arrange(curve) |>
-  #   dplyr::select(leaf_type) |>
-  #   as.list()
-  # 
 )
 
 stan_rh_curves$n_pts = rh_curves |>
   summarise(n = n(), .by = "curve") |>
   pull(n)
+
+# add SPLASH data
+stan_accession_climate = compose_data(accession_climate)
+stan_accession_climate$n = NULL
+stan_rh_curves = c(stan_rh_curves, stan_accession_climate)
 
 assert_false(any(duplicated(names(stan_rh_curves))))
 

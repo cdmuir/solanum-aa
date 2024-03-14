@@ -16,11 +16,6 @@ init = rh_curves |>
   }) |>
   as.list()
 
-# Started 8:59
-# 10% at 35 minutes, ETA 5h 50m
-# 35% at 123 minutes, ETA 5h 51m
-# 50% at 175 minutes, ETA 5h 50m
-# 72% at 284 minutes, ETA 6h 34m
 fit_aa1 = m$sample(
   data = stan_rh_curves,
   chains = 2L,

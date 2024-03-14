@@ -13,6 +13,8 @@ read_rds("data/thinned_rh_curves.rds") |>
                        "-",
                        names = c("acc", "id"),
                        cols_remove = FALSE) |>
+  # filter out Hawaiian and cultivated Solanum
+  dplyr::filter(str_detect(acc, "^LA[0-9]{4}"), acc != "LA3475") |>
   # make unique ID for each leaf_type within acc_id
   unite("lightintensity_x_acc_id", acc_id, light_intensity, remove = FALSE) |>
   # make unique ID for each curve

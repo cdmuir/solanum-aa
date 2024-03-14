@@ -1,3 +1,4 @@
+// This version includes random effects of acc and acc_id on light treatment and intensity.
 // This model fits a quadratic function of log_gsw to log_A for every curve, then
 // integrates overlapping region to estimate AA. Then we estimate parameters 
 // describing effects of variables on AA. 
@@ -67,9 +68,17 @@ parameters {
   // regression on aa
   real b0_aa;
   real b_aa_light_intensity_2000;
+  vector[n_acc] b_aa_light_intensity_2000_acc;
+  vector[n_acc_id] b_aa_light_intensity_2000_acc_id;
   real b_aa_light_treatment_high;
+  vector[n_acc] b_aa_light_treatment_high_acc;
+  vector[n_acc_id] b_aa_light_treatment_high_acc_id;
   vector[n_acc] b_aa_acc;
   vector[n_acc_id] b_aa_acc_id;
+  real log_sigma_aa_light_intensity_2000_acc;
+  real log_sigma_aa_light_intensity_2000_acc_id;
+  real log_sigma_aa_light_treatment_high_acc;
+  real log_sigma_aa_light_treatment_high_acc_id;
   real log_sigma_aa_acc;
   real log_sigma_aa_acc_id;
   
@@ -86,11 +95,23 @@ parameters {
 }
 transformed parameters {
   real sigma_resid;
+  real sigma_aa_light_intensity_2000_acc;
+  real sigma_aa_light_intensity_2000_acc_id;
+  real sigma_aa_light_treatment_high_acc;
+  real sigma_aa_light_treatment_high_acc_id;
   real sigma_aa_acc;
   real sigma_aa_acc_id;
   real sigma_ppfd;
   
   sigma_resid = exp(log_sigma_resid);
+  sigma_aa_light_intensity_2000_acc = 
+    exp(log_sigma_aa_light_intensity_2000_acc);
+  sigma_aa_light_intensity_2000_acc_id = 
+    exp(log_sigma_aa_light_intensity_2000_acc_id);
+  sigma_aa_light_treatment_high_acc = 
+    exp(log_sigma_aa_light_treatment_high_acc);
+  sigma_aa_light_treatment_high_acc_id = 
+    exp(log_sigma_aa_light_treatment_high_acc_id);
   sigma_aa_acc = exp(log_sigma_aa_acc);
   sigma_aa_acc_id = exp(log_sigma_aa_acc_id);
   sigma_ppfd = exp(log_sigma_ppfd);
@@ -112,9 +133,17 @@ model {
     // regression on aa
     b0_aa ~ normal(0, 1);
     b_aa_light_intensity_2000 ~ normal(0, 1);
+    b_aa_light_intensity_2000_acc ~ normal(0, sigma_aa_light_intensity_2000_acc);
+    b_aa_light_intensity_2000_acc_id ~ normal(0, sigma_aa_light_intensity_2000_acc_id);
     b_aa_light_treatment_high ~ normal(0, 1);
+    b_aa_light_treatment_high_acc ~ normal(0, sigma_aa_light_treatment_high_acc);
+    b_aa_light_treatment_high_acc_id ~ normal(0, sigma_aa_light_treatment_high_acc_id);
     b_aa_acc ~ normal(0, sigma_aa_acc);
     b_aa_acc_id ~ normal(0, sigma_aa_acc_id);
+    log_sigma_aa_light_intensity_2000_acc ~ normal(-3, 5);
+    log_sigma_aa_light_intensity_2000_acc_id ~ normal(-3, 5);
+    log_sigma_aa_light_treatment_high_acc ~ normal(-3, 5);
+    log_sigma_aa_light_treatment_high_acc_id ~ normal(-3, 5);
     log_sigma_aa_acc ~ normal(-3, 5);
     log_sigma_aa_acc_id ~ normal(-3, 5);
     
@@ -140,9 +169,13 @@ model {
     real sigma;
     
     // regression on aa
-    b_2000 = b_aa_light_intensity_2000;
+    b_2000 = b_aa_light_intensity_2000 +
+      b_aa_light_intensity_2000_acc[acc[i]] +
+      b_aa_light_intensity_2000_acc_id[acc_id[i]];
 
-    b_high = b_aa_light_treatment_high;
+    b_high = b_aa_light_treatment_high +
+      b_aa_light_treatment_high_acc[acc[i]] +
+      b_aa_light_treatment_high_acc_id[acc_id[i]];
       
     mu1 = b0_aa + 
       b_2000 * (light_intensity[i] == 2) +
@@ -223,9 +256,13 @@ generated quantities {
     real sigma;
     
     // regression on aa
-    b_2000 = b_aa_light_intensity_2000;
+    b_2000 = b_aa_light_intensity_2000 +
+      b_aa_light_intensity_2000_acc[acc[i]] +
+      b_aa_light_intensity_2000_acc_id[acc_id[i]];
 
-    b_high = b_aa_light_treatment_high;
+    b_high = b_aa_light_treatment_high +
+      b_aa_light_treatment_high_acc[acc[i]] +
+      b_aa_light_treatment_high_acc_id[acc_id[i]];
       
     mu1 = b0_aa + 
       b_2000 * (light_intensity[i] == 2) +
