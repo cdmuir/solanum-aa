@@ -65,6 +65,7 @@ p_blue_low = "13.0"
 percent_lma_switch = "5.0" # percent measure LMA on alternate leaflet
 percent_lma_missing = "3.0" # percent leaves missing LMA
 
+loo_version = "2.7.0"
 ```
 
 ## Notes
@@ -231,12 +232,14 @@ We fit Bayesian models using the *R* package **brms** version `r fit_aa$version$
 
 Base model (need to add indices):
 
-$$A = \beta_0 + \beta_1 \text{log}(g_\text{sw}) + \beta_2 \text{log}(g_\text{sw}) ^ 2 + \epsilon$$
+$$\text{log(A)} = \beta_0 + \beta_1 \text{log}(g_\text{sw}) + \beta_2 \text{log}(g_\text{sw}) ^ 2 + \epsilon$$
 Estimate \aax{} by integrating over range of \gsw{} overlap (need to add indices for accession, replicate, light intensity):
 
 $$\mathrm{AA} = \int_{\text{min(log(}g_\text{sw}))}^{\text{max(log(}g_\text{sw}))} \text{log}\bigg(\frac{A_\text{amphi}(x; \theta_\text{amphi})}{A_\text{hypo}(x; \theta_\text{hypo})}\bigg) dx$$
 
-where $\text{min(log(}g_\text{sw}))$ and $\text{max(log(}g_\text{sw}))$ are the minumum and maximum values of $\text{log(}g_\text{sw})$ where amphi and pseudohypo curves overlap. \Aamphi{} is calculated from parameter estimates $\theta_\text{amphi} \in \{\beta_{0,\text{amphi}}, \beta_{1,\text{amphi}}, \beta_{2,\text{amphi}}\}$; \Ahypo{} is calculated from parameter estimates $\theta_\text{hypo} \in \{\beta_{0,\text{hypo}}, \beta_{1,\text{hypo}}, \beta_{2,\text{hypo}}\}$
+where $\text{min(log(}g_\text{sw}))$ and $\text{max(log(}g_\text{sw}))$ are the minimum and maximum values of $\text{log(}g_\text{sw})$ where amphi and pseudohypo curves overlap. \Aamphi{} is calculated from parameter estimates $\theta_\text{amphi} \in \{\beta_{0,\text{amphi}}, \beta_{1,\text{amphi}}, \beta_{2,\text{amphi}}\}$; \Ahypo{} is calculated from parameter estimates $\theta_\text{hypo} \in \{\beta_{0,\text{hypo}}, \beta_{1,\text{hypo}}, \beta_{2,\text{hypo}}\}$ for each curve.
+
+#### Predictions
 
 * Assimilatory: 
   + average AA2000 - AA150
@@ -268,6 +271,9 @@ Reinforcing interactions (we only consider these because these are ones which co
   + AAsun - AAshade varies among accession, correlated with PAR
   + AA2000 - AA150 varies among accession, correlated with PAR
   + cor(AAsun2000, PAR) > cor(AAsun150, PAR) and > cor(AAshade2000, PAR) and > cor(AAshade150, PAR) in nonadditive way
+  
+We tested competing predictions through a combination of model selection and parameter estimation from the posterior of selected models. We started with a base model that included fixed effects of light intensity and light treatment on \aax, a random effect of accession on \aax, and a linear regression of PAR on accession-level \aax. We next compared the fit of the base model to a more complex with an interaction between light intensity and light treatment using LOOIC with the \textit{R} package **loo** version `r loo_version` [@vehtari_practical_2017]. These comparisons allowed us to test the main predictions of each hypothesis and for a reinforcing interactions between assimilatory and plastic hypotheses (tab:predictions). However, these models cannot test predictions when there is an interaction with the constitutive hypothesis, because this hypothesis posits accession-levels variation in responses to light intensity and/or light treatment. Therefore, we tested for significant variation among accessions in light intensity and light treatment by comparing LOOIC values of models with and without random interactions between these factors and accession.
+
 ## Acknowledgements
 
 Justin Alter, Max Gatlin, Joana Kim, Jenna Matsuyama, Brandon Najarian, Kai Yasuda

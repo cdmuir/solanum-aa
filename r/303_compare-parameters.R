@@ -17,15 +17,12 @@ s = fit_aa1$summary()
 fit_aa1$summary(c( "log_sigma_resid", "rho_resid", "b0_aa",
 "b_aa_light_intensity_2000",
 "b_aa_light_treatment_high",
-"log_sigma_aa_light_intensity_2000_acc",
-"log_sigma_aa_light_intensity_2000_acc_id",
-"log_sigma_aa_light_treatment_high_acc",
-"log_sigma_aa_light_treatment_high_acc_id",
 "log_sigma_aa_acc",
 "log_sigma_aa_acc_id",
 "b0_log_sigma_aa",
 "b_log_sigma_aa_light_intensity_2000",
-"b_log_sigma_aa_light_treatment_high"
+"b_log_sigma_aa_light_treatment_high",
+"b1_ppfd"
 )) |>
   select(variable, median, q5, q95, rhat)
 
