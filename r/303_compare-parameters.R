@@ -2,14 +2,18 @@
 source("r/header.R")
 
 fit_aa1 = read_rds("objects/fit_aa1.rds")
+fit_aa2 = read_rds("objects/fit_aa2.rds")
 
 library("loo")
 options(mc.cores = 10)
 
 log_lik_aa1 = fit_aa1$draws("log_lik")
+log_lik_aa2 = fit_aa2$draws("log_lik")
 reff_aa1 = relative_eff(exp(log_lik_aa1)) 
+reff_aa2 = relative_eff(exp(log_lik_aa2)) 
 loo_aa1 = loo(log_lik_aa1, r_eff = reff_aa1)
-print(loo_aa1)
+loo_aa2 = loo(log_lik_aa2, r_eff = reff_aa2)
+loo_compare(loo_aa1, loo_aa2)
 
 mcmc_trace(fit_aa1$draws("lp__"))
 s = fit_aa1$summary()

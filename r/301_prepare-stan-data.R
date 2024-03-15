@@ -1,8 +1,7 @@
 # Prepare actual data for Stan
 source("r/header.R")
-tr = read.tree("data/Pease_etal_TomatoPhylo_RAxMLConcatTree_alltaxa_FigS2A.nwk") |>
-  drop.tip(c("LA3475", "SL2.50"))
-plot(tr)
+
+phy = read_rds("data/phylogeny.rds")
 
 rh_curves = read_rds("data/prepared_rh_curves.rds") |>
   dplyr::select(
@@ -17,19 +16,26 @@ rh_curves = read_rds("data/prepared_rh_curves.rds") |>
     light_treatment
   ) 
 
+rh_curves |>
+  summarise(n_curves = n_distinct(curve),
+            .by = "acc") |>
+  arrange(n_curves) 
+
 accession_climate = read_rds("data/accession-climate.rds") |>
   dplyr::select(acc1 = accession, ppfd_mol_m2) |>
   dplyr::filter(acc1 %in% unique(rh_curves$acc)) |>
   mutate(scaled_ppfd_mol_m2 = (ppfd_mol_m2 - mean(ppfd_mol_m2)) / sd(ppfd_mol_m2))
 
 assert_true(setequal(unique(rh_curves$acc), accession_climate$acc1))
+assert_true(setequal(phy$tip.label, accession_climate$acc1))
 
-# WORKING HERE
-# LA1044 is galapagense - replace 3909 in tree
-# LA0750 is pennellii - put near la0716? do some more research
-accession_climate$acc1 %in% tr$tip.label
-tr$tip.label %in% accession_climate$acc1
-accession_climate$acc1[which(!(accession_climate$acc1 %in% tr$tip.label))]
+# make divergence matrix and index in same order as acc
+Dmat = cophenetic(phy)
+i = as.numeric(as.factor(colnames(Dmat)))
+Dmat1 = Dmat[i,i] / max(Dmat)
+
+
+
 stan_rh_curves = rh_curves |>
   compose_data()
 
@@ -107,6 +113,9 @@ stan_rh_curves$n_pts = rh_curves |>
 stan_accession_climate = compose_data(accession_climate)
 stan_accession_climate$n = NULL
 stan_rh_curves = c(stan_rh_curves, stan_accession_climate)
+
+# add phylogeny
+stan_rh_curves$Dmat = Dmat1
 
 assert_false(any(duplicated(names(stan_rh_curves))))
 

@@ -88,7 +88,7 @@ condor_submit solanum-aa/htc/fit_aa1.sub
 condor_submit solanum-aa/htc/fit_aa2.sub
 
 # check status
-condor_q 13584
+condor_q 19402
 
 # 4. Retrieve results
 scp cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/fit_aa1.rds objects/
