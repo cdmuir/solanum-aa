@@ -10,6 +10,22 @@ functions {
       x * (theta[1] - theta[4]);
     
   }
+  
+  // OU process from McElreath Rethinking v2
+  matrix cov_GPL1(matrix x, real sq_alpha, real sq_rho, real delta) {
+    int N = dims(x)[1];
+    matrix[N, N] K;
+    for (i in 1:(N-1)) {
+      K[i, i] = sq_alpha + delta;
+      for (j in (i + 1):N) {
+        K[i, j] = sq_alpha * exp(-sq_rho * x[i,j] );
+        K[j, i] = K[i, j];
+      }
+    }
+      K[N, N] = sq_alpha + delta;
+      return K;
+  }
+
 }
 data {
   
@@ -47,8 +63,11 @@ data {
   array[n_curve] real max_scaled_log_gsw;
   
   // SPLASH data
-  array[n_acc] real scaled_ppfd_mol_m2;
+  vector[n_acc] scaled_ppfd_mol_m2;
 
+  // distance matrix for Gaussian Process
+  matrix[n_acc,n_acc] Dmat;
+  
 }
 transformed data {
   vector[n] log_A;
@@ -69,6 +88,8 @@ parameters {
   real b_aa_light_intensity_2000;
   real b_aa_light_treatment_high;
   vector[n_acc] b_aa_acc;
+  real<lower=0> rhosq_aa_acc;
+  real<lower=0> etasq_aa_acc;
   vector[n_acc_id] b_aa_acc_id;
   real log_sigma_aa_acc;
   real log_sigma_aa_acc_id;
@@ -81,20 +102,17 @@ parameters {
   // regression on scaled_ppfd_mol_m2
   real b0_ppfd;
   real b1_ppfd;
-  real log_sigma_ppfd;
+  real<lower=0> rhosq_ppfd;
+  real<lower=0> etasq_ppfd;
   
 }
 transformed parameters {
   real sigma_resid;
-  real sigma_aa_acc;
   real sigma_aa_acc_id;
-  real sigma_ppfd;
-  
+
   sigma_resid = exp(log_sigma_resid);
-  sigma_aa_acc = exp(log_sigma_aa_acc);
   sigma_aa_acc_id = exp(log_sigma_aa_acc_id);
-  sigma_ppfd = exp(log_sigma_ppfd);
-  
+
 }
 model {
   
@@ -113,9 +131,12 @@ model {
     b0_aa ~ normal(0, 1);
     b_aa_light_intensity_2000 ~ normal(0, 1);
     b_aa_light_treatment_high ~ normal(0, 1);
-    b_aa_acc ~ normal(0, sigma_aa_acc);
     b_aa_acc_id ~ normal(0, sigma_aa_acc_id);
-    log_sigma_aa_acc ~ normal(-3, 5);
+    rhosq_aa_acc ~ normal(3, 0.25);
+    etasq_aa_acc ~ normal(1, 0.25);
+    matrix[n_acc,n_acc] Sigma_aa_acc;
+    Sigma_aa_acc = cov_GPL1(Dmat, etasq_aa_acc, rhosq_aa_acc, 0);
+    b_aa_acc ~ multi_normal(rep_vector(0.0, n_acc), Sigma_aa_acc);
     log_sigma_aa_acc_id ~ normal(-3, 5);
     
     // regression on sigma_aa
@@ -125,7 +146,8 @@ model {
     // regression on scaled_ppfd_mol_m2
     b0_ppfd ~ normal(0, 1);
     b1_ppfd ~ normal(0, 1);
-    log_sigma_ppfd ~ normal(-3, 5);
+    rhosq_ppfd ~ normal(3, 0.25);
+    etasq_ppfd ~ normal(1, 0.25);
 
   }
   
@@ -207,7 +229,9 @@ model {
   }
   
   // regression on scaled_ppfd_mol_m2
-  scaled_ppfd_mol_m2 ~ normal(b0_ppfd + b1_ppfd * b_aa_acc, sigma_ppfd);
+  matrix[n_acc,n_acc] Sigma_ppfd;
+  Sigma_ppfd = cov_GPL1(Dmat, etasq_ppfd, rhosq_ppfd, 0);
+  scaled_ppfd_mol_m2 ~ multi_normal(b0_ppfd + b1_ppfd * b_aa_acc, Sigma_ppfd);
 
 }
 generated quantities {

@@ -1,5 +1,8 @@
 # Prepare actual data for Stan
 source("r/header.R")
+tr = read.tree("data/Pease_etal_TomatoPhylo_RAxMLConcatTree_alltaxa_FigS2A.nwk") |>
+  drop.tip(c("LA3475", "SL2.50"))
+plot(tr)
 
 rh_curves = read_rds("data/prepared_rh_curves.rds") |>
   dplyr::select(
@@ -21,6 +24,12 @@ accession_climate = read_rds("data/accession-climate.rds") |>
 
 assert_true(setequal(unique(rh_curves$acc), accession_climate$acc1))
 
+# WORKING HERE
+# LA1044 is galapagense - replace 3909 in tree
+# LA0750 is pennellii - put near la0716? do some more research
+accession_climate$acc1 %in% tr$tip.label
+tr$tip.label %in% accession_climate$acc1
+accession_climate$acc1[which(!(accession_climate$acc1 %in% tr$tip.label))]
 stan_rh_curves = rh_curves |>
   compose_data()
 
