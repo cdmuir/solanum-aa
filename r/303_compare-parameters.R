@@ -15,25 +15,35 @@ loo_aa1 = loo(log_lik_aa1, r_eff = reff_aa1)
 loo_aa2 = loo(log_lik_aa2, r_eff = reff_aa2)
 loo_compare(loo_aa1, loo_aa2)
 
-mcmc_trace(fit_aa1$draws("lp__"))
+mcmc_trace(fit_aa2$draws("lp__"))
 s = fit_aa1$summary()
 
 fit_aa1$summary(c( "log_sigma_resid", "rho_resid", "b0_aa",
 "b_aa_light_intensity_2000",
 "b_aa_light_treatment_high",
-"log_sigma_aa_acc",
+"rhosq_aa_acc", "etasq_aa_acc",
 "log_sigma_aa_acc_id",
 "b0_log_sigma_aa",
 "b_log_sigma_aa_light_intensity_2000",
 "b_log_sigma_aa_light_treatment_high",
-"b1_ppfd"
+"b1_ppfd", 
+"rhosq_ppfd", "etasq_ppfd"
 )) |>
   select(variable, median, q5, q95, rhat)
 
-fit_aa1$summary(c( "b_aa_light_treatment_high_acc"
+fit_aa2$summary(c( "log_sigma_resid", "rho_resid", "b0_aa",
+                   "b_aa_light_intensity_2000",
+                   "b_aa_light_treatment_high",
+                   "b_aa_2000_high",
+                   # "rhosq_aa_acc", "etasq_aa_acc",
+                   "log_sigma_aa_acc_id",
+                   "b0_log_sigma_aa",
+                   "b_log_sigma_aa_light_intensity_2000",
+                   "b_log_sigma_aa_light_treatment_high",
+                   "b1_ppfd"
+                   # "rhosq_ppfd", "etasq_ppfd"
 )) |>
-  select(variable, median, q5, q95) |>
-  print(n = 33)
+  select(variable, median, q5, q95, rhat)
 
 # NEED TO UPDATE
 pars = c("A")

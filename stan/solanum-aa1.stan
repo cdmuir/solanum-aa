@@ -61,6 +61,7 @@ data {
   // min and max scaled_log_gsw by curve
   array[n_curve] real min_scaled_log_gsw;
   array[n_curve] real max_scaled_log_gsw;
+  array[n_curve] real S;
   
   // SPLASH data
   vector[n_acc] scaled_ppfd_mol_m2;
@@ -80,7 +81,8 @@ parameters {
   vector[n_curve] b1;
   vector[n_curve] b2;
 
-  real log_sigma_resid;
+  real b0_log_sigma_resid;
+  real b_log_sigma_resid_S;
   real<lower=-1,upper=1> rho_resid;
   
   // regression on aa
@@ -91,7 +93,6 @@ parameters {
   real<lower=0> rhosq_aa_acc;
   real<lower=0> etasq_aa_acc;
   vector[n_acc_id] b_aa_acc_id;
-  real log_sigma_aa_acc;
   real log_sigma_aa_acc_id;
   
   // regression on sigma_aa
@@ -107,10 +108,8 @@ parameters {
   
 }
 transformed parameters {
-  real sigma_resid;
   real sigma_aa_acc_id;
 
-  sigma_resid = exp(log_sigma_resid);
   sigma_aa_acc_id = exp(log_sigma_aa_acc_id);
 
 }
@@ -124,7 +123,8 @@ model {
     b1 ~ normal(0, 10);
     b2 ~ normal(0, 10);
   
-    log_sigma_resid ~ normal(0, 1); 
+    b0_log_sigma_resid ~ normal(-3, 5); 
+    b_log_sigma_resid_S ~ normal(0, 1);
     rho_resid ~ normal(0, 1);
     
     // regression on aa
@@ -140,7 +140,7 @@ model {
     log_sigma_aa_acc_id ~ normal(-3, 5);
     
     // regression on sigma_aa
-    b0_log_sigma_aa ~ normal(0, 1);
+    b0_log_sigma_aa ~ normal(-3, 5);
     b_log_sigma_aa_light_intensity_2000 ~ normal(0, 1);
     
     // regression on scaled_ppfd_mol_m2
@@ -209,12 +209,16 @@ model {
   // likelihood ----
   vector[n] resid;
   vector[n] mu2;
+  vector[n] sigma2;
   
     for (i in 1:n) {
       
       mu2[i] = b0[curve[i]] + 
         b1[curve[i]] * scaled_log_gsw[i] +
         b2[curve[i]] * scaled_log_gsw[i] ^ 2;
+            b0_log_sigma_resid ~ normal(-3, 5); 
+
+      sigma2[i] = exp(b0_log_sigma_resid + (6 - S[curve[i]]) * b_log_sigma_resid_S);
   
     }
     
@@ -224,7 +228,7 @@ model {
       mu2[i] += rho_resid * resid[i - 1] * (curve[i] == curve[i - 1]);
     }
     
-  target += normal_lpdf(log_A | mu2, sigma_resid);
+  target += normal_lpdf(log_A | mu2, sigma2);
   
   }
   

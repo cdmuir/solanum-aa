@@ -84,8 +84,8 @@ scp data/prepared_rh_curves.rds data/stan_rh_curves.rds htc/fit_aa2.R htc/fit_aa
 ssh cdmuir@ap2002.chtc.wisc.edu
 
 # 3. Submit jobs
-condor_submit solanum-aa/htc/fit_aa1.sub
-condor_submit solanum-aa/htc/fit_aa2.sub
+condor_submit solanum-aa/htc/fit_aa1.sub # took 40379 seconds, disk usage 1842255 kb, 1885 mb memory
+condor_submit solanum-aa/htc/fit_aa2.sub # took 27037 seconds, disk usage 1842875 kb, 1709 mb memory
 
 # check status
 condor_q 19402

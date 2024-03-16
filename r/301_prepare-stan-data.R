@@ -7,6 +7,7 @@ rh_curves = read_rds("data/prepared_rh_curves.rds") |>
   dplyr::select(
     A,
     scaled_log_gsw,
+    S,
     acc,
     curve,
     acc_id,
@@ -15,11 +16,6 @@ rh_curves = read_rds("data/prepared_rh_curves.rds") |>
     lightintensity_x_acc_id,
     light_treatment
   ) 
-
-rh_curves |>
-  summarise(n_curves = n_distinct(curve),
-            .by = "acc") |>
-  arrange(n_curves) 
 
 accession_climate = read_rds("data/accession-climate.rds") |>
   dplyr::select(acc1 = accession, ppfd_mol_m2) |>
@@ -34,8 +30,7 @@ Dmat = cophenetic(phy)
 i = as.numeric(as.factor(colnames(Dmat)))
 Dmat1 = Dmat[i,i] / max(Dmat)
 
-
-
+# Compose data
 stan_rh_curves = rh_curves |>
   compose_data()
 
@@ -64,6 +59,7 @@ stan_rh_curves$acc = NULL
 stan_rh_curves$acc_id = NULL
 stan_rh_curves$light_intensity = NULL
 stan_rh_curves$light_treatment = NULL
+stan_rh_curves$S = NULL
 
 # Manual changes
 stan_rh_curves = c(
@@ -91,12 +87,13 @@ stan_rh_curves = c(
     dplyr::select(amphi, pseudohypo, acc, acc_id, light_intensity, light_treatment) |>
     as.list(),
   
-  ## min and max scaled_log_gsw by curve
+  ## min and max scaled_log_gsw, S by curve
   rh_curves |>
     mutate(across(c("curve"), \(.x) as.numeric(as.factor(.x)))) |>
     summarize(
       min_scaled_log_gsw = min(scaled_log_gsw),
       max_scaled_log_gsw = max(scaled_log_gsw),
+      S = first(S),
       .by = c(curve)
     ) |>
     arrange(curve) |>
