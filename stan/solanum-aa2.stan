@@ -100,11 +100,11 @@ parameters {
   real b_log_sigma_aa_light_intensity_2000;
   real b_log_sigma_aa_light_treatment_high;
   
-  // regression on scaled_ppfd_mol_m2
-  real b0_ppfd;
-  real b1_ppfd;
-  real<lower=0> rhosq_ppfd;
-  real<lower=0> etasq_ppfd;
+  // regression of scaled_ppfd_mol_m2 on aa_acc
+  real b0_ppfd_aa;
+  real b1_ppfd_aa;
+  real<lower=0> rhosq_ppfd_aa;
+  real<lower=0> etasq_ppfd_aa;
   
 }
 transformed parameters {
@@ -141,12 +141,13 @@ model {
     // regression on sigma_aa
     b0_log_sigma_aa ~ normal(-3, 5);
     b_log_sigma_aa_light_intensity_2000 ~ normal(0, 1);
+    b_log_sigma_aa_light_treatment_high ~ normal(0, 1);
     
-    // regression on scaled_ppfd_mol_m2
-    b0_ppfd ~ normal(0, 1);
-    b1_ppfd ~ normal(0, 1);
-    rhosq_ppfd ~ normal(3, 0.25);
-    etasq_ppfd ~ normal(1, 0.25);
+    // regression of scaled_ppfd_mol_m2 on aa_acc
+    b0_ppfd_aa ~ normal(0, 1);
+    b1_ppfd_aa ~ normal(0, 1);
+    rhosq_ppfd_aa ~ normal(3, 0.25);
+    etasq_ppfd_aa ~ normal(1, 0.25);
 
   }
   
@@ -232,10 +233,12 @@ model {
   
   }
   
-  // regression on scaled_ppfd_mol_m2
+  // regression of scaled_ppfd_mol_m2 on aa_acc
+  vector[n_acc] aa_acc;
   matrix[n_acc,n_acc] Sigma_ppfd;
-  Sigma_ppfd = cov_GPL1(Dmat, etasq_ppfd, rhosq_ppfd, 0);
-  scaled_ppfd_mol_m2 ~ multi_normal(b0_ppfd + b1_ppfd * b_aa_acc, Sigma_ppfd);
+  aa_acc = b0_aa + b_aa_acc;
+  Sigma_ppfd = cov_GPL1(Dmat, rhosq_ppfd_aa, rhosq_ppfd_aa, 0);
+  aa_acc ~ multi_normal(b0_ppfd_aa + b1_ppfd_aa * scaled_ppfd_mol_m2, Sigma_ppfd);
 
 }
 generated quantities {

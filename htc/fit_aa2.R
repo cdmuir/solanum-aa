@@ -22,17 +22,15 @@ init = rh_curves |>
   }) |>
   as.list()
 
-fit_aa2 = m$sample(
+fit_m = m$sample(
   data = stan_rh_curves,
   chains = 2L,
   parallel_chains = 2L,
   init = list(init, init),
   seed = 898932814,
-  iter_warmup = 1e3,
-  iter_sampling = 1e3,
-  thin = 1e0
-  # max_treedepth = 12L,
-  # adapt_delta = 0.9
+  iter_warmup = 2e3,
+  iter_sampling = 2e3,
+  thin = 2e0
 )
     
-fit_aa2$save_object("fit_aa2.rds")
+fit_m$save_object("fit_aa2.rds")

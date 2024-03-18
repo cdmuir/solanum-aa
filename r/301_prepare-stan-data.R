@@ -97,7 +97,7 @@ stan_rh_curves = c(
       .by = c(curve)
     ) |>
     arrange(curve) |>
-    dplyr::select(min_scaled_log_gsw, max_scaled_log_gsw) |>
+    dplyr::select(min_scaled_log_gsw, max_scaled_log_gsw, S) |>
     as.list()
   
 )

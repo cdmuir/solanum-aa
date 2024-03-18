@@ -76,19 +76,23 @@ rm fit_*
 # ACTUAL DATA
 
 # 1. Transfer files before logging in using scp
-scp data/prepared_rh_curves.rds data/stan_rh_curves.rds htc/fit_aa1.R htc/fit_aa1.sh htc/fit_aa1.sub stan/solanum-aa1.stan cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/solanum-aa/htc
-scp data/prepared_rh_curves.rds data/stan_rh_curves.rds htc/fit_aa2.R htc/fit_aa2.sh htc/fit_aa2.sub stan/solanum-aa2.stan cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/solanum-aa/htc
-# scp htc/fit_aa1.sub cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/solanum-aa/htc
+scp data/prepared_rh_curves.rds data/stan_rh_curves.rds cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/solanum-aa/htc
+scp htc/fit_aa* stan/solanum-aa* cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/solanum-aa/htc
 
 # 2. Login to submit node
 ssh cdmuir@ap2002.chtc.wisc.edu
 
 # 3. Submit jobs
-condor_submit solanum-aa/htc/fit_aa1.sub # took 40379 seconds, disk usage 1842255 kb, 1885 mb memory
-condor_submit solanum-aa/htc/fit_aa2.sub # took 27037 seconds, disk usage 1842875 kb, 1709 mb memory
+condor_submit solanum-aa/htc/fit_aa1.sub # took 77866.2 seconds, with 1e3 iterations
+condor_submit solanum-aa/htc/fit_aa2.sub # took 86127.7 seconds, with 1e3 iterations
+condor_submit solanum-aa/htc/fit_aa3.sub # ?
+condor_submit solanum-aa/htc/fit_aa4.sub # ?
 
 # check status
-condor_q 19402
+condor_q 23163
+condor_q 23164
+condor_q 23165
+condor_q 23167
 
 # 4. Retrieve results
 scp cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/fit_aa1.rds objects/

@@ -1,6 +1,5 @@
-// This model fits a quadratic function of log_gsw to log_A for every curve, then
-// integrates overlapping region to estimate AA. Then we estimate parameters 
-// describing effects of variables on AA. 
+// Same as solanum-aa1.stan but with random effect of accession on effect of
+// light treatment
 functions {
   // indefinite integral of log(A_amphi) - log(A_hypo) based on parameters theta
   real aa_int(real x, array[] real theta) {
@@ -94,6 +93,9 @@ parameters {
   real<lower=0> etasq_aa_acc;
   vector[n_acc_id] b_aa_acc_id;
   real log_sigma_aa_acc_id;
+  vector[n_acc] b_aa_light_treatment_high_acc;
+  real<lower=0> rhosq_aa_light_treatment_high_acc;
+  real<lower=0> etasq_aa_light_treatment_high_acc;
   
   // regression on sigma_aa
   real b0_log_sigma_aa;
@@ -130,13 +132,20 @@ model {
     b_aa_light_intensity_2000 ~ normal(0, 1);
     b_aa_light_treatment_high ~ normal(0, 1);
     b_aa_acc_id ~ normal(0, sigma_aa_acc_id);
-    rhosq_aa_acc ~ normal(3, 0.25);
-    etasq_aa_acc ~ normal(1, 0.25);
+    rhosq_aa_acc ~ normal(0, 10);
+    etasq_aa_acc ~ normal(0, 10);
     matrix[n_acc,n_acc] Sigma_aa_acc;
     Sigma_aa_acc = cov_GPL1(Dmat, etasq_aa_acc, rhosq_aa_acc, 0);
     b_aa_acc ~ multi_normal(rep_vector(0.0, n_acc), Sigma_aa_acc);
     log_sigma_aa_acc_id ~ normal(-3, 5);
-    
+    rhosq_aa_light_treatment_high_acc ~ normal(0, 10);
+    etasq_aa_light_treatment_high_acc ~ normal(0, 10);
+    matrix[n_acc,n_acc] Sigma_aa_light_treatment_high_acc;
+    Sigma_aa_light_treatment_high_acc = cov_GPL1(Dmat,
+      etasq_aa_light_treatment_high_acc, rhosq_aa_light_treatment_high_acc, 0);
+    b_aa_light_treatment_high_acc ~ multi_normal(rep_vector(0.0, n_acc),
+      Sigma_aa_light_treatment_high_acc);
+
     // regression on sigma_aa
     b0_log_sigma_aa ~ normal(-3, 5);
     b_log_sigma_aa_light_intensity_2000 ~ normal(0, 1);
@@ -145,8 +154,8 @@ model {
     // regression of scaled_ppfd_mol_m2 on aa_acc
     b0_ppfd_aa ~ normal(0, 1);
     b1_ppfd_aa ~ normal(0, 1);
-    rhosq_ppfd_aa ~ normal(3, 0.25);
-    etasq_ppfd_aa ~ normal(1, 0.25);
+    rhosq_ppfd_aa ~ normal(0, 1);
+    etasq_ppfd_aa ~ normal(0, 1);
 
   }
   
@@ -163,7 +172,8 @@ model {
     // regression on aa
     b_2000 = b_aa_light_intensity_2000;
 
-    b_high = b_aa_light_treatment_high;
+    b_high = b_aa_light_treatment_high + 
+      b_aa_light_treatment_high_acc[acc[i]];
       
     mu1 = b0_aa + 
       b_2000 * (light_intensity[i] == 2) +
@@ -234,7 +244,8 @@ model {
   // regression of scaled_ppfd_mol_m2 on aa_acc
   vector[n_acc] aa_acc;
   matrix[n_acc,n_acc] Sigma_ppfd;
-  aa_acc = b0_aa + b_aa_acc;
+  aa_acc = b0_aa + b_aa_acc + b_aa_light_treatment_high +
+    b_aa_light_treatment_high_acc;
   Sigma_ppfd = cov_GPL1(Dmat, rhosq_ppfd_aa, rhosq_ppfd_aa, 0);
   aa_acc ~ multi_normal(b0_ppfd_aa + b1_ppfd_aa * scaled_ppfd_mol_m2, Sigma_ppfd);
 
@@ -254,7 +265,8 @@ generated quantities {
     // regression on aa
     b_2000 = b_aa_light_intensity_2000;
 
-    b_high = b_aa_light_treatment_high;
+    b_high = b_aa_light_treatment_high + 
+      b_aa_light_treatment_high_acc[acc[i]];
       
     mu1 = b0_aa + 
       b_2000 * (light_intensity[i] == 2) +

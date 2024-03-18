@@ -7,7 +7,7 @@ library(tibble)
 
 set_cmdstan_path("cmdstan-2.34.1")
 
-m = cmdstan_model("solanum-aa1.stan")
+m = cmdstan_model("solanum-aa4.stan")
 
 rh_curves = read_rds("prepared_rh_curves.rds")
 stan_rh_curves = read_rds("stan_rh_curves.rds")
@@ -33,4 +33,4 @@ fit_m = m$sample(
   thin = 2e0
 )
     
-fit_m$save_object("fit_aa1.rds")
+fit_m$save_object("fit_aa4.rds")
