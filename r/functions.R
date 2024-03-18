@@ -195,6 +195,209 @@ make_autocorr_matrix = function(elapsed, b_autocorr) {
 
 # 3. Fit data ----
 
+# Functions to write Stan models
+write_solanum_aa = function(model) {
+  assert_string(model)
+  assert_choice(model, paste0("aa", 1:5))
+  
+  write_lines(
+    c(
+      solanum_aa_functions(),
+      solanum_aa_data(),
+      solanum_aa_parameters(model),
+      solanum_aa_model(model),
+      solanum_aa_generated(model)
+    ),
+    glue("stan/solanum-{model}.stan")
+  )
+  
+  invisible()
+  
+}
+
+get_par_table = function(model) {
+  read_csv("data/parameters.csv", col_types = "cciddciiiii") |>
+    pivot_longer(cols = starts_with("aa"),
+                 names_to = "model",
+                 values_to = "value") |>
+    dplyr::filter(model == !!model, value == 1L)
+}
+
+solanum_aa_functions = function() {
+  read_lines("stan/solanum-aa-functions.stan")
+}
+
+solanum_aa_data = function() {
+  read_lines("stan/solanum-aa-data.stan")
+}
+
+solanum_aa_parameters = function(model) {
+  
+  par_table = get_par_table(model)
+  
+  # parameters
+  pars = par_table |>
+    mutate(
+      lb1 = if_else(is.na(lb), "", glue("lower={lb}")),
+      ub1 = if_else(is.na(ub), "", glue("upper={ub}")),
+      sep = if_else(is.na(lb) | is.na(ub), "", ", "),
+      bnds = if_else(bounds == "0", "", glue("<{lb1}{sep}{ub1}>")),
+      par = glue(
+        "{type}{size}{bnds} {parameter};",
+        type = if_else(length == "1", "real", "vector"),
+        size = if_else(length == "1", "", glue("[{length}]"))
+      )
+    ) |>
+    pull(par)
+  
+  # transformed parameters
+  # only works with log_sigma -> sigma transformation
+  tpars = par_table |>
+    dplyr::filter(str_detect(parameter, "^log_sigma")) |>
+    mutate(
+      new_parameter = str_remove(parameter, "log_"),
+      tpar = glue(
+        "{type}{size} {new_parameter};",
+        type = if_else(length == "1", "real", "vector"),
+        size = if_else(length == "1", "", glue("[{length}]"))),
+      trans = glue("{new_parameter} = exp({parameter});")
+    ) |>
+    dplyr::select(tpar, trans) |>
+    pivot_longer(everything()) |>
+    mutate(name = factor(name, levels = c("tpar", "trans"))) |>
+    arrange(name, value) |>
+    pull(value)
+  
+  c(
+    glue("parameters {{
+  {str_c(pars, collapse = '\n  ')}
+}}"),
+    glue("transformed parameters {{
+  {str_c(tpars, collapse = '\n  ')}
+}}")
+  )
+  
+}
+
+solanum_aa_model = function(model) {
+  
+  c(
+    "model {",
+    solanum_aa_priors(model),
+    solanum_aa_aa(model),
+    solanum_aa_rh(),
+    solanum_aa_ppfd(model),
+    "}"
+  )
+  
+}
+
+solanum_aa_priors = function(model) {
+  
+  par_table = get_par_table(model)
+  
+  # identify phylogentically structured parameters
+  phylo_s = "^b_(.*)_acc$"
+  phylo_pars = par_table |>
+    dplyr::filter(str_detect(parameter, phylo_s)) |>
+    pull(parameter)
+  
+  # priors on phylogenetic structure
+  x = str_replace(phylo_pars, phylo_s, "\\1")
+  phylo_priors = c(
+    glue("  matrix[n_acc,n_acc] Sigma_{x}_acc;"),
+    glue("  Sigma_{x}_acc = cov_GPL1(Dmat, etasq_{x}_acc, rhosq_{x}_acc, 0);")
+  )
+  
+  # priors
+  priors = par_table |>
+    mutate(prior = glue("  {parameter} ~ {prior};")) |>
+    pull(prior)
+  
+  c(
+    "  // priors on phylogenetic structure",
+    glue("  {str_c(phylo_priors, collapse = '\n  ')}"),
+    "",
+    "  // priors",
+    glue("  {str_c(priors, collapse = '\n  ')}"),
+    ""
+  )
+  
+}
+
+solanum_aa_aa = function(model) {
+  
+  b_2000 = switch(
+    model,
+    aa1 = "b_aa_light_intensity_2000",
+    aa2 = "b_aa_light_intensity_2000",
+    aa3 = "b_aa_light_intensity_2000 + b_aa_light_intensity_2000_acc[acc[i]]",
+    aa4 = "b_aa_light_intensity_2000",
+    aa5 = "b_aa_light_intensity_2000 + b_aa_light_intensity_2000_acc[acc[i]]"
+  )
+  
+  b_high = switch(
+    model,
+    aa1 = "b_aa_light_treatment_high",
+    aa2 = "b_aa_light_treatment_high",
+    aa3 = "b_aa_light_treatment_high",
+    aa4 = "b_aa_light_treatment_high + b_aa_light_treatment_high_acc[acc[i]]",
+    aa5 = "b_aa_light_treatment_high + b_aa_light_treatment_high_acc[acc[i]]"
+  )
+  
+  b_aa_2000_high = switch(
+    model,
+    aa1 = "",
+    aa2 = "b_aa_2000_high +",
+    aa3 = "",
+    aa4 = "",
+    aa5 = "b_aa_2000_high +"
+  )
+  
+  read_lines("stan/solanum-aa-aa.stan") |>
+    str_replace_all(
+      c(
+        "\\{b_2000\\}" = b_2000,
+        "\\{b_high\\}" = b_high,
+        "\\{b_aa_2000_high\\}" = b_aa_2000_high
+      )
+    ) 
+  
+}
+
+solanum_aa_rh = function() {
+  read_lines("stan/solanum-aa-rh.stan")
+}
+
+solanum_aa_ppfd = function(model) {
+  
+  aa_acc = switch(
+    model,
+    aa1 = "b0_aa + b_aa_acc;",
+    aa2 = "b0_aa + b_aa_acc;",
+    aa3 = "b0_aa + b_aa_acc + b_aa_light_intensity_2000 + b_aa_light_intensity_2000_acc;",
+    aa4 = "b0_aa + b_aa_acc + b_aa_light_treatment_high + b_aa_light_treatment_high_acc;",
+    aa5 = "b0_aa + b_aa_acc + b_aa_light_intensity_2000 + b_aa_light_intensity_2000_acc + b_aa_light_treatment_high + b_aa_light_treatment_high_acc;"
+  )
+  
+  read_lines("stan/solanum-aa-ppfd.stan") |>
+    str_replace("\\{aa_acc\\}", aa_acc)
+  
+}
+
+solanum_aa_generated = function(model) {
+  
+  c(
+    "generated quantities {",
+    "  // calculated log-likelihood to estimate LOOIC for model comparison",
+    "  vector[n_lightintensity_x_acc_id] log_lik;",
+    str_replace(solanum_aa_aa(model), "target +", "log_lik[i] "),
+    "}"
+  )
+  
+}
+
+
 # Calculate AA from parameter estimates:
 # log(A_amphi) = b0_a + b1_a * log(gsw) + b2_a * log(gsw) ^ 2
 # log(A_hypo)  = b0_h + b1_h * log(gsw) + b2_h * log(gsw) ^ 2

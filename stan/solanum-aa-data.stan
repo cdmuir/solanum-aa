@@ -41,3 +41,7 @@ data {
   matrix[n_acc,n_acc] Dmat;
   
 }
+transformed data {
+  vector[n] log_A;
+  log_A = log(A);
+}
