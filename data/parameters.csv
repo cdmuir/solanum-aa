@@ -1,0 +1,34 @@
+parameter,lenth,prior,aa1,aa2,aa3,aa4,aa5
+b0,n_curve,normal(0,1),1,1,1,1,1
+b1,n_curve,normal(0,1),1,1,1,1,1
+b2,n_curve,normal(0,1),1,1,1,1,1
+
+  // quadratic regression coefficients
+  vector[n_curve] b0;
+  vector[n_curve] b1;
+  vector[n_curve] b2;
+
+  real b0_log_sigma_resid;
+  real b_log_sigma_resid_S;
+  real<lower=-1,upper=1> rho_resid;
+  
+  // regression on aa
+  real b0_aa;
+  real b_aa_light_intensity_2000;
+  real b_aa_light_treatment_high;
+  vector[n_acc] b_aa_acc;
+  real<lower=0> rhosq_aa_acc;
+  real<lower=0> etasq_aa_acc;
+  vector[n_acc_id] b_aa_acc_id;
+  real log_sigma_aa_acc_id;
+  
+  // regression on sigma_aa
+  real b0_log_sigma_aa;
+  real b_log_sigma_aa_light_intensity_2000;
+  real b_log_sigma_aa_light_treatment_high;
+  
+  // regression of scaled_ppfd_mol_m2 on aa_acc
+  real b0_ppfd_aa;
+  real b1_ppfd_aa;
+  real<lower=0> rhosq_ppfd_aa;
+  real<lower=0> etasq_ppfd_aa;

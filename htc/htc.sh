@@ -92,7 +92,11 @@ condor_submit solanum-aa/htc/fit_aa4.sub # ?
 condor_q 23163
 condor_q 23164
 condor_q 23165
-condor_q 23167
+condor_q 23167 # aa4
+condor_q 23168 # aa1 after some changes
+condor_q 23169 # aa2 after some changes
+condor_q 23170 # aa3 after some changes
+condor_q 23171 # aa4 after some changes
 
 # 4. Retrieve results
 scp cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/fit_aa1.rds objects/
