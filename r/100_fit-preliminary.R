@@ -1,174 +1,32 @@
-# Preliminary fit to inform simulations
-message("still a lot of messiness in the code that needs to be cleaned up")
+# Fit preliminary model to each RH curve to identify AA outliers
 source("r/header.R")
 
-rh_curves = read_rds("data/thinned_rh_curves.rds") |>
-  separate_wider_delim(acc_id, "-", names = c("acc", "id"), cols_remove = FALSE)
+rh_curves = read_rds("data/prepared_rh_curves.rds") |>
+  mutate(log_A = log(A))
 
-# dummy model just for drafting ms. erase later
-fit_dummy = brm(A ~ 1, data = rh_curves[1:100,], 
-                chains = 4L, cores = 4L, backend = "cmdstanr")
-write_rds(fit_dummy, "objects/fit_dummy.rds")
-
-# Example curve to test with
-tmp = rh_curves |>
-  filter(acc_id == "LA1777-E")
-
-# M-M not working
-pars = nls(
-  A ~ V * gsw / (Km + gsw),
-  data = filter(
-    tmp,
-    curve_type == "1-sided RH",
-    light_intensity == "150",
-    assumed_K == 0.5
-  ),
-  start = list(V = 50, Km = 0.3)
-)
-
-df_line = tibble(
-  gsw = seq(0, 0.4, 0.01),
-  A = coef(pars)["V"] * gsw / (coef(pars)["Km"] + gsw),
-  curve_type = "1-sided RH",
-  light_intensity = "150"
-)
-
-ggplot(tmp, aes(gsw, A, color = curve_type)) +
-  geom_point() +
-  # scale_x_log10() +
-  geom_line(data = df_line)
-
-# Function to calculate a test statistic for whether there is a nonlinear
-# relationship between fitted values and residuals
-test_stat = function(formula) {
-  fit = lm(formula)
-  dat = tibble(p = predict(fit), r = resid(fit))
-  summary(lm(r ~ poly(p, 2), data  = dat))$r.squared
-}
-
-# Conclusion 1: A-log(gsw) is best, but still problematic, esp for some at 2000 PAR ----
-df1 = rh_curves |>
-  filter(assumed_K == 0.5, !is.na(gsw)) |>
-  mutate(rsw = 1 / gsw) |>
-  summarise(
-    A_gsw = test_stat(A ~ gsw),
-    logA_gsw = test_stat(log(A) ~ gsw),
-    A_loggsw = test_stat(A ~ log(gsw)),
-    logA_loggsw = test_stat(log(A) ~ log(gsw)),
-    A_rsw = test_stat(A ~ rsw),
-    logA_rsw = test_stat(log(A) ~ rsw),
-    A_logrsw = test_stat(A ~ log(rsw)),
-    logA_logrsw = test_stat(log(A) ~ log(rsw)),
-    .by = c("curve_type", "light_intensity", "acc_id")
-  ) 
-
-df1 |>
-  pivot_longer(A_gsw:logA_logrsw) |>
-  ggplot(aes(value, color = name, fill = name)) +
-  facet_wrap(light_intensity ~ name) +
-  geom_density(alpha = 0.5)
-
-# Conclusion 2: Some evidence that M-M fits better at high light intensity ----
-df1 = rh_curves |>
-  filter(assumed_K == 0.5, !is.na(gsw)) |>
-  summarise(
-    fit1 = list(try(nls(A ~ V * gsw / (Km + gsw)))),
-    fit2 = list(lm(A ~ log(gsw))),
-    keep = inherits(fit1[[1]], "nls"),
-    .by = c("curve_type", "light_intensity", "acc_id")
-  ) |>
-  filter(keep)
-
-df1$aic1 = sapply(seq_len(nrow(df1)), \(.i) AIC(df1$fit1[.i][[1]]))
-df1$aic2 = sapply(seq_len(nrow(df1)), \(.i) AIC(df1$fit2[.i][[1]]))
-
-# 2468 of 2566 fit MM
-df1 |>
-  # Negative: AIC1 > AIC2 (lm favored over nls)
-  # Positive: AIC2 > AIC1 (nls favored over lm)
-  mutate(dAIC = aic2 - aic1) |>
-  # summarize(dAIC = median(dAIC), .by = c("curve_type", "light_intensity"))
-  ggplot(aes(dAIC)) +
-  facet_grid(rows = vars(curve_type), cols = vars(light_intensity)) +
-  geom_histogram() +
-  geom_vline(xintercept = 0)
-
-# Conclusion 3: poly curves
-df1 = rh_curves |>
-  summarise(
-    fit1 = list(lm(A ~ log(gsw))),
-    fit2 = list(lm(A ~ poly(log(gsw), 2))),
-    fit3 = list(lm(A ~ poly(log(gsw), 3))),
-    .by = c("light_treatment", "curve_type", "light_intensity", "acc_id")
-  )
-
-df1$aic1 = sapply(seq_len(nrow(df1)), \(.i) AIC(df1$fit1[.i][[1]]))
-df1$aic2 = sapply(seq_len(nrow(df1)), \(.i) AIC(df1$fit2[.i][[1]]))
-df1$aic3 = sapply(seq_len(nrow(df1)), \(.i) AIC(df1$fit3[.i][[1]]))
-
-df1 = df1 |>
-  mutate(
-    daic12 = aic2 - aic1,
-    daic23 = aic3 - aic2
-  ) 
-
-df1 |>
-  summarize(
-    across(starts_with("daic"), median), 
-    .by = c("light_treatment", "curve_type", "light_intensity")
-  )
-
-df1 |>
-  select(curve_type, light_intensity, acc_id, starts_with("daic")) |>
-  pivot_longer(starts_with("daic")) |>
-  ggplot(aes(value)) +
-  facet_wrap(~name, scales = "free") +
-  geom_histogram()
-
-# Conclusion 4: brm produces rough-and-ready estimates of slope and intercept ----
-df1 = rh_curves |>
-  reframe(
-    name = c("intercept", "slope"),
-    value = coef(lm(A ~ log(gsw))),
-    .by = c("curve_type", "light_intensity", "acc_id", "acc", "light_treatment")
-  ) |>
-  pivot_wider()
-
-ggplot(df1, aes(intercept, slope, color = curve_type, shape = light_intensity,
-             fill = light_treatment)) +
-  facet_wrap(~acc) +
-  geom_point() +
-  scale_shape_discrete()
-  
-fit_preliminary = brm(
-  bf(
-    mvbind(intercept, slope) ~
-      leaf_type * light_intensity * light_treatment +
-      (leaf_type * light_intensity * light_treatment |
-         acc),
-    sigma ~ light_intensity
-  ) +
-    set_rescor(TRUE),
-  data = df1 |>
-    mutate(leaf_type = case_when(
-      curve_type == "1-sided RH" ~ "pseudohypo",
-      curve_type == "2-sided RH" ~ "amphi"
-  )),
+# This model worked well for LA2172. Scaling up to all accessions
+# started at 1:20 PM
+# 100 / 4000 at 1:45 PM, so ETA is 40 * 25 = 1000 minutes
+fit_aa0 = brm(
+  bf(log_A ~ poly(log_gsw, 2) + (poly(log_gsw, 2) | curve),
+     sigma ~ 1 + (1 | curve)),
+  family = gaussian(),
+  data = rh_curves,
   backend = "cmdstanr",
-  chains = 1,
-  silent = 0
+  chains = 4,
+  cores = 4,
+  silent = 0,
+  iter = 4e3,
+  thin = 2e0,
+  max_treedepth = 12
 )
 
-conditional_effects(fit_preliminary)
+write_rds(fit_aa0, "objects/fit_aa0.rds")
 
-write_rds(fit_preliminary, "objects/fit_preliminary.rds")
+# Check convergence
+summary(fit_aa0)
 
-# OLD
-# fit1 = brm(A ~ curve_type + light_treatment + light_intensity + log(gsw) +
-#              curve_type:light_treatment + curve_type:light_intensity +
-#              light_treatment:log(gsw) + light_intensity:log(gsw) +
-#              (curve_type + light_treatment + light_intensity + log(gsw) | acc) +
-#              (log(gsw) | acc_id), data = rh_curves,
-#           chains = 1, backend = "cmdstanr", silent = 0)
-# 
-# fit1$save_objects("objects/fit1-preliminary.rds")
+fit_aa0 |>
+  spread_draws(r_curve[curve, term]) |>
+  summarize(rhat = posterior::rhat(r_curve)) |>
+  dplyr::filter(rhat > 1.05)
