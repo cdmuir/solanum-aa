@@ -87,6 +87,7 @@ condor_submit solanum-aa/htc/fit_aa1.sub # took 77866.2 seconds, with 1e3 iterat
 condor_submit solanum-aa/htc/fit_aa2.sub # took 86127.7 seconds, with 1e3 iterations
 condor_submit solanum-aa/htc/fit_aa3.sub # ?
 condor_submit solanum-aa/htc/fit_aa4.sub # ?
+condor_submit solanum-aa/htc/fit_aa5.sub # ?
 
 # check status
 condor_q 23163
@@ -97,6 +98,13 @@ condor_q 23168 # aa1 after some changes
 condor_q 23169 # aa2 after some changes
 condor_q 23170 # aa3 after some changes
 condor_q 23171 # aa4 after some changes
+# runs with 'automated' scripted model and 4e3 sampling iterations
+condor_q 25015
+condor_q 25016
+condor_q 25017
+condor_q 25018
+condor_q 25019
+
 
 # 4. Retrieve results
 scp cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/fit_aa1.rds objects/

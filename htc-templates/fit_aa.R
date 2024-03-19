@@ -28,9 +28,9 @@ fit_m = m$sample(
   parallel_chains = 2L,
   init = list(init, init),
   seed = 898932814,
-  iter_warmup = 2e3,
-  iter_sampling = 2e3,
-  thin = 2e0
+  iter_warmup = 4e3,
+  iter_sampling = 4e3,
+  thin = 4e0
 )
     
 fit_m$save_object("fit_{m}.rds")
