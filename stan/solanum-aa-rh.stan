@@ -5,9 +5,9 @@
   
   for (i in 1:n) {
       
-    mu2[i] = b0[curve[i]] + 
-      b1[curve[i]] * scaled_log_gsw[i] +
-      b2[curve[i]] * scaled_log_gsw[i] ^ 2;
+    mu2[i] = Mu_curve[1] + B_curve[curve[i],1] + 
+      (Mu_curve[2] + B_curve[curve[i],2]) * scaled_log_gsw[i] +
+      (Mu_curve[3] + B_curve[curve[i],3]) * scaled_log_gsw[i] ^ 2;
     
     sigma2[i] = exp(b0_log_sigma_resid + (6 - S[curve[i]]) * b_log_sigma_resid_S);
   

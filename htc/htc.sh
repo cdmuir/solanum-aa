@@ -90,15 +90,8 @@ condor_submit solanum-aa/htc/fit_aa4.sub # ?
 condor_submit solanum-aa/htc/fit_aa5.sub # ?
 
 # check status
-condor_q 23163
-condor_q 23164
-condor_q 23165
-condor_q 23167 # aa4
-condor_q 23168 # aa1 after some changes
-condor_q 23169 # aa2 after some changes
-condor_q 23170 # aa3 after some changes
-condor_q 23171 # aa4 after some changes
 # runs with 'automated' scripted model and 4e3 sampling iterations
+# first version of automated model with fixed effects of b0, b1, b2
 condor_q 25015
 condor_q 25016
 condor_q 25017
@@ -109,6 +102,8 @@ condor_q 25019
 # 4. Retrieve results
 scp cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/fit_aa1.rds objects/
 scp cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/fit_aa2.rds objects/
+scp cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/fit_aa3.rds objects/
+scp cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/fit_aa4.rds objects/
 
 # clean up on submit node
 rm fit_*

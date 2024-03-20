@@ -235,7 +235,7 @@ solanum_aa_parameters = function(model) {
   
   par_table = get_par_table(model)
   
-  # parameters
+  # parameters (WORKING HERE)
   pars = par_table |>
     mutate(
       lb1 = if_else(is.na(lb), "", glue("lower={lb}")),
@@ -252,7 +252,7 @@ solanum_aa_parameters = function(model) {
   
   # transformed parameters
   # only works with log_sigma -> sigma transformation
-  tpars = par_table |>
+  tpars1 = par_table |>
     dplyr::filter(str_detect(parameter, "^log_sigma")) |>
     mutate(
       new_parameter = str_remove(parameter, "log_"),
@@ -267,6 +267,25 @@ solanum_aa_parameters = function(model) {
     mutate(name = factor(name, levels = c("tpar", "trans"))) |>
     arrange(name, value) |>
     pull(value)
+
+  # Covariance matrix from correlation matrix
+  tpars2 = par_table |>
+    dplyr::filter(str_detect(parameter, "^R_")) |>
+    mutate(
+      new_parameter = str_replace(parameter, "R_", "S_"),
+      tpar = glue(
+        "{type}{size} {new_parameter};",
+        type = "matrix",
+        size = glue("[{length}]")),
+      trans = glue("{new_parameter} = quad_form_diag({parameter}, exp({log_sigma}));", log_sigma = str_replace(parameter, "R_", "log_sigma_"))
+    ) |>
+    dplyr::select(tpar, trans) |>
+    pivot_longer(everything()) |>
+    mutate(name = factor(name, levels = c("tpar", "trans"))) |>
+    arrange(name, value) |>
+    pull(value)
+  
+  tpars = c(tpars1, tpars2)
   
   c(
     glue("parameters {{

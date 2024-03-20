@@ -4,20 +4,17 @@ source("r/header.R")
 
 paste0("aa", 1:5) |>
   walk(\(model) {
-    model = "aa1"
     fit = read_rds(glue("objects/fit_{model}.rds"))
     
     focal_pars = get_par_table(model) |>
       dplyr::filter(length == "1")
     
-    x = 1:10 # remove this when doing all parameters
-    par_draws = fit$draws(focal_pars$parameter[x]) |>
+    par_draws = fit$draws(focal_pars$parameter) |>
       as_draws_df()
     
-    gp = focal_pars$parameter[x] |>
+    gp = focal_pars$parameter |>
       map(\(.p) {
-        # .p = focal_pars$parameter[9]
-        
+
         gp_trace = mcmc_trace(par_draws, .p)
         df_post = fit$draws(.p) |>
           as_draws_df() |>
