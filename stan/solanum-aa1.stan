@@ -72,10 +72,10 @@ transformed data {
   log_A = log(A);
 }
 parameters {
-  vector[n_curve,3] B_curve;
+  array[n_curve] vector[3] B_curve;
   vector[3] Mu_curve;
   vector[3] log_sigma_curve;
-  vector[3,3] R_curve;
+  matrix[3,3] R_curve;
   real b0_log_sigma_resid;
   real b_log_sigma_resid_S;
   real<lower=-1, upper=1> rho_resid;
@@ -100,8 +100,8 @@ transformed parameters {
   vector[3] sigma_curve;
   sigma_aa_acc_id = exp(log_sigma_aa_acc_id);
   sigma_curve = exp(log_sigma_curve);
-  matrix[3,3] S_curve;
-  S_curve = quad_form_diag(R_curve, exp(log_sigma_curve));
+  matrix[3,3] Sigma_curve;
+  Sigma_curve = quad_form_diag(R_curve, sigma_curve);
 }
 model {
   // priors on phylogenetic structure
@@ -171,12 +171,12 @@ model {
     a = min_scaled_log_gsw[amphi_curve];
     b = max_scaled_log_gsw[pseudohypo_curve];
     
-    theta[1] = b0[amphi_curve];      // b0_amphi;
-    theta[2] = b1[amphi_curve];      // b1_amphi;
-    theta[3] = b2[amphi_curve];      // b2_amphi;
-    theta[4] = b0[pseudohypo_curve]; // b0_hypo;
-    theta[5] = b1[pseudohypo_curve]; // b1_hypo;
-    theta[6] = b2[pseudohypo_curve]; // b2_hypo;
+    theta[1] = Mu_curve[1] + B_curve[curve[amphi_curve],1]; // b0_amphi;
+    theta[2] = Mu_curve[2] + B_curve[curve[amphi_curve],2]; // b1_amphi;
+    theta[3] = Mu_curve[3] + B_curve[curve[amphi_curve],3]; // b2_amphi;
+    theta[4] = Mu_curve[1] + B_curve[curve[pseudohypo_curve],1]; // b0_hypo;
+    theta[5] = Mu_curve[2] + B_curve[curve[pseudohypo_curve],2]; // b1_hypo;
+    theta[6] = Mu_curve[3] + B_curve[curve[pseudohypo_curve],3]; // b2_hypo;
     
     aa_i = aa_int(b, theta) - aa_int(a, theta);
 
@@ -254,12 +254,12 @@ generated quantities {
     a = min_scaled_log_gsw[amphi_curve];
     b = max_scaled_log_gsw[pseudohypo_curve];
     
-    theta[1] = b0[amphi_curve];      // b0_amphi;
-    theta[2] = b1[amphi_curve];      // b1_amphi;
-    theta[3] = b2[amphi_curve];      // b2_amphi;
-    theta[4] = b0[pseudohypo_curve]; // b0_hypo;
-    theta[5] = b1[pseudohypo_curve]; // b1_hypo;
-    theta[6] = b2[pseudohypo_curve]; // b2_hypo;
+    theta[1] = Mu_curve[1] + B_curve[curve[amphi_curve],1]; // b0_amphi;
+    theta[2] = Mu_curve[2] + B_curve[curve[amphi_curve],2]; // b1_amphi;
+    theta[3] = Mu_curve[3] + B_curve[curve[amphi_curve],3]; // b2_amphi;
+    theta[4] = Mu_curve[1] + B_curve[curve[pseudohypo_curve],1]; // b0_hypo;
+    theta[5] = Mu_curve[2] + B_curve[curve[pseudohypo_curve],2]; // b1_hypo;
+    theta[6] = Mu_curve[3] + B_curve[curve[pseudohypo_curve],3]; // b2_hypo;
     
     aa_i = aa_int(b, theta) - aa_int(a, theta);
 

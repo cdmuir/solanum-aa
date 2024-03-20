@@ -242,11 +242,7 @@ solanum_aa_parameters = function(model) {
       ub1 = if_else(is.na(ub), "", glue("upper={ub}")),
       sep = if_else(is.na(lb) | is.na(ub), "", ", "),
       bnds = if_else(bounds == "0", "", glue("<{lb1}{sep}{ub1}>")),
-      par = glue(
-        "{type}{size}{bnds} {parameter};",
-        type = if_else(length == "1", "real", "vector"),
-        size = if_else(length == "1", "", glue("[{length}]"))
-      )
+      par = glue("{type}{bnds} {parameter};")
     ) |>
     pull(par)
   
@@ -256,10 +252,7 @@ solanum_aa_parameters = function(model) {
     dplyr::filter(str_detect(parameter, "^log_sigma")) |>
     mutate(
       new_parameter = str_remove(parameter, "log_"),
-      tpar = glue(
-        "{type}{size} {new_parameter};",
-        type = if_else(length == "1", "real", "vector"),
-        size = if_else(length == "1", "", glue("[{length}]"))),
+      tpar = glue("{type} {new_parameter};"),
       trans = glue("{new_parameter} = exp({parameter});")
     ) |>
     dplyr::select(tpar, trans) |>
@@ -272,12 +265,10 @@ solanum_aa_parameters = function(model) {
   tpars2 = par_table |>
     dplyr::filter(str_detect(parameter, "^R_")) |>
     mutate(
-      new_parameter = str_replace(parameter, "R_", "S_"),
-      tpar = glue(
-        "{type}{size} {new_parameter};",
-        type = "matrix",
-        size = glue("[{length}]")),
-      trans = glue("{new_parameter} = quad_form_diag({parameter}, exp({log_sigma}));", log_sigma = str_replace(parameter, "R_", "log_sigma_"))
+      new_parameter = str_replace(parameter, "R_", "Sigma_"),
+      tpar = glue("{type} {new_parameter};"),
+      trans = glue("{new_parameter} = quad_form_diag({parameter}, {sigma});", 
+                   sigma = str_replace(parameter, "R_", "sigma_"))
     ) |>
     dplyr::select(tpar, trans) |>
     pivot_longer(everything()) |>

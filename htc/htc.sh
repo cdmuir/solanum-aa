@@ -83,8 +83,8 @@ scp htc/fit_aa* stan/solanum-aa* cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/solanu
 ssh cdmuir@ap2002.chtc.wisc.edu
 
 # 3. Submit jobs
-condor_submit solanum-aa/htc/fit_aa1.sub # took 77866.2 seconds, with 1e3 iterations
-condor_submit solanum-aa/htc/fit_aa2.sub # took 86127.7 seconds, with 1e3 iterations
+condor_submit solanum-aa/htc/fit_aa1.sub # ?
+condor_submit solanum-aa/htc/fit_aa2.sub # ?
 condor_submit solanum-aa/htc/fit_aa3.sub # ?
 condor_submit solanum-aa/htc/fit_aa4.sub # ?
 condor_submit solanum-aa/htc/fit_aa5.sub # ?
@@ -97,6 +97,8 @@ condor_q 25016
 condor_q 25017
 condor_q 25018
 condor_q 25019
+# runs with 'automated' scripted model and 4e3 sampling iterations
+# second version of automated model with random effects of b0, b1, b2
 
 
 # 4. Retrieve results

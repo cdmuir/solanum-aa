@@ -72,9 +72,10 @@ transformed data {
   log_A = log(A);
 }
 parameters {
-  vector[n_curve] b0;
-  vector[n_curve] b1;
-  vector[n_curve] b2;
+  array[n_curve] vector[3] B_curve;
+  vector[3] Mu_curve;
+  vector[3] log_sigma_curve;
+  matrix[3,3] R_curve;
   real b0_log_sigma_resid;
   real b_log_sigma_resid_S;
   real<lower=-1, upper=1> rho_resid;
@@ -99,7 +100,11 @@ parameters {
 }
 transformed parameters {
   real sigma_aa_acc_id;
+  vector[3] sigma_curve;
   sigma_aa_acc_id = exp(log_sigma_aa_acc_id);
+  sigma_curve = exp(log_sigma_curve);
+  matrix[3,3] Sigma_curve;
+  Sigma_curve = quad_form_diag(R_curve, sigma_curve);
 }
 model {
   // priors on phylogenetic structure
@@ -109,9 +114,10 @@ model {
   Sigma_aa_light_intensity_2000_acc = cov_GPL1(Dmat, etasq_aa_light_intensity_2000_acc, rhosq_aa_light_intensity_2000_acc, 0);
 
   // priors
-  b0 ~ normal(0,1);
-  b1 ~ normal(0,1);
-  b2 ~ normal(0,1);
+  B_curve ~ multi_normal(Mu_curve, Sigma_curve);
+  Mu_curve ~ normal(0, 10);
+  log_sigma_curve ~ normal(0,1);
+  R_curve ~ lkj_corr(2);
   b0_log_sigma_resid ~ normal(-3,5);
   b_log_sigma_resid_S ~ normal(0,1);
   rho_resid ~ normal(0,1);
@@ -173,12 +179,12 @@ model {
     a = min_scaled_log_gsw[amphi_curve];
     b = max_scaled_log_gsw[pseudohypo_curve];
     
-    theta[1] = b0[amphi_curve];      // b0_amphi;
-    theta[2] = b1[amphi_curve];      // b1_amphi;
-    theta[3] = b2[amphi_curve];      // b2_amphi;
-    theta[4] = b0[pseudohypo_curve]; // b0_hypo;
-    theta[5] = b1[pseudohypo_curve]; // b1_hypo;
-    theta[6] = b2[pseudohypo_curve]; // b2_hypo;
+    theta[1] = Mu_curve[1] + B_curve[curve[amphi_curve],1]; // b0_amphi;
+    theta[2] = Mu_curve[2] + B_curve[curve[amphi_curve],2]; // b1_amphi;
+    theta[3] = Mu_curve[3] + B_curve[curve[amphi_curve],3]; // b2_amphi;
+    theta[4] = Mu_curve[1] + B_curve[curve[pseudohypo_curve],1]; // b0_hypo;
+    theta[5] = Mu_curve[2] + B_curve[curve[pseudohypo_curve],2]; // b1_hypo;
+    theta[6] = Mu_curve[3] + B_curve[curve[pseudohypo_curve],3]; // b2_hypo;
     
     aa_i = aa_int(b, theta) - aa_int(a, theta);
 
@@ -192,9 +198,9 @@ model {
   
   for (i in 1:n) {
       
-    mu2[i] = b0[curve[i]] + 
-      b1[curve[i]] * scaled_log_gsw[i] +
-      b2[curve[i]] * scaled_log_gsw[i] ^ 2;
+    mu2[i] = Mu_curve[1] + B_curve[curve[i],1] + 
+      (Mu_curve[2] + B_curve[curve[i],2]) * scaled_log_gsw[i] +
+      (Mu_curve[3] + B_curve[curve[i],3]) * scaled_log_gsw[i] ^ 2;
     
     sigma2[i] = exp(b0_log_sigma_resid + (6 - S[curve[i]]) * b_log_sigma_resid_S);
   
@@ -256,12 +262,12 @@ generated quantities {
     a = min_scaled_log_gsw[amphi_curve];
     b = max_scaled_log_gsw[pseudohypo_curve];
     
-    theta[1] = b0[amphi_curve];      // b0_amphi;
-    theta[2] = b1[amphi_curve];      // b1_amphi;
-    theta[3] = b2[amphi_curve];      // b2_amphi;
-    theta[4] = b0[pseudohypo_curve]; // b0_hypo;
-    theta[5] = b1[pseudohypo_curve]; // b1_hypo;
-    theta[6] = b2[pseudohypo_curve]; // b2_hypo;
+    theta[1] = Mu_curve[1] + B_curve[curve[amphi_curve],1]; // b0_amphi;
+    theta[2] = Mu_curve[2] + B_curve[curve[amphi_curve],2]; // b1_amphi;
+    theta[3] = Mu_curve[3] + B_curve[curve[amphi_curve],3]; // b2_amphi;
+    theta[4] = Mu_curve[1] + B_curve[curve[pseudohypo_curve],1]; // b0_hypo;
+    theta[5] = Mu_curve[2] + B_curve[curve[pseudohypo_curve],2]; // b1_hypo;
+    theta[6] = Mu_curve[3] + B_curve[curve[pseudohypo_curve],3]; // b2_hypo;
     
     aa_i = aa_int(b, theta) - aa_int(a, theta);
 
