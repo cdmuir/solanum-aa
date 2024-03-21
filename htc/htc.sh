@@ -90,22 +90,19 @@ condor_submit solanum-aa/htc/fit_aa4.sub # ?
 condor_submit solanum-aa/htc/fit_aa5.sub # ?
 
 # check status
-# runs with 'automated' scripted model and 4e3 sampling iterations
-# first version of automated model with fixed effects of b0, b1, b2
-condor_q 25015
-condor_q 25016
-condor_q 25017
-condor_q 25018
-condor_q 25019
-# runs with 'automated' scripted model and 4e3 sampling iterations
-# second version of automated model with random effects of b0, b1, b2
-
+# Most recent - 4e4 iterations, max_treedepth=12, correct covariance matrix
+condor_q 37751
+condor_q 37753
+condor_q 37754
+condor_q 37755
+condor_q 37756
 
 # 4. Retrieve results
 scp cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/fit_aa1.rds objects/
 scp cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/fit_aa2.rds objects/
 scp cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/fit_aa3.rds objects/
 scp cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/fit_aa4.rds objects/
+scp cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/fit_aa5.rds objects/
 
 # clean up on submit node
 rm fit_*

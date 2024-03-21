@@ -2,7 +2,7 @@ parameter,type,bounds,lb,ub,prior,aa1,aa2,aa3,aa4,aa5
 B_curve,"array[n_curve] vector[3] ",0,NA,NA,"multi_normal(Mu_curve, Sigma_curve)",1,1,1,1,1
 Mu_curve,vector[3],0,NA,NA,"normal(0, 10)",1,1,1,1,1
 log_sigma_curve,vector[3],0,NA,NA,"normal(0,1)",1,1,1,1,1
-R_curve,"matrix[3,3]",0,NA,NA,"lkj_corr(2)",1,1,1,1,1
+R_curve,"corr_matrix[3]",0,NA,NA,"lkj_corr(2)",1,1,1,1,1
 b0_log_sigma_resid,real,0,NA,NA,"normal(-3,5)",1,1,1,1,1
 b_log_sigma_resid_S,real,0,NA,NA,"normal(0,1)",1,1,1,1,1
 rho_resid,real,1,-1,1,"normal(0,1)",1,1,1,1,1

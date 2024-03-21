@@ -1,4 +1,4 @@
-# Check model convergence
+# Check model convergence (MIGHT NEED TO EDIT TO INCLUDE TERMS FOR RH CURVE TERMS)
 source("r/header.R")
 
 paste0("aa", 1:5) |>
@@ -6,7 +6,7 @@ paste0("aa", 1:5) |>
     fit = read_rds(glue("objects/fit_{model}.rds"))
     
     focal_pars = get_par_table(model) |>
-      dplyr::filter(length == "1") |>
+      dplyr::filter(type == "real") |>
       pull(parameter)
     
     par_summary = fit$summary(focal_pars)

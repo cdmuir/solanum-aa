@@ -75,7 +75,7 @@ parameters {
   array[n_curve] vector[3] B_curve;
   vector[3] Mu_curve;
   vector[3] log_sigma_curve;
-  matrix[3,3] R_curve;
+  corr_matrix[3] R_curve;
   real b0_log_sigma_resid;
   real b_log_sigma_resid_S;
   real<lower=-1, upper=1> rho_resid;
@@ -263,7 +263,7 @@ generated quantities {
     
     aa_i = aa_int(b, theta) - aa_int(a, theta);
 
-    log_lik[i] += normal_lpdf(aa_i | mu1, sigma);
+    log_lik[i] = normal_lpdf(aa_i | mu1, sigma);
 
   }
 }

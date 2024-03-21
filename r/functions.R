@@ -266,7 +266,9 @@ solanum_aa_parameters = function(model) {
     dplyr::filter(str_detect(parameter, "^R_")) |>
     mutate(
       new_parameter = str_replace(parameter, "R_", "Sigma_"),
-      tpar = glue("{type} {new_parameter};"),
+      type1 = str_remove(type, "corr_") |>
+        str_replace("\\[([0-9]+)\\]", "[\\1,\\1]"),
+      tpar = glue("{type1} {new_parameter};"),
       trans = glue("{new_parameter} = quad_form_diag({parameter}, {sigma});", 
                    sigma = str_replace(parameter, "R_", "sigma_"))
     ) |>
@@ -401,12 +403,11 @@ solanum_aa_generated = function(model) {
     "generated quantities {",
     "  // calculated log-likelihood to estimate LOOIC for model comparison",
     "  vector[n_lightintensity_x_acc_id] log_lik;",
-    str_replace(solanum_aa_aa(model), "target +", "log_lik[i] "),
+    str_replace(solanum_aa_aa(model), "target \\+", "log_lik[i] "),
     "}"
   )
   
 }
-
 
 # Calculate AA from parameter estimates:
 # log(A_amphi) = b0_a + b1_a * log(gsw) + b2_a * log(gsw) ^ 2
