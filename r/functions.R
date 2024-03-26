@@ -195,7 +195,7 @@ make_autocorr_matrix = function(elapsed, b_autocorr) {
 
 # 3. Fit data ----
 
-# Functions to write Stan models
+## Functions to write Stan models ----
 write_solanum_aa = function(model) {
   assert_string(model)
   assert_choice(model, paste0("aa", 1:5))
@@ -419,5 +419,158 @@ aa_int = function(log_gsw, b0_a, b0_h, b1_a, b1_h, b2_a, b2_h) {
   log_gsw ^ 3 * (b2_a / 3 - b2_h / 3) + 
     log_gsw ^ 2 * (b1_a / 2 - b1_h / 2) + 
     log_gsw * (b0_a - b0_h)
+  
+}
+
+## Function for checkpointing Stan models ----
+## Modified from chkptstanr::chkpt_stan()
+chkpt_stan1 = function(model_code,
+                       data,
+                       iter_warmup = 1000,
+                       iter_sampling = 1000,
+                       thin = 1,
+                       iter_per_chkpt = 100,
+                       chkpt_progress = TRUE,
+                       path,
+                       init = NULL,
+                       max_treedepth = 10L) {
+  chkpt_set_up = chkptstanr::chkpt_setup(iter_sampling, iter_warmup, iter_per_chkpt)
+  if (!dir.exists(path)) {
+    path = chkptstanr::create_folder(folder_name = path)
+  }
+  
+  ## write model code
+  stan_code_path = cmdstanr::write_stan_file(
+    code = model_code,
+    dir = paste0(path, "/stan_model"),
+    basename = "model"
+  )
+  
+  ## compile model
+  m = cmdstan_model(stan_code_path, dir = path)
+  
+  # check on current status
+  cp_files = list.files(paste0(path, "/cp_info"))
+  
+  ## iter_typical
+  if (length(cp_files) == 0) {
+    # initiate fit
+    last_chkpt = 0
+    sample_chunk = m$sample(
+      data = data,
+      refresh = 0,
+      init = list(init),
+      output_dir = path,
+      output_basename = "model",
+      chains = 1L,
+      parallel_chains = 1L,
+      iter_warmup = 150,
+      iter_sampling = 0,
+      save_warmup = TRUE,
+      thin = thin,
+      max_treedepth = max_treedepth,
+      adapt_engaged = TRUE,
+      adapt_delta = 0.8,
+      step_size = NULL
+    )
+    stan_state = chkptstanr::extract_stan_state(sample_chunk, "warmup")
+  } else {
+    # get stan state
+    checkpoints = as.numeric(gsub(".*info_(.+).rds.*", "\\1", cp_files))
+    last_chkpt = max(checkpoints)
+    stan_state = readRDS(file = paste0(path, "/cp_info/",
+                                       cp_files[which.max(checkpoints)]))
+  }
+  
+  if (last_chkpt == chkpt_set_up$total_chkpts) {
+    return(message("Checkpointing complete"))
+  } else {
+    cp_seq = seq(last_chkpt + 1, chkpt_set_up$total_chkpts)
+  }
+  
+  for (i in cp_seq) {
+    if (i <= chkpt_set_up$warmup_chkpts) {
+      stan_phase = "warmup"
+      sample_chunk = m$sample(
+        data = data,
+        refresh = 0,
+        init = stan_state$inits,
+        output_dir = path,
+        output_basename = "model",
+        chains = 1L,
+        parallel_chains = 1L,
+        iter_warmup = iter_per_chkpt,
+        iter_sampling = 0,
+        save_warmup = TRUE,
+        thin = thin,
+        max_treedepth = max_treedepth,
+        adapt_engaged = TRUE,
+        adapt_delta = 0.8,
+        step_size = stan_state$step_size_adapt,
+        inv_metric = stan_state$inv_metric
+      )
+    }
+    else {
+      stan_phase <- "sample"
+      sample_chunk = m$sample(
+        data = data,
+        refresh = 0,
+        init = stan_state$inits,
+        output_dir = path,
+        output_basename = "model",
+        chains = 1L,
+        parallel_chains = 1L,
+        iter_warmup = 0,
+        iter_sampling = iter_per_chkpt,
+        save_warmup = FALSE,
+        thin = thin,
+        max_treedepth = max_treedepth,
+        adapt_engaged = FALSE,
+        step_size = stan_state$step_size_adapt,
+        inv_metric = stan_state$inv_metric
+      )
+      sample_chunk$save_object(paste0(path, "/cp_samples/",
+                                      "samples_", i, ".rds"))
+    }
+    stan_state = chkptstanr::extract_stan_state(sample_chunk, stan_phase)
+    saveRDS(object = stan_state,
+            file = paste0(path, "/cp_info/cp_info_",
+                          i, ".rds"))
+    cat(chkptstanr:::progress_bar(chkpt_set_up, phase = stan_phase, i = i))
+    if (i == chkpt_set_up$total_chkpts) {
+      message("Checkpointing complete")
+    }
+  }
+  
+}
+
+combine_chkpt_draws1 = function(path) {
+
+  draws = list.files(paste0(path, "/cp_samples"), full.names = TRUE) |> 
+    map(read_rds) |>
+    map(\(.x) .x$draws())
+  
+  draws_dim = dim(draws[[1]])
+  draws_per_cp = draws_dim[1]
+  chains = draws_dim[2]
+  draws_total = draws_per_cp * length(draws)
+  param_names = dimnames(draws[[1]])$variable
+  param_total = length(param_names)
+  draws_abind = abind::abind(draws, along = 1)
+  draws_array = array(
+    data = 0,
+    dim = c(draws_total, chains,
+            param_total),
+    dimnames = list(
+      iteration = c(1:draws_total),
+      chain = c(1:chains),
+      variable = param_names
+    )
+  )
+  for (i in seq_along(param_names)) {
+    draws_array[, , i] = draws_abind[, , param_names[i]]
+  }
+  class(draws_array) = c("draws_array", "draws", "array")
+  return(draws_array)
   
 }

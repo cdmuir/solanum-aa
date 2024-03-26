@@ -77,8 +77,8 @@ rm fit_*
 # ACTUAL DATA
 
 # 1. Transfer files before logging in using scp
-scp data/prepared_rh_curves.rds data/stan_rh_curves.rds cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/solanum-aa/htc
-scp htc/fit_aa* stan/solanum-aa* cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/solanum-aa/htc
+scp data/stan_rh_curves.rds objects/init.rds cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/solanum-aa/htc
+scp r/functions.R htc/fit_aa* stan/solanum-aa* cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/solanum-aa/htc
 
 # 2. Login to submit node
 ssh cdmuir@ap2002.chtc.wisc.edu
@@ -98,8 +98,8 @@ condor_q 37753
 condor_q 37754
 condor_q 37755
 condor_q 37756
-# same as above, but as checkpoint job
-condor_q 40890
+# short run. same as above, but as checkpoint job
+condor_q 54771
 
 ls /var/lib/condor/spool
 vi fit_aa1_40890.log
