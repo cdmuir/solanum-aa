@@ -544,9 +544,18 @@ chkpt_stan1 = function(model_code,
   
 }
 
+sort_by_number = function(.x) {
+  .x[.x |>
+       str_remove_all(".*samples_") |>
+       str_remove(".rds") |>
+       as.integer() |>
+       order()]
+}
+
 combine_chkpt_draws1 = function(path) {
 
   draws = list.files(paste0(path, "/cp_samples"), full.names = TRUE) |> 
+    sort_by_number() |>
     map(read_rds) |>
     map(\(.x) .x$draws())
   

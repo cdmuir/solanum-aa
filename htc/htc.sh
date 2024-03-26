@@ -93,13 +93,16 @@ condor_submit solanum-aa/htc/fit_aa5.sub # ?
 
 # check status
 # 4e3 iterations, max_treedepth=12, correct covariance matrix
-condor_q 37751
-condor_q 37753
-condor_q 37754
-condor_q 37755
-condor_q 37756
+# took >72 hours
 # short run. same as above, but as checkpoint job
 condor_q 54771
+# long run. same as above, but as checkpoint job
+condor_q 54806 # aa1
+condor_q 54807 # aa2
+condor_q 54808 # aa3
+condor_q 54809 # aa4
+condor_q 54810 # aa5
+
 
 ls /var/lib/condor/spool
 vi fit_aa1_40890.log
