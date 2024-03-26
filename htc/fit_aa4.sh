@@ -16,4 +16,4 @@ export RHOME=$PWD/R
 export R_LIBS=$PWD/packages
 
 # run your script
-Rscript fit_aa4.R
+Rscript fit_aa4.R $1

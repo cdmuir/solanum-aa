@@ -18,6 +18,7 @@ scp htc/build-stan.sub cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/solanum-aa
 ssh cdmuir@ap2002.chtc.wisc.edu
 
 ## On submit node
+cd solanum-aa
 condor_submit -i build-r.sub
 tar -xzf R413.tar.gz
 export PATH=$PWD/R/bin:$PATH
@@ -83,6 +84,7 @@ scp htc/fit_aa* stan/solanum-aa* cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/solanu
 ssh cdmuir@ap2002.chtc.wisc.edu
 
 # 3. Submit jobs
+condor_submit -i solanum-aa/htc/fit_aa1.sub # ?
 condor_submit solanum-aa/htc/fit_aa1.sub # ?
 condor_submit solanum-aa/htc/fit_aa2.sub # ?
 condor_submit solanum-aa/htc/fit_aa3.sub # ?
@@ -90,14 +92,26 @@ condor_submit solanum-aa/htc/fit_aa4.sub # ?
 condor_submit solanum-aa/htc/fit_aa5.sub # ?
 
 # check status
-# Most recent - 4e4 iterations, max_treedepth=12, correct covariance matrix
+# 4e3 iterations, max_treedepth=12, correct covariance matrix
 condor_q 37751
 condor_q 37753
 condor_q 37754
 condor_q 37755
 condor_q 37756
+# same as above, but as checkpoint job
+condor_q 40890
+
+ls /var/lib/condor/spool
+vi fit_aa1_40890.log
+cd /var/lib/condor/spool/8668
+cd /home/cdmuir
+
+condor_tail 38668
+condor_tail 25015
 
 # 4. Retrieve results
+scp cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/draws_aa1_*.rds objects/
+
 scp cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/fit_aa1.rds objects/
 scp cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/fit_aa2.rds objects/
 scp cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/fit_aa3.rds objects/

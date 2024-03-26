@@ -1,3 +1,4 @@
+library(chkptstanr)
 library(cmdstanr)
 library(dplyr)
 library(purrr)
@@ -5,9 +6,17 @@ library(readr)
 library(stringr)
 library(tibble)
 
+args = commandArgs(trailingOnly = TRUE)
+
 set_cmdstan_path("cmdstan-2.34.1")
 
-m = cmdstan_model("solanum-aa4.stan")
+# m = cmdstan_model("solanum-aa4.stan")
+stan_code = read_lines("solanum-aa4.stan") |> paste(collapse = "\n")
+
+chkpt_path = paste0("chkpt_folder_aa4_", args[1])
+if (!dir.exists(chkpt_path)) {
+  create_folder(folder_name = chkpt_path)
+}
 
 rh_curves = read_rds("prepared_rh_curves.rds")
 stan_rh_curves = read_rds("stan_rh_curves.rds")
@@ -37,16 +46,36 @@ init = list(
   B_curve = B_curve
 )
 
-fit_m = m$sample(
+# Old version without checkpoint
+# fit_m = m$sample(
+#   data = stan_rh_curves,
+#   chains = 4L,
+#   parallel_chains = 4L,
+#   init = list(init, init, init, init),
+#   seed = 898932814,
+#   iter_warmup = 4e3,
+#   iter_sampling = 4e3,
+#   thin = 4e0,
+#   max_treedepth = 12L
+# )
+# 
+# fit_m$save_object("fit_aa4.rds")
+
+# New version with checkpoint
+fit_m = chkpt_stan(
+  model_code = stan_code, 
   data = stan_rh_curves,
-  chains = 4L,
-  parallel_chains = 4L,
-  init = list(init, init, init, init),
-  seed = 898932814,
   iter_warmup = 4e3,
   iter_sampling = 4e3,
-  thin = 4e0,
-  max_treedepth = 12L
+  iter_per_chkpt = 1e2,
+  iter_typical = 2e2,
+  parallel_chains = 1,
+  control = list(max_treedepth = 12L),
+  init = init,
+  path = chkpt_path
 )
-    
-fit_m$save_object("fit_aa4.rds")
+
+draws = combine_chkpt_draws(object = fit_m)
+
+write_rds(draws, paste0("draws_aa4_", args[1], ".rds"))
+tar(paste0(chkpt_path, ".tar"), chkpt_path)

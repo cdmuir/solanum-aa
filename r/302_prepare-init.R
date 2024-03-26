@@ -1,10 +1,7 @@
-# Fit model to actual data
+# Prepare initial values for solanum-aa models
 source("r/header.R")
 
-m = cmdstan_model("stan/solanum-aa1.stan", dir = "stan/bin")
-
 rh_curves = read_rds("data/prepared_rh_curves.rds")
-stan_rh_curves = read_rds("data/stan_rh_curves.rds")
 
 b = rh_curves |>
   mutate(across(c("curve"), \(.x) as.numeric(as.factor(.x)))) |>
@@ -31,15 +28,4 @@ init = list(
   B_curve = B_curve
 )
 
-fit_aa1 = m$sample(
-  data = stan_rh_curves,
-  chains = 2L,
-  parallel_chains = 2L,
-  init = list(init, init),
-  seed = 898932815,
-  iter_warmup = 2e3,
-  iter_sampling = 2e3,
-  refresh = 4e1
-)
-
-fit_aa1$save_object("objects/fit_aa1.rds")
+write_rds(init, "objects/init.rds")
