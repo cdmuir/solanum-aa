@@ -35,7 +35,7 @@ rh_curves1$resid = rstudent(fit1)
 hist(rh_curves1$resid)
 rh_curves1 |>
   filter(abs(resid) > 3.5) |>
-  select(acc_id, aa) |>
+  select(acc_id, aa, resid) |>
   arrange(aa) |>
   print(n = 21)
 
