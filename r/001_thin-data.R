@@ -17,9 +17,9 @@ thinning_summary = thinned_rh_curves |>
   ) |>
   mutate(percent_thin = 100 * (1 - n_keep / n_total))
 
-ggplot(thinning_summary, aes(percent_thin)) +
-  facet_grid(vars(light_intensity, light_treatment), vars(curve_type)) +
-  geom_histogram()
+# ggplot(thinning_summary, aes(percent_thin)) +
+#   facet_grid(vars(light_intensity, light_treatment), vars(curve_type)) +
+#   geom_histogram()
 
 thinned_rh_curves |>
   filter(keep) |>

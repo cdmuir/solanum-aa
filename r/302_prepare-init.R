@@ -1,7 +1,7 @@
 # Prepare initial values for solanum-aa models
 source("r/header.R")
 
-rh_curves = read_rds("data/prepared_rh_curves.rds")
+rh_curves = read_rds("data/trimmed_rh_curves.rds")
 
 b = rh_curves |>
   mutate(across(c("curve"), \(.x) as.numeric(as.factor(.x)))) |>

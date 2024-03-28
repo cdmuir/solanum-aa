@@ -1,68 +1,31 @@
 # Fit model to actual data
+# This version runs locally; I have other code for running on HPC
 source("r/header.R")
-library(chkptstanr)
 
-# m = cmdstan_model("stan/solanum-aa1.stan", dir = "stan/bin")
+m = "aa1"
 
-rh_curves = read_rds("data/prepared_rh_curves.rds")
+stan_code = read_lines(glue("stan/solanum-{m}.stan")) |> 
+  paste(collapse = "\n")
+
+chkpt_path = glue("checkpoints/chkpt_folder_{m}")
+
 stan_rh_curves = read_rds("data/stan_rh_curves.rds")
+init = read_rds("objects/init.rds")
 
-b = rh_curves |>
-  mutate(across(c("curve"), \(.x) as.numeric(as.factor(.x)))) |>
-  split(~ curve) |>
-  map_dfr(\(.x) {
-    fit = lm(log(A) ~ scaled_log_gsw + I(scaled_log_gsw ^ 2), data = .x)
-    b = unname(coef(fit))
-    tibble(b0 = b[1], b1 = b[2], b2 = b[3])
-  })
-
-Mu_curve = apply(b, 2, mean)
-
-B_curve = b |>
-  mutate(b0 = b0 - Mu_curve[1], b1 = b1 - Mu_curve[2], b2 = b2 - Mu_curve[3])
-
-R_curve = cor(B_curve)
-
-log_sigma_curve = log(diag(cov(B_curve)))
-
-init = list(
-  Mu_curve = Mu_curve,
-  R_curve = R_curve,
-  log_sigma_curve = log_sigma_curve,
-  B_curve = B_curve
-)
-
-stan_code = read_lines("stan/solanum-aa1.stan") |> paste(collapse = "\n")
-path = create_folder(folder_name = "chkpt_folder_aa1")
-fit_aa1 = chkpt_stan(
-  model_code = stan_code, 
+fit_m = chkpt_stan1(
+  model_code = stan_code,
   data = stan_rh_curves,
-  iter_warmup = 10,
-  iter_sampling = 10,
-  thin = 2,
-  iter_per_chkpt = 2,
-  iter_typical = 5,
-  chains = 4,
-  parallel_chains = 4,
+  iter_warmup = 4e3,
+  iter_sampling = 4e3,
+  thin = 4e0,
+  iter_per_chkpt = 2e2,
   chkpt_progress = TRUE,
-  init = list(init, init, init, init),
-  seed = 898932815,
-  path = path
+  path = chkpt_path,
+  init = init,
+  max_treedepth = 12L
 )
 
+draws = combine_chkpt_draws1(path = chkpt_path)
 
-draws = combine_chkpt_draws(object = fit_aa1)
-
-
-fit_aa1 = m$sample(
-  data = stan_rh_curves,
-  chains = 2L,
-  parallel_chains = 2L,
-  init = list(init, init),
-  seed = 898932815,
-  iter_warmup = 2e3,
-  iter_sampling = 2e3,
-  refresh = 4e1
-)
-
-fit_aa1$save_object("objects/fit_aa1.rds")
+write_rds(draws, glue("objects/draws_{m}.rds"))
+tar(paste0(chkpt_path, ".tar"), chkpt_path)

@@ -3,7 +3,7 @@ source("r/header.R")
 
 phy = read_rds("data/phylogeny.rds")
 
-rh_curves = read_rds("data/prepared_rh_curves.rds") |>
+rh_curves = read_rds("data/trimmed_rh_curves.rds") |>
   dplyr::select(
     A,
     scaled_log_gsw,
