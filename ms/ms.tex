@@ -78,28 +78,38 @@
 \makeatletter
 \def\fps@figure{htbp}
 \makeatother
+% definitions for citeproc citations
+\NewDocumentCommand\citeproctext{}{}
+\NewDocumentCommand\citeproc{mm}{%
+  \begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
+\makeatletter
+ % allow citations to break across lines
+ \let\@cite@ofmt\@firstofone
+ % avoid brackets around text for \cite:
+ \def\@biblabel#1{}
+ \def\@cite#1#2{{#1\if@tempswa , #2\fi}}
+\makeatother
 \newlength{\cslhangindent}
 \setlength{\cslhangindent}{1.5em}
 \newlength{\csllabelwidth}
 \setlength{\csllabelwidth}{3em}
-\newlength{\cslentryspacingunit} % times entry-spacing
-\setlength{\cslentryspacingunit}{\parskip}
-\newenvironment{CSLReferences}[2] % #1 hanging-ident, #2 entry spacing
- {% don't indent paragraphs
-  \setlength{\parindent}{0pt}
+\newenvironment{CSLReferences}[2] % #1 hanging-indent, #2 entry-spacing
+ {\begin{list}{}{%
+  \setlength{\itemindent}{0pt}
+  \setlength{\leftmargin}{0pt}
+  \setlength{\parsep}{0pt}
   % turn on hanging indent if param 1 is 1
   \ifodd #1
-  \let\oldpar\par
-  \def\par{\hangindent=\cslhangindent\oldpar}
+   \setlength{\leftmargin}{\cslhangindent}
+   \setlength{\itemindent}{-1\cslhangindent}
   \fi
   % set entry spacing
-  \setlength{\parskip}{#2\cslentryspacingunit}
- }%
- {}
+  \setlength{\itemsep}{#2\baselineskip}}}
+ {\end{list}}
 \usepackage{calc}
-\newcommand{\CSLBlock}[1]{#1\hfill\break}
-\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
-\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
+\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
 \newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
 
 \KOMAoption{captions}{tableheading}
@@ -109,17 +119,15 @@
 \newcommand{\Aamphi}{$A_{\mathrm{amphi}}$}
 \newcommand{\Ahypo}{$A_{\mathrm{hypo}}$}
 \newcommand{\agcurve}{$A \textendash g_\text{sw}$}
+\newcommand{\ca}{$C_\mathrm{a}$}
 \newcommand{\caequals}[1]{$C_\mathrm{a} = \qty{#1}{\micro\mol\raiseto{-1}\mol}$}
+\newcommand{\cabetween}[2]{#1 < $C_\mathrm{a} < \qty{#2}{\micro\mol\raiseto{-1}\mol}$}
 \newcommand{\gsw}{$g_\text{sw}$}
 \newcommand{\ppfd}{$\mathrm{PPFD}$}
 \newcommand{\ppfdequals}[1]{$\mathrm{PPFD} = \qty{#1}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$}
 \newcommand{\rh}{$\mathrm{RH}$}
 \newcommand{\rhequals}[1]{$\mathrm{RH} = #1\%$}
 \newcommand{\tleafequals}[1]{$T_\mathrm{leaf} = \qty{#1}{\degreeCelsius}$}
-\makeatletter
-\makeatother
-\makeatletter
-\makeatother
 \makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \AtBeginDocument{%
@@ -156,23 +164,16 @@
 \newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
 \makeatother
 \makeatletter
+\makeatother
+\makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
-\makeatother
-\makeatletter
-\@ifpackageloaded{tcolorbox}{}{\usepackage[skins,breakable]{tcolorbox}}
-\makeatother
-\makeatletter
-\@ifundefined{shadecolor}{\definecolor{shadecolor}{rgb}{.97, .97, .97}}
-\makeatother
-\makeatletter
-\makeatother
-\makeatletter
 \makeatother
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\usepackage{bookmark}
+
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
@@ -190,10 +191,8 @@
 
 \begin{document}
 \maketitle
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, interior hidden, borderline west={3pt}{0pt}{shadecolor}, breakable, sharp corners, frame hidden, enhanced]}{\end{tcolorbox}}\fi
 
-\hypertarget{notes}{%
-\subsection{Notes}\label{notes}}
+\subsection{Notes}\label{notes}
 
 In preamble: - short codes for commonly used symbols - ?
 
@@ -210,8 +209,12 @@ Terminology to standardize:
   ?
 \end{itemize}
 
-\hypertarget{main}{%
-\subsection{Main}\label{main}}
+\subsection{Authors}\label{authors}
+
+definite: Wei Shen Lim, Dachuan Wang, Chris Muir question: Sam McKlin,
+Tom Buckley
+
+\subsection{Main}\label{main}
 
 {[}introduction{]} Stomata are important
 
@@ -329,8 +332,8 @@ light intensity
 \endlastfoot
 acclimatory & cor(PAR, AA) = 0 & AAsun = AAshade & AA2000 \textgreater{}
 AA150 \\
-plastic & cor(PAR, AAsun) \textgreater{} 0 & AAsun \textgreater{}
-AAshade & AA2000 = AA150 \\
+plastic & cor(PAR, AA) = 0 & AAsun \textgreater{} AAshade & AA2000 =
+AA150 \\
 constitutive & cor(PAR, AA) \textgreater{} 0 & AAsun = AAshade & AA2000
 = AA150 \\
 \end{longtable}
@@ -359,13 +362,11 @@ paragraph, or it's own?).
 new trait that should be considered and that CO2 diffusion becomes major
 limitation
 
-\hypertarget{materials-and-methods}{%
-\subsection{Materials and Methods}\label{materials-and-methods}}
+\subsection{Materials and Methods}\label{materials-and-methods}
 
 {[}this will be moved to SI eventually{]}
 
-\hypertarget{accessions}{%
-\subsubsection{Accessions}\label{accessions}}
+\subsubsection{Accessions}\label{accessions}
 
 We compared AA among 30 ecologically diverse accessions of wild tomato,
 including representatives of all described species of \emph{Solanum}
@@ -380,10 +381,15 @@ accession selection and phylogeny?{]}
 
 \begin{table}
 
-\end{table}
+\caption{\label{tbl-accessions}Solanum accessions}
 
-\hypertarget{plant-growth-conditions}{%
-\subsubsection{Plant growth conditions}\label{plant-growth-conditions}}
+\centering{
+
+}
+
+\end{table}%
+
+\subsubsection{Plant growth conditions}\label{plant-growth-conditions}
 
 In all growth spaces, we recorded \(\mathrm{PPFD}\) using full spectrum
 quantum sensors (SQ-500-SS, Apogee Instruments, Logan, Utah, USA); we
@@ -395,9 +401,8 @@ measured. We measured leaf temperature of focal leaves prior to
 measurement using an infrared radiometer (SI-111-SS, Apogee Instruments,
 Logan, Utah, USA).
 
-\hypertarget{germination-and-seedling-stage}{%
 \paragraph{Germination and seedling
-stage}\label{germination-and-seedling-stage}}
+stage}\label{germination-and-seedling-stage}
 
 Seeds provided by the Tomato Genetics Resource Center germinated on
 moist paper in plastic boxes after soaking for 30-60 minutes in a 50\%
@@ -411,8 +416,7 @@ same environmental conditions (12:12 h, 25:\(\qty{20}{\degreeCelsius}\),
 \(\mathrm{PPFD} = \qty{200}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}\)
 (Fluence RAZRx, Austin, Texas, USA).
 
-\hypertarget{light-treatments}{%
-\paragraph{Light treatments}\label{light-treatments}}
+\paragraph{Light treatments}\label{light-treatments}
 
 Seedlings were randomly assigned in alternating order within accession
 to the sun or shade treatment during transplanting. After seedlings
@@ -448,8 +452,7 @@ lower. However, because of evaporative cooling, the leaves in the sun
 treatment were only \(\qty{1}{\degreeCelsius}\) on average (\(n = 600\)
 leaves).
 
-\hypertarget{leaf-trait-measurements}{%
-\subsubsection{Leaf trait measurements}\label{leaf-trait-measurements}}
+\subsubsection{Leaf trait measurements}\label{leaf-trait-measurements}
 
 We selected a fully expanded, unshaded leaf at least six leaves above
 the cotyledons during early vegetative growth. This typically meant that
@@ -470,8 +473,7 @@ the same leaf (10.0)\%. We measured chlorophyll concentration index
 Instruments, Logan, Utah, USA) on the lamina of focal leaflets before
 gas exchange measurements at the same time we measured leaf temperature.
 
-\hypertarget{amphistomy-advantage}{%
-\paragraph{Amphistomy advantage}\label{amphistomy-advantage}}
+\paragraph{Amphistomy advantage}\label{amphistomy-advantage}
 
 We estimated `amphistomy advantage' (\aax) \emph{sensu} (\emph{4}), but
 with modifications previously described in (\emph{1}). \aax{} is
@@ -526,8 +528,7 @@ logged data until \gsw{} reached its nadir. We then acclimated the leaf
 to low light (\ppfdequals{150}) and \rhequals{70} before inducing
 stomatal closure with low \rh and logging data as described above.
 
-\hypertarget{light-response-curves}{%
-\paragraph{Light-response curves}\label{light-response-curves}}
+\paragraph{Light-response curves}\label{light-response-curves}
 
 In 90.0\% of plants, we measured light-response curves on the same
 leaflets as \agcurve{} curves. However, when a leaflet was damaged
@@ -539,8 +540,7 @@ and \tleafequals{25}. After \(A\) and \gsw{} stabilized, we measured
 \(\qty{2000}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}\) in
 descending order.
 
-\hypertarget{stomatal-anatomy}{%
-\paragraph{Stomatal anatomy}\label{stomatal-anatomy}}
+\paragraph{Stomatal anatomy}\label{stomatal-anatomy}
 
 We estimated the stomatal density and size on ab- and adaxial leaf
 surfaces from all leaves, using guard cell length as a proxy for
@@ -557,8 +557,7 @@ of ImageJ2 version 2.3.0 (\emph{7}), then divided the count by the
 visible leaf area (\(\qty{0.890}{\raiseto{2}\milli\meter}\)) to estimate
 stomatal density.
 
-\hypertarget{leaf-mass-per-area}{%
-\paragraph{Leaf mass per area}\label{leaf-mass-per-area}}
+\paragraph{Leaf mass per area}\label{leaf-mass-per-area}
 
 Leaf mass per area (LMA) is the dry mass divided by the leaflet area. We
 scanned fresh leaflets on a flat bed scanner (Epson V600, Los Alamitos,
@@ -573,39 +572,244 @@ making surface impressions and we could not reliably estimate area. LMA
 data are missing from \(3.0\%\) of individuals because the area or mass
 was not recorded at all or recorded incorrectly.
 
-\hypertarget{data-analysis}{%
-\subsubsection{Data analysis}\label{data-analysis}}
+\subsubsection{\texorpdfstring{Cleaning \agcurve{}
+curves}{Cleaning  curves}}\label{cleaning-curves}
 
-\hypertarget{general-points-not-sure-where-this-goes-yet}{%
+The raw data set consisted of 2400 \agcurve{} curves with an average of
+100. Principled, consistent, manual curation of a data set this size is
+not feasible. Therefore, we automated data cleaning using custom
+\emph{R} scripts. Cleaning is divided into XXX sequential steps:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  remove unreliable data points
+\item
+  remove hysteretic portion of \agcurve{} curves at low \gsw{}
+\item
+  remove outliers within each \agcurve{} curve
+\item
+  remove replicates with no overlap between amphi and pseudohypo
+  \agcurve{} curves
+\item
+  remove replicates with outlier \aax values
+\end{enumerate}
+
+\paragraph{Remove unreliable data
+points}\label{remove-unreliable-data-points}
+
+\emph{Rationale}: Unreliable data points consisted of those where
+chamber {[}CO\(_2\){]} was unstable and therefore measurements are not
+biologically meaningful.
+
+\emph{Procedure}: We retained data points where \cabetween{410}{420}.
+
+\paragraph{\texorpdfstring{Remove hysteretic portion of \agcurve{}
+curves at low
+\gsw{}}{Remove hysteretic portion of  curves at low }}\label{remove-hysteretic-portion-of-curves-at-low}
+
+\emph{Rationale}: In most \agcurve{} curves, we observed a hysteretic
+response at low \gsw. After \gsw{} and \(A\) declined simultaneously,
+\(A\) increased slightly as \gsw{} continued to decline or stabilize,
+indicating some leaf acclimation to low \rh. We removed this portion of
+the curve to focus curve-fitting on the primary domain where \(A\)
+increases monotonically with \gsw{}.
+
+\emph{Procedure}: For each
+
+\subsubsection{Data analysis}\label{data-analysis}
+
 \paragraph{General points (not sure where this goes
-yet)}\label{general-points-not-sure-where-this-goes-yet}}
+yet)}\label{general-points-not-sure-where-this-goes-yet}
 
 \begin{itemize}
 \tightlist
 \item
   models fit in Stan/brms
 \item
-  warmup and sampling iterations were chosen so that parameter ESS
-  \textgreater{} 1000 and \(\hat{R} < 1.01\) (\emph{8}) and the
-  effective sample size (ESS) was greater than \(10^3\).
+  we chose the number of chains, warmup and sampling iterations, and
+  maximum treedepth so that parameter estimates converged
+  (\(\hat{R} < 1.01\) (\emph{8})) and the effective sample size (ESS)
+  for each parameter was greater than \(10^3\).
 \end{itemize}
 
 We fit Bayesian models using the \emph{R} package \textbf{brms} version
-2.20.4 (\emph{9}) with MCMC sampling in \emph{Stan} version XXX
-(\emph{10}). We used CmdStan version 2.33.1 and \textbf{cmdstanr}
-version 0.7.1 (\emph{11}) to interface with \emph{R} version 4.3.2
-(\emph{12}). We sampled the posterior distribution from 4 chains with
-1000 iterations each after 1000 warmup iterations per chain. We
-estimated parameters and confidence intervals as the median and 95\%
-quantile intervals of the posterior, respectively.
+2.20.4 (\emph{9}) with MCMC sampling in \emph{Stan} (\emph{10}). We used
+CmdStan version 2.33.1 and \textbf{cmdstanr} version 0.7.1 (\emph{11})
+to interface with \emph{R} version 4.3.2 (\emph{12}). We sampled the
+posterior distribution from 4 chains with 1000 iterations each after
+1000 warmup iterations per chain. We estimated parameters and confidence
+intervals as the median and 95\% quantile intervals of the posterior,
+respectively.
 
-\hypertarget{references}{%
-\subsection*{References}\label{references}}
+\paragraph{Parameter estimates (this is a provisional
+section)}\label{parameter-estimates-this-is-a-provisional-section}
+
+Base model (need to add indices):
+
+\[\text{log(A)} = \beta_0 + \beta_1 \text{log}(g_\text{sw}) + \beta_2 \text{log}(g_\text{sw}) ^ 2 + \epsilon\]
+Estimate \aax{} by integrating over range of \gsw{} overlap (need to add
+indices for accession, replicate, light intensity):
+
+\[\mathrm{AA} = \int_{\text{min(log(}g_\text{sw}))}^{\text{max(log(}g_\text{sw}))} \text{log}\bigg(\frac{A_\text{amphi}(x; \theta_\text{amphi})}{A_\text{hypo}(x; \theta_\text{hypo})}\bigg) dx\]
+
+where \(\text{min(log(}g_\text{sw}))\) and
+\(\text{max(log(}g_\text{sw}))\) are the minimum and maximum values of
+\(\text{log(}g_\text{sw})\) where amphi and pseudohypo curves overlap.
+\Aamphi{} is calculated from parameter estimates
+\(\theta_\text{amphi} \in \{\beta_{0,\text{amphi}}, \beta_{1,\text{amphi}}, \beta_{2,\text{amphi}}\}\);
+\Ahypo{} is calculated from parameter estimates
+\(\theta_\text{hypo} \in \{\beta_{0,\text{hypo}}, \beta_{1,\text{hypo}}, \beta_{2,\text{hypo}}\}\)
+for each curve.
+
+\paragraph{Predictions}\label{predictions}
+
+\begin{itemize}
+\tightlist
+\item
+  Assimilatory:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    average AA2000 - AA150
+  \item
+    among accession variation in AA2000 - AA150
+  \end{itemize}
+\item
+  Plastic
+
+  \begin{itemize}
+  \tightlist
+  \item
+    average AAsun - AAshade
+  \item
+    among accession variation in AAsun - AAshade
+  \end{itemize}
+\item
+  Constitutive
+
+  \begin{itemize}
+  \tightlist
+  \item
+    cor(PAR, AA) at accession level
+  \end{itemize}
+\end{itemize}
+
+Reinforcing interactions (we only consider these because these are ones
+which could explain why amphi leaves occur in high light habitats)
+
+\begin{itemize}
+\tightlist
+\item
+  Assimilatory * Plastic (reinforcing interaction)
+
+  \begin{itemize}
+  \tightlist
+  \item
+    AAsun - AAshade greater at 2000 than 150
+  \item
+    AA2000 - AA150 greater in sun leaves than shade leaves
+  \item
+    there may be var among accessions, but not correlated with PAR
+  \end{itemize}
+\item
+  Assimilatory * Constitutive (reinforcing interaction)
+
+  \begin{itemize}
+  \tightlist
+  \item
+    cor(AA2000, PAR) \textgreater{} 0; cor(AA150, PAR) = 0
+  \item
+    AA2000 - AA150 varies among accessions, correlated with PAR
+  \end{itemize}
+\item
+  Plastic * Constitutive (reinforcing interaction)
+
+  \begin{itemize}
+  \tightlist
+  \item
+    cor(AAsun, PAR) \textgreater{} 0; cor(AAshade, PAR) = 0
+  \item
+    AAsun - AAshade varies among accessions, correlated with PAR
+  \end{itemize}
+\item
+  Assimilatory * Plastic * Constitutive (reinforcing interaction)
+
+  \begin{itemize}
+  \tightlist
+  \item
+    AAsun - AAshade greater at 2000 than 150
+  \item
+    AA2000 - AA150 greater in sun leaves than shade leaves
+  \item
+    AAsun - AAshade varies among accession, correlated with PAR
+  \item
+    AA2000 - AA150 varies among accession, correlated with PAR
+  \item
+    cor(AAsun2000, PAR) \textgreater{} cor(AAsun150, PAR) and
+    \textgreater{} cor(AAshade2000, PAR) and \textgreater{}
+    cor(AAshade150, PAR) in nonadditive way
+  \end{itemize}
+\end{itemize}
+
+We tested competing predictions through a combination of model selection
+and parameter estimation from the posterior of selected models. We
+started with a base model that includes fixed effects of light intensity
+and light treatment on \aax, a random effect of accession on \aax, and a
+linear regression of PAR on accession-level \aax. We next compared the
+fit of the base model to a more complex with an interaction between
+light intensity and light treatment using LOOIC with the \textit{R}
+package \textbf{loo} version 2.7.0 (\textbf{vehtari\_practical\_2017?}).
+These comparisons allowed us to test the main predictions of each
+hypothesis and for a reinforcing interactions between assimilatory and
+plastic hypotheses (tab:predictions). However, these models cannot test
+predictions when there is an interaction with the constitutive
+hypothesis, because this hypothesis posits accession-levels variation in
+responses to light intensity and/or light treatment. Therefore, we
+tested for significant variation among accessions in light intensity and
+light treatment by comparing LOOIC values of models with and without
+random interactions between these factors and accession.
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3182}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.2727}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.4091}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Hypothesis
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Prediction
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Model
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Assimilatory & & base model \\
+Plastic & & base model \\
+Constitutive & & base model \\
+Assimilatory * Plastic & & + intensity \(\times\) treatment \\
+Assimilatory * Constitutive & & + accession \(\times\) intensity
+(random) \\
+Plastic * Constitutive & & + accession \(\times\) treatment (random) \\
+Assimilatory * Plastic * Constitutive & & + accession \(\times\)
+intensity \(\times\) treatment (random) \\
+\end{longtable}
+
+\subsection{Acknowledgements}\label{acknowledgements}
+
+Justin Alter, Max Gatlin, Joana Kim, Jenna Matsuyama, Brandon Najarian,
+Kai Yasuda
+
+\subsection*{References}\label{references}
 \addcontentsline{toc}{subsection}{References}
 
-\hypertarget{refs}{}
-\begin{CSLReferences}{0}{0}
-\leavevmode\vadjust pre{\hypertarget{ref-triplett_amphistomy_2024}{}}%
+\phantomsection\label{refs}
+\begin{CSLReferences}{0}{1}
+\bibitem[\citeproctext]{ref-triplett_amphistomy_2024}
 \CSLLeftMargin{1. }%
 \CSLRightInline{G. Triplett, T. N. Buckley, C. D. Muir,
 \href{https://doi.org/10.1002/ajb2.16284}{Amphistomy increases leaf
@@ -613,14 +817,14 @@ photosynthesis more in coastal than montane plants of {Hawaiian} ʻilima
 ( \emph{{Sida} fallax} )}. \emph{American Journal of Botany}
 \textbf{111}, e16284 (2024).}
 
-\leavevmode\vadjust pre{\hypertarget{ref-peralta_taxonomy_2008}{}}%
+\bibitem[\citeproctext]{ref-peralta_taxonomy_2008}
 \CSLLeftMargin{2. }%
 \CSLRightInline{I. E. Peralta, D. M. Spooner, S. Knapp, Taxonomy of wild
 tomatoes and their relatives (\emph{solanum} sect.
 \emph{Lycopersicoides}, sect. \emph{Juglandifolia}, sect.
 \emph{Lycopersicon}; {Solanaceae}). \textbf{84} (2008).}
 
-\leavevmode\vadjust pre{\hypertarget{ref-schoch_dependence_1980}{}}%
+\bibitem[\citeproctext]{ref-schoch_dependence_1980}
 \CSLLeftMargin{3. }%
 \CSLRightInline{P.-G. Schoch, C. Zinsou, M. Sibi,
 \href{https://doi.org/10.1093/jxb/31.5.1211}{Dependence of the stomatal
@@ -628,27 +832,27 @@ index on environmental factors during stomatal differentiation in leaves
 of \emph{{Vigna} sinensis} {L}.: 1. {Effect} of light intensity}.
 \emph{Journal of Experimental Botany} \textbf{31}, 1211--1216 (1980).}
 
-\leavevmode\vadjust pre{\hypertarget{ref-parkhurst_adaptive_1978}{}}%
+\bibitem[\citeproctext]{ref-parkhurst_adaptive_1978}
 \CSLLeftMargin{4. }%
 \CSLRightInline{D. F. Parkhurst,
 \href{https://doi.org/10.2307/2259142}{The adaptive significance of
 stomatal occurrence on one or both surfaces of leaves}. \emph{The
 Journal of Ecology} \textbf{66}, 367--383 (1978).}
 
-\leavevmode\vadjust pre{\hypertarget{ref-sack_developmental_2016}{}}%
+\bibitem[\citeproctext]{ref-sack_developmental_2016}
 \CSLLeftMargin{5. }%
 \CSLRightInline{L. Sack, T. N. Buckley,
 \href{https://doi.org/10.1104/pp.16.00476}{The developmental basis of
 stomatal density and flux}. \emph{Plant Physiology} \textbf{171},
 2358--2363 (2016).}
 
-\leavevmode\vadjust pre{\hypertarget{ref-mott_amphistomy_1991}{}}%
+\bibitem[\citeproctext]{ref-mott_amphistomy_1991}
 \CSLLeftMargin{6. }%
 \CSLRightInline{K. A. Mott, O. Michaelson, Amphistomy as an adaptation
 to high light intensity in \emph{{Ambrosia} cordifolia} ({Compositae}).
 \emph{American Journal of Botany} \textbf{78}, 76--79 (1991).}
 
-\leavevmode\vadjust pre{\hypertarget{ref-schindelin_fiji_2012}{}}%
+\bibitem[\citeproctext]{ref-schindelin_fiji_2012}
 \CSLLeftMargin{7. }%
 \CSLRightInline{J. Schindelin, I. Arganda-Carreras, E. Frise, V. Kaynig,
 M. Longair, T. Pietzsch, S. Preibisch, C. Rueden, S. Saalfeld, B.
@@ -657,13 +861,13 @@ Tomancak, A. Cardona, \href{https://doi.org/10.1038/nmeth.2019}{Fiji: An
 open-source platform for biological-image analysis}. \emph{Nature
 Methods} \textbf{9}, 676--682 (2012).}
 
-\leavevmode\vadjust pre{\hypertarget{ref-gelman_inference_1992}{}}%
+\bibitem[\citeproctext]{ref-gelman_inference_1992}
 \CSLLeftMargin{8. }%
 \CSLRightInline{A. Gelman, D. B. Rubin, Inference from iterative
 simulation using multiple sequences. \emph{Statistical Science}
 \textbf{7}, 457--472 (1992).}
 
-\leavevmode\vadjust pre{\hypertarget{ref-burkner_brms_2017}{}}%
+\bibitem[\citeproctext]{ref-burkner_brms_2017}
 \CSLLeftMargin{9. }%
 \CSLRightInline{P.-C. Bürkner,
 \href{https://doi.org/10.18637/jss.v080.i01}{\textbf{Brms} : {An}
@@ -671,20 +875,20 @@ simulation using multiple sequences. \emph{Statistical Science}
 \emph{stan}}. \emph{Journal of Statistical Software} \textbf{80}
 (2017).}
 
-\leavevmode\vadjust pre{\hypertarget{ref-stan_development_team_stan_2023}{}}%
+\bibitem[\citeproctext]{ref-stan_development_team_stan_2023}
 \CSLLeftMargin{10. }%
 \CSLRightInline{Stan Development Team, \emph{Stan {Modeling} {Language}
 {Users} {Guide} and {Reference} {Manual}} (2023;
 \url{https://mc-stan.org}).}
 
-\leavevmode\vadjust pre{\hypertarget{ref-gabry_cmdstanr_2023}{}}%
+\bibitem[\citeproctext]{ref-gabry_cmdstanr_2023}
 \CSLLeftMargin{11. }%
 \CSLRightInline{J. Gabry, R. Češnovar, \emph{Cmdstanr: {R} {Interface}
 to '{CmdStan}'} (2023;
 \href{https://mc-stan.org/cmdstanr,\%20https://discourse.mc-stan.org}{https://mc-stan.org/cmdstanr,
 https://discourse.mc-stan.org}).}
 
-\leavevmode\vadjust pre{\hypertarget{ref-r_core_team_r:_2023}{}}%
+\bibitem[\citeproctext]{ref-r_core_team_r:_2023}
 \CSLLeftMargin{12. }%
 \CSLRightInline{R Core Team, \emph{R: {A} {Language} and {Environment}
 for {Statistical} {Computing}} (R Foundation for Statistical Computing,

@@ -11,7 +11,9 @@ header-includes: |
   \newcommand{\Aamphi}{$A_{\mathrm{amphi}}$}
   \newcommand{\Ahypo}{$A_{\mathrm{hypo}}$}
   \newcommand{\agcurve}{$A \textendash g_\text{sw}$}
+  \newcommand{\ca}{$C_\mathrm{a}$}
   \newcommand{\caequals}[1]{$C_\mathrm{a} = \qty{#1}{\micro\mol\raiseto{-1}\mol}$}
+  \newcommand{\cabetween}[2]{#1 < $C_\mathrm{a} < \qty{#2}{\micro\mol\raiseto{-1}\mol}$}
   \newcommand{\gsw}{$g_\text{sw}$}
   \newcommand{\ppfd}{$\mathrm{PPFD}$}
   \newcommand{\ppfdequals}[1]{$\mathrm{PPFD} = \qty{#1}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$}
@@ -64,6 +66,13 @@ p_blue_low = "13.0"
 
 percent_lma_switch = "5.0" # percent measure LMA on alternate leaflet
 percent_lma_missing = "3.0" # percent leaves missing LMA
+
+### Cleaning RH curves
+n_rh_curve_raw = 2400 # export from adaptive-amphistomy/r/07_process-licor.R
+n_points_per_rh_curves_raw = 100 # export from adaptive-amphistomy/r/07_process-licor.R
+ca_min = 410 # export from adaptive-amphistomy/r/10_filter-rh-curves.R
+ca_max = 420 # export from adaptive-amphistomy/r/10_filter-rh-curves.R
+n_min_points_per_rh_curve = 10 # export from adaptive-amphistomy/r/10_filter-rh-curves.R
 
 loo_version = "2.7.0"
 ```
@@ -219,12 +228,36 @@ Add information on internal leaf anatomy, if using
 
 Leaf mass per area (LMA) is the dry mass divided by the leaflet area. We scanned fresh leaflets on a flat bed scanner (Epson V600, Los Alamitos, California. USA) and measured leaflet area from digital images using the FIJI implementation of ImageJ2 version 2.3.0 [@schindelin_fiji_2012]. We dried leaves for 72 hours at $\qty{74}{\degreeCelsius}$ in a food dehydrator (Cosori CP267-FD, Vesync Co., Anaheim, California, USA) and weighed using a benchtop analytical balance (Ohaus PR64 Analytical Balance, Parsippany, New Jersey, USA). In $`r percent_lma_switch`\%$ we measured LMA on the adjacent leaflet because the focal leaflet was damaged or wilted while making surface impressions and we could not reliably estimate area. LMA data are missing from $`r percent_lma_missing`\%$ of individuals because the area or mass was not recorded at all or recorded incorrectly.
 
+### Cleaning \agcurve{} curves
+
+The raw data set consisted of `r n_rh_curve_raw` \agcurve{} curves with an average of `r n_points_per_rh_curves_raw`. Principled, consistent, manual curation of a data set this size is not feasible. Therefore, we automated data cleaning using custom *R* scripts. Cleaning is divided into XXX sequential steps:
+
+1. remove unreliable data points
+2. remove hysteretic portion of \agcurve{} curves at low \gsw{}
+3. remove outliers within each \agcurve{} curve
+4. remove replicates with no overlap between amphi and pseudohypo \agcurve{} curves
+5. remove replicates with outlier \aax values
+
+#### Remove unreliable data points
+
+*Rationale*: Unreliable data points consisted of those where chamber [CO$_2$] was unstable and therefore measurements are not biologically meaningful.
+
+*Procedure*: We retained data points where \cabetween{`r ca_min`}{`r ca_max`}.
+
+#### Remove hysteretic portion of \agcurve{} curves at low \gsw{}
+
+*Rationale*: In most \agcurve{} curves, we observed a hysteretic response at low \gsw. After \gsw{} and $A$ declined simultaneously, $A$ increased slightly as \gsw{} continued to decline or stabilize, indicating some leaf acclimation to low \rh. We removed this portion of the curve to focus curve-fitting on the primary domain where $A$ increases monotonically with \gsw{}.
+
+*Procedure*: For each curve, we removed data points after \gsw{} had reached its minimum unless there were fewer than `r n_min_points_per_rh_curve` data points remaining.
+
+WORKING HERE
+
 ### Data analysis
 
 #### General points (not sure where this goes yet)
 
 - models fit in Stan/brms
-- warmup and sampling iterations were chosen so that parameter ESS > 1000 and  $\hat{R} < 1.01$ [@gelman_inference_1992] and the effective sample size (ESS) was greater than $10^3$.
+- we chose the number of chains, warmup and sampling iterations, and maximum treedepth so that parameter estimates converged ($\hat{R} < 1.01$ [@gelman_inference_1992]) and the effective sample size (ESS) for each parameter was greater than $10^3$.
 
 We fit Bayesian models using the *R* package **brms** version `r fit_aa$version$brms` [@burkner_brms_2017] with MCMC sampling in *Stan* [@stan_development_team_stan_2023]. We used CmdStan version `r fit_aa$version$cmdstan` and **cmdstanr** version `r fit_aa$version$cmdstanr` [@gabry_cmdstanr_2023] to interface with *R* version `r getRversion()` [@r_core_team_r:_2023]. We sampled the posterior distribution from `r dim_fit_aa[2]` chains with `r dim_fit_aa[1]` iterations each after `r dim_fit_aa[1]` warmup iterations per chain. We estimated parameters and confidence intervals as the median and 95% quantile intervals of the posterior, respectively. 
 
