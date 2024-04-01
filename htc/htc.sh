@@ -92,21 +92,24 @@ condor_submit solanum-aa/htc/fit_aa4.sub # ?
 condor_submit solanum-aa/htc/fit_aa5.sub # ?
 
 # check status
-# 4e3 iterations, max_treedepth=12, correct covariance matrix
-# took >72 hours
-# short run. same as above, but as checkpoint job
-condor_q 54771
-# long run. same as above, but as checkpoint job
-condor_q 54806 # aa1
-condor_q 54807 # aa2
-condor_q 54808 # aa3
-condor_q 54809 # aa4
-condor_q 54810 # aa5
+# 4e3 iterations, max_treedepth=12, correct covariance matrix, checkpoint ever 2e2
+condor_q 88597 # aa1
+condor_q 88598 # aa2
+condor_q 88599 # aa3
+condor_q 88600 # aa4
+condor_q 88601 # aa5
+# same as above, but checkpoint every 1e1
+condor_q 93809 # aa1
+condor_q 93810 # aa2
+condor_q 93811 # aa3
+condor_q 93812 # aa4
+condor_q 93813 # aa5
 
-
+condor_tail 88597.1
 ls /var/lib/condor/spool
 vi fit_aa1_40890.log
-cd /var/lib/condor/spool/8668
+ls /var/lib/condor/spool/8598/0/cluster88598.proc0.subproc0/chkpt_folder_aa2_0/cp_info
+ls /var/lib/condor/spool/8601/0/cluster88601.proc0.subproc0/chkpt_folder_aa5_0/cp_info
 cd /home/cdmuir
 
 condor_tail 38668

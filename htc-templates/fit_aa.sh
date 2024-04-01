@@ -16,4 +16,12 @@ export RHOME=$PWD/R
 export R_LIBS=$PWD/packages
 
 # run your script
-Rscript fit_{m}.R $1
+timeout 10h Rscript fit_{m}.R $1
+
+timeout_exit_status=$?
+ 
+if [ $timeout_exit_status -eq 124 ]; then
+    exit 85
+fi
+
+exit $timeout_exit_status

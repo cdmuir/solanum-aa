@@ -428,8 +428,10 @@ chkpt_stan1 = function(model_code,
                        data,
                        iter_warmup = 1000,
                        iter_sampling = 1000,
+                       iter_typical = 150,
                        thin = 1,
                        iter_per_chkpt = 100,
+                       exit_after = NULL,
                        chkpt_progress = TRUE,
                        path,
                        init = NULL,
@@ -464,7 +466,7 @@ chkpt_stan1 = function(model_code,
       output_basename = "model",
       chains = 1L,
       parallel_chains = 1L,
-      iter_warmup = 150,
+      iter_warmup = iter_typical,
       iter_sampling = 0,
       save_warmup = TRUE,
       thin = thin,
@@ -485,7 +487,8 @@ chkpt_stan1 = function(model_code,
   if (last_chkpt == chkpt_set_up$total_chkpts) {
     return(message("Checkpointing complete"))
   } else {
-    cp_seq = seq(last_chkpt + 1, chkpt_set_up$total_chkpts)
+    cp_seq = seq(last_chkpt + 1,
+                 min(last_chkpt + 1 + exit_after, chkpt_set_up$total_chkpts))
   }
   
   for (i in cp_seq) {
