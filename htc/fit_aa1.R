@@ -12,32 +12,27 @@ args = commandArgs(trailingOnly = TRUE)
 
 set_cmdstan_path("cmdstan-2.34.1")
 
-stan_code = read_lines("solanum-aa1.stan") |> 
-  paste(collapse = "\n")
+s = "chkpt_folder_aa1"
+chkpt_path = paste0("checkpoints/", s)
 
-chkpt_path = paste0("chkpt_folder_aa1_", args[1])
-
-stan_rh_curves = read_rds("stan_rh_curves.rds")
-init = read_rds("init.rds")
-
-fit_m = chkpt_stan1(
-  model_code = stan_code,
-  data = stan_rh_curves,
-  iter_warmup = 4e3,
-  iter_sampling = 4e3,
-  iter_typical = 150,
-  thin = 4e0,
-  iter_per_chkpt = 1e1,
-  exit_after = NULL,
-  chkpt_progress = TRUE,
-  path = chkpt_path,
-  init = init,
-  max_treedepth = 12L
-)
-
-if (length(list.files(paste0(chkpt_path, "/cp_samples")) > 0)) {
-  draws = combine_chkpt_draws1(path = chkpt_path)
-  write_rds(draws, paste0("draws_aa1_", args[1], ".rds"))
+# Only untar if path doesn't exist (first run)
+if (!dir.exists(chkpt_path)) {
+  untar(paste0(s, ".tar"))
+  options(cmdstanr_force_recompile = TRUE)
+  file.remove(paste0(s, ".tar"))
 }
 
-tar(paste0(chkpt_path, ".tar"), chkpt_path)
+fit_m = chkpt_stan1(
+  chkpt_path,
+  iter_warmup = 40, #4e3,
+  iter_sampling = 40, #4e3,
+  thin = 1, #4e0,
+  iter_per_chkpt = 10, #2e0,
+  chkpt_progress = TRUE,
+  max_treedepth = 10L #12L
+)
+
+draws = combine_chkpt_draws1(path = chkpt_path)
+
+write_rds(draws, paste0("draws_aa1_", args[1], ".rds"))
+tar(paste0(s, "_", args[1], ".tar"), chkpt_path)

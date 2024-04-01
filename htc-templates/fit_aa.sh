@@ -16,7 +16,7 @@ export RHOME=$PWD/R
 export R_LIBS=$PWD/packages
 
 # run your script
-timeout 10h Rscript fit_{m}.R $1
+timeout 10m Rscript fit_{m}.R $1
 
 timeout_exit_status=$?
  

@@ -77,8 +77,8 @@ rm fit_*
 # ACTUAL DATA
 
 # 1. Transfer files before logging in using scp
-scp data/stan_rh_curves.rds objects/init.rds cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/solanum-aa/htc
-scp r/functions.R htc/fit_aa* stan/solanum-aa* cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/solanum-aa/htc
+scp checkpoints/*.tar cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/solanum-aa/htc
+scp r/functions.R htc/fit_aa* cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/solanum-aa/htc
 
 # 2. Login to submit node
 ssh cdmuir@ap2002.chtc.wisc.edu

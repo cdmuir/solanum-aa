@@ -422,24 +422,17 @@ aa_int = function(log_gsw, b0_a, b0_h, b1_a, b1_h, b2_a, b2_h) {
   
 }
 
-## Function for checkpointing Stan models ----
-## Modified from chkptstanr::chkpt_stan()
-chkpt_stan1 = function(model_code,
-                       data,
-                       iter_warmup = 1000,
-                       iter_sampling = 1000,
-                       iter_typical = 150,
-                       thin = 1,
-                       iter_per_chkpt = 100,
-                       exit_after = NULL,
-                       chkpt_progress = TRUE,
-                       path,
-                       init = NULL,
-                       max_treedepth = 10L) {
-  chkpt_set_up = chkptstanr::chkpt_setup(iter_sampling, iter_warmup, iter_per_chkpt)
-  if (!dir.exists(path)) {
-    path = chkptstanr::create_folder(folder_name = path)
-  }
+## Functions for checkpointing Stan models ----
+inititalize_stan = function(
+  model_code,
+  data,
+  iter_typical = 150,
+  path,
+  init = NULL,
+  max_treedepth = 10L
+) {
+  
+  path = chkptstanr::create_folder(folder_name = path)
   
   ## write model code
   stan_code_path = cmdstanr::write_stan_file(
@@ -451,44 +444,66 @@ chkpt_stan1 = function(model_code,
   ## compile model
   m = cmdstan_model(stan_code_path, dir = path)
   
-  # check on current status
+  ## initiate fit
+  sample_chunk = m$sample(
+    data = data,
+    refresh = 0,
+    init = list(init),
+    output_dir = path,
+    output_basename = "model",
+    chains = 1L,
+    parallel_chains = 1L,
+    iter_warmup = iter_typical,
+    iter_sampling = 0,
+    save_warmup = TRUE,
+    thin = 1e0,
+    max_treedepth = max_treedepth,
+    adapt_engaged = TRUE,
+    adapt_delta = 0.8,
+    step_size = NULL
+  )
+  
+  stan_state = chkptstanr::extract_stan_state(sample_chunk, "warmup")
+
+  write_rds(data, paste0(path, "/data.rds"))
+  write_rds(stan_state, paste0(path, "/cp_info/cp_info_0.rds"))
+  
+  invisible()
+  
+}
+
+## Modified from chkptstanr::chkpt_stan()
+chkpt_stan1 = function(path,
+                       iter_warmup = 1000,
+                       iter_sampling = 1000,
+                       thin = 1,
+                       iter_per_chkpt = 100,
+                       chkpt_progress = TRUE,
+                       max_treedepth = 10L) {
+  chkpt_set_up = chkptstanr::chkpt_setup(iter_sampling, iter_warmup, iter_per_chkpt)
+  
+  data = readRDS(file = paste0(path, "/data.rds"))
+  
+  ## path to model code
+  stan_code_path = paste0(path, "/stan_model/model.stan")
+  
+  ## compile model
+  m = cmdstan_model(stan_code_path, dir = path)
+  
+  ## check on current status
   cp_files = list.files(paste0(path, "/cp_info"))
   
-  ## iter_typical
-  if (length(cp_files) == 0) {
-    # initiate fit
-    last_chkpt = 0
-    sample_chunk = m$sample(
-      data = data,
-      refresh = 0,
-      init = list(init),
-      output_dir = path,
-      output_basename = "model",
-      chains = 1L,
-      parallel_chains = 1L,
-      iter_warmup = iter_typical,
-      iter_sampling = 0,
-      save_warmup = TRUE,
-      thin = thin,
-      max_treedepth = max_treedepth,
-      adapt_engaged = TRUE,
-      adapt_delta = 0.8,
-      step_size = NULL
-    )
-    stan_state = chkptstanr::extract_stan_state(sample_chunk, "warmup")
-  } else {
-    # get stan state
-    checkpoints = as.numeric(gsub(".*info_(.+).rds.*", "\\1", cp_files))
-    last_chkpt = max(checkpoints)
-    stan_state = readRDS(file = paste0(path, "/cp_info/",
-                                       cp_files[which.max(checkpoints)]))
-  }
+  ## get stan state
+  checkpoints = as.numeric(gsub(".*info_(.+).rds.*", "\\1", cp_files))
+  last_chkpt = max(checkpoints)
+  stan_state = readRDS(file = paste0(path, "/cp_info/",
+                                     cp_files[which.max(checkpoints)]))
+  
   
   if (last_chkpt == chkpt_set_up$total_chkpts) {
     return(message("Checkpointing complete"))
   } else {
-    cp_seq = seq(last_chkpt + 1,
-                 min(last_chkpt + 1 + exit_after, chkpt_set_up$total_chkpts))
+    cp_seq = seq(last_chkpt + 1, chkpt_set_up$total_chkpts)
   }
   
   for (i in cp_seq) {
@@ -514,7 +529,7 @@ chkpt_stan1 = function(model_code,
       )
     }
     else {
-      stan_phase <- "sample"
+      stan_phase = "sample"
       sample_chunk = m$sample(
         data = data,
         refresh = 0,

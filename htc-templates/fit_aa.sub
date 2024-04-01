@@ -9,12 +9,12 @@ output = fit_{m}_$(Cluster)_$(Process).out
 error = fit_{m}_$(Cluster)_$(Process).err
 
 # Transfer input files
-transfer_input_files = http://proxy.chtc.wisc.edu/SQUID/chtc/el8/R413.tar.gz, solanum-aa/cmdstan-2.34.1.tar.gz, solanum-aa/packages.tar.gz, solanum-aa/htc/functions.R, solanum-aa/htc/stan_rh_curves.rds, solanum-aa/htc/init.rds, solanum-aa/htc/fit_{m}.sh, solanum-aa/htc/fit_{m}.R, solanum-aa/htc/solanum-{m}.stan
+transfer_input_files = http://proxy.chtc.wisc.edu/SQUID/chtc/el8/R413.tar.gz, solanum-aa/cmdstan-2.34.1.tar.gz, solanum-aa/packages.tar.gz, solanum-aa/htc/functions.R, solanum-aa/htc/chkpt_folder_{m}.tar, solanum-aa/htc/fit_{m}.sh, solanum-aa/htc/fit_{m}.R
 
 # Transfer outfiles
 should_transfer_files = YES
 checkpoint_exit_code = 85
-transfer_checkpoint_files = chkpt_folder_{m}_$(Process)
+transfer_checkpoint_files = checkpoints/chkpt_folder_{m}_$(Process)
 +is_resumable = true
 when_to_transfer_output = ON_EXIT
 
@@ -22,4 +22,4 @@ request_cpus = 1
 request_memory = 4GB
 request_disk = 4GB
 
-queue 4
+queue 1
