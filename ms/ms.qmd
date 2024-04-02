@@ -30,6 +30,7 @@ csl: https://www.zotero.org/styles/science
 library(readr)
 # I am mostly putting placeholders here for objects/values that will need to be
 # loaded eventually to use in paper.
+aa_args = read_rds("../objects/aa_args.rds")
 fit_aa = read_rds("../objects/fit_dummy.rds")
 dim_fit_aa = dim(fit_aa$fit)
 
@@ -70,9 +71,10 @@ percent_lma_missing = "3.0" # percent leaves missing LMA
 ### Cleaning RH curves
 n_rh_curve_raw = 2400 # export from adaptive-amphistomy/r/07_process-licor.R
 n_points_per_rh_curves_raw = 100 # export from adaptive-amphistomy/r/07_process-licor.R
-ca_min = 410 # export from adaptive-amphistomy/r/10_filter-rh-curves.R
-ca_max = 420 # export from adaptive-amphistomy/r/10_filter-rh-curves.R
-n_min_points_per_rh_curve = 10 # export from adaptive-amphistomy/r/10_filter-rh-curves.R
+ca_min = aa_args$ca_min
+ca_max = aa_args$ca_max
+n_min_points_per_rh_curve = aa_args$n_min_points_per_rh_curve
+outlier_threshold = aa_args$outlier_threshold
 
 loo_version = "2.7.0"
 ```
@@ -250,6 +252,13 @@ The raw data set consisted of `r n_rh_curve_raw` \agcurve{} curves with an avera
 
 *Procedure*: For each curve, we removed data points after \gsw{} had reached its minimum unless there were fewer than `r n_min_points_per_rh_curve` data points remaining.
 
+#### Remove outliers within each \agcurve{} curve
+
+*Rationale*: Individual outliers within \agcurve{} curves, usually caused by transitory changes in chamber conditions, exert undue leverage on parameter estimates and cause bias and/or low precision in parameter estimates.
+
+*Procedure*: We fit provisional quadratic regressions for each curve using ordinary least squares with the `lm()` function in *R*. We sequentially removed data points with an external studentized residual greater than `r outlier_threshold` until none remained.
+
+were likely due to measurement error or leaf damage.
 WORKING HERE
 
 ### Data analysis

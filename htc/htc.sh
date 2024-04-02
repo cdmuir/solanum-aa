@@ -104,6 +104,8 @@ condor_q 93810 # aa2
 condor_q 93811 # aa3
 condor_q 93812 # aa4
 condor_q 93813 # aa5
+# initiate fit locally, checkpoint every 2e1
+condor_q 102059 # aa1
 
 condor_tail 97794
 ls /var/lib/condor/spool
