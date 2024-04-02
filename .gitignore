@@ -5,4 +5,4 @@
 .DS_Store
 .venv
 synthetic-data
-checkpoints
+checkpoints/chkpt_folder_aa*/*

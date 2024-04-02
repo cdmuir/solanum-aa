@@ -105,15 +105,9 @@ condor_q 93811 # aa3
 condor_q 93812 # aa4
 condor_q 93813 # aa5
 
-condor_tail 88597.1
+condor_tail 97794
 ls /var/lib/condor/spool
-vi fit_aa1_40890.log
-ls /var/lib/condor/spool/8598/0/cluster88598.proc0.subproc0/chkpt_folder_aa2_0/cp_info
-ls /var/lib/condor/spool/8601/0/cluster88601.proc0.subproc0/chkpt_folder_aa5_0/cp_info
-cd /home/cdmuir
-
-condor_tail 38668
-condor_tail 25015
+ls /var/lib/condor/spool/7763/0/cluster97763.proc0.subproc0/chkpt_folder_aa1
 
 # 4. Retrieve results
 scp cdmuir@ap2002.chtc.wisc.edu:/home/cdmuir/draws_aa1_*.rds objects/

@@ -498,7 +498,14 @@ chkpt_stan1 = function(path,
   last_chkpt = max(checkpoints)
   stan_state = readRDS(file = paste0(path, "/cp_info/",
                                      cp_files[which.max(checkpoints)]))
-  
+  # fix NAs in stan_state$init
+  stan_state$inits = stan_state$inits |> 
+    map(\(.chain) {
+      .chain |>
+        map(\(.par) {
+          .par = ifelse(is.na(.par), 0, .par)
+        })
+    })
   
   if (last_chkpt == chkpt_set_up$total_chkpts) {
     return(message("Checkpointing complete"))
