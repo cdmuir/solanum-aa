@@ -9,15 +9,15 @@ c("processed-data/accession-climate",
     file.copy(
       glue("../../data/adaptive-amphistomy/{.x}.rds"),
       glue("data/{.y}.rds", .y = str_remove(.x, "(process|filter)ed-data/")),
-      overwrite = FALSE
+      overwrite = TRUE
     )
   })
 
-c("objects/aa_args", "objects/aa_stats.rds") |>
+c("objects/aa_args", "objects/aa_stats") |>
   walk(\(.x) {
     file.copy(
       glue("../../data/adaptive-amphistomy/{.x}.rds"),
       glue("{.x}.rds"),
-      overwrite = FALSE
+      overwrite = TRUE
     )
   })

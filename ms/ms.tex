@@ -112,19 +112,36 @@
 \newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
 \newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
 
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
 \KOMAoption{captions}{tableheading}
+\usepackage{hyperref}
 \addtokomafont{disposition}{\rmfamily}
 \usepackage{siunitx}
 \newcommand{\aax}{$\mathrm{AA}$}
 \newcommand{\Aamphi}{$A_{\mathrm{amphi}}$}
 \newcommand{\Ahypo}{$A_{\mathrm{hypo}}$}
 \newcommand{\agcurve}{$A \textendash g_\text{sw}$}
+\newcommand{\aqcurve}{$A \textendash Q$}
 \newcommand{\ca}{$C_\mathrm{a}$}
 \newcommand{\caequals}[1]{$C_\mathrm{a} = \qty{#1}{\micro\mol\raiseto{-1}\mol}$}
 \newcommand{\cabetween}[2]{#1 < $C_\mathrm{a} < \qty{#2}{\micro\mol\raiseto{-1}\mol}$}
 \newcommand{\gsw}{$g_\text{sw}$}
 \newcommand{\ppfd}{$\mathrm{PPFD}$}
 \newcommand{\ppfdequals}[1]{$\mathrm{PPFD} = \qty{#1}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$}
+\newcommand{\ppfdqty}[1]{$\qty{#1}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$}
 \newcommand{\rh}{$\mathrm{RH}$}
 \newcommand{\rhequals}[1]{$\mathrm{RH} = #1\%$}
 \newcommand{\tleafequals}[1]{$T_\mathrm{leaf} = \qty{#1}{\degreeCelsius}$}
@@ -372,12 +389,12 @@ We compared AA among 30 ecologically diverse accessions of wild tomato,
 including representatives of all described species of \emph{Solanum}
 sect. \emph{Lycopersicon} and sect. \emph{Lycopersicoides} (\emph{2})
 and the cultivated tomato \emph{S. lycopersicum} var.
-\emph{lycopersicum} (tab:accessions). Due to constraints on growth space
-and time, we spread out measurements over 80 weeks from May 1, 2022 to
-October 31, 2023. Replicates within accession were evenly spread out
-over this period to prevent confounding of temporal variation in growth
-conditions with accession. {[}anything else to say here? maybe explain
-accession selection and phylogeny?{]}
+\emph{lycopersicum} \autoref{tab:accessions}. Due to constraints on
+growth space and time, we spread out measurements over 80 weeks from May
+1, 2022 to October 31, 2023. Replicates within accession were evenly
+spread out over this period to prevent confounding of temporal variation
+in growth conditions with accession. {[}anything else to say here? maybe
+explain accession selection and phylogeny?{]}
 
 \begin{table}
 
@@ -435,18 +452,15 @@ We assigned sun and shade treatment to lower and upper racks of a
 \(\qty{1.22}{\meter} \times \qty{2.44}{\meter}\) shelving unit in a
 climate-controlled growth room. We assigned the sun treatment to the
 lower rack to limit diffuse light from reaching the shade treatment. The
-average daytime \ppfd{} was \ppfdequals{800}
-(\(\qty{800}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}\)) and
-\ppfdequals{125}
-(\(\qty{125}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}\)) for sun
-and shade treatments, respectively. To isolate the effect of light
-intensity from quality, we used the same LED model with the the same
-spectrum (Fluence SPYDR 2i, Austin, Texas, USAS), but dimmed the lights
-in the shade treatment. To maintain homogeneous environmental conditions
-other than light, we mixed air within the growth room using an air
-circulator (Vornado 693DC, Andover, Kansas, USA) and within racks using
-a miniature oscillating air circulator (Vornado Atom 1, Andover, Kansas,
-USA). Despite these efforts, the air in the sun treatment was on average
+average daytime \ppfd{} was \ppfdqty{800} and \ppfdqty{125} for sun and
+shade treatments, respectively. To isolate the effect of light intensity
+from quality, we used the same LED model with the the same spectrum
+(Fluence SPYDR 2i, Austin, Texas, USAS), but dimmed the lights in the
+shade treatment. To maintain homogeneous environmental conditions other
+than light, we mixed air within the growth room using an air circulator
+(Vornado 693DC, Andover, Kansas, USA) and within racks using a miniature
+oscillating air circulator (Vornado Atom 1, Andover, Kansas, USA).
+Despite these efforts, the air in the sun treatment was on average
 \(\qty{1}{\degreeCelsius}\) warmer and the average RH was consequently 5
 lower. However, because of evaporative cooling, the leaves in the sun
 treatment were only \(\qty{1}{\degreeCelsius}\) on average (\(n = 600\)
@@ -528,12 +542,13 @@ logged data until \gsw{} reached its nadir. We then acclimated the leaf
 to low light (\ppfdequals{150}) and \rhequals{70} before inducing
 stomatal closure with low \rh and logging data as described above.
 
-\paragraph{Light-response curves}\label{light-response-curves}
+\paragraph{\texorpdfstring{Light-response (\aqcurve)
+curves}{Light-response () curves}}\label{light-response-curves}
 
-In 90.0\% of plants, we measured light-response curves on the same
-leaflets as \agcurve{} curves. However, when a leaflet was damaged
+In 90.0\% of plants, we measured light-response (\aqcurve) curves on the
+same leaflets as \agcurve{} curves. However, when a leaflet was damaged
 during \agcurve{} curves, we used the next closest leaflet for
-light-response curves. Leaves acclimated to high light-intensity
+\aqcurve{} curves. Leaves acclimated to high light-intensity
 (\ppfdequals{2000}), ambient CO\(_2\) (\caequals{415}), \rhequals{50},
 and \tleafequals{25}. After \(A\) and \gsw{} stabilized, we measured
 \(A\) at 20 light-intensity levels between \(0\) and
@@ -575,40 +590,53 @@ was not recorded at all or recorded incorrectly.
 \subsubsection{\texorpdfstring{Cleaning \agcurve{}
 curves}{Cleaning  curves}}\label{cleaning-curves}
 
-The raw data set consisted of 2400 \agcurve{} curves with an average of
-100. Principled, consistent, manual curation of a data set this size is
-not feasible. Therefore, we automated data cleaning using custom
-\emph{R} scripts. Cleaning is divided into XXX sequential steps:
+The raw data set consisted of 2370 \agcurve{} curves with an average of
+63.2. Manual curation of a data set this size in a principled,
+consistent manner is not feasible. Therefore, we automated data cleaning
+using custom \emph{R} scripts. Cleaning is divided into six sequential
+steps \autoref{tbl-cleaning1}.
 
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  remove unreliable data points
-\item
-  remove hysteretic portion of \agcurve{} curves at low \gsw{}
-\item
-  remove outliers within each \agcurve{} curve
-\item
-  thin redundant data points within each \agcurve{} curve
-\item
-  remove replicates with no overlap between amphi and pseudohypo
-  \agcurve{} curves
-\item
-  Trim extreme \aax{} values
-\end{enumerate}
+\begin{table}
 
-\textbf{Table showing number of curves and points before and after each
-cleaning step}
+\caption{\label{tbl-cleaning1}Six sequential steps for cleaning
+\agcurve{} curves. The rationale and procedure for each step are
+described in the text. The rightmost columns summarize the number of
+curves and mean number of points per curve remaining after each step.
+For reference, there are four possible \agcurve{} curves per replicate:
+all combinations of leaf type (amphi or pseudohypo) and light intensity
+(high or low).}
 
-\paragraph{Remove unreliable data
-points}\label{remove-unreliable-data-points}
+\centering{
+
+\centering
+\begin{tabular}{>{\raggedright\arraybackslash}p{9cm}>{\centering\arraybackslash}p{2.5cm}>{\centering\arraybackslash}p{2.5cm}}
+\toprule
+Step: description & Number of curves & Number of points per curve\\
+\midrule
+\cellcolor{gray!10}{1. remove unreliable and unusable data points} & \cellcolor{gray!10}{2361} & \cellcolor{gray!10}{63.0}\\
+2. remove hysteretic portion of \agcurve{} curves at low \gsw{} & 2360 & 59.2\\
+\cellcolor{gray!10}{3. remove outliers within each \agcurve{} curve} & \cellcolor{gray!10}{2360} & \cellcolor{gray!10}{58.7}\\
+4. remove replicates with no overlap between amphi and pseudohypo \agcurve{} curves & 2268 & 58.5\\
+\cellcolor{gray!10}{5. thin redundant data points within each \agcurve{} curve} & \cellcolor{gray!10}{2268} & \cellcolor{gray!10}{28.1}\\
+\addlinespace
+6. Trim extreme \aax{} values & 2210 & 28.0\\
+\bottomrule
+\end{tabular}
+
+}
+
+\end{table}%
+
+\paragraph{Remove unreliable and unusable data
+points}\label{remove-unreliable-and-unusable-data-points}
 
 \emph{Rationale}: Unreliable data points consisted of those where
 chamber {[}CO\(_2\){]} was unstable and therefore measurements are not
-biologically meaningful.
+biologically meaningful. Unusable data points were those where \(A < 0\)
+because the logarithm of a negative number is undefined.
 
-\emph{Procedure}: We retained data points where \cabetween{410}{420}.
+\emph{Procedure}: We retained data points where \cabetween{410}{420} and
+\(A> 0\).
 
 \paragraph{\texorpdfstring{Remove hysteretic portion of \agcurve{}
 curves at low
@@ -636,17 +664,7 @@ estimates.
 \emph{Procedure}: We fit provisional quadratic regressions for each
 curve using ordinary least squares with the \texttt{lm()} function in
 \emph{R}. We sequentially removed data points with an absolute external
-studentized residual greater than until none remained.
-
-\paragraph{\texorpdfstring{Remove replicates with no overlap between
-amphi and pseudohypo \agcurve{}
-curves}{Remove replicates with no overlap between amphi and pseudohypo  curves}}\label{remove-replicates-with-no-overlap-between-amphi-and-pseudohypo-curves}
-
-\emph{Rationale}: We could not estimate \aax{} for replicates where
-amphi and pseudohypo \agcurve{} curves did not overlap.
-
-\emph{Procedure}: We removed replicates where the range of \gsw{} values
-for amphi and pseudohypo \agcurve{} curves did not overlap.
+studentized residual greater than 3 until none remained.
 
 \paragraph{\texorpdfstring{Thin redundant data points within each
 \agcurve{}
@@ -665,6 +683,16 @@ curve and thinned all but one point per thinning interval of
 \(0.05~\log(\si{\mol\raiseto{-2}\meter\raiseto{-1}\second})\), retaining
 the point nearest the midpoint of the interval.
 
+\paragraph{\texorpdfstring{Remove replicates with no overlap between
+amphi and pseudohypo \agcurve{}
+curves}{Remove replicates with no overlap between amphi and pseudohypo  curves}}\label{remove-replicates-with-no-overlap-between-amphi-and-pseudohypo-curves}
+
+\emph{Rationale}: We could not estimate \aax{} for replicates where
+amphi and pseudohypo \agcurve{} curves did not overlap.
+
+\emph{Procedure}: We removed replicates where the range of \gsw{} values
+for amphi and pseudohypo \agcurve{} curves did not overlap.
+
 \paragraph{\texorpdfstring{Trim extreme \aax{}
 values}{Trim extreme  values}}\label{trim-extreme-values}
 
@@ -674,7 +702,7 @@ measured on consecutive days, a poor calibration or a damaged leaf could
 cause a large difference in \(A\) between days, which would appear as an
 extreme \aax{} value.
 
-\emph{Procedure}: We privionsally estimated \aax{} for each replicate by
+\emph{Procedure}: We provionsally estimated \aax{} for each replicate by
 integrating over the range of \gsw{} values where amphi and pseudohypo
 \agcurve{} curves overlap. In this procedure, curve parameters were
 provisionally estimated using ordinary least squares with the
@@ -687,6 +715,33 @@ extreme \aax{} values as those with an absolute internal studentized
 residual \(> 3.5\). Because these values likely indicate significant
 measurement error or leaf damage, we removed \agcurve{} curves at both
 light intensities if either was classified as extreme.
+
+\subsubsection{\texorpdfstring{Cleaning \aqcurve{}
+curves}{Cleaning  curves}}\label{cleaning-curves-1}
+
+WORKING HERE!
+
+The raw data set consisted of \aqcurve{} curves with an average of .
+Manual curation of a data set this size in a principled, consistent
+manner is not feasible. Therefore, we automated data cleaning using
+custom \emph{R} scripts. Cleaning is divided into six sequential steps
+\autoref{tbl-cleaning2}.
+
+\begin{table}
+
+\caption{\label{tbl-cleaning2}Six sequential steps for cleaning
+\agcurve{} curves. The rationale and procedure for each step are
+described in the text. The rightmost columns summarize the number of
+curves and mean number of points per curve remaining after each step.
+For reference, there are four possible \agcurve{} curves per replicate:
+all combinations of leaf type (amphi or pseudohypo) and light intensity
+(high or low).}
+
+\centering{
+
+}
+
+\end{table}%
 
 \subsubsection{Data analysis}\label{data-analysis}
 

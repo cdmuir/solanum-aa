@@ -1,4 +1,12 @@
 # 0. Import data ----
+add_to_stats = function(...) {
+  old = read_rds("objects/aa_stats.rds")
+  new = list(...)
+  if (any(names(new) %in% names(old))) {
+    old[intersect(names(old), names(new))] = NULL
+  }
+  write_rds(c(old, new), "objects/aa_stats.rds")
+}
 
 ## Function to thin data before analysis
 thin_data = function(.d, bin_width, min_n = 20L) {

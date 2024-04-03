@@ -32,9 +32,24 @@ fit1 = lm(aa ~ light_treatment * light_intensity * acc, data = rh_curves1)
 rh_curves1$resid = rstudent(fit1)
 
 acc_id_outlier = rh_curves1 |>
-  filter(abs(resid) > aa_pars$aa_outlier_threshold) |>
+  filter(abs(resid) > aa_args$aa_outlier_threshold) |>
   select(acc_id, aa, resid) |>
   pull(acc_id)
+
+do.call(
+  "add_to_stats",
+  rh_curves |>
+    filter(!(acc_id %in% acc_id_outlier)) |>
+    dplyr::summarize(
+      n_point = length(obs),
+      .by = c("acc_id", "curve_type", "light_intensity")
+    ) |>
+    dplyr::summarize(
+      n_rh_curve6 = n(),
+      n_point_per_rh_curve6 = mean(n_point)
+    ) |>
+    as.list()
+)
 
 rh_curves |> 
   filter(!(acc_id %in% acc_id_outlier)) |>

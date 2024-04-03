@@ -16,9 +16,21 @@ thinning_summary = thinned_rh_curves |>
   ) |>
   mutate(percent_thin = 100 * (1 - n_keep / n_total))
 
-# ggplot(thinning_summary, aes(percent_thin)) +
-#   facet_grid(vars(light_intensity, light_treatment), vars(curve_type)) +
-#   geom_histogram()
+# add stats on data cleaning
+do.call(
+  "add_to_stats",
+  thinned_rh_curves |>
+    filter(keep) |>
+    dplyr::summarize(
+      n_point = length(obs),
+      .by = c("acc_id", "curve_type", "light_intensity")
+    ) |>
+    dplyr::summarize(
+      n_rh_curve5 = n(),
+      n_point_per_rh_curve5 = mean(n_point)
+    ) |>
+    as.list()
+)
 
 thinned_rh_curves |>
   filter(keep) |>

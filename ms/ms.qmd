@@ -12,12 +12,14 @@ header-includes: |
   \newcommand{\Aamphi}{$A_{\mathrm{amphi}}$}
   \newcommand{\Ahypo}{$A_{\mathrm{hypo}}$}
   \newcommand{\agcurve}{$A \textendash g_\text{sw}$}
+  \newcommand{\aqcurve}{$A \textendash Q$}
   \newcommand{\ca}{$C_\mathrm{a}$}
   \newcommand{\caequals}[1]{$C_\mathrm{a} = \qty{#1}{\micro\mol\raiseto{-1}\mol}$}
   \newcommand{\cabetween}[2]{#1 < $C_\mathrm{a} < \qty{#2}{\micro\mol\raiseto{-1}\mol}$}
   \newcommand{\gsw}{$g_\text{sw}$}
   \newcommand{\ppfd}{$\mathrm{PPFD}$}
   \newcommand{\ppfdequals}[1]{$\mathrm{PPFD} = \qty{#1}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$}
+  \newcommand{\ppfdqty}[1]{$\qty{#1}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$}
   \newcommand{\rh}{$\mathrm{RH}$}
   \newcommand{\rhequals}[1]{$\mathrm{RH} = #1\%$}
   \newcommand{\tleafequals}[1]{$T_\mathrm{leaf} = \qty{#1}{\degreeCelsius}$}
@@ -29,11 +31,16 @@ csl: https://www.zotero.org/styles/science
 ```{r load-objects, echo=FALSE, eval=TRUE}
 
 library(readr)
+library(stringr)
 library(tibble)
+
 # I am mostly putting placeholders here for objects/values that will need to be
 # loaded eventually to use in paper.
 aa_args = read_rds("../objects/aa_args1.rds")
 aa_stats = read_rds("../objects/aa_stats.rds")
+# sort list by name
+aa_stats = aa_stats[order(names(aa_stats))]
+
 fit_aa = read_rds("../objects/fit_dummy.rds")
 dim_fit_aa = dim(fit_aa$fit)
 
@@ -196,7 +203,7 @@ Seeds provided by the Tomato Genetics Resource Center germinated on moist paper 
 
 Seedlings were randomly assigned in alternating order within accession to the sun or shade treatment during transplanting. After seedlings established in cell-pack flats for $\approx 2$ weeks, we transplanted them to 3.78 L plastic pots containing 60% Pro-Mix BX potting mix, 20% coral sand (Pro-Pak, Honolulu, Hawaiʻi, USA), and 20% cinders (Niu Nursery, Honolulu, Hawaiʻi, USA). Percentage composition is on a volume basis. The soil mixture contained slow release NPK fertilizer following manufacturer instructions (Osmocote Smart-Release Plant Food Flower & Vegetable, The Scotts Company, Marysville, Ohio, USA). We determined pot field capacity one week after transplanting using a scale (Ohaus V12P15 Valor 1000, Parsippany, New Jersey, USA) and watered to field capacity three times per week to prevent drought stress. 
 
-We assigned sun and shade treatment to lower and upper racks of a $\qty{1.22}{\meter} \times \qty{2.44}{\meter}$ shelving unit in a climate-controlled growth room. We assigned the sun treatment to the lower rack to limit diffuse light from reaching the shade treatment. The average daytime \ppfd{} was \ppfdequals{`r ppfd_sun`} ($\qty{`r ppfd_sun`}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$) and \ppfdequals{`r ppfd_shade`} ($\qty{`r ppfd_shade`}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$) for sun and shade treatments, respectively. To isolate the effect of light intensity from quality, we used the same LED model with the the same spectrum (Fluence SPYDR 2i, Austin, Texas, USAS), but dimmed the lights in the shade treatment. To maintain homogeneous environmental conditions other than light, we mixed air within the growth room using an air circulator (Vornado 693DC, Andover, Kansas, USA) and within racks using a miniature oscillating air circulator (Vornado Atom 1, Andover, Kansas, USA). Despite these efforts, the air in the sun treatment was on average $\qty{`r temp_diff`}{\degreeCelsius}$ warmer and the average RH was consequently `r rh_diff` lower. However, because of evaporative cooling, the leaves in the sun treatment were only $\qty{`r leaf_temp_diff`}{\degreeCelsius}$ on average ($n = `r n_leaf_temp`$ leaves).
+We assigned sun and shade treatment to lower and upper racks of a $\qty{1.22}{\meter} \times \qty{2.44}{\meter}$ shelving unit in a climate-controlled growth room. We assigned the sun treatment to the lower rack to limit diffuse light from reaching the shade treatment. The average daytime \ppfd{} was \ppfdqty{`r ppfd_sun`} and \ppfdqty{`r ppfd_shade`} for sun and shade treatments, respectively. To isolate the effect of light intensity from quality, we used the same LED model with the the same spectrum (Fluence SPYDR 2i, Austin, Texas, USAS), but dimmed the lights in the shade treatment. To maintain homogeneous environmental conditions other than light, we mixed air within the growth room using an air circulator (Vornado 693DC, Andover, Kansas, USA) and within racks using a miniature oscillating air circulator (Vornado Atom 1, Andover, Kansas, USA). Despite these efforts, the air in the sun treatment was on average $\qty{`r temp_diff`}{\degreeCelsius}$ warmer and the average RH was consequently `r rh_diff` lower. However, because of evaporative cooling, the leaves in the sun treatment were only $\qty{`r leaf_temp_diff`}{\degreeCelsius}$ on average ($n = `r n_leaf_temp`$ leaves).
 
 ### Leaf trait measurements
 
@@ -216,9 +223,9 @@ We collected four \agcurve{} curves per leaf, an amphi (untreated) curve and a p
 
 In all cases, we acclimated the focal leaf to high light (\ppfdequals{2000}) and high relative humidity (\rhequals{70}) until $A$ and \gsw{} reach their maximum. After that, we decreased \rh{} to $\approx 10\%$ to induce rapid stomatal closure without biochemical downregulation. Hence, \Aamphi{} and \Ahypo{} were both measured at low chamber humidity after the leaf had acclimated to high humidity. All other environmental conditions in the leaf chamber remained the same. We logged data until \gsw{} reached its nadir. We then acclimated the leaf to low light (\ppfdequals{150}) and \rhequals{70} before inducing stomatal closure with low \rh and logging data as described above.
 
-#### Light-response curves
+#### Light-response (\aqcurve) curves
 
-In `r percent_aa_and_aq`\% of plants, we measured light-response curves on the same leaflets as \agcurve{} curves. However, when a leaflet was damaged during \agcurve{} curves, we used the next closest leaflet for light-response curves. Leaves acclimated to high light-intensity (\ppfdequals{2000}), ambient CO$_2$ (\caequals{415}), \rhequals{50}, and \tleafequals{25}. After $A$ and \gsw{} stabilized, we measured $A$ at 20 light-intensity levels between $0$ and $\qty{2000}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$ in descending order.
+In `r percent_aa_and_aq`\% of plants, we measured light-response (\aqcurve) curves on the same leaflets as \agcurve{} curves. However, when a leaflet was damaged during \agcurve{} curves, we used the next closest leaflet for \aqcurve{} curves. Leaves acclimated to high light-intensity (\ppfdequals{2000}), ambient CO$_2$ (\caequals{415}), \rhequals{50}, and \tleafequals{25}. After $A$ and \gsw{} stabilized, we measured $A$ at 20 light-intensity levels between $0$ and $\qty{2000}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$ in descending order.
 
 #### Stomatal anatomy
 
@@ -238,25 +245,29 @@ Leaf mass per area (LMA) is the dry mass divided by the leaflet area. We scanned
 
 ### Cleaning \agcurve{} curves
 
-The raw data set consisted of `r n_rh_curve_raw` \agcurve{} curves with an average of `r n_points_per_rh_curves_raw`. Manual curation of a data set this size in a principled, consistent manner is not feasible. Therefore, we automated data cleaning using custom *R* scripts. Cleaning is divided into six sequential steps \autoref{tbl-cleaning}.
+The raw data set consisted of `r prettyNum(aa_stats$n_rh_curve0)` \agcurve{} curves with an average of `r formatC(aa_stats$n_point_per_rh_curve0, digits = 3)` points per curve. Manual curation of a data set this size in a principled, consistent manner is not feasible. Therefore, we automated data cleaning using custom *R* scripts. Cleaning is divided into six sequential steps \autoref{tbl-cleaning1}.
 
-```{r, cleaning, echo=FALSE,message=FALSE,warning=FALSE}
-#| label: tbl-cleaning
+```{r, cleaning1, echo=FALSE,message=FALSE,warning=FALSE}
+#| label: tbl-cleaning1
 #| tbl-cap: "Six sequential steps for cleaning \\agcurve{} curves. The rationale and procedure for each step are described in the text. The rightmost columns summarize the number of curves and mean number of points per curve remaining after each step. For reference, there are four possible \\agcurve{} curves per replicate: all combinations of leaf type (amphi or pseudohypo) and light intensity (high or low)."
 
 step_description_col = c(
   "1. remove unreliable and unusable data points",
   "2. remove hysteretic portion of \\agcurve{} curves at low \\gsw{}",
   "3. remove outliers within each \\agcurve{} curve",
-  "4. thin redundant data points within each \\agcurve{} curve",
-  "5. remove replicates with no overlap between amphi and pseudohypo \\agcurve{} curves",
+  "4. remove replicates with no overlap between amphi and pseudohypo \\agcurve{} curves",
+  "5. thin redundant data points within each \\agcurve{} curve",
   "6. Trim extreme \\aax{} values"
 )
 
+n_curve_col = unlist(aa_stats[str_detect(names(aa_stats), "^n_rh_curve[1-9]$")])
+
+n_point_col = unlist(aa_stats[str_detect(names(aa_stats), "^n_point_per_rh_curve[1-9]$")])
+
 tibble(
   `Step: description` = step_description_col,
-  `Number of curves` = 100 + c(1,2,3,4,5,6),
-  `Number of points per curve` = c(10.1,2,3,4,5,6)
+  `Number of curves` = n_curve_col,
+  `Number of points per curve` = n_point_col
 ) |>
   knitr::kable(format = "latex",
                align = c("l", "c", "c"),
@@ -288,23 +299,62 @@ tibble(
 
 *Procedure*: We fit provisional quadratic regressions for each curve using ordinary least squares with the `lm()` function in *R*. We sequentially removed data points with an absolute external studentized residual greater than `r point_outlier_threshold` until none remained.
 
-#### Remove replicates with no overlap between amphi and pseudohypo \agcurve{} curves
-
-*Rationale*: We could not estimate \aax{} for replicates where amphi and pseudohypo \agcurve{} curves did not overlap.
-
-*Procedure*: We removed replicates where the range of \gsw{} values for amphi and pseudohypo \agcurve{} curves did not overlap.
-
 #### Thin redundant data points within each \agcurve{} curve
 
 *Rationale*: Data points closely spaced along the \agcurve{} curve provide redundant information and may be highly correlated (i.e. pseudoreplication). This occurred because data was logged at a constant temporal interval, but the rate at which \gsw{} declined was not constant. Thinning reduces parameter estimation bias toward densely sampled regions of the curve which may not be the most biologically informative.
 
 *Procedure*: We retained the maxima and minima \gsw{} for each curve and thinned all but one point per thinning interval of $`r thinning_interval`~\log(\si{\mol\raiseto{-2}\meter\raiseto{-1}\second})$, retaining the point nearest the midpoint of the interval.
 
+#### Remove replicates with no overlap between amphi and pseudohypo \agcurve{} curves
+
+*Rationale*: We could not estimate \aax{} for replicates where amphi and pseudohypo \agcurve{} curves did not overlap.
+
+*Procedure*: We removed replicates where the range of \gsw{} values for amphi and pseudohypo \agcurve{} curves did not overlap.
+
 #### Trim extreme \aax{} values
 
 *Rationale*: Extreme \aax{} values were likely due to measurement error or leaf damage. Since amphi and pseudohypo \agcurve{} curves are measured on consecutive days, a poor calibration or a damaged leaf could cause a large difference in $A$ between days, which would appear as an extreme \aax{} value.
 
-*Procedure*: We privionsally estimated \aax{} for each replicate by integrating over the range of \gsw{} values where amphi and pseudohypo \agcurve{} curves overlap. In this procedure, curve parameters were provisionally estimated using ordinary least squares with the `lm()` function in *R*. We then used point estimates of \aax{} for each replicate as the response variable in a linear model with light treatment, light intensity, accession, and all interactions as explanatory variables. This model was also fit using ordinary least squares with the `lm()` function in *R*. We classified  extreme \aax{} values as those with an absolute internal studentized residual $> `r aa_outlier_threshold`$. Because these values likely indicate significant measurement error or leaf damage, we removed \agcurve{} curves at both light intensities if either was classified as extreme.
+*Procedure*: We provionsally estimated \aax{} for each replicate by integrating over the range of \gsw{} values where amphi and pseudohypo \agcurve{} curves overlap. In this procedure, curve parameters were provisionally estimated using ordinary least squares with the `lm()` function in *R*. We then used point estimates of \aax{} for each replicate as the response variable in a linear model with light treatment, light intensity, accession, and all interactions as explanatory variables. This model was also fit using ordinary least squares with the `lm()` function in *R*. We classified  extreme \aax{} values as those with an absolute internal studentized residual $> `r aa_outlier_threshold`$. Because these values likely indicate significant measurement error or leaf damage, we removed \agcurve{} curves at both light intensities if either was classified as extreme.
+
+### Cleaning \aqcurve{} curves
+
+WORKING HERE!
+
+The raw data set consisted of `r prettyNum(aa_stats$n_aq_curve0)` \aqcurve{} curves with an average of `r formatC(aa_stats$n_point_per_aq_curve0, digits = 3)`. Manual curation of a data set this size in a principled, consistent manner is not feasible. Therefore, we automated data cleaning using custom *R* scripts. Cleaning is divided into six sequential steps \autoref{tbl-cleaning2}.
+
+```{r, cleaning2, eval=FALSE,echo=FALSE,message=FALSE,warning=FALSE}
+#| label: tbl-cleaning2
+#| tbl-cap: "Six sequential steps for cleaning \\agcurve{} curves. The rationale and procedure for each step are described in the text. The rightmost columns summarize the number of curves and mean number of points per curve remaining after each step. For reference, there are four possible \\agcurve{} curves per replicate: all combinations of leaf type (amphi or pseudohypo) and light intensity (high or low)."
+
+step_description_col = c(
+  "1. remove unreliable and unusable data points",
+  "2. remove hysteretic portion of \\agcurve{} curves at low \\gsw{}",
+  "3. remove outliers within each \\agcurve{} curve",
+  "4. remove replicates with no overlap between amphi and pseudohypo \\agcurve{} curves",
+  "5. thin redundant data points within each \\agcurve{} curve",
+  "6. Trim extreme \\aax{} values"
+)
+
+n_curve_col = unlist(aa_stats[str_detect(names(aa_stats), "^n_rh_curve[0-9]$")])
+
+n_point_col = unlist(aa_stats[str_detect(names(aa_stats), "^n_point_per_rh_curve[0-9]$")])
+
+tibble(
+  `Step: description` = step_description_col,
+  `Number of curves` = n_curve_col,
+  `Number of points per curve` = n_point_col
+) |>
+  knitr::kable(format = "latex",
+               align = c("l", "c", "c"),
+               digits = c(0, 0, 1),
+               booktabs = TRUE, escape = FALSE) |>
+  kableExtra::kable_styling(latex_options = c("striped", "no_vertical_lines")) |>
+  kableExtra::column_spec(1, width = "9cm") |>
+  kableExtra::column_spec(2, width = "2.5cm") |>
+  kableExtra::column_spec(3, width = "2.5cm")
+
+```
 
 ### Data analysis
 
