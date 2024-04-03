@@ -32,7 +32,7 @@ fit1 = lm(aa ~ light_treatment * light_intensity * acc, data = rh_curves1)
 rh_curves1$resid = rstudent(fit1)
 
 acc_id_outlier = rh_curves1 |>
-  filter(abs(resid) > aa_outlier_threshold) |>
+  filter(abs(resid) > aa_pars$aa_outlier_threshold) |>
   select(acc_id, aa, resid) |>
   pull(acc_id)
 

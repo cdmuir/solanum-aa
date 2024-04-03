@@ -590,11 +590,16 @@ not feasible. Therefore, we automated data cleaning using custom
 \item
   remove outliers within each \agcurve{} curve
 \item
+  thin redundant data points within each \agcurve{} curve
+\item
   remove replicates with no overlap between amphi and pseudohypo
   \agcurve{} curves
 \item
-  remove replicates with outlier \aax values
+  Trim extreme \aax{} values
 \end{enumerate}
+
+\textbf{Table showing number of curves and points before and after each
+cleaning step}
 
 \paragraph{Remove unreliable data
 points}\label{remove-unreliable-data-points}
@@ -616,7 +621,72 @@ indicating some leaf acclimation to low \rh. We removed this portion of
 the curve to focus curve-fitting on the primary domain where \(A\)
 increases monotonically with \gsw{}.
 
-\emph{Procedure}: For each
+\emph{Procedure}: For each curve, we removed data points after \gsw{}
+had reached its minimum unless there were fewer than 10 data points
+remaining.
+
+\paragraph{\texorpdfstring{Remove outliers within each \agcurve{}
+curve}{Remove outliers within each  curve}}\label{remove-outliers-within-each-curve}
+
+\emph{Rationale}: Individual outliers within \agcurve{} curves, usually
+caused by transitory changes in chamber conditions, exert undue leverage
+on parameter estimates and cause bias and/or low precision in parameter
+estimates.
+
+\emph{Procedure}: We fit provisional quadratic regressions for each
+curve using ordinary least squares with the \texttt{lm()} function in
+\emph{R}. We sequentially removed data points with an absolute external
+studentized residual greater than until none remained.
+
+\paragraph{\texorpdfstring{Remove replicates with no overlap between
+amphi and pseudohypo \agcurve{}
+curves}{Remove replicates with no overlap between amphi and pseudohypo  curves}}\label{remove-replicates-with-no-overlap-between-amphi-and-pseudohypo-curves}
+
+\emph{Rationale}: We could not estimate \aax{} for replicates where
+amphi and pseudohypo \agcurve{} curves did not overlap.
+
+\emph{Procedure}: We removed replicates where the range of \gsw{} values
+for amphi and pseudohypo \agcurve{} curves did not overlap.
+
+\paragraph{\texorpdfstring{Thin redundant data points within each
+\agcurve{}
+curve}{Thin redundant data points within each  curve}}\label{thin-redundant-data-points-within-each-curve}
+
+\emph{Rationale}: Data points closely spaced along the \agcurve{} curve
+provide redundant information and may be highly correlated
+(i.e.~pseudoreplication). This occurred because data was logged at a
+constant temporal interval, but the rate at which \gsw{} declined was
+not constant. Thinning reduces parameter estimation bias toward densely
+sampled regions of the curve which may not be the most biologically
+informative.
+
+\emph{Procedure}: We retained the maxima and minima \gsw{} for each
+curve and thinned all but one point per thinning interval of
+\(0.05~\log(\si{\mol\raiseto{-2}\meter\raiseto{-1}\second})\), retaining
+the point nearest the midpoint of the interval.
+
+\paragraph{\texorpdfstring{Trim extreme \aax{}
+values}{Trim extreme  values}}\label{trim-extreme-values}
+
+\emph{Rationale}: Extreme \aax{} values were likely due to measurement
+error or leaf damage. Since amphi and pseudohypo \agcurve{} curves are
+measured on consecutive days, a poor calibration or a damaged leaf could
+cause a large difference in \(A\) between days, which would appear as an
+extreme \aax{} value.
+
+\emph{Procedure}: We privionsally estimated \aax{} for each replicate by
+integrating over the range of \gsw{} values where amphi and pseudohypo
+\agcurve{} curves overlap. In this procedure, curve parameters were
+provisionally estimated using ordinary least squares with the
+\texttt{lm()} function in \emph{R}. We then used point estimates of
+\aax{} for each replicate as the response variable in a linear model
+with light treatment, light intensity, accession, and all interactions
+as explanatory variables. This model was also fit using ordinary least
+squares with the \texttt{lm()} function in \emph{R}. We classified
+extreme \aax{} values as those with an absolute internal studentized
+residual \(> 3.5\). Because these values likely indicate significant
+measurement error or leaf damage, we removed \agcurve{} curves at both
+light intensities if either was classified as extreme.
 
 \subsubsection{Data analysis}\label{data-analysis}
 

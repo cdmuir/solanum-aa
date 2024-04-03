@@ -30,7 +30,7 @@ csl: https://www.zotero.org/styles/science
 library(readr)
 # I am mostly putting placeholders here for objects/values that will need to be
 # loaded eventually to use in paper.
-aa_args = read_rds("../objects/aa_args.rds")
+aa_args = read_rds("../objects/aa_args1.rds")
 fit_aa = read_rds("../objects/fit_dummy.rds")
 dim_fit_aa = dim(fit_aa$fit)
 
@@ -74,7 +74,10 @@ n_points_per_rh_curves_raw = 100 # export from adaptive-amphistomy/r/07_process-
 ca_min = aa_args$ca_min
 ca_max = aa_args$ca_max
 n_min_points_per_rh_curve = aa_args$n_min_points_per_rh_curve
-outlier_threshold = aa_args$outlier_threshold
+point_outlier_threshold = aa_args$point_outlier_threshold
+aa_outlier_threshold = aa_args$aa_outlier_threshold
+thinning_interval = aa_args$thinning_interval
+
 
 loo_version = "2.7.0"
 ```
@@ -237,8 +240,11 @@ The raw data set consisted of `r n_rh_curve_raw` \agcurve{} curves with an avera
 1. remove unreliable data points
 2. remove hysteretic portion of \agcurve{} curves at low \gsw{}
 3. remove outliers within each \agcurve{} curve
-4. remove replicates with no overlap between amphi and pseudohypo \agcurve{} curves
-5. remove replicates with outlier \aax values
+4. thin redundant data points within each \agcurve{} curve
+5. remove replicates with no overlap between amphi and pseudohypo \agcurve{} curves
+6. Trim extreme \aax{} values
+
+**Table showing number of curves and points before and after each cleaning step**
 
 #### Remove unreliable data points
 
@@ -256,10 +262,25 @@ The raw data set consisted of `r n_rh_curve_raw` \agcurve{} curves with an avera
 
 *Rationale*: Individual outliers within \agcurve{} curves, usually caused by transitory changes in chamber conditions, exert undue leverage on parameter estimates and cause bias and/or low precision in parameter estimates.
 
-*Procedure*: We fit provisional quadratic regressions for each curve using ordinary least squares with the `lm()` function in *R*. We sequentially removed data points with an external studentized residual greater than `r outlier_threshold` until none remained.
+*Procedure*: We fit provisional quadratic regressions for each curve using ordinary least squares with the `lm()` function in *R*. We sequentially removed data points with an absolute external studentized residual greater than `r point_outlier_threshold` until none remained.
 
-were likely due to measurement error or leaf damage.
-WORKING HERE
+#### Remove replicates with no overlap between amphi and pseudohypo \agcurve{} curves
+
+*Rationale*: We could not estimate \aax{} for replicates where amphi and pseudohypo \agcurve{} curves did not overlap.
+
+*Procedure*: We removed replicates where the range of \gsw{} values for amphi and pseudohypo \agcurve{} curves did not overlap.
+
+#### Thin redundant data points within each \agcurve{} curve
+
+*Rationale*: Data points closely spaced along the \agcurve{} curve provide redundant information and may be highly correlated (i.e. pseudoreplication). This occurred because data was logged at a constant temporal interval, but the rate at which \gsw{} declined was not constant. Thinning reduces parameter estimation bias toward densely sampled regions of the curve which may not be the most biologically informative.
+
+*Procedure*: We retained the maxima and minima \gsw{} for each curve and thinned all but one point per thinning interval of $`r thinning_interval`~\log(\si{\mol\raiseto{-2}\meter\raiseto{-1}\second})$, retaining the point nearest the midpoint of the interval.
+
+#### Trim extreme \aax{} values
+
+*Rationale*: Extreme \aax{} values were likely due to measurement error or leaf damage. Since amphi and pseudohypo \agcurve{} curves are measured on consecutive days, a poor calibration or a damaged leaf could cause a large difference in $A$ between days, which would appear as an extreme \aax{} value.
+
+*Procedure*: We privionsally estimated \aax{} for each replicate by integrating over the range of \gsw{} values where amphi and pseudohypo \agcurve{} curves overlap. In this procedure, curve parameters were provisionally estimated using ordinary least squares with the `lm()` function in *R*. We then used point estimates of \aax{} for each replicate as the response variable in a linear model with light treatment, light intensity, accession, and all interactions as explanatory variables. This model was also fit using ordinary least squares with the `lm()` function in *R*. We classified  extreme \aax{} values as those with an absolute internal studentized residual $> `r aa_outlier_threshold`$. Because these values likely indicate significant measurement error or leaf damage, we removed \agcurve{} curves at both light intensities if either was classified as extreme.
 
 ### Data analysis
 

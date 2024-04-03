@@ -31,5 +31,11 @@ id_string = "^(LA[0-9]{4}A*|nelsonii|sandwicense)-[A-Z]{1}[A]{0,1}$"
 
 theme_set(theme_cowplot())
 
-# options (could this be a separate file?)
-aa_outlier_threshold = 3.5
+# options 
+aa_args = read_rds("objects/aa_args.rds") |>
+  c(
+    aa_outlier_threshold = 3.5,
+    thinning_interval = 0.05
+  )
+
+write_rds(aa_args, "objects/aa_args1.rds")

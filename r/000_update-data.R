@@ -12,3 +12,12 @@ c("processed-data/accession-climate",
       overwrite = FALSE
     )
   })
+
+c("objects/aa_args") |>
+  walk(\(.x) {
+    file.copy(
+      glue("../../data/adaptive-amphistomy/{.x}.rds"),
+      glue("{.x}.rds"),
+      overwrite = FALSE
+    )
+  })
