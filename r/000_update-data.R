@@ -13,7 +13,7 @@ c("processed-data/accession-climate",
     )
   })
 
-c("objects/aa_args") |>
+c("objects/aa_args", "objects/aa_stats.rds") |>
   walk(\(.x) {
     file.copy(
       glue("../../data/adaptive-amphistomy/{.x}.rds"),

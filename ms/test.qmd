@@ -5,14 +5,60 @@ format:
     keep-tex: true  
     toc: false
 header-includes: |
+  \usepackage{hyperref}
   \addtokomafont{disposition}{\rmfamily}
   \usepackage{siunitx}
-  \newcommand{\gsc}{$g_\text{sc}$}
-  \newcommand{\ppfd}[1]{$\mathrm{PPFD} = \qty{#1}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$}
+  \newcommand{\aax}{$\mathrm{AA}$}
+  \newcommand{\Aamphi}{$A_{\mathrm{amphi}}$}
+  \newcommand{\Ahypo}{$A_{\mathrm{hypo}}$}
+  \newcommand{\agcurve}{$A \textendash g_\text{sw}$}
+  \newcommand{\ca}{$C_\mathrm{a}$}
+  \newcommand{\caequals}[1]{$C_\mathrm{a} = \qty{#1}{\micro\mol\raiseto{-1}\mol}$}
+  \newcommand{\cabetween}[2]{#1 < $C_\mathrm{a} < \qty{#2}{\micro\mol\raiseto{-1}\mol}$}
+  \newcommand{\gsw}{$g_\text{sw}$}
+  \newcommand{\ppfd}{$\mathrm{PPFD}$}
+  \newcommand{\ppfdequals}[1]{$\mathrm{PPFD} = \qty{#1}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$}
+  \newcommand{\rh}{$\mathrm{RH}$}
+  \newcommand{\rhequals}[1]{$\mathrm{RH} = #1\%$}
+  \newcommand{\tleafequals}[1]{$T_\mathrm{leaf} = \qty{#1}{\degreeCelsius}$}
 mainfont: Times New Roman
-csl: https://www.zotero.org/styles/american-journal-of-botany
+bibliography: solanum-aa.bib
+csl: https://www.zotero.org/styles/science
 ---
 
-words \gsc
+```{r load-objects, echo=FALSE, eval=TRUE}
 
-this \ppfd{2000}
+library(readr)
+library(tibble)
+```
+
+Manual curation of a data set this size in a principled, consistent manner is not feasible. Therefore, we automated data cleaning using custom *R* scripts. Cleaning is divided into six sequential steps \autoref{tbl-cleaning}.
+
+```{r, cleaning, echo=FALSE,message=FALSE,warning=FALSE}
+#| label: tbl-cleaning
+#| tbl-cap: "Six sequential steps for cleaning \\agcurve{} curves. The rationale and procedure for each step are described in the text. The rightmost columns summarize the number of curves and mean number of points per curve remaining after each step. For reference, there are four possible \\agcurve{} curves per replicate: all combinations of leaf type (amphi or pseudohypo) and light intensity (high or low)."
+
+step_description_col = c(
+  "1. remove unreliable data points",
+  "2. remove hysteretic portion of \\agcurve{} curves at low \\gsw{}",
+  "3. remove outliers within each \\agcurve{} curve",
+  "4. thin redundant data points within each \\agcurve{} curve",
+  "5. remove replicates with no overlap between amphi and pseudohypo \\agcurve{} curves",
+  "6. Trim extreme \\aax{} values"
+)
+
+tibble(
+  `Step: description` = step_description_col,
+  `Number of curves` = 100 + c(1,2,3,4,5,6),
+  `Number of points per curve` = c(10.1,2,3,4,5,6)
+) |>
+  knitr::kable(format = "latex",
+               align = c("l", "c", "c"),
+               digits = c(0, 0, 1),
+               booktabs = TRUE, escape = FALSE) |>
+  kableExtra::kable_styling(latex_options = c("striped", "no_vertical_lines")) |>
+  kableExtra::column_spec(1, width = "9cm") |>
+  kableExtra::column_spec(2, width = "2.5cm") |>
+  kableExtra::column_spec(3, width = "2.5cm")
+
+```
