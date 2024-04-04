@@ -17,6 +17,8 @@ header-includes: |
   \newcommand{\caequals}[1]{$C_\mathrm{a} = \qty{#1}{\micro\mol\raiseto{-1}\mol}$}
   \newcommand{\cabetween}[2]{#1 < $C_\mathrm{a} < \qty{#2}{\micro\mol\raiseto{-1}\mol}$}
   \newcommand{\gsw}{$g_\text{sw}$}
+  \newcommand{\loggsw}{$\log(g_\text{sw})$}
+  \newcommand{\logA}{$\log(A)$}
   \newcommand{\ppfd}{$\mathrm{PPFD}$}
   \newcommand{\ppfdequals}[1]{$\mathrm{PPFD} = \qty{#1}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$}
   \newcommand{\ppfdqty}[1]{$\qty{#1}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$}
@@ -355,7 +357,7 @@ tibble(
 
 *Rationale*: Individual outliers within \agcurve{} curves, usually caused by transitory changes in chamber conditions, exert undue leverage on parameter estimates and cause bias and/or low precision in parameter estimates.
 
-*Procedure*: We fit provisional nonrectangular hyperbola [@marshall_model_1980] to each \aqcurve{} curve using nonlinear regression with the `nlsLM()` function from the *R* package **minpack.lm** version `r packageVersion("minpack.lm")` [@Elzhov_minpack.lm_2023]. We sequentially removed data points with an absolute external studentized residual $> `r point_outlier_threshold`$ until none remained.
+*Procedure*: We fit provisional nonrectangular hyperbola [@marshall_model_1980] to each \aqcurve{} curve using nonlinear regression with the `nlsLM()` function from the *R* package **minpack.lm** version `r packageVersion("minpack.lm")` [@elzhov_minpacklm_2023]. We sequentially removed data points with an absolute external studentized residual $> `r point_outlier_threshold`$ until none remained.
 
 #### Remove \aqcurve{} curves with poor fit
 
@@ -370,16 +372,55 @@ tibble(
 - models fit in Stan/brms
 - we chose the number of chains, warmup and sampling iterations, and maximum treedepth so that parameter estimates converged ($\hat{R} < 1.01$ [@gelman_inference_1992]) and the effective sample size (ESS) for each parameter was $> 10^3$.
 
-We fit Bayesian models using the *R* package **brms** version `r fit_aa$version$brms` [@burkner_brms_2017] with MCMC sampling in *Stan* [@stan_development_team_stan_2023]. We used CmdStan version `r fit_aa$version$cmdstan` and **cmdstanr** version `r fit_aa$version$cmdstanr` [@gabry_cmdstanr_2023] to interface with *R* version `r getRversion()` [@r_core_team_r:_2023]. We sampled the posterior distribution from `r dim_fit_aa[2]` chains with `r dim_fit_aa[1]` iterations each after `r dim_fit_aa[1]` warmup iterations per chain. We estimated parameters and confidence intervals as the median and 95% quantile intervals of the posterior, respectively. 
+We fit Bayesian models with MCMC sampling in the probabilistic programming language *Stan* [@stan_development_team_stan_2023]. We used CmdStan version `r fit_aa$version$cmdstan` and **cmdstanr** version `r fit_aa$version$cmdstanr` [@gabry_cmdstanr_2023] to interface with *R* version `r getRversion()` [@r_core_team_r:_2023]. We sampled the posterior distribution from `r dim_fit_aa[2]` chains with `r dim_fit_aa[1]` iterations each after `r dim_fit_aa[1]` warmup iterations per chain. We estimated parameters and confidence intervals as the median and 95% quantile intervals of the posterior, respectively. 
 
-#### Parameter estimates (this is a provisional section)
+#### Parameter estimation
+
+There were four levels of parameter estimation in our analysis:
+
+1. Estimate \agcurve{} curve parameters for each leaf
+2. Estimate \aax{} for each light intensity with leaf using \agcurve{} curve parameters
+3. Estimate the effects of light intensity, light treatment, and accession on \aax{} (assimilatory and plasticity hypotheses)
+4. Estimate the effects of native light habitat on accession-level \aax{} (constitutive hypothesis)
+
+Although the higher-level parameter estimates depend on the lower-level parameter estimates, we fit all models simultaneously to ensure that the uncertainty in lower-level estimates propagated to higher-level estimates. 
+
+##### \agcurve{} curve parameters
+
+We modeled \logA as a quadratic function of \loggsw for each leaf using the following equation:
+
+$$\log(A_{ij}) = (\beta_0 + b_{0,j}) + (\beta_1 + b_{1,j}) \log{g_{\text{sw},i}} + (\beta_2 + b_{2,j}) \log{g_{\text{sw},i}}^2 + \epsilon_{i}$$
+
+where $\beta_0$, $\beta_1$, and $\beta_2$ are the average intercept, linear, and quadratic coefficients, respectively. We used diffuse normal priors with mean $0$ and standard deviation $10$ on these parameters. We estimated random effects of curve $j$ on the intercept ($b_{0,j}$), linear ($b_{1,j}$), and quadratic ($b_{2,j}$) coefficients. We assumed that the $j \times 3$ array of coefficients was multivariate normal a mean vector of $\vec{0}$ and covariance $\Sigma_\text{curve}$. We used a weakly informative normal prior with mean $0$ and standard deviation $1$ on the log-transformed standard deviations (i.e. the diagonal of $\Sigma_\text{curve}$). We used a weakly informative $\mathrm{LJK}(2)$ prior on the correlation matrix. The off diagonal elements of $\Sigma_\text{curve}$ can be calculated from its diagonal elements and the correlation matrix.
+
+The residuals $\epsilon_{i}$ were modeled as a lag-1 autocorrelated time-series. We further assumed that the residual standard deviation of the $j^{\text{th}}$ curve ($\sigma_{\epsilon,j}$) was inversely proportional to the leaf surface area ($S_j$) within the chamber:
+
+$$\log (\sigma_{\epsilon,j}) = \log (\sigma_{\qty{6}{\raiseto{2}\centi\meter},\epsilon}) + (6 - S_j) \beta_{S,\epsilon}$$
+where $\sigma_{\qty{6}{\raiseto{2}\centi\meter},\epsilon}$ is the minimum residual standard deviation when the $\qty{6}{\raiseto{2}\centi\meter}$ chamber is completely filled. The residual standard deviation increases on log-linear scale by $\beta_{S,\epsilon}$. We used a weakly informative normal prior with mean $-3$ and standard deviation $5$ on $\log (\sigma_{\qty{6}{\raiseto{2}\centi\meter},\epsilon})$ and a weakly informative normal prior with mean $0$ and standard deviation $1$ on $\beta_{S,\epsilon}$.
+
+##### \aax{} for each light intensity with leaf using \agcurve{} curve parameters
+
+Within the $k^{\text{th}}$ leaf, we estimated \aax{} for each light intensity by integrating the difference in \logA between the amphi and pseudohypo \agcurve{} curves over the range of \gsw{} values where the curves overlap. We used the following equation to estimate \aax{} for the $k^{\text{th}}$ leaf at light intensity $l$ in accession $m$:
+
+$$\widehat{\mathrm{AA}}_{klm} = \int_{\text{min(log(}g_\text{sw}))}^{\text{max(log(}g_\text{sw}))} \text{log}\bigg(\frac{\hat{A}_\text{amphi}(x; \theta_{klm,\text{amphi})}}{\hat{A}_\text{hypo}(x; \theta_{klm,\text{hypo})}}\bigg) dx$$
+where:
+
+$$\theta_\text{amphi} \in \{\hat{b}_{0, f(\text{amphi}, k,l,m)}, \hat{b}_{1, f(\text{amphi}, k,l,m)}, \hat{b}_{2, f(\text{amphi}, k,l,m)}\}, \text{and}$$ 
+
+$$\theta_\text{hypo} \in \{\hat{b}_{0, f(\text{hypo}, k,l,m)}, \hat{b}_{1, f(\text{hypo}, k,l,m)}, \hat{b}_{2, f(\text{hypo}, k,l,m)}\}.$$ 
+The function $f : \Theta_1 \rightarrow \Theta_2$ maps the set $\Theta_1$ indexed by leaf type (amphi or pseudohypo), leaf replicate, light intensity, and accession to set $\Theta_2$ indexed by individual \agcurve{} curve.
+
+##### Effects of light intensity, light treatment, and accession on \aax
+
+WORKING HERE
+
+We estimated these parameters for each leaf using the posterior distribution of the parameters from the \agcurve{} curve fitting procedure.
 
 Base model (need to add indices):
 
 $$\text{log(A)} = \beta_0 + \beta_1 \text{log}(g_\text{sw}) + \beta_2 \text{log}(g_\text{sw}) ^ 2 + \epsilon$$
 Estimate \aax{} by integrating over range of \gsw{} overlap (need to add indices for accession, replicate, light intensity):
 
-$$\mathrm{AA} = \int_{\text{min(log(}g_\text{sw}))}^{\text{max(log(}g_\text{sw}))} \text{log}\bigg(\frac{A_\text{amphi}(x; \theta_\text{amphi})}{A_\text{hypo}(x; \theta_\text{hypo})}\bigg) dx$$
 
 where $\text{min(log(}g_\text{sw}))$ and $\text{max(log(}g_\text{sw}))$ are the minimum and maximum values of $\text{log(}g_\text{sw})$ where amphi and pseudohypo curves overlap. \Aamphi{} is calculated from parameter estimates $\theta_\text{amphi} \in \{\beta_{0,\text{amphi}}, \beta_{1,\text{amphi}}, \beta_{2,\text{amphi}}\}$; \Ahypo{} is calculated from parameter estimates $\theta_\text{hypo} \in \{\beta_{0,\text{hypo}}, \beta_{1,\text{hypo}}, \beta_{2,\text{hypo}}\}$ for each curve.
 

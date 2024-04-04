@@ -139,6 +139,8 @@
 \newcommand{\caequals}[1]{$C_\mathrm{a} = \qty{#1}{\micro\mol\raiseto{-1}\mol}$}
 \newcommand{\cabetween}[2]{#1 < $C_\mathrm{a} < \qty{#2}{\micro\mol\raiseto{-1}\mol}$}
 \newcommand{\gsw}{$g_\text{sw}$}
+\newcommand{\loggsw}{$\log(g_\text{sw})$}
+\newcommand{\logA}{$\log(A)$}
 \newcommand{\ppfd}{$\mathrm{PPFD}$}
 \newcommand{\ppfdequals}[1]{$\mathrm{PPFD} = \qty{#1}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$}
 \newcommand{\ppfdqty}[1]{$\qty{#1}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$}
@@ -756,13 +758,11 @@ caused by transitory changes in chamber conditions, exert undue leverage
 on parameter estimates and cause bias and/or low precision in parameter
 estimates.
 
-\emph{Procedure}: We fit provisional nonrectangular hyperbola
-(\textbf{marshall\_model\_1980?}) to each \aqcurve{} curve using
-nonlinear regression with the \texttt{nlsLM()} function from the
-\emph{R} package \textbf{minpack.lm} version 1.2.4
-(\textbf{Elzhov\_minpack.lm\_2023?}). We sequentially removed data
-points with an absolute external studentized residual \(> 3\) until none
-remained.
+\emph{Procedure}: We fit provisional nonrectangular hyperbola (\emph{8})
+to each \aqcurve{} curve using nonlinear regression with the
+\texttt{nlsLM()} function from the \emph{R} package \textbf{minpack.lm}
+version 1.2.4 (\emph{9}). We sequentially removed data points with an
+absolute external studentized residual \(> 3\) until none remained.
 
 \paragraph{\texorpdfstring{Remove \aqcurve{} curves with poor
 fit}{Remove  curves with poor fit}}\label{remove-curves-with-poor-fit}
@@ -790,29 +790,115 @@ yet)}\label{general-points-not-sure-where-this-goes-yet}
 \item
   we chose the number of chains, warmup and sampling iterations, and
   maximum treedepth so that parameter estimates converged
-  (\(\hat{R} < 1.01\) (\emph{8})) and the effective sample size (ESS)
+  (\(\hat{R} < 1.01\) (\emph{10})) and the effective sample size (ESS)
   for each parameter was \(> 10^3\).
 \end{itemize}
 
-We fit Bayesian models using the \emph{R} package \textbf{brms} version
-2.20.4 (\emph{9}) with MCMC sampling in \emph{Stan} (\emph{10}). We used
-CmdStan version 2.33.1 and \textbf{cmdstanr} version 0.7.1 (\emph{11})
-to interface with \emph{R} version 4.3.2 (\emph{12}). We sampled the
-posterior distribution from 4 chains with 1000 iterations each after
-1000 warmup iterations per chain. We estimated parameters and confidence
-intervals as the median and 95\% quantile intervals of the posterior,
+We fit Bayesian models with MCMC sampling in the probabilistic
+programming language \emph{Stan} (\emph{11}). We used CmdStan version
+2.33.1 and \textbf{cmdstanr} version 0.7.1 (\emph{12}) to interface with
+\emph{R} version 4.3.2 (\emph{13}). We sampled the posterior
+distribution from 4 chains with 1000 iterations each after 1000 warmup
+iterations per chain. We estimated parameters and confidence intervals
+as the median and 95\% quantile intervals of the posterior,
 respectively.
 
-\paragraph{Parameter estimates (this is a provisional
-section)}\label{parameter-estimates-this-is-a-provisional-section}
+\paragraph{Parameter estimation}\label{parameter-estimation}
+
+There were four levels of parameter estimation in our analysis:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Estimate \agcurve{} curve parameters for each leaf
+\item
+  Estimate \aax{} for each light intensity with leaf using \agcurve{}
+  curve parameters
+\item
+  Estimate the effects of light intensity, light treatment, and
+  accession on \aax{} (assimilatory and plasticity hypotheses)
+\item
+  Estimate the effects of native light habitat on accession-level \aax{}
+  (constitutive hypothesis)
+\end{enumerate}
+
+Although the higher-level parameter estimates depend on the lower-level
+parameter estimates, we fit all models simultaneously to ensure that the
+uncertainty in lower-level estimates propagated to higher-level
+estimates.
+
+\subparagraph{\texorpdfstring{\agcurve{} curve
+parameters}{ curve parameters}}\label{curve-parameters}
+
+We modeled \logA as a quadratic function of \loggsw for each leaf using
+the following equation:
+
+\[\log(A_{ij}) = (\beta_0 + b_{0,j}) + (\beta_1 + b_{1,j}) \log{g_{\text{sw},i}} + (\beta_2 + b_{2,j}) \log{g_{\text{sw},i}}^2 + \epsilon_{i}\]
+
+where \(\beta_0\), \(\beta_1\), and \(\beta_2\) are the average
+intercept, linear, and quadratic coefficients, respectively. We used
+diffuse normal priors with mean \(0\) and standard deviation \(10\) on
+these parameters. We estimated random effects of curve \(j\) on the
+intercept (\(b_{0,j}\)), linear (\(b_{1,j}\)), and quadratic
+(\(b_{2,j}\)) coefficients. We assumed that the \(j \times 3\) array of
+coefficients was multivariate normal a mean vector of \(\vec{0}\) and
+covariance \(\Sigma_\text{curve}\). We used a weakly informative normal
+prior with mean \(0\) and standard deviation \(1\) on the
+log-transformed standard deviations (i.e.~the diagonal of
+\(\Sigma_\text{curve}\)). We used a weakly informative
+\(\mathrm{LJK}(2)\) prior on the correlation matrix. The off diagonal
+elements of \(\Sigma_\text{curve}\) can be calculated from its diagonal
+elements and the correlation matrix.
+
+The residuals \(\epsilon_{i}\) were modeled as a lag-1 autocorrelated
+time-series. We further assumed that the residual standard deviation of
+the \(j^{\text{th}}\) curve (\(\sigma_{\epsilon,j}\)) was inversely
+proportional to the leaf surface area (\(S_j\)) within the chamber:
+
+\[\log (\sigma_{\epsilon,j}) = \log (\sigma_{\qty{6}{\raiseto{2}\centi\meter},\epsilon}) + (6 - S_j) \beta_{S,\epsilon}\]
+where \(\sigma_{\qty{6}{\raiseto{2}\centi\meter},\epsilon}\) is the
+minimum residual standard deviation when the
+\(\qty{6}{\raiseto{2}\centi\meter}\) chamber is completely filled. The
+residual standard deviation increases on log-linear scale by
+\(\beta_{S,\epsilon}\). We used a weakly informative normal prior with
+mean \(-3\) and standard deviation \(5\) on
+\(\log (\sigma_{\qty{6}{\raiseto{2}\centi\meter},\epsilon})\) and a
+weakly informative normal prior with mean \(0\) and standard deviation
+\(1\) on \(\beta_{S,\epsilon}\).
+
+\subparagraph{\texorpdfstring{\aax{} for each light intensity with leaf
+using \agcurve{} curve
+parameters}{ for each light intensity with leaf using  curve parameters}}\label{for-each-light-intensity-with-leaf-using-curve-parameters}
+
+Within the \(k^{\text{th}}\) leaf, we estimated \aax{} for each light
+intensity by integrating the difference in \logA between the amphi and
+pseudohypo \agcurve{} curves over the range of \gsw{} values where the
+curves overlap. We used the following equation to estimate \aax{} for
+the \(k^{\text{th}}\) leaf at light intensity \(l\) in accession \(m\):
+
+\[\widehat{\mathrm{AA}}_{klm} = \int_{\text{min(log(}g_\text{sw}))}^{\text{max(log(}g_\text{sw}))} \text{log}\bigg(\frac{\hat{A}_\text{amphi}(x; \theta_{klm,\text{amphi})}}{\hat{A}_\text{hypo}(x; \theta_{klm,\text{hypo})}}\bigg) dx\]
+where:
+
+\[\theta_\text{amphi} \in \{\hat{b}_{0, f(\text{amphi}, k,l,m)}, \hat{b}_{1, f(\text{amphi}, k,l,m)}, \hat{b}_{2, f(\text{amphi}, k,l,m)}\}, \text{and}\]
+
+\[\theta_\text{hypo} \in \{\hat{b}_{0, f(\text{hypo}, k,l,m)}, \hat{b}_{1, f(\text{hypo}, k,l,m)}, \hat{b}_{2, f(\text{hypo}, k,l,m)}\}.\]
+The function \(f : \Theta_1 \rightarrow \Theta_2\) maps the set
+\(\Theta_1\) indexed by leaf type (amphi or pseudohypo), leaf replicate,
+light intensity, and accession to set \(\Theta_2\) indexed by \agcurve{}
+curve.
+
+WORKING HERE
+
+We estimated these parameters for each leaf using the posterior
+distribution of the parameters from the \agcurve{} curve fitting
+procedure.
 
 Base model (need to add indices):
 
 \[\text{log(A)} = \beta_0 + \beta_1 \text{log}(g_\text{sw}) + \beta_2 \text{log}(g_\text{sw}) ^ 2 + \epsilon\]
 Estimate \aax{} by integrating over range of \gsw{} overlap (need to add
 indices for accession, replicate, light intensity):
-
-\[\mathrm{AA} = \int_{\text{min(log(}g_\text{sw}))}^{\text{max(log(}g_\text{sw}))} \text{log}\bigg(\frac{A_\text{amphi}(x; \theta_\text{amphi})}{A_\text{hypo}(x; \theta_\text{hypo})}\bigg) dx\]
 
 where \(\text{min(log(}g_\text{sw}))\) and
 \(\text{max(log(}g_\text{sw}))\) are the minimum and maximum values of
@@ -921,16 +1007,16 @@ and light treatment on \aax, a random effect of accession on \aax, and a
 linear regression of PAR on accession-level \aax. We next compared the
 fit of the base model to a more complex with an interaction between
 light intensity and light treatment using LOOIC with the \textit{R}
-package \textbf{loo} version 2.7.0 (\textbf{vehtari\_practical\_2017?}).
-These comparisons allowed us to test the main predictions of each
-hypothesis and for a reinforcing interactions between assimilatory and
-plastic hypotheses (tab:predictions). However, these models cannot test
-predictions when there is an interaction with the constitutive
-hypothesis, because this hypothesis posits accession-levels variation in
-responses to light intensity and/or light treatment. Therefore, we
-tested for significant variation among accessions in light intensity and
-light treatment by comparing LOOIC values of models with and without
-random interactions between these factors and accession.
+package \textbf{loo} version 2.7.0 (\emph{14}). These comparisons
+allowed us to test the main predictions of each hypothesis and for a
+reinforcing interactions between assimilatory and plastic hypotheses
+(tab:predictions). However, these models cannot test predictions when
+there is an interaction with the constitutive hypothesis, because this
+hypothesis posits accession-levels variation in responses to light
+intensity and/or light treatment. Therefore, we tested for significant
+variation among accessions in light intensity and light treatment by
+comparing LOOIC values of models with and without random interactions
+between these factors and accession.
 
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3182}}
@@ -1021,38 +1107,53 @@ Tomancak, A. Cardona, \href{https://doi.org/10.1038/nmeth.2019}{Fiji: An
 open-source platform for biological-image analysis}. \emph{Nature
 Methods} \textbf{9}, 676--682 (2012).}
 
-\bibitem[\citeproctext]{ref-gelman_inference_1992}
+\bibitem[\citeproctext]{ref-marshall_model_1980}
 \CSLLeftMargin{8. }%
+\CSLRightInline{B. Marshall, P. V. Biscoe,
+\href{https://doi.org/10.1093/jxb/31.1.29}{A {Model} for
+{C}\(_{\textrm{3}}\) {Leaves} {Describing} the {Dependence} of {Net}
+{Photosynthesis} on {Irradiance}}. \emph{Journal of Experimental Botany}
+\textbf{31}, 29--39 (1980).}
+
+\bibitem[\citeproctext]{ref-elzhov_minpacklm_2023}
+\CSLLeftMargin{9. }%
+\CSLRightInline{T. V. Elzhov, K. M. Mullen, A.-N. Spiess, B. M. Bolker,
+\emph{Minpack.lm: {R} {Interface} to the {Levenberg}-{Marquardt}
+{Nonlinear} {Least}-{Squares} {Algorithm} {Found} in {MINPACK}, {Plus}
+{Support} for {Bounds}} (2023;
+\url{https://CRAN.R-project.org/package=minpack.lm}).}
+
+\bibitem[\citeproctext]{ref-gelman_inference_1992}
+\CSLLeftMargin{10. }%
 \CSLRightInline{A. Gelman, D. B. Rubin, Inference from iterative
 simulation using multiple sequences. \emph{Statistical Science}
 \textbf{7}, 457--472 (1992).}
 
-\bibitem[\citeproctext]{ref-burkner_brms_2017}
-\CSLLeftMargin{9. }%
-\CSLRightInline{P.-C. Bürkner,
-\href{https://doi.org/10.18637/jss.v080.i01}{\textbf{Brms} : {An}
-\emph{r} {Package} for {Bayesian} {Multilevel} {Models} {Using}
-\emph{stan}}. \emph{Journal of Statistical Software} \textbf{80}
-(2017).}
-
 \bibitem[\citeproctext]{ref-stan_development_team_stan_2023}
-\CSLLeftMargin{10. }%
+\CSLLeftMargin{11. }%
 \CSLRightInline{Stan Development Team, \emph{Stan {Modeling} {Language}
 {Users} {Guide} and {Reference} {Manual}} (2023;
 \url{https://mc-stan.org}).}
 
 \bibitem[\citeproctext]{ref-gabry_cmdstanr_2023}
-\CSLLeftMargin{11. }%
+\CSLLeftMargin{12. }%
 \CSLRightInline{J. Gabry, R. Češnovar, \emph{Cmdstanr: {R} {Interface}
 to '{CmdStan}'} (2023;
 \href{https://mc-stan.org/cmdstanr,\%20https://discourse.mc-stan.org}{https://mc-stan.org/cmdstanr,
 https://discourse.mc-stan.org}).}
 
 \bibitem[\citeproctext]{ref-r_core_team_r:_2023}
-\CSLLeftMargin{12. }%
+\CSLLeftMargin{13. }%
 \CSLRightInline{R Core Team, \emph{R: {A} {Language} and {Environment}
 for {Statistical} {Computing}} (R Foundation for Statistical Computing,
 Vienna, Austria, 2023; \url{http://www.R-project.org/}).}
+
+\bibitem[\citeproctext]{ref-vehtari_practical_2017}
+\CSLLeftMargin{14. }%
+\CSLRightInline{A. Vehtari, A. Gelman, J. Gabry,
+\href{https://doi.org/10.1007/s11222-016-9696-4}{Practical {Bayesian}
+model evaluation using leave-one-out cross-validation and {WAIC}}.
+\emph{Statistics and Computing} \textbf{27}, 1413--1432 (2017).}
 
 \end{CSLReferences}
 
