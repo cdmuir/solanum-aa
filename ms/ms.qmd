@@ -400,7 +400,7 @@ where $\sigma_{\qty{6}{\raiseto{2}\centi\meter},\epsilon}$ is the minimum residu
 
 ##### \aax{} for each light intensity with leaf using \agcurve{} curve parameters
 
-Within the $k^{\text{th}}$ leaf, we estimated \aax{} for each light intensity by integrating the difference in \logA between the amphi and pseudohypo \agcurve{} curves over the range of \gsw{} values where the curves overlap. We used the following equation to estimate \aax{} for the $k^{\text{th}}$ leaf at light intensity $l$ in accession $m$:
+Within the $k^{\text{th}}$ leaf, we estimated \aax{} for each light intensity by integrating the difference in \logA between the amphi and pseudohypo \agcurve{} curves over the range of \gsw{} values where the curves overlap (from $\min(\log(g_\text{sw}))$ to $\max(\log(g_\text{sw}))$). The estimate of \aax{} for the $k^{\text{th}}$ leaf at light intensity $l$ in accession $m$ is:
 
 $$\widehat{\mathrm{AA}}_{klm} = \int_{\text{min(log(}g_\text{sw}))}^{\text{max(log(}g_\text{sw}))} \text{log}\bigg(\frac{\hat{A}_\text{amphi}(x; \theta_{klm,\text{amphi})}}{\hat{A}_\text{hypo}(x; \theta_{klm,\text{hypo})}}\bigg) dx$$
 where:
@@ -408,21 +408,21 @@ where:
 $$\theta_\text{amphi} \in \{\hat{b}_{0, f(\text{amphi}, k,l,m)}, \hat{b}_{1, f(\text{amphi}, k,l,m)}, \hat{b}_{2, f(\text{amphi}, k,l,m)}\}, \text{and}$$ 
 
 $$\theta_\text{hypo} \in \{\hat{b}_{0, f(\text{hypo}, k,l,m)}, \hat{b}_{1, f(\text{hypo}, k,l,m)}, \hat{b}_{2, f(\text{hypo}, k,l,m)}\}.$$ 
-The function $f : \Theta_1 \rightarrow \Theta_2$ maps the set $\Theta_1$ indexed by leaf type (amphi or pseudohypo), leaf replicate, light intensity, and accession to set $\Theta_2$ indexed by individual \agcurve{} curve.
+The function $f : \Theta_1 \rightarrow \Theta_2$ maps the set $\Theta_1$ indexed by leaf type (amphi or pseudohypo), leaf replicate, light intensity, and accession to set $\Theta_2$ indexed by individual \agcurve{} curve. This mapping is necessary because the random effects structure differs between models of \loggsw on \logA and that of models predicting \aax{} described in the next section.
 
 ##### Effects of light intensity, light treatment, and accession on \aax
+
+We tested for effects of light intensity, light treatment, accession, and their interactions on \aax{} by estimating parameters in the following equation:
+
+$$\mathrm{AA} = ... + \epsilon$$
 
 WORKING HERE
 
 We estimated these parameters for each leaf using the posterior distribution of the parameters from the \agcurve{} curve fitting procedure.
 
-Base model (need to add indices):
-
-$$\text{log(A)} = \beta_0 + \beta_1 \text{log}(g_\text{sw}) + \beta_2 \text{log}(g_\text{sw}) ^ 2 + \epsilon$$
-Estimate \aax{} by integrating over range of \gsw{} overlap (need to add indices for accession, replicate, light intensity):
 
 
-where $\text{min(log(}g_\text{sw}))$ and $\text{max(log(}g_\text{sw}))$ are the minimum and maximum values of $\text{log(}g_\text{sw})$ where amphi and pseudohypo curves overlap. \Aamphi{} is calculated from parameter estimates $\theta_\text{amphi} \in \{\beta_{0,\text{amphi}}, \beta_{1,\text{amphi}}, \beta_{2,\text{amphi}}\}$; \Ahypo{} is calculated from parameter estimates $\theta_\text{hypo} \in \{\beta_{0,\text{hypo}}, \beta_{1,\text{hypo}}, \beta_{2,\text{hypo}}\}$ for each curve.
+
 
 #### Predictions
 
