@@ -87,9 +87,8 @@ n_min_points_per_rh_curve = aa_args$n_min_points_per_rh_curve
 point_outlier_threshold = aa_args$point_outlier_threshold
 aa_outlier_threshold = aa_args$aa_outlier_threshold
 thinning_interval = aa_args$thinning_interval
+aq_r2_threshold = aa_args$aq_r2_threshold
 
-
-loo_version = "2.7.0"
 ```
 
 ## Notes
@@ -245,7 +244,7 @@ Leaf mass per area (LMA) is the dry mass divided by the leaflet area. We scanned
 
 ### Cleaning \agcurve{} curves
 
-The raw data set consisted of `r prettyNum(aa_stats$n_rh_curve0)` \agcurve{} curves with an average of `r formatC(aa_stats$n_point_per_rh_curve0, digits = 3)` points per curve. Manual curation of a data set this size in a principled, consistent manner is not feasible. Therefore, we automated data cleaning using custom *R* scripts. Cleaning is divided into six sequential steps \autoref{tbl-cleaning1}.
+The raw data set consisted of `r prettyNum(aa_stats$n_rh_curve0, big.mark = ",")` \agcurve{} curves with an average of `r formatC(aa_stats$n_point_per_rh_curve0, digits = 3)` points per curve. Manual curation of a data set this size in a principled, consistent manner is not feasible. Therefore, we automated data cleaning using custom *R* scripts. Cleaning is divided into six sequential steps \autoref{tbl-cleaning1}.
 
 ```{r, cleaning1, echo=FALSE,message=FALSE,warning=FALSE}
 #| label: tbl-cleaning1
@@ -260,7 +259,8 @@ step_description_col = c(
   "6. Trim extreme \\aax{} values"
 )
 
-n_curve_col = unlist(aa_stats[str_detect(names(aa_stats), "^n_rh_curve[1-9]$")])
+n_curve_col = unlist(aa_stats[str_detect(names(aa_stats), "^n_rh_curve[1-9]$")]) |>
+  prettyNum(big.mark = ",")
 
 n_point_col = unlist(aa_stats[str_detect(names(aa_stats), "^n_point_per_rh_curve[1-9]$")])
 
@@ -297,7 +297,7 @@ tibble(
 
 *Rationale*: Individual outliers within \agcurve{} curves, usually caused by transitory changes in chamber conditions, exert undue leverage on parameter estimates and cause bias and/or low precision in parameter estimates.
 
-*Procedure*: We fit provisional quadratic regressions for each curve using ordinary least squares with the `lm()` function in *R*. We sequentially removed data points with an absolute external studentized residual greater than `r point_outlier_threshold` until none remained.
+*Procedure*: We fit provisional quadratic regressions for each curve using ordinary least squares with the `lm()` function in *R*. We sequentially removed data points with an absolute external studentized residual $> `r point_outlier_threshold`$ until none remained.
 
 #### Thin redundant data points within each \agcurve{} curve
 
@@ -319,26 +319,21 @@ tibble(
 
 ### Cleaning \aqcurve{} curves
 
-WORKING HERE!
+The raw data set consisted of `r prettyNum(aa_stats$n_aq_curve0, big.mark = ",")` \aqcurve{} curves with an average of `r formatC(aa_stats$n_point_per_aq_curve0, digits = 3)`. Manual curation of a data set this size in a principled, consistent manner is not feasible. Therefore, we automated data cleaning using custom *R* scripts. Cleaning is divided into two sequential steps \autoref{tbl-cleaning2}.
 
-The raw data set consisted of `r prettyNum(aa_stats$n_aq_curve0)` \aqcurve{} curves with an average of `r formatC(aa_stats$n_point_per_aq_curve0, digits = 3)`. Manual curation of a data set this size in a principled, consistent manner is not feasible. Therefore, we automated data cleaning using custom *R* scripts. Cleaning is divided into six sequential steps \autoref{tbl-cleaning2}.
-
-```{r, cleaning2, eval=FALSE,echo=FALSE,message=FALSE,warning=FALSE}
+```{r, cleaning2,echo=FALSE,message=FALSE,warning=FALSE}
 #| label: tbl-cleaning2
-#| tbl-cap: "Six sequential steps for cleaning \\agcurve{} curves. The rationale and procedure for each step are described in the text. The rightmost columns summarize the number of curves and mean number of points per curve remaining after each step. For reference, there are four possible \\agcurve{} curves per replicate: all combinations of leaf type (amphi or pseudohypo) and light intensity (high or low)."
+#| tbl-cap: "Two sequential steps for cleaning \\agcurve{} curves. The rationale and procedure for each step are described in the text. The rightmost columns summarize the number of curves and mean number of points per curve remaining after each step."
 
 step_description_col = c(
-  "1. remove unreliable and unusable data points",
-  "2. remove hysteretic portion of \\agcurve{} curves at low \\gsw{}",
-  "3. remove outliers within each \\agcurve{} curve",
-  "4. remove replicates with no overlap between amphi and pseudohypo \\agcurve{} curves",
-  "5. thin redundant data points within each \\agcurve{} curve",
-  "6. Trim extreme \\aax{} values"
+  "1. remove outliers within each \\aqcurve{} curve",
+  "2. remove \\aqcurve{} curves with poor fit"
 )
 
-n_curve_col = unlist(aa_stats[str_detect(names(aa_stats), "^n_rh_curve[0-9]$")])
+n_curve_col = unlist(aa_stats[str_detect(names(aa_stats), "^n_aq_curve[1-9]$")]) |>
+  prettyNum(big.mark = ",")
 
-n_point_col = unlist(aa_stats[str_detect(names(aa_stats), "^n_point_per_rh_curve[0-9]$")])
+n_point_col = unlist(aa_stats[str_detect(names(aa_stats), "^n_point_per_aq_curve[1-9]$")])
 
 tibble(
   `Step: description` = step_description_col,
@@ -356,12 +351,24 @@ tibble(
 
 ```
 
+#### Remove outliers within each \aqcurve{} curve
+
+*Rationale*: Individual outliers within \agcurve{} curves, usually caused by transitory changes in chamber conditions, exert undue leverage on parameter estimates and cause bias and/or low precision in parameter estimates.
+
+*Procedure*: We fit provisional nonrectangular hyperbola [@marshall_model_1980] to each \aqcurve{} curve using nonlinear regression with the `nlsLM()` function from the *R* package **minpack.lm** version `r packageVersion("minpack.lm")` [@Elzhov_minpack.lm_2023]. We sequentially removed data points with an absolute external studentized residual $> `r point_outlier_threshold`$ until none remained.
+
+#### Remove \aqcurve{} curves with poor fit
+
+*Rationale*: \aqcurve{} curves with a poor fit to the nonrectangular hyperbola most likely indicate systematic measurement error and/or the leaf was not fully acclimated to the chamber environment. 
+
+*Procedure*: As described above, we fit provisional nonrectangular hyperbola to each \aqcurve{} curve and calculated the model $r^2$. There was a clear break between typical curves and poorly fitting curves where $r^2 < `r aq_r2_threshold`$. We therefore removed \aqcurve{} curves with $r^2 < `r aq_r2_threshold`$.
+
 ### Data analysis
 
 #### General points (not sure where this goes yet)
 
 - models fit in Stan/brms
-- we chose the number of chains, warmup and sampling iterations, and maximum treedepth so that parameter estimates converged ($\hat{R} < 1.01$ [@gelman_inference_1992]) and the effective sample size (ESS) for each parameter was greater than $10^3$.
+- we chose the number of chains, warmup and sampling iterations, and maximum treedepth so that parameter estimates converged ($\hat{R} < 1.01$ [@gelman_inference_1992]) and the effective sample size (ESS) for each parameter was $> 10^3$.
 
 We fit Bayesian models using the *R* package **brms** version `r fit_aa$version$brms` [@burkner_brms_2017] with MCMC sampling in *Stan* [@stan_development_team_stan_2023]. We used CmdStan version `r fit_aa$version$cmdstan` and **cmdstanr** version `r fit_aa$version$cmdstanr` [@gabry_cmdstanr_2023] to interface with *R* version `r getRversion()` [@r_core_team_r:_2023]. We sampled the posterior distribution from `r dim_fit_aa[2]` chains with `r dim_fit_aa[1]` iterations each after `r dim_fit_aa[1]` warmup iterations per chain. We estimated parameters and confidence intervals as the median and 95% quantile intervals of the posterior, respectively. 
 
@@ -409,7 +416,7 @@ Reinforcing interactions (we only consider these because these are ones which co
   + AA2000 - AA150 varies among accession, correlated with PAR
   + cor(AAsun2000, PAR) > cor(AAsun150, PAR) and > cor(AAshade2000, PAR) and > cor(AAshade150, PAR) in nonadditive way
   
-We tested competing predictions through a combination of model selection and parameter estimation from the posterior of selected models. We started with a base model that includes fixed effects of light intensity and light treatment on \aax, a random effect of accession on \aax, and a linear regression of PAR on accession-level \aax. We next compared the fit of the base model to a more complex with an interaction between light intensity and light treatment using LOOIC with the \textit{R} package **loo** version `r loo_version` [@vehtari_practical_2017]. These comparisons allowed us to test the main predictions of each hypothesis and for a reinforcing interactions between assimilatory and plastic hypotheses (tab:predictions). However, these models cannot test predictions when there is an interaction with the constitutive hypothesis, because this hypothesis posits accession-levels variation in responses to light intensity and/or light treatment. Therefore, we tested for significant variation among accessions in light intensity and light treatment by comparing LOOIC values of models with and without random interactions between these factors and accession.
+We tested competing predictions through a combination of model selection and parameter estimation from the posterior of selected models. We started with a base model that includes fixed effects of light intensity and light treatment on \aax, a random effect of accession on \aax, and a linear regression of PAR on accession-level \aax. We next compared the fit of the base model to a more complex with an interaction between light intensity and light treatment using LOOIC with the \textit{R} package **loo** version `r packageVersion("loo")` [@vehtari_practical_2017]. These comparisons allowed us to test the main predictions of each hypothesis and for a reinforcing interactions between assimilatory and plastic hypotheses (tab:predictions). However, these models cannot test predictions when there is an interaction with the constitutive hypothesis, because this hypothesis posits accession-levels variation in responses to light intensity and/or light treatment. Therefore, we tested for significant variation among accessions in light intensity and light treatment by comparing LOOIC values of models with and without random interactions between these factors and accession.
 
 | Hypothesis   | Prediction | Model |
 |--------------|------------|------------------|
