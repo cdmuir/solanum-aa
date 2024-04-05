@@ -368,10 +368,10 @@ solanum_aa_aa = function(model) {
   b_aa_2000_high = switch(
     model,
     aa1 = "",
-    aa2 = "b_aa_2000_high +",
+    aa2 = "b_aa_2000_high * (light_intensity[i] == 2) * (light_treatment[i] == 2) +",
     aa3 = "",
     aa4 = "",
-    aa5 = "b_aa_2000_high +"
+    aa5 = "b_aa_2000_high * (light_intensity[i] == 2) * (light_treatment[i] == 2) +"
   )
   
   read_lines("stan/solanum-aa-aa.stan") |>
