@@ -412,11 +412,9 @@ The function $f : \Theta_1 \rightarrow \Theta_2$ maps the set $\Theta_1$ indexed
 
 ##### Effects of light intensity, light treatment, and accession on \aax
 
-We tested for effects of light intensity, light treatment, accession, and their interactions on \aax{} by estimating parameters in the following equation:
+We tested for effects of light intensity, light treatment, accession, and their interactions on \aax. All models included effects of light intensity and light treatment, as well as random effects of accession and replicate within accession. More complex models included interactions between light intensity and light treatment, as well as random effects of accession on the effects of light intensity and light treatment. We used a weakly informative normal prior with mean $0$ and standard deviation $10$ for fixed effects light intensity and treatment. We used a weakly informative normal prior with mean $-5$ and standard deviation $5$ for the the random effect standard deviation of replicate within accession. We accounted for the phylogenetic structure among the random effects of accession using an Ornstein-Uhlenbeck (OU) process [@hansen_stabilizing_1997]. We used a weakly informative normal prior with mean $0$ and standard deviation $10$ on OU parameters. We modeled the residual standard deviation on a log-link scale with effects of light intensity and light treatment. We used a weakly informative normal prior with mean $-3$ and standard deviation $5$ on the residual standard deviation intercept and a weakly informative normal prior with mean $0$ and standard deviation $1$ on the effects of light intensity and light treatment on the residual standard deviation.
 
-$$\mathrm{AA} = ... + \epsilon$$
-
-WORKING HERE
+WORKING HERE - TABLE OR SOMETHING SUMMARIZING MODELS?
 
 We estimated these parameters for each leaf using the posterior distribution of the parameters from the \agcurve{} curve fitting procedure.
 
