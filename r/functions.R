@@ -243,7 +243,7 @@ solanum_aa_parameters = function(model) {
   
   par_table = get_par_table(model)
   
-  # parameters (WORKING HERE)
+  # parameters
   pars = par_table |>
     mutate(
       lb1 = if_else(is.na(lb), "", glue("lower={lb}")),

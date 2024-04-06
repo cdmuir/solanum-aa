@@ -1,0 +1,30 @@
+parameter,latex,description,par_type
+B_curve,"$\mathbf{B}_\text{curve}$","$n_\text{curve} \times 3$ array of random \agcurve{} curve-level coefficients ($b_{0,j}$, $b_{1,j}$, $b_{2,j}$); $\mathbf{B}_\text{curve} \sim \text{MVN}(\vec{0}, \symbf{\Sigma}_\text{curve})$",ags
+Mu_curve,"$\vec{\beta}_\text{curve}$","vector of mean quadratic coefficients ($\beta_0$, $\beta_1$, $\beta_2$)",ags
+Sigma_curve,"$\symbf{\Sigma}_\text{curve}$","$3 \times 3$ covariance matrix of curve-level coefficients",ags
+b0_log_sigma_resid,"$\sigma_{\qty{6}{\raiseto{2}\centi\meter},\epsilon}$","minimum residual standard deviation when the measured leaf surface area is $\qty{6}{\raiseto{2}\centi\meter}$",ags
+b_log_sigma_resid_S,"$\beta_{S,\epsilon}$","slope of the relationship between residual standard deviation and measured leaf surface area",ags
+rho_resid,"$\rho_{\epsilon}$","lag-1 residual autocorrelation",ags
+
+b0_aa,real,0,NA,NA,"normal(0,1)",1,1,1,1,1
+b_aa_light_intensity_2000,real,0,NA,NA,"normal(0,1)",1,1,1,1,1
+b_aa_light_treatment_high,real,0,NA,NA,"normal(0,1)",1,1,1,1,1
+b_aa_acc,vector[n_acc],0,NA,NA,"normal(0, sigma_aa_acc_id)",1,1,1,1,1
+rhosq_aa_acc,real,1,0,NA,"normal(0,10)",1,1,1,1,1
+etasq_aa_acc,real,1,0,NA,"normal(0,10)",1,1,1,1,1
+b_aa_acc_id,vector[n_acc_id],0,NA,NA,"normal(0,sigma_aa_acc_id)",1,1,1,1,1
+log_sigma_aa_acc_id,real,0,NA,NA,"normal(-3,5)",1,1,1,1,1
+b0_log_sigma_aa,real,0,NA,NA,"normal(-3,5)",1,1,1,1,1
+b_log_sigma_aa_light_intensity_2000,real,0,NA,NA,"normal(0,1)",1,1,1,1,1
+b_log_sigma_aa_light_treatment_high,real,0,NA,NA,"normal(0,1)",1,1,1,1,1
+b0_ppfd_aa,real,0,NA,NA,"normal(0,1)",1,1,1,1,1
+b1_ppfd_aa,real,0,NA,NA,"normal(0,1)",1,1,1,1,1
+rhosq_ppfd_aa,real,1,0,NA,"normal(0,10)",1,1,1,1,1
+etasq_ppfd_aa,real,1,0,NA,"normal(0,10)",1,1,1,1,1
+b_aa_2000_high,real,0,NA,NA,"normal(0,1)",0,1,0,0,1
+b_aa_light_intensity_2000_acc,vector[n_acc],0,NA,NA,"multi_normal(rep_vector(0.0, n_acc), Sigma_aa_light_intensity_2000_acc)",0,0,1,0,1
+rhosq_aa_light_intensity_2000_acc,real,1,0,NA,"normal(0, 10)",0,0,1,0,1
+etasq_aa_light_intensity_2000_acc,real,1,0,NA,"normal(0, 10)",0,0,1,0,1
+b_aa_light_treatment_high_acc,vector[n_acc],0,NA,NA,"multi_normal(rep_vector(0.0, n_acc), Sigma_aa_light_treatment_high_acc)",0,0,0,1,1
+rhosq_aa_light_treatment_high_acc,real,1,0,NA,"normal(0, 10)",0,0,0,1,1
+etasq_aa_light_treatment_high_acc,real,1,0,NA,"normal(0, 10)",0,0,0,1,1

@@ -31,7 +31,7 @@ csl: https://www.zotero.org/styles/science
 ---
 
 ```{r load-objects, echo=FALSE, eval=TRUE}
-
+library(dplyr)
 library(readr)
 library(stringr)
 library(tibble)
@@ -384,6 +384,33 @@ There were four levels of parameter estimation in our analysis:
 4. Estimate the effects of native light habitat on accession-level \aax{} (constitutive hypothesis)
 
 Although the higher-level parameter estimates depend on the lower-level parameter estimates, we fit all models simultaneously to ensure that the uncertainty in lower-level estimates propagated to higher-level estimates. 
+
+```{r, parameters, echo=FALSE,message=FALSE,warning=FALSE}
+#| label: tbl-parameters
+#| tbl-cap: "caption"
+
+df_parameters = read_csv("../data/parameters1.csv", col_types = "cccc", n_max = 6) 
+
+# WORKING ON TABLE IN test.gmd
+df_parameters |>
+  dplyr::select(Parameter = latex, Description = description) |>
+  knitr::kable(
+    format = "latex",
+    align = c("c", "l"),
+    booktabs = TRUE,
+    escape = FALSE
+  ) |>
+  kableExtra::kable_styling(latex_options = c("striped", "no_vertical_lines")) |>
+  kableExtra::column_spec(1, width = "1in") |>
+  kableExtra::column_spec(2, width = "5in") |>
+  kableExtra::pack_rows("\\agcurve{} curve parameters",
+                        min(which(df_parameters$par_type == "ags")),
+                        max(which(df_parameters$par_type == "ags")),
+                        escape = FALSE) #|>
+                        # kableExtra::pack_rows("x", 2, 2)
+
+
+```
 
 ##### \agcurve{} curve parameters
 
