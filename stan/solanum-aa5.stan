@@ -130,7 +130,7 @@ model {
   b0_aa ~ normal(0,1);
   b_aa_light_intensity_2000 ~ normal(0,1);
   b_aa_light_treatment_high ~ normal(0,1);
-  b_aa_acc ~ normal(0, sigma_aa_acc_id);
+  b_aa_acc ~ multi_normal(rep_vector(0.0, n_acc), Sigma_aa_acc);
   rhosq_aa_acc ~ normal(0,10);
   etasq_aa_acc ~ normal(0,10);
   b_aa_acc_id ~ normal(0,sigma_aa_acc_id);
