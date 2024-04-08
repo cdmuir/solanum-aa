@@ -378,7 +378,7 @@ We fit Bayesian models with MCMC sampling in the probabilistic programming langu
 
 There were four levels of parameter estimation in our analysis:
 
-1. Estimate \agcurve{} curve parameters for each leaf
+1. Estimate \agcurve{} curve parameters
 2. Estimate \aax{} for each light intensity with leaf using \agcurve{} curve parameters
 3. Estimate the effects of light intensity, light treatment, and accession on \aax{} (assimilatory and plasticity hypotheses)
 4. Estimate the effects of native light habitat on accession-level \aax{} (constitutive hypothesis)
@@ -387,18 +387,19 @@ Although the higher-level parameter estimates depend on the lower-level paramete
 
 ```{r, parameters, echo=FALSE,message=FALSE,warning=FALSE}
 #| label: tbl-parameters
-#| tbl-cap: "caption"
+#| tbl-cap: "Description of parameters estimated in the hierarchical Bayesian model. The `Parameter` column lists the parameter name as it appears in text. The `Description` column provides a brief description of the parameter."
 
-df_parameters = read_csv("../data/parameters1.csv", col_types = "cccc", n_max = 6) 
+df_parameters = read_csv("../data/parameters1.csv", col_types = "ccccl") |>
+    dplyr::filter(include)
 
-# WORKING ON TABLE IN test.gmd
 df_parameters |>
   dplyr::select(Parameter = latex, Description = description) |>
   knitr::kable(
     format = "latex",
-    align = c("c", "l"),
+    align = c("l", "l"),
     booktabs = TRUE,
-    escape = FALSE
+    escape = FALSE,
+    longtable = TRUE
   ) |>
   kableExtra::kable_styling(latex_options = c("striped", "no_vertical_lines")) |>
   kableExtra::column_spec(1, width = "1in") |>
@@ -406,9 +407,19 @@ df_parameters |>
   kableExtra::pack_rows("\\agcurve{} curve parameters",
                         min(which(df_parameters$par_type == "ags")),
                         max(which(df_parameters$par_type == "ags")),
-                        escape = FALSE) #|>
-                        # kableExtra::pack_rows("x", 2, 2)
-
+                        escape = FALSE) |>
+  kableExtra::pack_rows("\\aax{} for each light intensity with leaf using \\agcurve{} curve parameters",
+                        min(which(df_parameters$par_type == "aa_est")),
+                        max(which(df_parameters$par_type == "aa_est")),
+                        escape = FALSE) |>
+  kableExtra::pack_rows("effects light intensity, light treatments, and accession on \\aax",
+                        min(which(df_parameters$par_type == "aa")),
+                        max(which(df_parameters$par_type == "aa")),
+                        escape = FALSE) |>
+  kableExtra::pack_rows("effects of native light habitat on accession-level \\aax",
+                        min(which(df_parameters$par_type == "ppfd_aa")),
+                        max(which(df_parameters$par_type == "ppfd_aa")),
+                        escape = FALSE)
 
 ```
 
@@ -439,7 +450,12 @@ The function $f : \Theta_1 \rightarrow \Theta_2$ maps the set $\Theta_1$ indexed
 
 ##### Effects of light intensity, light treatment, and accession on \aax
 
-We tested for effects of light intensity, light treatment, accession, and their interactions on \aax. All models included effects of light intensity and light treatment, as well as random effects of accession and replicate within accession. More complex models included interactions between light intensity and light treatment, as well as random effects of accession on the effects of light intensity and light treatment. We used a weakly informative normal prior with mean $0$ and standard deviation $10$ for fixed effects light intensity and treatment. We used a weakly informative normal prior with mean $-3$ and standard deviation $5$ for the the random effect standard deviation of replicate within accession. We accounted for the phylogenetic structure among the random effects of accession using an Ornstein-Uhlenbeck (OU) process [@hansen_stabilizing_1997]. We used a weakly informative normal prior with mean $0$ and standard deviation $10$ on OU parameters. We modeled the residual standard deviation on a log-link scale with effects of light intensity and light treatment. We used a weakly informative normal prior with mean $-3$ and standard deviation $5$ on the residual standard deviation intercept and a weakly informative normal prior with mean $0$ and standard deviation $1$ on the effects of light intensity and light treatment on the residual standard deviation.
+We tested for effects of light intensity, light treatment, accession, and their interactions on \aax. All models included effects of light intensity and light treatment, as well as random effects of accession and replicate within accession. More complex models included interactions between light intensity and light treatment, as well as random effects of accession on the effects of light intensity and light treatment. We used a weakly informative normal prior with mean $0$ and standard deviation $10$ for fixed effects light intensity and treatment. We used a weakly informative normal prior with mean $-3$ and standard deviation $5$ for the the random effect standard deviation of replicate within accession. We accounted for the phylogenetic structure among the random effects of accession using an Ornstein-Uhlenbeck (OU) process [@hansen_stabilizing_1997]. The expected covariance between accessions $i$ and $j$ ($\text{Cov}(i, j)$ ) is:
+
+$$\text{Cov}(i, j) = \frac{\sigma^2}{2 \alpha} \exp(-\alpha D_{ij})$$
+where $\sigma^2$ is the variance of the random effect, $\alpha$ is the rate of decay of the covariance with phylogenetic distance, $D_{ij}$, the phylogenetic distance between accessions $i$ and $j$. We estimated $\sigma^2 / (2 \alpha)$ and $\alpha$ as a separate parameters and reparameterized them as $\sigma^2$ and $\alpha$. We used a weakly informative normal prior with mean $0$ and standard deviation $10$ on OU parameters. 
+
+We modeled the residual standard deviation of \aax, (i.e. phylogenetically unstructured variation unaccounted for by explanatory variables) on a log-link scale with effects of light intensity and light treatment. We used a weakly informative normal prior with mean $-3$ and standard deviation $5$ on the residual standard deviation intercept and a weakly informative normal prior with mean $0$ and standard deviation $1$ on the effects of light intensity and light treatment on the residual standard deviation.
 
 ##### Effects of native light habitat on accession-level \aax
 

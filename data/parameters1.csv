@@ -1,51 +1,35 @@
-parameter,latex,description,par_type
-B_curve,"$\mathbf{B}_\text{curve}$","$n_\text{curve} \times 3$ array of random \agcurve{} curve-level coefficients ($b_{0,j}$, $b_{1,j}$, $b_{2,j}$); $\mathbf{B}_\text{curve} \sim \text{MVN}(\vec{0}, \symbf{\Sigma}_\text{curve})$",ags
-Mu_curve,"$\vec{\beta}_\text{curve}$","vector of mean quadratic coefficients ($\beta_0$, $\beta_1$, $\beta_2$)",ags
-Sigma_curve,"$\symbf{\Sigma}_\text{curve}$","$3 \times 3$ covariance matrix of curve-level coefficients",ags
-b0_log_sigma_resid,"$\sigma_{\qty{6}{\raiseto{2}\centi\meter},\epsilon}$","minimum residual standard deviation when the measured leaf surface area is $\qty{6}{\raiseto{2}\centi\meter}$",ags
-b_log_sigma_resid_S,"$\beta_{S,\epsilon}$","slope of the relationship between residual standard deviation and measured leaf surface area",ags
-rho_resid,"$\rho_{\epsilon}$","lag-1 residual autocorrelation",ags
-b0_aa,"$\beta_{\mathrm{AA},0}$","intercept of \aax{} at low light intensity in shade treatment",aa
-b_aa_light_intensity_2000,"$\beta_{\mathrm{AA},2000}$","effect of high light intensity at \ppfdequals{2000} on \aax",aa
-b_aa_light_treatment_high,"$\beta_{\mathrm{AA},\text{sun}}$","effect of sun treatment on \aax{}",aa
-b_aa_2000_high,"$\beta_{\mathrm{AA},\text{2000,high}}$","effect of high light intensity at \ppfdequals{2000} on \aax{} in sun treatment",aa
-# NEED TO FIGURE OUT IF THIS WAY TO DENOTE PHYLO COVARIANCE MATRIX
-b_aa_acc,"\vec{\beta}_{\mathrm{AA},\text{acc}}","vector of $n_\text{acc}$ phylogenetically structured random accession-level effects on \aax; $\vec{\beta}_{\mathrm{AA},\text{acc}} \sim \text{MVN}(\vec{0}, \symbf{\Sigma}_{\text{AA,acc}})$",aa
-b_aa_acc_id
-b_aa_light_intensity_2000_acc
-b_aa_light_treatment_high_acc
-
-b0_log_sigma_aa
-b_log_sigma_aa_light_intensity_2000
-b_log_sigma_aa_light_treatment_high
-
-log_sigma_aa_acc_id
-rhosq_aa_acc
-etasq_aa_acc
-rhosq_aa_light_intensity_2000_acc
-etasq_aa_light_intensity_2000_acc
-rhosq_aa_light_treatment_high_acc
-etasq_aa_light_treatment_high_acc
-
-b0_aa,real,0,NA,NA,"normal(0,1)",1,1,1,1,1
-b_aa_light_intensity_2000,real,0,NA,NA,"normal(0,1)",1,1,1,1,1
-b_aa_light_treatment_high,real,0,NA,NA,"normal(0,1)",1,1,1,1,1
-b_aa_acc,vector[n_acc],0,NA,NA,"normal(0, sigma_aa_acc_id)",1,1,1,1,1
-rhosq_aa_acc,real,1,0,NA,"normal(0,10)",1,1,1,1,1
-etasq_aa_acc,real,1,0,NA,"normal(0,10)",1,1,1,1,1
-b_aa_acc_id,vector[n_acc_id],0,NA,NA,"normal(0,sigma_aa_acc_id)",1,1,1,1,1
-log_sigma_aa_acc_id,real,0,NA,NA,"normal(-3,5)",1,1,1,1,1
-b0_log_sigma_aa,real,0,NA,NA,"normal(-3,5)",1,1,1,1,1
-b_log_sigma_aa_light_intensity_2000,real,0,NA,NA,"normal(0,1)",1,1,1,1,1
-b_log_sigma_aa_light_treatment_high,real,0,NA,NA,"normal(0,1)",1,1,1,1,1
-b0_ppfd_aa,real,0,NA,NA,"normal(0,1)",1,1,1,1,1
-b1_ppfd_aa,real,0,NA,NA,"normal(0,1)",1,1,1,1,1
-rhosq_ppfd_aa,real,1,0,NA,"normal(0,10)",1,1,1,1,1
-etasq_ppfd_aa,real,1,0,NA,"normal(0,10)",1,1,1,1,1
-b_aa_2000_high,real,0,NA,NA,"normal(0,1)",0,1,0,0,1
-b_aa_light_intensity_2000_acc,vector[n_acc],0,NA,NA,"multi_normal(rep_vector(0.0, n_acc), Sigma_aa_light_intensity_2000_acc)",0,0,1,0,1
-rhosq_aa_light_intensity_2000_acc,real,1,0,NA,"normal(0, 10)",0,0,1,0,1
-etasq_aa_light_intensity_2000_acc,real,1,0,NA,"normal(0, 10)",0,0,1,0,1
-b_aa_light_treatment_high_acc,vector[n_acc],0,NA,NA,"multi_normal(rep_vector(0.0, n_acc), Sigma_aa_light_treatment_high_acc)",0,0,0,1,1
-rhosq_aa_light_treatment_high_acc,real,1,0,NA,"normal(0, 10)",0,0,0,1,1
-etasq_aa_light_treatment_high_acc,real,1,0,NA,"normal(0, 10)",0,0,0,1,1
+parameter,latex,description,par_type,include
+B_curve,"$\mathbf{B}_\text{curve}$","$n_\text{curve} \times 3$ array of random \agcurve{} curve-level coefficients ($b_{0,j}$, $b_{1,j}$, $b_{2,j}$); $\mathbf{B}_\text{curve} \sim \text{MVN}(\vec{0}, \symbf{\Sigma}_\text{curve})$",ags,TRUE
+Mu_curve,"$\vec{\beta}_\text{curve}$","vector of mean quadratic coefficients ($\beta_0$, $\beta_1$, $\beta_2$)",ags,TRUE
+Sigma_curve,"$\symbf{\Sigma}_\text{curve}$","$3 \times 3$ covariance matrix of curve-level coefficients",ags,TRUE
+b0_log_sigma_resid,"$\sigma_{\qty{6}{\raiseto{2}\centi\meter},\epsilon}$","minimum residual standard deviation when the measured leaf surface area is $\qty{6}{\raiseto{2}\centi\meter}$",ags,TRUE
+b_log_sigma_resid_S,"$\beta_{S,\epsilon}$","slope of the relationship between residual standard deviation and measured leaf surface area (log-link scale)",ags,TRUE
+rho_resid,"$\rho_{\epsilon}$","lag-1 residual autocorrelation",ags,TRUE
+aa,"$\widehat{\mathrm{AA}}_{klm}$","estimate of \aax{} for the $k^{\text{th}}$ leaf at light intensity $l$ in accession $m$",aa_est,TRUE
+b0_aa,"$\beta_{\mathrm{AA},0}$","intercept of \aax{} at low light intensity in shade treatment",aa,TRUE
+b_aa_light_intensity_2000,"$\beta_{\mathrm{AA},2000}$","effect of high light intensity at \ppfdequals{2000} on \aax",aa,TRUE
+b_aa_light_treatment_high,"$\beta_{\mathrm{AA},\text{sun}}$","effect of sun treatment on \aax{}",aa,TRUE
+b_aa_2000_high,"$\beta_{\mathrm{AA},\text{2000,high}}$","effect of high light intensity at \ppfdequals{2000} on \aax{} in sun treatment",aa,TRUE
+b_aa_acc,"$\vec{\beta}_{\mathrm{AA},\text{acc}}$","vector of $n_\text{acc}$ phylogenetically structured random accession-level effects on \aax; $\vec{\beta}_{\mathrm{AA},\text{acc}} \sim \text{MVN}(\vec{0}, \symbf{\Sigma}_{\text{AA,acc}})$",aa,TRUE
+Sigma_aa_acc,"$\symbf{\Sigma}_{\text{AA,acc}}$","$n_\text{acc} \times n_\text{acc}$ covariance matrix of phylogenetically structured random accession-level effects on \aax; ",aa,TRUE
+b_aa_acc_id,"$\vec{\beta}_{\mathrm{AA},\text{rep}}$","vector of $n_\text{rep}$ random replicate-level effects on \aax; $\vec{\beta}_{\mathrm{AA},\text{rep}} \sim \text{Normal}(0, \sigma_{\mathrm{AA},\text{rep}})$",aa,TRUE
+b_aa_light_intensity_2000_acc,"$\vec{\beta}_{\mathrm{AA},\text{2000,acc}}$","vector of $n_\text{acc}$ phylogenetically structured random accession-level effects of high light intensity at \ppfdequals{2000} on \aax; $\vec{\beta}_{\mathrm{AA},\text{2000,acc}} \sim \text{MVN}(\vec{0}, \symbf{\Sigma}_{\mathrm{AA},\text{2000,acc}})$",aa,TRUE
+b_aa_light_treatment_high_acc,"$\vec{\beta}_{\mathrm{AA},\text{sun,acc}}$","vector of $n_\text{acc}$ phylogenetically structured random accession-level effects of sun treatment on \aax; $\vec{\beta}_{\mathrm{AA},\text{sun,acc}} \sim \text{MVN}(\vec{0}, \symbf{\Sigma}_{\mathrm{AA},\text{sun,acc}})$",aa,TRUE
+b0_log_sigma_aa,"$\sigma_{\mathrm{AA},\epsilon,0}$","intercept of phylogenetically unstructured residual standard deviation of \aax",aa,TRUE
+b_log_sigma_aa_light_intensity_2000,"$\beta_{\mathrm{AA},\epsilon,2000}$","effect of high light intensity at \ppfdequals{2000} on phylogenetically unstructured residual standard deviation of \aax{} (log-link scale)",aa,TRUE
+b_log_sigma_aa_light_treatment_high,"$\beta_{\mathrm{AA},\epsilon,\text{sun}}$","effect of sun treatment on phylogenetically unstructured residual standard deviation of \aax{} (log-link scale)",aa,TRUE
+log_sigma_aa_acc_id,"$\sigma_{\mathrm{AA},\text{rep}}$","standard deviation of random replicate-level effects on \aax",aa,TRUE
+rhosq_aa_acc,"$\rho^2_{\mathrm{AA},\text{acc}}$","decay rate of phylogenetic covariance in random accession-level effects on \aax",aa,FALSE
+alpha_aa_acc,"$\alpha_{\mathrm{AA},\text{acc}}$","decay rate of phylogenetic covariance in random accession-level effects on \aax",aa,TRUE
+etasq_aa_acc,"$\eta^2_{\mathrm{AA},\text{acc}}$","phylogenetic variance in random accession-level effects on \aax",aa,FALSE
+sigmasq_aa_acc,"$\sigma^2_{\mathrm{AA},\text{acc}}$","phylogenetic diffusion rate in random accession-level effects on \aax",aa,TRUE
+rhosq_aa_light_intensity_2000_acc,"$\rho^2_{\mathrm{AA},\text{2000,acc}}$","decay rate of phylogenetic covariance in random accession-level effects of high light intensity at \ppfdequals{2000} on \aax",aa,FALSE
+alpha_aa_light_intensity_2000_acc,"$\alpha_{\mathrm{AA},\text{2000,acc}}$","decay rate of phylogenetic covariance in random accession-level effects of high light intensity at \ppfdequals{2000} on \aax",aa,TRUE
+etasq_aa_light_intensity_2000_acc,"$\eta^2_{\mathrm{AA},\text{2000,acc}}$","phylogenetic variance in random accession-level effects of high light intensity at \ppfdequals{2000} on \aax",aa,FALSE
+sigmasq_aa_light_intensity_2000_acc,"$\sigma^2_{\mathrm{AA},\text{2000,acc}}$","phylogenetic diffusion rate in random accession-level effects of high light intensity at \ppfdequals{2000} on \aax",aa,TRUE
+rhosq_aa_light_treatment_high_acc,"$\rho^2_{\mathrm{AA},\text{sun,acc}}$","decay rate of phylogenetic covariance in random accession-level effects of sun treatment on \aax",aa,FALSE
+alpha_aa_light_treatment_high_acc,"$\alpha_{\mathrm{AA},\text{sun,acc}}$","decay rate of phylogenetic covariance in random accession-level effects of sun treatment on \aax",aa,TRUE
+etasq_aa_light_treatment_high_acc,"$\eta^2_{\mathrm{AA},\text{sun,acc}}$","phylogenetic variance in random accession-level effects of sun treatment on \aax",aa,FALSE
+sigmasq_aa_light_treatment_high_acc,"$\sigma^2_{\mathrm{AA},\text{sun,acc}}$","phylogenetic diffusion rate in random accession-level effects of sun treatment on \aax",aa,TRUE
+b0_ppfd_aa,"$\beta_{\mathrm{AA},\text{PPFD},0}$","intercept of accession-level \aax{} when native \ppfdequals{0}",ppfd_aa,TRUE
+b1_ppfd_aa,"$\beta_{\mathrm{AA},\text{PPFD},1}$","slope of native \ppfd{} on accession-level \aax{}",ppfd_aa,TRUE

@@ -38,15 +38,17 @@ Manual curation of a data set this size in a principled, consistent manner is no
 #| label: tbl-parameters
 #| tbl-cap: "caption"
 
-df_parameters = read_csv("../data/parameters1.csv", col_types = "cccc", n_max = 6) 
+df_parameters = read_csv("../data/parameters1.csv", col_types = "ccccl") |>
+    dplyr::filter(include)
 
 df_parameters |>
   dplyr::select(Parameter = latex, Description = description) |>
   knitr::kable(
     format = "latex",
-    align = c("c", "l"),
+    align = c("l", "l"),
     booktabs = TRUE,
-    escape = FALSE
+    escape = FALSE,
+    longtable = TRUE
   ) |>
   kableExtra::kable_styling(latex_options = c("striped", "no_vertical_lines")) |>
   kableExtra::column_spec(1, width = "1in") |>
@@ -54,8 +56,19 @@ df_parameters |>
   kableExtra::pack_rows("\\agcurve{} curve parameters",
                         min(which(df_parameters$par_type == "ags")),
                         max(which(df_parameters$par_type == "ags")),
-                        escape = FALSE) #|>
-                        # kableExtra::pack_rows("x", 2, 2)
+                        escape = FALSE) |>
+  kableExtra::pack_rows("\\aax{} for each light intensity with leaf using \\agcurve{} curve parameters",
+                        min(which(df_parameters$par_type == "aa_est")),
+                        max(which(df_parameters$par_type == "aa_est")),
+                        escape = FALSE) |>
+  kableExtra::pack_rows("effects light intensity, light treatments, and accession on \\aax",
+                        min(which(df_parameters$par_type == "aa")),
+                        max(which(df_parameters$par_type == "aa")),
+                        escape = FALSE) |>
+  kableExtra::pack_rows("effects of native light habitat on accession-level \\aax",
+                        min(which(df_parameters$par_type == "ppfd_aa")),
+                        max(which(df_parameters$par_type == "ppfd_aa")),
+                        escape = FALSE)
 
 
 ```
