@@ -373,6 +373,44 @@ tibble(
 - we chose the number of chains, warmup and sampling iterations, and maximum treedepth so that parameter estimates converged ($\hat{R} < 1.01$ [@gelman_inference_1992]) and the effective sample size (ESS) for each parameter was $> 10^3$.
 
 We fit Bayesian models with MCMC sampling in the probabilistic programming language *Stan* [@stan_development_team_stan_2023]. We used CmdStan version `r fit_aa$version$cmdstan` and **cmdstanr** version `r fit_aa$version$cmdstanr` [@gabry_cmdstanr_2023] to interface with *R* version `r getRversion()` [@r_core_team_r:_2023]. We sampled the posterior distribution from `r dim_fit_aa[2]` chains with `r dim_fit_aa[1]` iterations each after `r dim_fit_aa[1]` warmup iterations per chain. We estimated parameters and confidence intervals as the median and 95% quantile intervals of the posterior, respectively. 
+#### *Stan* models
+
+- high level overview of differences among models \autoref{tbl-models}
+- next section describes common elements of all models and additional details about parameters
+
+```{r, models, echo=FALSE,message=FALSE,warning=FALSE}
+#| label: tbl-models
+#| tbl-cap: "Summary of differences among competing models of how \\aax{} varies with light intensity, light treatment, and among accessions as a function of native \\ppfd. The models are numbered from simpler to more complex. All models include fixed effects of light intensity and light treatment; some models include interactions between. All models include a phylogenetic random effect of accession on \\aax; some models include varying effects of light intensity and light treatment among accessions. The last column indicates the accession-level \\aax{} variable we used as a response to native \\ppfd."
+
+tribble(
+    ~"Model", ~"Fixed effects", ~"Phylogenetic random effects", ~"Response to native \\ppfd",
+    "1", "light intensity", "varying intercept among accessions", "$\\mathrm{AA}_{0, \\text{acc}}$",
+    "1", "light treatment", "", "",
+    "2", "light intensity", "varying intercept among accessions", "$\\mathrm{AA}_{0, \\text{acc}}$",
+    "2", "light treatment", "", "",
+    "2", "intensity $\\times$ treatment", "", "",
+    "3", "light intensity", "varying intercept among accessions", "$\\mathrm{AA}_{2000, \\text{acc}}$",
+    "3", "light treatment", "varying effect of high light intensity among accessions", "",
+    "4", "light intensity", "varying intercept among accessions", "$\\mathrm{AA}_{\\text{sun, acc}}$",
+    "4", "light treatment", "varying effect of sun treatment among accessions", "",
+    "5", "light intensity", "varying intercept among accessions", "$\\mathrm{AA}_{2000, \\text{sun, acc}}$",
+    "5", "light treatment", "varying effect of high light intensity among accessions", "",
+    "5", "intensity $\\times$ treatment", "varying effect of sun treatment among accessions", ""
+  ) |>
+  knitr::kable(
+    format = "latex",
+    align = c("c", "l", "l", "l"),
+    booktabs = TRUE,
+    escape = FALSE,
+    longtable = FALSE
+  ) |>
+    kableExtra::collapse_rows(columns = 1, latex_hline = "major", row_group_label_position = "first") |>
+  kableExtra::column_spec(1, width = "0.3in") |>
+  kableExtra::column_spec(2, width = "1.3in") |>
+  kableExtra::column_spec(3, width = "3.4in") |>
+  kableExtra::column_spec(4, width = "1in")
+
+```
 
 #### Parameter estimation
 
@@ -461,22 +499,6 @@ We modeled the residual standard deviation of \aax, (i.e. phylogenetically unstr
 
 We tested a linear effect of native light habitat on accession-level \aax. In Models 1 and 2, we used the random intercept of \aax{} as a response variable; in model 3 we used the random intercept plus the random effect of accession at high light intensity; in model 4 we used the random intercept plus the random effect of accession in the sun treatment; in model 5 we used the random intercept plus the random effects of accession at high light intensity and sun treatment. We used a weakly informative normal prior with mean $0$ and standard deviation $1$ for the slope and intercept. We accounted for the phylogenetic structure among the model residuals using an (OU) process. We used a weakly informative normal prior with mean $0$ and standard deviation $10$ on OU parameters. 
 
-
-WORKING HERE - TABLE OR SOMETHING SUMMARIZING MODELS?
-- TABLE SUMMARIZING PARAMETERS
-model | fixed effects | phylogenetic random effects | response to native PPFD
-1 | light intensity | varying intercept among accessions | AA_0,acc
-1 | light treatment | | 
-2 | light intensity | varying intercept among accessions | AA_0,acc
-2 | light treatment | | 
-2 | light intensity x light treatment | | 
-3 | light intensity | varying intercept among accessions | AA_2000,acc
-3 | light treatment | varying effect of high light intensity among accessions | 
-4 | light intensity | varying intercept among accessions | AA_sun,acc
-4 | light treatment | varying effect of sun treatment among accessions | 
-5 | light intensity | varying intercept among accessions | AA_2000,high,acc
-5 | light treatment | varying effect of high light intensity among accessions | 
-5 | light intensity x light treatment | varying effect of sun treatment among accessions | 
 
 We estimated these parameters for each leaf using the posterior distribution of the parameters from the \agcurve{} curve fitting procedure.
 

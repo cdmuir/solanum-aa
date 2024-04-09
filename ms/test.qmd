@@ -32,41 +32,38 @@ library(readr)
 library(tibble)
 ```
 
-blah \autoref{tbl-predictions}.
+blah \autoref{tbl-models}.
 
-```{r, predictions, echo=FALSE,message=FALSE,warning=FALSE}
-#| label: tbl-predictions
-#| tbl-cap: "caption"
+```{r, models, echo=FALSE,message=FALSE,warning=FALSE}
+#| label: tbl-models
+#| tbl-cap: "Summary of differences among competing models of how \\aax{} varies with light intensity, light treatment, and among accessions as a function of native \\ppfd. The models are numbered from simpler to more complex. All models include fixed effects of light intensity and light treatment; some models include interactions between. All models include a phylogenetic random effect of accession on \\aax; some models include varying effects of light intensity and light treatment among accessions. The last column indicates the accession-level \\aax{} variable we used as a response to native \\ppfd."
 
-df_parameters |>
-  tribble(
-    Parameter = latex, Description = description) |>
+tribble(
+    ~"Model", ~"Fixed effects", ~"Phylogenetic random effects", ~"Response to native \\ppfd",
+    "1", "light intensity", "varying intercept among accessions", "$\\mathrm{AA}_{0, \\text{acc}}$",
+    "1", "light treatment", "", "",
+    "2", "light intensity", "varying intercept among accessions", "$\\mathrm{AA}_{0, \\text{acc}}$",
+    "2", "light treatment", "", "",
+    "2", "intensity $\\times$ treatment", "", "",
+    "3", "light intensity", "varying intercept among accessions", "$\\mathrm{AA}_{2000, \\text{acc}}$",
+    "3", "light treatment", "varying effect of high light intensity among accessions", "",
+    "4", "light intensity", "varying intercept among accessions", "$\\mathrm{AA}_{\\text{sun, acc}}$",
+    "4", "light treatment", "varying effect of sun treatment among accessions", "",
+    "5", "light intensity", "varying intercept among accessions", "$\\mathrm{AA}_{2000, \\text{sun, acc}}$",
+    "5", "light treatment", "varying effect of high light intensity among accessions", "",
+    "5", "intensity $\\times$ treatment", "varying effect of sun treatment among accessions", ""
+  ) |>
   knitr::kable(
     format = "latex",
-    align = c("l", "l"),
+    align = c("c", "l", "l", "l"),
     booktabs = TRUE,
     escape = FALSE,
-    longtable = TRUE
+    longtable = FALSE
   ) |>
-  kableExtra::kable_styling(latex_options = c("striped", "no_vertical_lines")) |>
-  kableExtra::column_spec(1, width = "1in") |>
-  kableExtra::column_spec(2, width = "5in") |>
-  kableExtra::pack_rows("\\agcurve{} curve parameters",
-                        min(which(df_parameters$par_type == "ags")),
-                        max(which(df_parameters$par_type == "ags")),
-                        escape = FALSE) |>
-  kableExtra::pack_rows("\\aax{} for each light intensity with leaf using \\agcurve{} curve parameters",
-                        min(which(df_parameters$par_type == "aa_est")),
-                        max(which(df_parameters$par_type == "aa_est")),
-                        escape = FALSE) |>
-  kableExtra::pack_rows("effects light intensity, light treatments, and accession on \\aax",
-                        min(which(df_parameters$par_type == "aa")),
-                        max(which(df_parameters$par_type == "aa")),
-                        escape = FALSE) |>
-  kableExtra::pack_rows("effects of native light habitat on accession-level \\aax",
-                        min(which(df_parameters$par_type == "ppfd_aa")),
-                        max(which(df_parameters$par_type == "ppfd_aa")),
-                        escape = FALSE)
-
+    kableExtra::collapse_rows(columns = 1, latex_hline = "major", row_group_label_position = "first") |>
+  kableExtra::column_spec(1, width = "0.3in") |>
+  kableExtra::column_spec(2, width = "1.3in") |>
+  kableExtra::column_spec(3, width = "3.4in") |>
+  kableExtra::column_spec(4, width = "1in")
 
 ```
