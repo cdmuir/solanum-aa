@@ -32,17 +32,15 @@ library(readr)
 library(tibble)
 ```
 
-Manual curation of a data set this size in a principled, consistent manner is not feasible. Therefore, we automated data cleaning using custom *R* scripts. Cleaning is divided into six sequential steps \autoref{tbl-parameters}.
+blah \autoref{tbl-predictions}.
 
-```{r, parameters, echo=FALSE,message=FALSE,warning=FALSE}
-#| label: tbl-parameters
+```{r, predictions, echo=FALSE,message=FALSE,warning=FALSE}
+#| label: tbl-predictions
 #| tbl-cap: "caption"
 
-df_parameters = read_csv("../data/parameters1.csv", col_types = "ccccl") |>
-    dplyr::filter(include)
-
 df_parameters |>
-  dplyr::select(Parameter = latex, Description = description) |>
+  tribble(
+    Parameter = latex, Description = description) |>
   knitr::kable(
     format = "latex",
     align = c("l", "l"),

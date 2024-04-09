@@ -461,8 +461,22 @@ We modeled the residual standard deviation of \aax, (i.e. phylogenetically unstr
 
 We tested a linear effect of native light habitat on accession-level \aax. In Models 1 and 2, we used the random intercept of \aax{} as a response variable; in model 3 we used the random intercept plus the random effect of accession at high light intensity; in model 4 we used the random intercept plus the random effect of accession in the sun treatment; in model 5 we used the random intercept plus the random effects of accession at high light intensity and sun treatment. We used a weakly informative normal prior with mean $0$ and standard deviation $1$ for the slope and intercept. We accounted for the phylogenetic structure among the model residuals using an (OU) process. We used a weakly informative normal prior with mean $0$ and standard deviation $10$ on OU parameters. 
 
+
 WORKING HERE - TABLE OR SOMETHING SUMMARIZING MODELS?
 - TABLE SUMMARIZING PARAMETERS
+model | fixed effects | phylogenetic random effects | response to native PPFD
+1 | light intensity | varying intercept among accessions | AA_0,acc
+1 | light treatment | | 
+2 | light intensity | varying intercept among accessions | AA_0,acc
+2 | light treatment | | 
+2 | light intensity x light treatment | | 
+3 | light intensity | varying intercept among accessions | AA_2000,acc
+3 | light treatment | varying effect of high light intensity among accessions | 
+4 | light intensity | varying intercept among accessions | AA_sun,acc
+4 | light treatment | varying effect of sun treatment among accessions | 
+5 | light intensity | varying intercept among accessions | AA_2000,high,acc
+5 | light treatment | varying effect of high light intensity among accessions | 
+5 | light intensity x light treatment | varying effect of sun treatment among accessions | 
 
 We estimated these parameters for each leaf using the posterior distribution of the parameters from the \agcurve{} curve fitting procedure.
 
