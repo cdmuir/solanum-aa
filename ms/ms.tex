@@ -42,7 +42,7 @@
 \makeatother
 \usepackage{xcolor}
 \setlength{\emergencystretch}{3em} % prevent overfull lines
-\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\setcounter{secnumdepth}{5}
 % Make \paragraph and \subparagraph free-standing
 \ifx\paragraph\undefined\else
   \let\oldparagraph\paragraph
@@ -211,7 +211,13 @@
 \begin{document}
 \maketitle
 
-\subsection{Notes}\label{notes}
+\renewcommand*\contentsname{Table of contents}
+{
+\hypersetup{linkcolor=}
+\setcounter{tocdepth}{3}
+\tableofcontents
+}
+\section{Notes}\label{notes}
 
 In preamble: - short codes for commonly used symbols - ?
 
@@ -228,12 +234,12 @@ Terminology to standardize:
   ?
 \end{itemize}
 
-\subsection{Authors}\label{authors}
+\section{Authors}\label{authors}
 
 definite: Wei Shen Lim, Dachuan Wang, Chris Muir question: Sam McKlin,
 Tom Buckley
 
-\subsection{Main}\label{main}
+\section{Main}\label{main}
 
 {[}introduction{]} Stomata are important
 
@@ -381,11 +387,11 @@ paragraph, or it's own?).
 new trait that should be considered and that CO2 diffusion becomes major
 limitation
 
-\subsection{Materials and Methods}\label{materials-and-methods}
+\section{Materials and Methods}\label{materials-and-methods}
 
 {[}this will be moved to SI eventually{]}
 
-\subsubsection{Accessions}\label{accessions}
+\subsection{Accessions}\label{accessions}
 
 We compared AA among 30 ecologically diverse accessions of wild tomato,
 including representatives of all described species of \emph{Solanum}
@@ -408,7 +414,7 @@ explain accession selection and phylogeny?{]}
 
 \end{table}%
 
-\subsubsection{Plant growth conditions}\label{plant-growth-conditions}
+\subsection{Plant growth conditions}\label{plant-growth-conditions}
 
 In all growth spaces, we recorded \(\mathrm{PPFD}\) using full spectrum
 quantum sensors (SQ-500-SS, Apogee Instruments, Logan, Utah, USA); we
@@ -420,7 +426,7 @@ measured. We measured leaf temperature of focal leaves prior to
 measurement using an infrared radiometer (SI-111-SS, Apogee Instruments,
 Logan, Utah, USA).
 
-\paragraph{Germination and seedling
+\subsubsection{Germination and seedling
 stage}\label{germination-and-seedling-stage}
 
 Seeds provided by the Tomato Genetics Resource Center germinated on
@@ -435,7 +441,7 @@ same environmental conditions (12:12 h, 25:\(\qty{20}{\degreeCelsius}\),
 \(\mathrm{PPFD} = \qty{200}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}\)
 (Fluence RAZRx, Austin, Texas, USA).
 
-\paragraph{Light treatments}\label{light-treatments}
+\subsubsection{Light treatments}\label{light-treatments}
 
 Seedlings were randomly assigned in alternating order within accession
 to the sun or shade treatment during transplanting. After seedlings
@@ -468,7 +474,7 @@ lower. However, because of evaporative cooling, the leaves in the sun
 treatment were only \(\qty{1}{\degreeCelsius}\) on average (\(n = 600\)
 leaves).
 
-\subsubsection{Leaf trait measurements}\label{leaf-trait-measurements}
+\subsection{Leaf trait measurements}\label{leaf-trait-measurements}
 
 We selected a fully expanded, unshaded leaf at least six leaves above
 the cotyledons during early vegetative growth. This typically meant that
@@ -489,7 +495,7 @@ the same leaf (10.0)\%. We measured chlorophyll concentration index
 Instruments, Logan, Utah, USA) on the lamina of focal leaflets before
 gas exchange measurements at the same time we measured leaf temperature.
 
-\paragraph{Amphistomy advantage}\label{amphistomy-advantage}
+\subsubsection{Amphistomy advantage}\label{amphistomy-advantage}
 
 We estimated `amphistomy advantage' (\aax) \emph{sensu} (\emph{4}), but
 with modifications previously described in (\emph{1}). \aax{} is
@@ -544,7 +550,7 @@ logged data until \gsw{} reached its nadir. We then acclimated the leaf
 to low light (\ppfdequals{150}) and \rhequals{70} before inducing
 stomatal closure with low \rh and logging data as described above.
 
-\paragraph{\texorpdfstring{Light-response (\aqcurve)
+\subsubsection{\texorpdfstring{Light-response (\aqcurve)
 curves}{Light-response () curves}}\label{light-response-curves}
 
 In 90.0\% of plants, we measured light-response (\aqcurve) curves on the
@@ -557,7 +563,7 @@ and \tleafequals{25}. After \(A\) and \gsw{} stabilized, we measured
 \(\qty{2000}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}\) in
 descending order.
 
-\paragraph{Stomatal anatomy}\label{stomatal-anatomy}
+\subsubsection{Stomatal anatomy}\label{stomatal-anatomy}
 
 We estimated the stomatal density and size on ab- and adaxial leaf
 surfaces from all leaves, using guard cell length as a proxy for
@@ -574,7 +580,7 @@ of ImageJ2 version 2.3.0 (\emph{7}), then divided the count by the
 visible leaf area (\(\qty{0.890}{\raiseto{2}\milli\meter}\)) to estimate
 stomatal density.
 
-\paragraph{Leaf mass per area}\label{leaf-mass-per-area}
+\subsubsection{Leaf mass per area}\label{leaf-mass-per-area}
 
 Leaf mass per area (LMA) is the dry mass divided by the leaflet area. We
 scanned fresh leaflets on a flat bed scanner (Epson V600, Los Alamitos,
@@ -589,7 +595,7 @@ making surface impressions and we could not reliably estimate area. LMA
 data are missing from \(3.0\%\) of individuals because the area or mass
 was not recorded at all or recorded incorrectly.
 
-\subsubsection{\texorpdfstring{Cleaning \agcurve{}
+\subsection{\texorpdfstring{Cleaning \agcurve{}
 curves}{Cleaning  curves}}\label{cleaning-curves}
 
 The raw data set consisted of 2,370 \agcurve{} curves with an average of
@@ -629,7 +635,7 @@ Step: description & Number of curves & Number of points per curve\\
 
 \end{table}%
 
-\paragraph{Remove unreliable and unusable data
+\subsubsection{Remove unreliable and unusable data
 points}\label{remove-unreliable-and-unusable-data-points}
 
 \emph{Rationale}: Unreliable data points consisted of those where
@@ -640,7 +646,7 @@ because the logarithm of a negative number is undefined.
 \emph{Procedure}: We retained data points where \cabetween{410}{420} and
 \(A> 0\).
 
-\paragraph{\texorpdfstring{Remove hysteretic portion of \agcurve{}
+\subsubsection{\texorpdfstring{Remove hysteretic portion of \agcurve{}
 curves at low
 \gsw{}}{Remove hysteretic portion of  curves at low }}\label{remove-hysteretic-portion-of-curves-at-low}
 
@@ -655,7 +661,7 @@ increases monotonically with \gsw{}.
 had reached its minimum unless there were fewer than 10 data points
 remaining.
 
-\paragraph{\texorpdfstring{Remove outliers within each \agcurve{}
+\subsubsection{\texorpdfstring{Remove outliers within each \agcurve{}
 curve}{Remove outliers within each  curve}}\label{remove-outliers-within-each-curve}
 
 \emph{Rationale}: Individual outliers within \agcurve{} curves, usually
@@ -668,7 +674,7 @@ curve using ordinary least squares with the \texttt{lm()} function in
 \emph{R}. We sequentially removed data points with an absolute external
 studentized residual \(> 3\) until none remained.
 
-\paragraph{\texorpdfstring{Thin redundant data points within each
+\subsubsection{\texorpdfstring{Thin redundant data points within each
 \agcurve{}
 curve}{Thin redundant data points within each  curve}}\label{thin-redundant-data-points-within-each-curve}
 
@@ -685,7 +691,7 @@ curve and thinned all but one point per thinning interval of
 \(0.05~\log(\si{\mol\raiseto{-2}\meter\raiseto{-1}\second})\), retaining
 the point nearest the midpoint of the interval.
 
-\paragraph{\texorpdfstring{Remove replicates with no overlap between
+\subsubsection{\texorpdfstring{Remove replicates with no overlap between
 amphi and pseudohypo \agcurve{}
 curves}{Remove replicates with no overlap between amphi and pseudohypo  curves}}\label{remove-replicates-with-no-overlap-between-amphi-and-pseudohypo-curves}
 
@@ -695,7 +701,7 @@ amphi and pseudohypo \agcurve{} curves did not overlap.
 \emph{Procedure}: We removed replicates where the range of \gsw{} values
 for amphi and pseudohypo \agcurve{} curves did not overlap.
 
-\paragraph{\texorpdfstring{Trim extreme \aax{}
+\subsubsection{\texorpdfstring{Trim extreme \aax{}
 values}{Trim extreme  values}}\label{trim-extreme-values}
 
 \emph{Rationale}: Extreme \aax{} values were likely due to measurement
@@ -718,7 +724,7 @@ residual \(> 3.5\). Because these values likely indicate significant
 measurement error or leaf damage, we removed \agcurve{} curves at both
 light intensities if either was classified as extreme.
 
-\subsubsection{\texorpdfstring{Cleaning \aqcurve{}
+\subsection{\texorpdfstring{Cleaning \aqcurve{}
 curves}{Cleaning  curves}}\label{cleaning-curves-1}
 
 The raw data set consisted of 658 \aqcurve{} curves with an average of
@@ -750,7 +756,7 @@ Step: description & Number of curves & Number of points per curve\\
 
 \end{table}%
 
-\paragraph{\texorpdfstring{Remove outliers within each \aqcurve{}
+\subsubsection{\texorpdfstring{Remove outliers within each \aqcurve{}
 curve}{Remove outliers within each  curve}}\label{remove-outliers-within-each-curve-1}
 
 \emph{Rationale}: Individual outliers within \agcurve{} curves, usually
@@ -764,7 +770,7 @@ to each \aqcurve{} curve using nonlinear regression with the
 version 1.2.4 (\emph{9}). We sequentially removed data points with an
 absolute external studentized residual \(> 3\) until none remained.
 
-\paragraph{\texorpdfstring{Remove \aqcurve{} curves with poor
+\subsubsection{\texorpdfstring{Remove \aqcurve{} curves with poor
 fit}{Remove  curves with poor fit}}\label{remove-curves-with-poor-fit}
 
 \emph{Rationale}: \aqcurve{} curves with a poor fit to the
@@ -778,7 +784,7 @@ There was a clear break between typical curves and poorly fitting curves
 where \(r^2 < 0.99\). We therefore removed \aqcurve{} curves with
 \(r^2 < 0.99\).
 
-\subsubsection{\texorpdfstring{Bayesian data analysis in
+\subsection{\texorpdfstring{Bayesian data analysis in
 \emph{Stan}}{Bayesian data analysis in Stan}}\label{bayesian-data-analysis-in-stan}
 
 We fit five models to test predictions of competing hypotheses about why
@@ -836,8 +842,8 @@ Model & Fixed effects & Phylogenetic random effects & Response to native \ppfd\\
 
 \end{table}%
 
-\paragraph{\texorpdfstring{Fitting models in
-\emph{Stan}}{Fitting models in Stan}}\label{fitting-models-in-stan}
+\subsubsection{\texorpdfstring{Fitting models in
+\emph{Stan}}{Fitting models in Stan}}\label{sec-fitting}
 
 We fit Bayesian models with MCMC sampling in the probabilistic
 programming language \emph{Stan} (\emph{10}). We used CmdStan version
@@ -851,7 +857,7 @@ iterations, and maximum treedepth so that parameter estimates converged
 (\(\hat{R} < 1.01\) (\emph{13})) and the effective sample size (ESS) for
 each parameter was \(> 10^3\).
 
-\paragraph{Parameter estimation and
+\subsubsection{Parameter estimation and
 priors}\label{parameter-estimation-and-priors}
 
 There were four levels of parameter estimation in our analysis:
@@ -931,7 +937,7 @@ Parameter & Description\\
 
 \end{longtable}
 
-\subparagraph{\texorpdfstring{\agcurve{} curve
+\paragraph{\texorpdfstring{\agcurve{} curve
 parameters}{ curve parameters}}\label{curve-parameters}
 
 We modeled \logA as a quadratic function of \loggsw for each leaf using
@@ -970,12 +976,12 @@ mean \(-3\) and standard deviation \(5\) on
 weakly informative normal prior with mean \(0\) and standard deviation
 \(1\) on \(\beta_{S,\epsilon}\).
 
-\subparagraph{\texorpdfstring{\aax{} for each light intensity with leaf
+\paragraph{\texorpdfstring{\aax{} for each light intensity with leaf
 using \agcurve{} curve
 parameters}{ for each light intensity with leaf using  curve parameters}}\label{for-each-light-intensity-with-leaf-using-curve-parameters}
 
 Within the \(k^{\text{th}}\) leaf, we estimated \aax{} for each light
-intensity by integrating the difference in \logA between the amphi and
+intensity by integrating the difference in \logA{} between the amphi and
 pseudohypo \agcurve{} curves over the range of \gsw{} values where the
 curves overlap (from \(\min(\log(g_\text{sw}))\) to
 \(\max(\log(g_\text{sw}))\)). The estimate of \aax{} for the
@@ -991,11 +997,11 @@ The function \(f : \Theta_1 \rightarrow \Theta_2\) maps the set
 \(\Theta_1\) indexed by leaf type (amphi or pseudohypo), leaf replicate,
 light intensity, and accession to set \(\Theta_2\) indexed by individual
 \agcurve{} curve. This mapping is necessary because the random effects
-structure differs between models of \loggsw on \logA and that of models
-predicting \aax{} described in the next section.
+structure differs between models of \loggsw{} on \logA{} and that of
+models predicting \aax{} described in the next section.
 
-\subparagraph{\texorpdfstring{Effects of light intensity, light
-treatment, and accession on
+\paragraph{\texorpdfstring{Effects of light intensity, light treatment,
+and accession on
 \aax}{Effects of light intensity, light treatment, and accession on }}\label{effects-of-light-intensity-light-treatment-and-accession-on}
 
 We tested for effects of light intensity, light treatment, accession,
@@ -1031,7 +1037,7 @@ deviation intercept and a weakly informative normal prior with mean
 \(0\) and standard deviation \(1\) on the effects of light intensity and
 light treatment on the residual standard deviation.
 
-\subparagraph{\texorpdfstring{Effects of native light habitat on
+\paragraph{\texorpdfstring{Effects of native light habitat on
 accession-level
 \aax}{Effects of native light habitat on accession-level }}\label{effects-of-native-light-habitat-on-accession-level}
 
@@ -1048,11 +1054,36 @@ structure among the model residuals using an (OU) process. We used a
 weakly informative normal prior with mean \(0\) and standard deviation
 \(10\) on OU parameters.
 
-We estimated these parameters for each leaf using the posterior
-distribution of the parameters from the \agcurve{} curve fitting
-procedure.
+\subsubsection{Predictions}\label{sec-predictions}
 
-\paragraph{Predictions}\label{predictions}
+WORKING HERE TO ADD PREDICTIONS AND TABLE
+
+The assimilatory, plastic, and constitutive hypotheses make different
+predictions about the relationship between \aax{} and light intensity,
+light treatment, and native \ppfd{} among accessions. Since these
+hypotheses are not mutually exclusive, we describe how we assessed
+support for one, two, or all three hypotheses simultaneously.
+
+We tested competing predictions through a combination of model selection
+and parameter estimation from the posterior of fitted models. In all
+cases, we estimated parameters and confidence intervals as described in
+Section~\ref{sec-fitting}.
+
+We started with a base model that includes fixed effects of light
+intensity and light treatment on \aax, a random effect of accession on
+\aax, and a linear regression of PAR on accession-level \aax. We next
+compared the fit of the base model to a more complex with an interaction
+between light intensity and light treatment using LOOIC with the
+\textit{R} package \textbf{loo} version 2.7.0 (\emph{15}). These
+comparisons allowed us to test the main predictions of each hypothesis
+and for a reinforcing interactions between assimilatory and plastic
+hypotheses (tab:predictions). However, these models cannot test
+predictions when there is an interaction with the constitutive
+hypothesis, because this hypothesis posits accession-levels variation in
+responses to light intensity and/or light treatment. Therefore, we
+tested for significant variation among accessions in light intensity and
+light treatment by comparing LOOIC values of models with and without
+random interactions between these factors and accession.
 
 \begin{itemize}
 \tightlist
@@ -1143,24 +1174,6 @@ which could explain why amphi leaves occur in high light habitats)
   \end{itemize}
 \end{itemize}
 
-We tested competing predictions through a combination of model selection
-and parameter estimation from the posterior of selected models. We
-started with a base model that includes fixed effects of light intensity
-and light treatment on \aax, a random effect of accession on \aax, and a
-linear regression of PAR on accession-level \aax. We next compared the
-fit of the base model to a more complex with an interaction between
-light intensity and light treatment using LOOIC with the \textit{R}
-package \textbf{loo} version 2.7.0 (\emph{15}). These comparisons
-allowed us to test the main predictions of each hypothesis and for a
-reinforcing interactions between assimilatory and plastic hypotheses
-(tab:predictions). However, these models cannot test predictions when
-there is an interaction with the constitutive hypothesis, because this
-hypothesis posits accession-levels variation in responses to light
-intensity and/or light treatment. Therefore, we tested for significant
-variation among accessions in light intensity and light treatment by
-comparing LOOIC values of models with and without random interactions
-between these factors and accession.
-
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3182}}
   >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.2727}}
@@ -1188,13 +1201,13 @@ Assimilatory * Plastic * Constitutive & & + accession \(\times\)
 intensity \(\times\) treatment (random) \\
 \end{longtable}
 
-\subsection{Acknowledgements}\label{acknowledgements}
+\section{Acknowledgements}\label{acknowledgements}
 
 Justin Alter, Max Gatlin, Joana Kim, Jenna Matsuyama, Brandon Najarian,
 Kai Yasuda
 
-\subsection*{References}\label{references}
-\addcontentsline{toc}{subsection}{References}
+\section*{References}\label{references}
+\addcontentsline{toc}{section}{References}
 
 \phantomsection\label{refs}
 \begin{CSLReferences}{0}{1}

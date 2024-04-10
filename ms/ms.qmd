@@ -3,7 +3,8 @@ title: Unknown
 format:
   pdf:
     keep-tex: true  
-    toc: false
+    toc: true
+number-sections: true
 header-includes: |
   \usepackage{hyperref}
   \addtokomafont{disposition}{\rmfamily}
@@ -411,7 +412,7 @@ tribble(
 
 ```
 
-#### Fitting models in *Stan*
+#### Fitting models in *Stan* {#sec-fitting}
 
 We fit Bayesian models with MCMC sampling in the probabilistic programming language *Stan* [@stan_development_team_stan_2023]. We used CmdStan version `r fit_aa$version$cmdstan` and **cmdstanr** version `r fit_aa$version$cmdstanr` [@gabry_cmdstanr_2023] to interface with *R* version `r getRversion()` [@r_core_team_r:_2023]. We sampled the posterior distribution from `r dim_fit_aa[2]` chains with `r dim_fit_aa[1]` iterations each after `r dim_fit_aa[1]` warmup iterations per chain. We estimated parameters and confidence intervals as the median and 95% quantile intervals of the posterior, respectively. We chose the number of chains, warmup and sampling iterations, and maximum treedepth so that parameter estimates converged ($\hat{R} < 1.01$ [@gelman_inference_1992]) and the effective sample size (ESS) for each parameter was $> 10^3$.
 
@@ -479,7 +480,7 @@ where $\sigma_{\qty{6}{\raiseto{2}\centi\meter},\epsilon}$ is the minimum residu
 
 ##### \aax{} for each light intensity with leaf using \agcurve{} curve parameters
 
-Within the $k^{\text{th}}$ leaf, we estimated \aax{} for each light intensity by integrating the difference in \logA between the amphi and pseudohypo \agcurve{} curves over the range of \gsw{} values where the curves overlap (from $\min(\log(g_\text{sw}))$ to $\max(\log(g_\text{sw}))$). The estimate of \aax{} for the $k^{\text{th}}$ leaf at light intensity $l$ in accession $m$ is:
+Within the $k^{\text{th}}$ leaf, we estimated \aax{} for each light intensity by integrating the difference in \logA{} between the amphi and pseudohypo \agcurve{} curves over the range of \gsw{} values where the curves overlap (from $\min(\log(g_\text{sw}))$ to $\max(\log(g_\text{sw}))$). The estimate of \aax{} for the $k^{\text{th}}$ leaf at light intensity $l$ in accession $m$ is:
 
 $$\widehat{\mathrm{AA}}_{klm} = \int_{\text{min(log(}g_\text{sw}))}^{\text{max(log(}g_\text{sw}))} \text{log}\bigg(\frac{\hat{A}_\text{amphi}(x; \theta_{klm,\text{amphi})}}{\hat{A}_\text{hypo}(x; \theta_{klm,\text{hypo})}}\bigg) dx$$
 where:
@@ -487,7 +488,7 @@ where:
 $$\theta_\text{amphi} \in \{\hat{b}_{0, f(\text{amphi}, k,l,m)}, \hat{b}_{1, f(\text{amphi}, k,l,m)}, \hat{b}_{2, f(\text{amphi}, k,l,m)}\}, \text{and}$$ 
 
 $$\theta_\text{hypo} \in \{\hat{b}_{0, f(\text{hypo}, k,l,m)}, \hat{b}_{1, f(\text{hypo}, k,l,m)}, \hat{b}_{2, f(\text{hypo}, k,l,m)}\}.$$ 
-The function $f : \Theta_1 \rightarrow \Theta_2$ maps the set $\Theta_1$ indexed by leaf type (amphi or pseudohypo), leaf replicate, light intensity, and accession to set $\Theta_2$ indexed by individual \agcurve{} curve. This mapping is necessary because the random effects structure differs between models of \loggsw on \logA and that of models predicting \aax{} described in the next section.
+The function $f : \Theta_1 \rightarrow \Theta_2$ maps the set $\Theta_1$ indexed by leaf type (amphi or pseudohypo), leaf replicate, light intensity, and accession to set $\Theta_2$ indexed by individual \agcurve{} curve. This mapping is necessary because the random effects structure differs between models of \loggsw{} on \logA{} and that of models predicting \aax{} described in the next section.
 
 ##### Effects of light intensity, light treatment, and accession on \aax
 
@@ -502,14 +503,16 @@ We modeled the residual standard deviation of \aax, (i.e. phylogenetically unstr
 
 We tested a linear effect of native light habitat on accession-level \aax. In Models 1 and 2, we used the random intercept of \aax{} as a response variable; in model 3 we used the random intercept plus the random effect of accession at high light intensity; in model 4 we used the random intercept plus the random effect of accession in the sun treatment; in model 5 we used the random intercept plus the random effects of accession at high light intensity and sun treatment. We used a weakly informative normal prior with mean $0$ and standard deviation $1$ for the slope and intercept. We accounted for the phylogenetic structure among the model residuals using an (OU) process. We used a weakly informative normal prior with mean $0$ and standard deviation $10$ on OU parameters. 
 
+#### Predictions {#sec-predictions}
 
-We estimated these parameters for each leaf using the posterior distribution of the parameters from the \agcurve{} curve fitting procedure.
+The assimilatory, plastic, and constitutive hypotheses make different predictions about the relationship between \aax{} and light intensity, light treatment, and native \ppfd{} among accessions. Since these hypotheses are not mutually exclusive, we describe how we assessed support for one, two, or all three hypotheses simultaneously in \autoref{tbl-predictions}.
 
+We evaluated predictions using a combination of parameter estimation and model selection. In all cases, we estimated parameters and confidence intervals as described in @sec-fitting. If the 95% confidence intervals for a parameter did not overlap zero, we considered the parameter to be significantly different from zero. We used leave-one-out cross-validation (LOOIC) to compare the fit of models (\autoref{tbl-models}) using the *R* package **loo** version `r packageVersion("loo")` [@vehtari_practical_2017] to calculate LOOIC values. We considered models with two standard errors of the mean lower LOOIC value to be a better fit to the data; we considered models with LOOIC values within two standard errors of the mean to be have similar support.
 
+```{r, predictions, eval=FALSE, echo=FALSE,message=FALSE,warning=FALSE}
+#| label: tbl-predictions
+#| tbl-cap: "caption"
 
-
-
-#### Predictions
 
 * Assimilatory: 
   + average AA2000 - AA150
@@ -542,7 +545,6 @@ Reinforcing interactions (we only consider these because these are ones which co
   + AA2000 - AA150 varies among accession, correlated with PAR
   + cor(AAsun2000, PAR) > cor(AAsun150, PAR) and > cor(AAshade2000, PAR) and > cor(AAshade150, PAR) in nonadditive way
   
-We tested competing predictions through a combination of model selection and parameter estimation from the posterior of selected models. We started with a base model that includes fixed effects of light intensity and light treatment on \aax, a random effect of accession on \aax, and a linear regression of PAR on accession-level \aax. We next compared the fit of the base model to a more complex with an interaction between light intensity and light treatment using LOOIC with the \textit{R} package **loo** version `r packageVersion("loo")` [@vehtari_practical_2017]. These comparisons allowed us to test the main predictions of each hypothesis and for a reinforcing interactions between assimilatory and plastic hypotheses (tab:predictions). However, these models cannot test predictions when there is an interaction with the constitutive hypothesis, because this hypothesis posits accession-levels variation in responses to light intensity and/or light treatment. Therefore, we tested for significant variation among accessions in light intensity and light treatment by comparing LOOIC values of models with and without random interactions between these factors and accession.
 
 | Hypothesis   | Prediction | Model |
 |--------------|------------|------------------|
@@ -553,6 +555,8 @@ We tested competing predictions through a combination of model selection and par
 | Assimilatory * Constitutive |  | + accession $\times$ intensity (random) |
 | Plastic * Constitutive |  | + accession $\times$ treatment (random) |
 | Assimilatory * Plastic * Constitutive |  | + accession $\times$ intensity $\times$ treatment (random) |
+
+```
 
 ## Acknowledgements
 
