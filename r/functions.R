@@ -1,3 +1,13 @@
+# Utility functions ----
+number_to_word = function(num) {
+  if (num >= 0 && num <= 10) {
+    words = c("zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten")
+    return(words[num + 1])
+  } else {
+    return(num)
+  }
+}
+
 # 0. Import data ----
 add_to_stats = function(...) {
   old = read_rds("objects/aa_stats.rds")

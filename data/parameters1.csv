@@ -33,3 +33,7 @@ etasq_aa_light_treatment_high_acc,"$\eta^2_{\mathrm{AA},\text{sun,acc}}$","phylo
 sigmasq_aa_light_treatment_high_acc,"$\sigma^2_{\mathrm{AA},\text{sun,acc}}$","phylogenetic diffusion rate in random accession-level effects of sun treatment on \aax",aa,TRUE
 b0_ppfd_aa,"$\beta_{\mathrm{AA},\text{PPFD},0}$","intercept of accession-level \aax{} when native \ppfdequals{0}",ppfd_aa,TRUE
 b1_ppfd_aa,"$\beta_{\mathrm{AA},\text{PPFD},1}$","slope of native \ppfd{} on accession-level \aax{}",ppfd_aa,TRUE
+rhosq_ppfd_aa,"$\rho^2_{\mathrm{AA},\text{PPFD}}$","decay rate of phylogenetic covariance in residuals of model testing effect of native \ppfd{} on accession-level \aax",aa,FALSE
+alpha_ppfd_aa,"$\alpha_{\mathrm{AA},\text{PPFD}}$","decay rate of phylogenetic covariance in residuals of model testing effect of native \ppfd{} on accession-level \aax",aa,TRUE
+etasq_ppfd_aa,"$\eta^2_{\mathrm{AA},\text{PPFD}}$","phylogenetic variance in residuals of model testing effect of native \ppfd{} on accession-level \aax",aa,FALSE
+sigmasq_ppfd_aa,"$\sigma^2_{\mathrm{AA},\text{PPFD}}$","phylogenetic diffusion rate in residuals of model testing effect of native \ppfd{} on accession-level \aax",aa,TRUE

@@ -30,11 +30,13 @@ bibliography: solanum-aa.bib
 csl: https://www.zotero.org/styles/science
 ---
 
-```{r load-objects, echo=FALSE, eval=TRUE}
+```{r load-objects, echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 library(dplyr)
 library(readr)
 library(stringr)
 library(tibble)
+
+source("../r/functions.R")
 
 # I am mostly putting placeholders here for objects/values that will need to be
 # loaded eventually to use in paper.
@@ -90,6 +92,12 @@ point_outlier_threshold = aa_args$point_outlier_threshold
 aa_outlier_threshold = aa_args$aa_outlier_threshold
 thinning_interval = aa_args$thinning_interval
 aq_r2_threshold = aa_args$aq_r2_threshold
+
+### Cleaning AQ curves
+
+### Bayesian data analysis
+n_model = 5 |>
+  number_to_word()
 
 ```
 
@@ -246,7 +254,7 @@ Leaf mass per area (LMA) is the dry mass divided by the leaflet area. We scanned
 
 ### Cleaning \agcurve{} curves
 
-The raw data set consisted of `r prettyNum(aa_stats$n_rh_curve0, big.mark = ",")` \agcurve{} curves with an average of `r formatC(aa_stats$n_point_per_rh_curve0, digits = 3)` points per curve. Manual curation of a data set this size in a principled, consistent manner is not feasible. Therefore, we automated data cleaning using custom *R* scripts. Cleaning is divided into six sequential steps \autoref{tbl-cleaning1}.
+The raw data set consisted of `r prettyNum(aa_stats$n_rh_curve0, big.mark = ",")` \agcurve{} curves with an average of `r formatC(aa_stats$n_point_per_rh_curve0, digits = 3)` points per curve. Manual curation of a data set this size in a principled, consistent manner is not feasible. Therefore, we automated data cleaning using custom *R* scripts. Cleaning is divided into six sequential steps (\autoref{tbl-cleaning1}).
 
 ```{r, cleaning1, echo=FALSE,message=FALSE,warning=FALSE}
 #| label: tbl-cleaning1
@@ -321,7 +329,7 @@ tibble(
 
 ### Cleaning \aqcurve{} curves
 
-The raw data set consisted of `r prettyNum(aa_stats$n_aq_curve0, big.mark = ",")` \aqcurve{} curves with an average of `r formatC(aa_stats$n_point_per_aq_curve0, digits = 3)`. Manual curation of a data set this size in a principled, consistent manner is not feasible. Therefore, we automated data cleaning using custom *R* scripts. Cleaning is divided into two sequential steps \autoref{tbl-cleaning2}.
+The raw data set consisted of `r prettyNum(aa_stats$n_aq_curve0, big.mark = ",")` \aqcurve{} curves with an average of `r formatC(aa_stats$n_point_per_aq_curve0, digits = 3)`. Manual curation of a data set this size in a principled, consistent manner is not feasible. Therefore, we automated data cleaning using custom *R* scripts. Cleaning is divided into two sequential steps (\autoref{tbl-cleaning2}).
 
 ```{r, cleaning2,echo=FALSE,message=FALSE,warning=FALSE}
 #| label: tbl-cleaning2
@@ -365,18 +373,9 @@ tibble(
 
 *Procedure*: As described above, we fit provisional nonrectangular hyperbola to each \aqcurve{} curve and calculated the model $r^2$. There was a clear break between typical curves and poorly fitting curves where $r^2 < `r aq_r2_threshold`$. We therefore removed \aqcurve{} curves with $r^2 < `r aq_r2_threshold`$.
 
-### Data analysis
+### Bayesian data analysis in *Stan*
 
-#### General points (not sure where this goes yet)
-
-- models fit in Stan/brms
-- we chose the number of chains, warmup and sampling iterations, and maximum treedepth so that parameter estimates converged ($\hat{R} < 1.01$ [@gelman_inference_1992]) and the effective sample size (ESS) for each parameter was $> 10^3$.
-
-We fit Bayesian models with MCMC sampling in the probabilistic programming language *Stan* [@stan_development_team_stan_2023]. We used CmdStan version `r fit_aa$version$cmdstan` and **cmdstanr** version `r fit_aa$version$cmdstanr` [@gabry_cmdstanr_2023] to interface with *R* version `r getRversion()` [@r_core_team_r:_2023]. We sampled the posterior distribution from `r dim_fit_aa[2]` chains with `r dim_fit_aa[1]` iterations each after `r dim_fit_aa[1]` warmup iterations per chain. We estimated parameters and confidence intervals as the median and 95% quantile intervals of the posterior, respectively. 
-#### *Stan* models
-
-- high level overview of differences among models \autoref{tbl-models}
-- next section describes common elements of all models and additional details about parameters
+We fit `r n_model` models to test predictions of competing hypotheses about why amphistomy advantage (\aax) might be greater for leaves in sunny, open habitats. This section provides an overview of differences among models (\autoref{tbl-models}). The next sections describe how we fit models in *Stan*, all model parameters and priors, and specific predictions about parameter values for each hypothesis.
 
 ```{r, models, echo=FALSE,message=FALSE,warning=FALSE}
 #| label: tbl-models
@@ -412,7 +411,11 @@ tribble(
 
 ```
 
-#### Parameter estimation
+#### Fitting models in *Stan*
+
+We fit Bayesian models with MCMC sampling in the probabilistic programming language *Stan* [@stan_development_team_stan_2023]. We used CmdStan version `r fit_aa$version$cmdstan` and **cmdstanr** version `r fit_aa$version$cmdstanr` [@gabry_cmdstanr_2023] to interface with *R* version `r getRversion()` [@r_core_team_r:_2023]. We sampled the posterior distribution from `r dim_fit_aa[2]` chains with `r dim_fit_aa[1]` iterations each after `r dim_fit_aa[1]` warmup iterations per chain. We estimated parameters and confidence intervals as the median and 95% quantile intervals of the posterior, respectively. We chose the number of chains, warmup and sampling iterations, and maximum treedepth so that parameter estimates converged ($\hat{R} < 1.01$ [@gelman_inference_1992]) and the effective sample size (ESS) for each parameter was $> 10^3$.
+
+#### Parameter estimation and priors
 
 There were four levels of parameter estimation in our analysis:
 

@@ -211,23 +211,6 @@
 \begin{document}
 \maketitle
 
-\begin{verbatim}
-
-Attaching package: 'dplyr'
-\end{verbatim}
-
-\begin{verbatim}
-The following objects are masked from 'package:stats':
-
-    filter, lag
-\end{verbatim}
-
-\begin{verbatim}
-The following objects are masked from 'package:base':
-
-    intersect, setdiff, setequal, union
-\end{verbatim}
-
 \subsection{Notes}\label{notes}
 
 In preamble: - short codes for commonly used symbols - ?
@@ -613,7 +596,7 @@ The raw data set consisted of 2,370 \agcurve{} curves with an average of
 63.2 points per curve. Manual curation of a data set this size in a
 principled, consistent manner is not feasible. Therefore, we automated
 data cleaning using custom \emph{R} scripts. Cleaning is divided into
-six sequential steps \autoref{tbl-cleaning1}.
+six sequential steps (\autoref{tbl-cleaning1}).
 
 \begin{table}
 
@@ -742,7 +725,7 @@ The raw data set consisted of 658 \aqcurve{} curves with an average of
 19.4. Manual curation of a data set this size in a principled,
 consistent manner is not feasible. Therefore, we automated data cleaning
 using custom \emph{R} scripts. Cleaning is divided into two sequential
-steps \autoref{tbl-cleaning2}.
+steps (\autoref{tbl-cleaning2}).
 
 \begin{table}
 
@@ -795,39 +778,15 @@ There was a clear break between typical curves and poorly fitting curves
 where \(r^2 < 0.99\). We therefore removed \aqcurve{} curves with
 \(r^2 < 0.99\).
 
-\subsubsection{Data analysis}\label{data-analysis}
+\subsubsection{\texorpdfstring{Bayesian data analysis in
+\emph{Stan}}{Bayesian data analysis in Stan}}\label{bayesian-data-analysis-in-stan}
 
-\paragraph{General points (not sure where this goes
-yet)}\label{general-points-not-sure-where-this-goes-yet}
-
-\begin{itemize}
-\tightlist
-\item
-  models fit in Stan/brms
-\item
-  we chose the number of chains, warmup and sampling iterations, and
-  maximum treedepth so that parameter estimates converged
-  (\(\hat{R} < 1.01\) (\emph{10})) and the effective sample size (ESS)
-  for each parameter was \(> 10^3\).
-\end{itemize}
-
-We fit Bayesian models with MCMC sampling in the probabilistic
-programming language \emph{Stan} (\emph{11}). We used CmdStan version
-2.33.1 and \textbf{cmdstanr} version 0.7.1 (\emph{12}) to interface with
-\emph{R} version 4.3.2 (\emph{13}). We sampled the posterior
-distribution from 4 chains with 1000 iterations each after 1000 warmup
-iterations per chain. We estimated parameters and confidence intervals
-as the median and 95\% quantile intervals of the posterior,
-respectively. \#\#\#\# \emph{Stan} models
-
-\begin{itemize}
-\tightlist
-\item
-  high level overview of differences among models \autoref{tbl-models}
-\item
-  next section describes common elements of all models and additional
-  details about parameters
-\end{itemize}
+We fit five models to test predictions of competing hypotheses about why
+amphistomy advantage (\aax) might be greater for leaves in sunny, open
+habitats. This section provides an overview of differences among models
+(\autoref{tbl-models}). The next sections describe how we fit models in
+\emph{Stan}, all model parameters and priors, and specific predictions
+about parameter values for each hypothesis.
 
 \begin{table}
 
@@ -877,7 +836,23 @@ Model & Fixed effects & Phylogenetic random effects & Response to native \ppfd\\
 
 \end{table}%
 
-\paragraph{Parameter estimation}\label{parameter-estimation}
+\paragraph{\texorpdfstring{Fitting models in
+\emph{Stan}}{Fitting models in Stan}}\label{fitting-models-in-stan}
+
+We fit Bayesian models with MCMC sampling in the probabilistic
+programming language \emph{Stan} (\emph{10}). We used CmdStan version
+2.33.1 and \textbf{cmdstanr} version 0.7.1 (\emph{11}) to interface with
+\emph{R} version 4.3.2 (\emph{12}). We sampled the posterior
+distribution from 4 chains with 1000 iterations each after 1000 warmup
+iterations per chain. We estimated parameters and confidence intervals
+as the median and 95\% quantile intervals of the posterior,
+respectively. We chose the number of chains, warmup and sampling
+iterations, and maximum treedepth so that parameter estimates converged
+(\(\hat{R} < 1.01\) (\emph{13})) and the effective sample size (ESS) for
+each parameter was \(> 10^3\).
+
+\paragraph{Parameter estimation and
+priors}\label{parameter-estimation-and-priors}
 
 There were four levels of parameter estimation in our analysis:
 
@@ -948,8 +923,10 @@ Parameter & Description\\
 \hspace{1em}$\sigma^2_{\mathrm{AA},\text{sun,acc}}$ & phylogenetic diffusion rate in random accession-level effects of sun treatment on \aax\\
 \addlinespace[0.3em]
 \multicolumn{2}{l}{\textbf{effects of native light habitat on accession-level \aax}}\\
-\hspace{1em}\cellcolor{gray!10}{$\beta_{\mathrm{AA},\text{PPFD},0}$} & \cellcolor{gray!10}{intercept of accession-level \aax{} when native \ppfdequals{0}}\\
-\hspace{1em}$\beta_{\mathrm{AA},\text{PPFD},1}$ & slope of native \ppfd{} on accession-level \aax{}\\
+\hspace{1em}\hspace{1em}\cellcolor{gray!10}{$\beta_{\mathrm{AA},\text{PPFD},0}$} & \cellcolor{gray!10}{intercept of accession-level \aax{} when native \ppfdequals{0}}\\
+\hspace{1em}\hspace{1em}$\beta_{\mathrm{AA},\text{PPFD},1}$ & slope of native \ppfd{} on accession-level \aax{}\\
+\hspace{1em}\cellcolor{gray!10}{$\alpha_{\mathrm{AA},\text{PPFD}}$} & \cellcolor{gray!10}{decay rate of phylogenetic covariance in residuals of model testing effect of native \ppfd{} on accession-level \aax}\\
+\hspace{1em}$\sigma^2_{\mathrm{AA},\text{PPFD}}$ & phylogenetic diffusion rate in residuals of model testing effect of native \ppfd{} on accession-level \aax\\
 \bottomrule
 
 \end{longtable}
@@ -1033,9 +1010,8 @@ treatment. We used a weakly informative normal prior with mean \(-3\)
 and standard deviation \(5\) for the the random effect standard
 deviation of replicate within accession. We accounted for the
 phylogenetic structure among the random effects of accession using an
-Ornstein-Uhlenbeck (OU) process (\textbf{hansen\_stabilizing\_1997?}).
-The expected covariance between accessions \(i\) and \(j\)
-(\(\text{Cov}(i, j)\) ) is:
+Ornstein-Uhlenbeck (OU) process (\emph{14}). The expected covariance
+between accessions \(i\) and \(j\) (\(\text{Cov}(i, j)\) ) is:
 
 \[\text{Cov}(i, j) = \frac{\sigma^2}{2 \alpha} \exp(-\alpha D_{ij})\]
 where \(\sigma^2\) is the variance of the random effect, \(\alpha\) is
@@ -1174,7 +1150,7 @@ and light treatment on \aax, a random effect of accession on \aax, and a
 linear regression of PAR on accession-level \aax. We next compared the
 fit of the base model to a more complex with an interaction between
 light intensity and light treatment using LOOIC with the \textit{R}
-package \textbf{loo} version 2.7.0 (\emph{14}). These comparisons
+package \textbf{loo} version 2.7.0 (\emph{15}). These comparisons
 allowed us to test the main predictions of each hypothesis and for a
 reinforcing interactions between assimilatory and plastic hypotheses
 (tab:predictions). However, these models cannot test predictions when
@@ -1290,33 +1266,40 @@ Methods} \textbf{9}, 676--682 (2012).}
 {Support} for {Bounds}} (2023;
 \url{https://CRAN.R-project.org/package=minpack.lm}).}
 
-\bibitem[\citeproctext]{ref-gelman_inference_1992}
-\CSLLeftMargin{10. }%
-\CSLRightInline{A. Gelman, D. B. Rubin, Inference from iterative
-simulation using multiple sequences. \emph{Statistical Science}
-\textbf{7}, 457--472 (1992).}
-
 \bibitem[\citeproctext]{ref-stan_development_team_stan_2023}
-\CSLLeftMargin{11. }%
+\CSLLeftMargin{10. }%
 \CSLRightInline{Stan Development Team, \emph{Stan {Modeling} {Language}
 {Users} {Guide} and {Reference} {Manual}} (2023;
 \url{https://mc-stan.org}).}
 
 \bibitem[\citeproctext]{ref-gabry_cmdstanr_2023}
-\CSLLeftMargin{12. }%
+\CSLLeftMargin{11. }%
 \CSLRightInline{J. Gabry, R. Češnovar, \emph{Cmdstanr: {R} {Interface}
 to '{CmdStan}'} (2023;
 \href{https://mc-stan.org/cmdstanr,\%20https://discourse.mc-stan.org}{https://mc-stan.org/cmdstanr,
 https://discourse.mc-stan.org}).}
 
 \bibitem[\citeproctext]{ref-r_core_team_r:_2023}
-\CSLLeftMargin{13. }%
+\CSLLeftMargin{12. }%
 \CSLRightInline{R Core Team, \emph{R: {A} {Language} and {Environment}
 for {Statistical} {Computing}} (R Foundation for Statistical Computing,
 Vienna, Austria, 2023; \url{http://www.R-project.org/}).}
 
-\bibitem[\citeproctext]{ref-vehtari_practical_2017}
+\bibitem[\citeproctext]{ref-gelman_inference_1992}
+\CSLLeftMargin{13. }%
+\CSLRightInline{A. Gelman, D. B. Rubin, Inference from iterative
+simulation using multiple sequences. \emph{Statistical Science}
+\textbf{7}, 457--472 (1992).}
+
+\bibitem[\citeproctext]{ref-hansen_stabilizing_1997}
 \CSLLeftMargin{14. }%
+\CSLRightInline{T. F. Hansen,
+\href{https://doi.org/10.1111/j.1558-5646.1997.tb01457.x}{Stabilizing
+selection and the comparative analysis of adaptation}. \emph{Evolution}
+\textbf{51}, 1341--1351 (1997).}
+
+\bibitem[\citeproctext]{ref-vehtari_practical_2017}
+\CSLLeftMargin{15. }%
 \CSLRightInline{A. Vehtari, A. Gelman, J. Gabry,
 \href{https://doi.org/10.1007/s11222-016-9696-4}{Practical {Bayesian}
 model evaluation using leave-one-out cross-validation and {WAIC}}.
