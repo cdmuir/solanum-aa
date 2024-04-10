@@ -416,7 +416,7 @@ tribble(
 
 We fit Bayesian models with MCMC sampling in the probabilistic programming language *Stan* [@stan_development_team_stan_2023]. We used CmdStan version `r fit_aa$version$cmdstan` and **cmdstanr** version `r fit_aa$version$cmdstanr` [@gabry_cmdstanr_2023] to interface with *R* version `r getRversion()` [@r_core_team_r:_2023]. We sampled the posterior distribution from `r dim_fit_aa[2]` chains with `r dim_fit_aa[1]` iterations each after `r dim_fit_aa[1]` warmup iterations per chain. We estimated parameters and confidence intervals as the median and 95% quantile intervals of the posterior, respectively. We chose the number of chains, warmup and sampling iterations, and maximum treedepth so that parameter estimates converged ($\hat{R} < 1.01$ [@gelman_inference_1992]) and the effective sample size (ESS) for each parameter was $> 10^3$.
 
-#### Parameter estimation and priors
+#### Parameter estimation and priors {#sec-parameters}
 
 There were four levels of parameter estimation in our analysis:
 
@@ -454,7 +454,7 @@ df_parameters |>
                         min(which(df_parameters$par_type == "aa_est")),
                         max(which(df_parameters$par_type == "aa_est")),
                         escape = FALSE) |>
-  kableExtra::pack_rows("effects light intensity, light treatments, and accession on \\aax",
+  kableExtra::pack_rows("effects of light intensity, light treatments, and accession on \\aax",
                         min(which(df_parameters$par_type == "aa")),
                         max(which(df_parameters$par_type == "aa")),
                         escape = FALSE) |>
@@ -492,7 +492,7 @@ The function $f : \Theta_1 \rightarrow \Theta_2$ maps the set $\Theta_1$ indexed
 
 ##### Effects of light intensity, light treatment, and accession on \aax
 
-We tested for effects of light intensity, light treatment, accession, and their interactions on \aax. All models included effects of light intensity and light treatment, as well as random effects of accession and replicate within accession. More complex models included interactions between light intensity and light treatment, as well as random effects of accession on the effects of light intensity and light treatment. We used a weakly informative normal prior with mean $0$ and standard deviation $10$ for fixed effects light intensity and treatment. We used a weakly informative normal prior with mean $-3$ and standard deviation $5$ for the the random effect standard deviation of replicate within accession. We accounted for the phylogenetic structure among the random effects of accession using an Ornstein-Uhlenbeck (OU) process [@hansen_stabilizing_1997]. The expected covariance between accessions $i$ and $j$ ($\text{Cov}(i, j)$ ) is:
+We tested for effects of light intensity, light treatment, accession, and their interactions on \aax. All models included effects of light intensity and light treatment, as well as random effects of accession and replicate within accession. More complex models included interactions between light intensity and light treatment, as well as random effects of accession on the effects of light intensity and light treatment. We used a weakly informative normal prior with mean $0$ and standard deviation $10$ for fixed effects of light intensity and treatment. We used a weakly informative normal prior with mean $-3$ and standard deviation $5$ for the the random effect standard deviation of replicate within accession. We accounted for the phylogenetic structure among the random effects of accession using an Ornstein-Uhlenbeck (OU) process [@hansen_stabilizing_1997]. The expected covariance between accessions $i$ and $j$ ($\text{Cov}(i, j)$ ) is:
 
 $$\text{Cov}(i, j) = \frac{\sigma^2}{2 \alpha} \exp(-\alpha D_{ij})$$
 where $\sigma^2$ is the variance of the random effect, $\alpha$ is the rate of decay of the covariance with phylogenetic distance, $D_{ij}$, the phylogenetic distance between accessions $i$ and $j$. We estimated $\sigma^2 / (2 \alpha)$ and $\alpha$ as a separate parameters and reparameterized them as $\sigma^2$ and $\alpha$. We used a weakly informative normal prior with mean $0$ and standard deviation $10$ on OU parameters. 
@@ -505,56 +505,88 @@ We tested a linear effect of native light habitat on accession-level \aax. In Mo
 
 #### Predictions {#sec-predictions}
 
-The assimilatory, plastic, and constitutive hypotheses make different predictions about the relationship between \aax{} and light intensity, light treatment, and native \ppfd{} among accessions. Since these hypotheses are not mutually exclusive, we describe how we assessed support for one, two, or all three hypotheses simultaneously in \autoref{tbl-predictions}.
+The assimilatory, plastic, and constitutive hypotheses make different predictions about the relationship between \aax{} and light intensity, light treatment, and native \ppfd{} among accessions. Since these hypotheses are not mutually exclusive, we describe how we assessed support for one, two, or all three hypotheses simultaneously in \autoref{tbl-predictions}. In general, the assimilatory hypothesis was supported if \aax{} was greater at high light intensity than low light intensity. The plastic hypothesis was supported if \aax{} was greater in sun leaves than shade leaves. The constitutive hypothesis was supported if accession-level \aax{} increased with native \ppfd. In interactive models, we only consider positively reinforcing interactions between high light intensity, sun leaves, and native \ppfd{} because these are the only interactions which could explain why amphistomatous leaves are advantageous in high light habitats.
 
-We evaluated predictions using a combination of parameter estimation and model selection. In all cases, we estimated parameters and confidence intervals as described in @sec-fitting. If the 95% confidence intervals for a parameter did not overlap zero, we considered the parameter to be significantly different from zero. We used leave-one-out cross-validation (LOOIC) to compare the fit of models (\autoref{tbl-models}) using the *R* package **loo** version `r packageVersion("loo")` [@vehtari_practical_2017] to calculate LOOIC values. We considered models with two standard errors of the mean lower LOOIC value to be a better fit to the data; we considered models with LOOIC values within two standard errors of the mean to be have similar support.
+We evaluated predictions using a combination of parameter estimation and model selection. In all cases, we estimated parameters and confidence intervals as described in @sec-fitting. If the 95% confidence intervals for a parameter did not overlap zero, we considered the parameter to be significantly different from zero. We used the leave-one-out cross-validation information criterion (LOOIC) to compare the fit of models (\autoref{tbl-models}) using the *R* package **loo** version `r packageVersion("loo")` [@vehtari_practical_2017] to calculate LOOIC values. Note that LOOIC was calculated only from pointwise likelihood values of the submodel estimating effects of light intensity, light treatments, and accession on \aax{} (see @sec-parameters). We considered models with two standard errors of the mean lower LOOIC value to be a better fit to the data; we considered models with LOOIC values within two standard errors of the mean to be have similar support.
 
-```{r, predictions, eval=FALSE, echo=FALSE,message=FALSE,warning=FALSE}
+```{r, predictions, eval=TRUE, echo=FALSE,message=FALSE,warning=FALSE}
 #| label: tbl-predictions
-#| tbl-cap: "caption"
+#| tbl-cap: "Predictions of competing hypotheses about the relationship between \\aax{} and light intensity, light treatment, and native \\ppfd{} among accessions. The middle column lists specific directional predictions about parameter values and model fit according to leave-one-out cross-validation information criterion (LOOIC), where $\\text{LOOIC}_i$ is the LOOIC value for model $i$. The rightmost column describes the predictions in words and explains how accession-level \\aax{} is calculated in the relevant model."
 
+tribble(
+  ~"\\textbf{Hypothesis}", ~"\\textbf{Prediction(s)}", ~"\\textbf{Description}",
+  "Assimilatory", "$\\beta_{\\mathrm{AA},2000} > 0$", "Average \\aax{} at high light intensity is greater than that at low light intensity",
+  "Plastic", "$\\beta_{\\mathrm{AA},\\text{sun}} > 0$", "Average \\aax{} in sun leaves is greater than that in shade leaves",
+  "Constitutive", "$\\beta_{\\mathrm{PPFD,AA}} > 0$", "Accession-level \\aax{} ($\\mathrm{AA}_\\text{acc}$) increases with native \\ppfd",
+  "Constitutive", "", "$\\mathrm{AA}_\\text{acc} = \\beta_{\\mathrm{AA}, 0} + \\vec{\\beta}_{\\mathrm{AA}, \\text{acc}}$",
+  "Assimilatory $\\times$ Plastic", "$\\beta_{\\mathrm{AA},2000,\\text{sun}} > 0$", "Average \\aax{} is highest at high light intensity in sun leaves",
+  "Assimilatory $\\times$ Plastic", "$\\text{LOOIC}_\\text{1} > \\text{LOOIC}_\\text{2}$", "",
+  "Assimilatory $\\times$ Constitutive", "$\\beta_{\\mathrm{AA},2000} > 0$", "Average \\aax{} at high light intensity is greater than that at low light intensity",
+  "Assimilatory $\\times$ Constitutive", "$\\beta_{\\mathrm{PPFD,AA}} > 0$", "Accession-level \\aax{} at high light intensity ($\\mathrm{AA}_{\\text{acc},2000}$) increases with native \\ppfd",
+  "Assimilatory $\\times$ Constitutive", "$\\text{LOOIC}_\\text{1} > \\text{LOOIC}_\\text{3}$", "$\\mathrm{AA}_{\\text{acc},2000} = \\beta_{\\mathrm{AA}, 0} + \\vec{\\beta}_{\\mathrm{AA}, \\text{acc}} + \\vec{\\beta}_{\\mathrm{AA}, 2000, \\text{acc}}$",
+  "Plastic $\\times$ Constitutive", "$\\beta_{\\mathrm{AA},\\text{sun}} > 0$", "Average \\aax{} in sun leaves is greater than that in shade leaves",
+  "Plastic $\\times$ Constitutive", "$\\beta_{\\mathrm{PPFD,AA}} > 0$", "Accession-level \\aax{} in sun leaves ($\\mathrm{AA}_{\\text{acc},\\text{sun}}$) increases with native \\ppfd",
+  "Plastic $\\times$ Constitutive", "$\\text{LOOIC}_\\text{1} > \\text{LOOIC}_\\text{4}$", "$\\mathrm{AA}_{\\text{acc},\\text{sun}} = \\beta_{\\mathrm{AA}, 0} + \\vec{\\beta}_{\\mathrm{AA}, \\text{acc}} + \\vec{\\beta}_{\\mathrm{AA}, \\text{sun}, \\text{acc}}$",
+  "Assimilatory $\\times$ Plastic $\\times$ Constitutive", "$\\beta_{\\mathrm{AA},2000,\\text{sun}} > 0$", "Average \\aax{} is highest at high light intensity in sun leaves",
+  "Assimilatory $\\times$ Plastic $\\times$ Constitutive", "$\\beta_{\\mathrm{PPFD,AA}} > 0$", "Accession-level \\aax{} at high light intensity in sun leaves ($\\mathrm{AA}_{\\text{acc},2000,\\text{sun}}$) increases with native \\ppfd",
+  "Assimilatory $\\times$ Plastic $\\times$ Constitutive", "$\\text{LOOIC}_\\text{3} > \\text{LOOIC}_\\text{5}$", "$\\mathrm{AA}_{\\text{acc},2000,\\text{sun}} = \\beta_{\\mathrm{AA}, 0} + \\vec{\\beta}_{\\mathrm{AA}, \\text{acc}} + \\vec{\\beta}_{\\mathrm{AA}, 2000, \\text{acc}} + \\vec{\\beta}_{\\mathrm{AA}, \\text{sun}, \\text{acc}}$"
 
-* Assimilatory: 
-  + average AA2000 - AA150
-  + among accession variation in AA2000 - AA150
-* Plastic
-  + average AAsun - AAshade
-  + among accession variation in AAsun - AAshade
-* Constitutive
-  + cor(PAR, AA) at accession level
-  
-Reinforcing interactions (we only consider these because these are ones which could explain why amphi leaves occur in high light habitats)
+) |>
+  knitr::kable(
+    format = "latex",
+    align = c("l", "l", "l"),
+    booktabs = TRUE,
+    escape = FALSE,
+    longtable = TRUE
+  ) |>
+  kableExtra::add_indent(positions = seq_len(15), level_of_indent = -1, target_cols = 3) |>
+  kableExtra::collapse_rows(1, latex_hline = "major", valign = "top",
+                            row_group_label_position = "first") |>
+  kableExtra::column_spec(1, width = "1in") |>
+  kableExtra::column_spec(2, width = "1.5in") |>
+  kableExtra::column_spec(3, width = "3in")
 
-* Assimilatory * Plastic (reinforcing interaction)
-  + AAsun - AAshade greater at 2000 than 150
-  + AA2000 - AA150 greater in sun leaves than shade leaves
-  + there may be var among accessions, but not correlated with PAR
-  
-* Assimilatory * Constitutive (reinforcing interaction)
-  + cor(AA2000, PAR) > 0; cor(AA150, PAR) = 0
-  + AA2000 - AA150 varies among accessions, correlated with PAR
-  
-* Plastic * Constitutive (reinforcing interaction)
-  + cor(AAsun, PAR) > 0; cor(AAshade, PAR) = 0
-  + AAsun - AAshade varies among accessions, correlated with PAR
-  
-* Assimilatory * Plastic * Constitutive (reinforcing interaction)
-  + AAsun - AAshade greater at 2000 than 150
-  + AA2000 - AA150 greater in sun leaves than shade leaves
-  + AAsun - AAshade varies among accession, correlated with PAR
-  + AA2000 - AA150 varies among accession, correlated with PAR
-  + cor(AAsun2000, PAR) > cor(AAsun150, PAR) and > cor(AAshade2000, PAR) and > cor(AAshade150, PAR) in nonadditive way
-  
-
-| Hypothesis   | Prediction | Model |
-|--------------|------------|------------------|
-| Assimilatory |  | base model |
-| Plastic      |  | base model |
-| Constitutive |  | base model |
-| Assimilatory * Plastic |  | + intensity $\times$ treatment |
-| Assimilatory * Constitutive |  | + accession $\times$ intensity (random) |
-| Plastic * Constitutive |  | + accession $\times$ treatment (random) |
-| Assimilatory * Plastic * Constitutive |  | + accession $\times$ intensity $\times$ treatment (random) |
+# * Assimilatory: 
+#   + average AA2000 - AA150
+#   + among accession variation in AA2000 - AA150
+# * Plastic
+#   + average AAsun - AAshade
+#   + among accession variation in AAsun - AAshade
+# * Constitutive
+#   + cor(PAR, AA) at accession level
+#   
+# Reinforcing interactions 
+# 
+# * Assimilatory * Plastic (reinforcing interaction)
+#   + AAsun - AAshade greater at 2000 than 150
+#   + AA2000 - AA150 greater in sun leaves than shade leaves
+#   + there may be var among accessions, but not correlated with PAR
+#   
+# * Assimilatory * Constitutive (reinforcing interaction)
+#   + cor(AA2000, PAR) > 0; cor(AA150, PAR) = 0
+#   + AA2000 - AA150 varies among accessions, correlated with PAR
+#   
+# * Plastic * Constitutive (reinforcing interaction)
+#   + cor(AAsun, PAR) > 0; cor(AAshade, PAR) = 0
+#   + AAsun - AAshade varies among accessions, correlated with PAR
+#   
+# * Assimilatory * Plastic * Constitutive (reinforcing interaction)
+#   + AAsun - AAshade greater at 2000 than 150
+#   + AA2000 - AA150 greater in sun leaves than shade leaves
+#   + AAsun - AAshade varies among accession, correlated with PAR
+#   + AA2000 - AA150 varies among accession, correlated with PAR
+#   + cor(AAsun2000, PAR) > cor(AAsun150, PAR) and > cor(AAshade2000, PAR) and > cor(AAshade150, PAR) in nonadditive way
+#   
+# 
+# | Hypothesis   | Prediction | Model |
+# |--------------|------------|------------------|
+# | Assimilatory |  | base model |
+# | Plastic      |  | base model |
+# | Constitutive |  | base model |
+# | Assimilatory * Plastic |  | + intensity $\times$ treatment |
+# | Assimilatory * Constitutive |  | + accession $\times$ intensity (random) |
+# | Plastic * Constitutive |  | + accession $\times$ treatment (random) |
+# | Assimilatory * Plastic * Constitutive |  | + accession $\times$ intensity $\times$ treatment (random) |
 
 ```
 

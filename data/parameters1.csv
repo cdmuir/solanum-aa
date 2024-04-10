@@ -9,7 +9,7 @@ aa,"$\widehat{\mathrm{AA}}_{klm}$","estimate of \aax{} for the $k^{\text{th}}$ l
 b0_aa,"$\beta_{\mathrm{AA},0}$","intercept of \aax{} at low light intensity in shade treatment",aa,TRUE
 b_aa_light_intensity_2000,"$\beta_{\mathrm{AA},2000}$","effect of high light intensity at \ppfdequals{2000} on \aax",aa,TRUE
 b_aa_light_treatment_high,"$\beta_{\mathrm{AA},\text{sun}}$","effect of sun treatment on \aax{}",aa,TRUE
-b_aa_2000_high,"$\beta_{\mathrm{AA},\text{2000,high}}$","effect of high light intensity at \ppfdequals{2000} on \aax{} in sun treatment",aa,TRUE
+b_aa_2000_high,"$\beta_{\mathrm{AA},2000,\text{sun}}$","effect of high light intensity at \ppfdequals{2000} on \aax{} in sun treatment",aa,TRUE
 b_aa_acc,"$\vec{\beta}_{\mathrm{AA},\text{acc}}$","vector of $n_\text{acc}$ phylogenetically structured random accession-level effects on \aax; $\vec{\beta}_{\mathrm{AA},\text{acc}} \sim \text{MVN}(\vec{0}, \symbf{\Sigma}_{\text{AA,acc}})$",aa,TRUE
 Sigma_aa_acc,"$\symbf{\Sigma}_{\text{AA,acc}}$","$n_\text{acc} \times n_\text{acc}$ covariance matrix of phylogenetically structured random accession-level effects on \aax; ",aa,TRUE
 b_aa_acc_id,"$\vec{\beta}_{\mathrm{AA},\text{rep}}$","vector of $n_\text{rep}$ random replicate-level effects on \aax; $\vec{\beta}_{\mathrm{AA},\text{rep}} \sim \text{Normal}(0, \sigma_{\mathrm{AA},\text{rep}})$",aa,TRUE
