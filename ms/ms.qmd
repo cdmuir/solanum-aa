@@ -104,8 +104,6 @@ n_model = 5 |>
 
 ## Notes
 
-In preamble: - short codes for commonly used symbols - ?
-
 Terminology to standardize:
 
 -   the native light habitat or environment: the SPLASH paper refers to what they calculated as 'habitat' PPFD, so I am going to use that terminology
@@ -117,13 +115,43 @@ Terminology to standardize:
 ## Authors
 
 definite: Wei Shen Lim, Dachuan Wang, Chris Muir
+
 question: Sam McKlin, Tom Buckley
 
-## Main
+I am using this approach to drafting the paper:
 
-\[introduction\] Stomata are important
+https://blogs.nature.com/nyc/2011/08/10/how-to-write-a-paper-one-possible-answer
 
-Stomatal ratio is important unsolved problem
+## Punchline
+
+Plastic changes in the structure of sun leaves can increase the intercellular CO$_2$ diffusion path length. Gas exchange through stomata on both upper and lower leaf surfaces, amphistomy, may be a compensatory mechanism to reduce the impact of increased diffusion path length on photosynthesis without increasing water loss. We demonstrate for the first time that sun leaves benefit most from amphistomy because it compensates for plastic structural changes in leaf anatomy.
+
+## Figures
+
+1. competing hypotheses and predictions (or predictions after methods?) for the benefit of amphistomy
+2. design of experiment to test competing hypotheses (with actual #'s of replicate, curves, etc.)
+3. Results on acclimatory, plastic, constitutive hypotheses
+4. Additional supporting figure on change in LMA, reduction of Amass, and relationship between LMA and AA? Modeling?
+
+
+## Outline
+
+1. Stomata are important
+  * organismal level, they help plants respond in variable environments (mention as key innovation of land plants, getting tall on land)
+  * ecosystem level, collectively stomata contribute to global carbon and water cycles
+  * because of their importance, stomata are useful for understanding adaptation, improving crops, predicting paleoclimate, and modeling future climate
+
+2. Despite extensive theoretical and empirical progress understanding stomata, stomatal ratio is important unsolved problem
+  * SR varies both qualitatively and quantitatively among leaves
+  * Presumably there is some relationship SR and conductance ratio
+  * More even conductance ratio increase CO2 supply without increasing water loss
+  * But we don't understand why SR varies so much even among dorsiventral leaves
+  
+3. Here we focus on the idea amphistomy may be more common in sunny habitats because sun leaves benefit more.
+  * three nonmutually exclusive hypotheses: acclimatory, plastic, constitutive
+  * WORKING HERE
+
+## Intro
 
 Amphi leaves are more common in sunny habitats and confer a great benefit. (this pattern is also true in Solanum? could we analyze herbarium data here?)
 
@@ -546,53 +574,11 @@ tribble(
   kableExtra::column_spec(2, width = "1.5in") |>
   kableExtra::column_spec(3, width = "3in")
 
-# * Assimilatory: 
-#   + average AA2000 - AA150
-#   + among accession variation in AA2000 - AA150
-# * Plastic
-#   + average AAsun - AAshade
-#   + among accession variation in AAsun - AAshade
-# * Constitutive
-#   + cor(PAR, AA) at accession level
-#   
-# Reinforcing interactions 
-# 
-# * Assimilatory * Plastic (reinforcing interaction)
-#   + AAsun - AAshade greater at 2000 than 150
-#   + AA2000 - AA150 greater in sun leaves than shade leaves
-#   + there may be var among accessions, but not correlated with PAR
-#   
-# * Assimilatory * Constitutive (reinforcing interaction)
-#   + cor(AA2000, PAR) > 0; cor(AA150, PAR) = 0
-#   + AA2000 - AA150 varies among accessions, correlated with PAR
-#   
-# * Plastic * Constitutive (reinforcing interaction)
-#   + cor(AAsun, PAR) > 0; cor(AAshade, PAR) = 0
-#   + AAsun - AAshade varies among accessions, correlated with PAR
-#   
-# * Assimilatory * Plastic * Constitutive (reinforcing interaction)
-#   + AAsun - AAshade greater at 2000 than 150
-#   + AA2000 - AA150 greater in sun leaves than shade leaves
-#   + AAsun - AAshade varies among accession, correlated with PAR
-#   + AA2000 - AA150 varies among accession, correlated with PAR
-#   + cor(AAsun2000, PAR) > cor(AAsun150, PAR) and > cor(AAshade2000, PAR) and > cor(AAshade150, PAR) in nonadditive way
-#   
-# 
-# | Hypothesis   | Prediction | Model |
-# |--------------|------------|------------------|
-# | Assimilatory |  | base model |
-# | Plastic      |  | base model |
-# | Constitutive |  | base model |
-# | Assimilatory * Plastic |  | + intensity $\times$ treatment |
-# | Assimilatory * Constitutive |  | + accession $\times$ intensity (random) |
-# | Plastic * Constitutive |  | + accession $\times$ treatment (random) |
-# | Assimilatory * Plastic * Constitutive |  | + accession $\times$ intensity $\times$ treatment (random) |
-
 ```
 
 ## Acknowledgements
 
-Justin Alter, Max Gatlin, Joana Kim, Jenna Matsuyama, Brandon Najarian, Kai Yasuda
+Justin Alter, Max Gatlin, Joana Kim, Jenna Matsuyama, Brandon Najarian, Kai Yasuda. Sarah Friedrich helped with figures.
 
 
 ## References
