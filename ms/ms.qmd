@@ -141,17 +141,19 @@ Plastic changes in the structure of sun leaves can increase the intercellular CO
   * ecosystem level, collectively stomata contribute to global carbon and water cycles
   * because of their importance, stomata are useful for understanding adaptation, improving crops, predicting paleoclimate, and modeling future climate
 
-2. Despite extensive theoretical and empirical progress understanding stomata, stomatal ratio is important unsolved problem
+2. Describe amphistomy
+
+3. Despite extensive theoretical and empirical progress understanding stomata, stomatal ratio is important unsolved problem
   * SR varies both qualitatively and quantitatively among leaves
   * Presumably there is some relationship SR and conductance ratio
   * More even conductance ratio increase CO2 supply without increasing water loss
   * But we don't understand why SR varies so much even among dorsiventral leaves
   
-3. Here we focus on the idea amphistomy may be more common in sunny habitats because sun leaves benefit more.
+4. Here we focus on the idea amphistomy may be more common in sunny habitats because sun leaves benefit more.
   * three nonmutually exclusive hypotheses: acclimatory, plastic, constitutive
   * I've already drafted brief explanations of these hypotheses below
   
-4. (a lot of this is AI generated text that I need to refine) We tested these hypotheses by comparing AA among wild tomato species from different native light habitats, grown under simulated sun and shade light treatments, and measured under contrasting light intensity
+5. (a lot of this is AI generated text that I need to refine) We tested these hypotheses by comparing AA among wild tomato species from different native light habitats, grown under simulated sun and shade light treatments, and measured under contrasting light intensity
   * We measured AA on `r n_plant` individual plants from `r n_acc` accessions (average of `r mean_n_rep` replicates per light treatment) using a recently developed method [@triplett_amphistomy_2024]
   * We directly compare the photosynthetic rate of an untreated amphistomatous leaf to that of the same leaf with gas exchange blocked through the adaxial (upper) surface by transparent plastic, which we refer to as 'pseudohypostomy'
   * We measured AA over a range of $g_\text{sc}$, inducing stomatal opening and closure by modulating humidity
@@ -159,27 +161,32 @@ Plastic changes in the structure of sun leaves can increase the intercellular CO
   * We collected four \agcurve{} curves per leaf, an amphi (untreated) curve and a pseudohypo (treated) curve at high light-intensity (\ppfdequals{2000}; `r p_red_high`:`r p_blue_high` red:blue) and low light-intensity (\ppfdequals{150}; `r p_red_low`:`r p_blue_low` red:blue)
   * We acclimated the focal leaf to high light (\ppfdequals{2000}) and high relative humidity (\rhequals{70}) until $A$ and \gsw{} reach their maximum. After that, we decreased \rh{} to $\approx 10\%$ to induce rapid stomatal closure without biochemical down
 
-5. Sun leaves have consistently higher SD and LMA and AQ parameters, but only accessions from low light habitats increased gmax ratio
+6. Sun leaves have consistently higher SD and LMA and AQ parameters, but only accessions from low light habitats increased gmax ratio
   * Large plastic responses to light intensity
   * gmax ratio is positively associated with native light habitat of shade leaves (what is the take-away here?)
   
-6. Data support the plasticity hypothesis
+8. Data support the plasticity hypothesis
   * AA was actually greater at low light intensity
   * No association between native PPFD and AA
   * Consistent increase in AA in sun leaves across all accessions
 
-7. What it all means
+8. What it all means
   * Our study reveals an important role for plasticity in explaining why amphi leaves are more common in sunny habitats
   * Confirms that leaf structure of sun leaves incurs costs that amphistomy can mitigate
   * It will be useful to consider coordination between leaf anatomy, stomatal density, and ratio in future studies of leaf structure-function and in crops (or something)
 
-## Intro - WORKING HERE
+## Intro
 
 <!-- Paragraph 1 -->
 Stomata are microscopic pores on the surfaces of leaves and other photosynthetic organs formed by a pair of guard cells. They are essential for growing tall on land because they allow plants to access CO$_2$ for photosynthetic carbon assimilation while preventing hydraulic failure in variable environments (citations). Optimal stomatal function depends on both dynamic changes in aperture on the scale of minutes to hours, as well as static anatomy determined by developmental plasticity and constitutive genetic differences [@boer__2016; harrison__2020; more citations]. Understanding how stomata respond to environmental change over daily, seasonal, and evolutionary time is important for understanding adaptation (cites), predicting paleoclimate from fossil cuticles (cites), and improving crops (cites). Stomatal function contributes to global carbon and water cycles and therefore predicting future climate (cites).
 
 <!-- Paragraph 2 -->
+Despite extensive theoretical and empirical progress understanding stomata function and anatomy from molecular to ecosystem levels, the adaptive significance of amphistomatous leaves remains an important unsolved problem in leaf structure-function relationships (parkhurst, grubb, gibson, drake). Amphistomatous leaves develop abaxial and adaxial stomata that can be independently regulated (reich, mott) to allow gas exchange through each surface (wall, marquez). In theory, gas exchange through stomata on each surface increases CO$_2$ supply to chloroplasts, all else being equal, enhancing photosynthesis (parkhurst, gutschick, fig. 1). Amphistomatous leaves also lose more water through evaporation because of a second boundary layer conductance (Smith), but the additional carbon gain should be enough to offset this cost in most realistic scenarios (Muir 2019). 
 
+<!-- Paragraph 3 -->
+The surprising fact is that despite the potential photosynthetic benefit, most leaves are not amphistomatous. Many vertically oriented and/or isobilateral leaves are amphistomatous (arcto paper, drake); among dorsiventral leaves, herbaceous plants in open, high light habitats tend to have have amphistomatous leaves (salisbury, bucher, jordan, etc.). Most other leaves, except those from aquatic habitats, are hypostomatous, producing stomata only on the lower, abaxial surface. The covariation between stomatal density ratio and light habitat is both qualitative and quantitative. A higher proportion of sun leaves are amphistomatous (salisbury) and the proportion of stomata on the upper, adaxial surface increases with light (muir 2018, bucher?). [end more strongly with statement that this is an important problem to be solved??]
+
+## Outtro - WORKING HERE
 
 
 Amphi leaves are more common in sunny habitats and confer a great benefit. (this pattern is also true in Solanum? could we analyze herbarium data here?)
