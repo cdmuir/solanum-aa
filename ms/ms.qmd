@@ -17,6 +17,7 @@ header-includes: |
   \newcommand{\ca}{$C_\mathrm{a}$}
   \newcommand{\caequals}[1]{$C_\mathrm{a} = \qty{#1}{\micro\mol\raiseto{-1}\mol}$}
   \newcommand{\cabetween}[2]{#1 < $C_\mathrm{a} < \qty{#2}{\micro\mol\raiseto{-1}\mol}$}
+  \newcommand{\gmaxratio}{$g_\text{max,ratio}$}
   \newcommand{\gsw}{$g_\text{sw}$}
   \newcommand{\loggsw}{$\log(g_\text{sw})$}
   \newcommand{\logA}{$\log(A)$}
@@ -184,14 +185,16 @@ Stomata are microscopic pores on the surfaces of leaves and other photosynthetic
 Despite extensive theoretical and empirical progress understanding stomata function and anatomy from molecular to ecosystem levels, the adaptive significance of amphistomatous leaves remains an important unsolved problem in leaf structure-function relationships (parkhurst, grubb, gibson, drake). Amphistomatous leaves develop abaxial and adaxial stomata that can be independently regulated (reich, mott) to allow gas exchange through each surface (wall, marquez). In theory, gas exchange through stomata on each surface increases CO$_2$ supply to chloroplasts, all else being equal, enhancing photosynthesis (parkhurst, gutschick, fig. 1). Amphistomatous leaves also lose more water through evaporation because of a second boundary layer conductance (Smith), but the additional carbon gain should be enough to offset this cost in most realistic scenarios (Muir 2019). 
 
 <!-- Paragraph 3 -->
+<!-- should i add analysis of herbarium data here? -->
 The surprising fact is that despite the potential photosynthetic benefit, most leaves are not amphistomatous. Many vertically oriented and/or isobilateral leaves are amphistomatous (arcto paper, drake); among dorsiventral leaves, herbaceous plants in open, high light habitats tend to have have amphistomatous leaves (salisbury, bucher, jordan, etc.). Most other leaves, except those from aquatic habitats, are hypostomatous, producing stomata only on the lower, abaxial surface. The covariation between stomatal density ratio and light habitat is both qualitative and quantitative. A higher proportion of sun leaves are amphistomatous (salisbury) and the proportion of stomata on the upper, adaxial surface increases with light (muir 2018, bucher?). [end more strongly with statement that this is an important problem to be solved??]
 
 ## Outtro - WORKING HERE
 
+It is commonly assumed in comparative studies that most trait variation between species is constitutive and genetically determined, but our results suggest that plastic responses to light are necessary to explain why \gmaxratio{} increases with light habitat. Reaction norms to light intensity among wild tomatoes indicate that accessions from low light habitats express low \gmaxratio{} when grown in shade, whereas accessions from high light habitats have constitutively higher \gmaxratio{} (Fig. rxn-norm). The larger response to light intensity is driven by greater plasticty in leaf structure in accessions from low-light habitats (Fig/table - I haven't tested this yet, so this is a placeholder.) We infer that these structural changes in sun leaves are costly because they increase the diffusion path length for CO$_2$ and reduce photosynthesis. As a consequence, sun leaves benefit more from amphistomy. This is the first demonstration that sun leaves benefit more from amphistomy because it compensates for developmental plasticity in leaf structure.
 
-Amphi leaves are more common in sunny habitats and confer a great benefit. (this pattern is also true in Solanum? could we analyze herbarium data here?)
+Two outstanding areas for further research are 1) the specific anatomical changes, such as leaf thickness or mesophyll porosity, that increase the diffusion path length for CO$_2$ in sun leaves, and 2) the costs of amphistomy that could explain plasticity in \gmaxratio{} in accessions from low-light habitats. Resolving the first question will require detailed anatomical measurements on a large number of shade and sun leaves with concomitant estimates of \aax. The fact that accessions from low-light habitats are more plastic suggests that costs of amphistomy are greatest in these environments. WORKING HERE
 
-\[maybe make distinction between amphi leaves and var in SR here since all tomato species are amphi\]
+## Middle
 
 Leaves with greater stomatal density ratio are more in open, sunny habitats because they deliver the greatest benefit in those circumstances. An amphistomatous leaf increases photosynthetic carbon gain compared to an otherwise identical hypostomatous leaf by increasing conductance through the leaf intercellular airspaces and boudary layers; the additional water loss through a second boundary layer is typically small \[cites\]. We quantify this benefit as the amphistomy advantage (AA = log(Aamphi/Ahypo). Why would AA be greater in sun than shade? There are three nonmutually exclusive hypotheses that we classify as 'acclimatory', 'plastic', and 'constitutive'.
 

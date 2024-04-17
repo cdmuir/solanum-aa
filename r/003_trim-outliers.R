@@ -55,6 +55,10 @@ rh_curves |>
   filter(!(acc_id %in% acc_id_outlier)) |>
   write_rds("data/trimmed_rh_curves.rds")
 
+# Writing rh_curves1 to use in preliminary analyses of AA and LMA, gmax_ratio, etc.
+write_rds(rh_curves1, "objects/rh_curves1.rds")
+
+
 # The rest of this is things I tried but probably won't use
 # ggplot(rh_curves1, aes(light_treatment, aa, color = light_intensity)) +
 #   geom_boxplot()
