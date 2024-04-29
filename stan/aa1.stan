@@ -25,7 +25,7 @@ data {
   int<lower=0> n_light_treatment;  
   
   // variables indexed by lightintensity_x_id groups
-  array[n] real aa;
+  array[n] real scaled_aa;
   array[n] int<lower=1,upper=n_acc> acc;
   array[n] int<lower=1,upper=n_acc_id> acc_id;
   array[n] int<lower=1,upper=n_light_intensity> light_intensity;
@@ -43,52 +43,32 @@ parameters {
   real b_aa_light_intensity_2000;
   real b_aa_light_treatment_high;
   vector[n_acc] b_aa_acc;
-  // real<lower=0> rhosq_aa_acc;
-  // real<lower=0> etasq_aa_acc;
-  real log_sigma_aa_acc;
+  real<lower=0> rhosq_aa_acc;
+  real<lower=0> etasq_aa_acc;
   vector[n_acc_id] b_aa_acc_id;
-  real log_sigma_aa_acc_id;
+  real<lower=0> sigma_aa_acc_id;
   real b0_log_sigma_aa;
   real b_log_sigma_aa_light_intensity_2000;
   real b_log_sigma_aa_light_treatment_high;
-  real b0_ppfd_aa;
-  real b1_ppfd_aa;
-  // real<lower=0> rhosq_ppfd_aa;
-  // real<lower=0> etasq_ppfd_aa;
-  real log_sigma_ppfd_aa;
-}
-transformed parameters {
-  real sigma_aa_acc;
-  real sigma_aa_acc_id;
-  real sigma_ppfd_aa;
-  sigma_aa_acc = exp(log_sigma_aa_acc);
-  sigma_aa_acc_id = exp(log_sigma_aa_acc_id);
-  sigma_ppfd_aa = exp(log_sigma_ppfd_aa);
 }
 model {
   // priors on phylogenetic structure
-  // matrix[n_acc,n_acc] Sigma_aa_acc;
-  // Sigma_aa_acc = cov_GPL1(Dmat, etasq_aa_acc, rhosq_aa_acc, 0);
+  matrix[n_acc,n_acc] Sigma_aa_acc;
+  Sigma_aa_acc = cov_GPL1(Dmat, etasq_aa_acc, rhosq_aa_acc, 0);
 
   // priors
   b0_aa ~ normal(0,1);
   b_aa_light_intensity_2000 ~ normal(0,1);
   b_aa_light_treatment_high ~ normal(0,1);
-  // b_aa_acc ~ multi_normal(rep_vector(0.0, n_acc), Sigma_aa_acc);
-  // rhosq_aa_acc ~ normal(0,10);
-  // etasq_aa_acc ~ normal(0,10);
-  b_aa_acc ~ normal(0,sigma_aa_acc);
-  log_sigma_aa_acc ~ normal(-3,5);
+  b_aa_acc ~ multi_normal(rep_vector(0.0, n_acc), Sigma_aa_acc);
+  rhosq_aa_acc ~ normal(0,10);
+  etasq_aa_acc ~ normal(0,10);
   b_aa_acc_id ~ normal(0,sigma_aa_acc_id);
-  log_sigma_aa_acc_id ~ normal(-3,5);
+  // log_sigma_aa_acc_id ~ normal(-3,5);
+  sigma_aa_acc_id ~ student_t(3, 0, 2.5);
   b0_log_sigma_aa ~ normal(-3,5);
   b_log_sigma_aa_light_intensity_2000 ~ normal(0,1);
   b_log_sigma_aa_light_treatment_high ~ normal(0,1);
-  b0_ppfd_aa ~ normal(0,1);
-  b1_ppfd_aa ~ normal(0,1);
-  // rhosq_ppfd_aa ~ normal(0,10);
-  // etasq_ppfd_aa ~ normal(0,10);
-  log_sigma_ppfd_aa ~ normal(-3,5);
 
   for (i in 1:n) {
     
@@ -113,18 +93,10 @@ model {
       b_log_sigma_aa_light_intensity_2000 * (light_intensity[i] == 2) +
       b_log_sigma_aa_light_treatment_high * (light_treatment[i] == 2));
 
-    target += normal_lpdf(aa[i] | mu1, sigma);
+    target += normal_lpdf(scaled_aa[i] | mu1, sigma);
 
   }
 
-  // regression of scaled_ppfd_mol_m2 on aa_acc
-  vector[n_acc] aa_acc;
-  // matrix[n_acc,n_acc] Sigma_ppfd;
-  aa_acc = b0_aa + b_aa_acc;
-  // Sigma_ppfd = cov_GPL1(Dmat, etasq_ppfd_aa, rhosq_ppfd_aa, 0);
-  // aa_acc ~ multi_normal(b0_ppfd_aa + b1_ppfd_aa * scaled_ppfd_mol_m2, Sigma_ppfd);
-  aa_acc ~ normal(b0_ppfd_aa + b1_ppfd_aa * scaled_ppfd_mol_m2, sigma_ppfd_aa);
-  
 }
 generated quantities {
   
@@ -155,7 +127,7 @@ generated quantities {
       b_log_sigma_aa_light_intensity_2000 * (light_intensity[i] == 2) +
       b_log_sigma_aa_light_treatment_high * (light_treatment[i] == 2));
 
-    log_lik[i] = normal_lpdf(aa[i] | mu1, sigma);
+    log_lik[i] = normal_lpdf(scaled_aa[i] | mu1, sigma);
 
   }
   

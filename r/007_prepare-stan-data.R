@@ -6,14 +6,16 @@ args = list(1)
 
 phy = read_rds("data/phylogeny.rds")
 
-aa_post = read_rds("objects/aa_post.rds")
+aa_post = read_rds("objects/aa_post.rds") |>
+  mutate(scaled_aa = (aa - mean(aa)) / sd(aa))
 n_draw = max(aa_post$.draw)
+
 
 stan_data = seq_len(n_draw) |>
   map(\(i) {
     df_data = aa_post |>
       filter(.draw == i) |>
-      select(acc, acc_id, light_intensity, light_treatment, aa)
+      select(acc, acc_id, light_intensity, light_treatment, scaled_aa)
     
     accession_climate = read_rds("data/accession-climate.rds") |>
       dplyr::select(acc1 = accession, ppfd_mol_m2) |>
