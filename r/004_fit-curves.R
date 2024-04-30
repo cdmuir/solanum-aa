@@ -1,4 +1,4 @@
-# new approach: estimate AA for every curve individually
+# Fit quadratic parameters to each curve separately
 source("r/header.R")
 
 rh_curves = read_rds("data/trimmed_rh_curves.rds")
