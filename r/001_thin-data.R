@@ -3,17 +3,7 @@ source("r/header.R")
 
 rh_curves = read_rds("data/rh_curves.rds")
 
-# Find replicates without low or high light intensity curve
-missing_curves = rh_curves |>
-  summarize(n = n(), .by = c(light_intensity, acc_id)) |>
-  pivot_wider(names_from = light_intensity, values_from = n) |>
-  filter(is.na(`150`) | is.na(`2000`)) |>
-  pull(acc_id)
-
-rh_curves1 = rh_curves |>
-  filter(!acc_id %in% missing_curves) 
-
-thinned_rh_curves = rh_curves1 |>
+thinned_rh_curves = rh_curves |>
   split( ~ acc_id + curve_type + light_intensity) |>
   map_dfr(thin_data, bin_width = aa_args$thinning_interval, .progress = TRUE)
 
@@ -36,8 +26,8 @@ do.call(
       .by = c("acc_id", "curve_type", "light_intensity")
     ) |>
     dplyr::summarize(
-      n_rh_curve5 = n(),
-      n_point_per_rh_curve5 = mean(n_point)
+      n_rh_curve6 = n(),
+      n_point_per_rh_curve6 = mean(n_point)
     ) |>
     as.list()
 )

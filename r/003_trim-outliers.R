@@ -1,3 +1,4 @@
+# REVISIT THIS WITH PP CHECK
 # Fit preliminary model to each RH curve to identify and trim AA outliers
 source("r/header.R")
 
