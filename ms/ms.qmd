@@ -42,10 +42,13 @@ source("../r/functions.R")
 
 # I am mostly putting placeholders here for objects/values that will need to be
 # loaded eventually to use in paper.
+# See code in 'solanum-aq' which can probably be reused here.
 aa_args = read_rds("../objects/aa_args1.rds")
 aa_stats = read_rds("../objects/aa_stats.rds")
 # sort list by name
 aa_stats = aa_stats[order(names(aa_stats))]
+
+plant_info = read_rds("../data/plant-info.rds")
 
 fit_aa = read_rds("../objects/fit_dummy.rds")
 dim_fit_aa = dim(fit_aa$fit)
@@ -58,24 +61,107 @@ n_weeks = 80 # number of weeks for LICOR measurements
 start_licor_date = "May 1, 2022"
 end_licor_date = "October 31, 2023"
 
+# Environmental data
+df_germ_summary = read_rds("../data/df_germ_summary.rds") |>
+  ungroup() |>
+  summarize(value = median(value), .by = c("period", "variable", "parameter"))
+
+df_growth_summary = read_rds("data/df_growth_summary.rds") |>
+  ungroup() |>
+  filter(!is.na(value)) 
+
 # environmental condition in germination room
-germ_temp_day = 25
-germ_temp_night = 20
-germ_rh_day = 40
-germ_rh_night = 60
-germ_ppfd = 200
 
-ppfd_sun = 800
-ppfd_shade = 125
-temp_diff = 1 # degrees warmer that the sun treatment air was
-rh_diff = 5 # rh_sun - rh_shade
-leaf_temp_diff = 1 # difference in leaf temperature between treatments
-n_leaf_temp = 600 # number of leaves for which we have measured leaf temp under ambient conditions
+germ_temp_day = df_germ_summary |>
+  filter(period == "day", variable == "degC", parameter == "mu") |>
+  pull(value) |>
+  prettyNum(digits = 3)
+  
+germ_temp_night = df_germ_summary |>
+  filter(period == "night", variable == "degC", parameter == "mu") |>
+  pull(value) |>
+  prettyNum(digits = 3)
 
-percent_terminal = "70.0" # percent of LICOR measurements on terminal leaflet
-percent_lateral = "30.0"
+germ_rh_day = df_germ_summary |>
+  filter(period == "day", variable == "RH", parameter == "mu") |>
+  pull(value) |>
+  prettyNum(digits = 3)
+
+germ_rh_night = df_germ_summary |>
+  filter(period == "night", variable == "RH", parameter == "mu") |>
+  pull(value) |>
+  prettyNum(digits = 3)
+
+germ_ppfd = df_germ_summary |>
+  filter(period == "day", variable == "PAR", parameter == "mu") |>
+  pull(value) |>
+  prettyNum(digits = 3)
+
+# environmental conditions in growth room
+
+d1 = df_growth_summary |>
+  summarize(value = median(value),
+            .by = c("period", "rack", "variable", "parameter"))
+
+ppfd_sun = d1 |>
+  filter(period == "day", rack == "lower", variable == "PAR", parameter == "mu") |>
+  pull(value) |>
+  prettyNum(digits = 3)
+
+ppfd_shade = d1 |>
+  filter(period == "day", rack == "upper", variable == "PAR", parameter == "mu") |>
+  pull(value) |>
+  prettyNum(digits = 3)
+
+# degrees warmer that the sun treatment air was
+temp_diff = df_growth_summary |>
+  filter(period == "day", rack != "hobo", variable == "degC", parameter == "mu") |>
+  pivot_wider(names_from = "rack") |>
+  mutate(diff = lower - upper) |>
+  summarize(value = median(diff, na.rm = TRUE)) |>
+  pull(value) |>
+  prettyNum(digits = 3)
+
+# difference in RH
+rh_diff = df_growth_summary |>
+  filter(period == "day", rack != "hobo", variable == "RH", parameter == "mu") |>
+  pivot_wider(names_from = "rack") |>
+  mutate(diff = upper - lower) |>
+  summarize(value = median(diff, na.rm = TRUE)) |>
+  pull(value) |>
+  prettyNum(digits = 3)
+
+df_leaf_temp = plant_info |>
+  filter(!is.na(leaf_temperature_C)) |>
+  summarize(
+    leaf_temperature_C = mean(leaf_temperature_C),
+    n = n(),
+    .by = "light_treatment"
+  )
+
+# difference in leaf temperature between treatments
+leaf_temp_diff = df_leaf_temp$leaf_temperature_C |>
+  diff() |>
+  prettyNum(digits = 3) 
+
+# number of leaves for which we have measured leaf temp under ambient conditions
+n_leaf_temp = sum(df_leaf_temp$n)
+
+# data on leaflet type
+df_leaflet_type = plant_info |>
+  summarize(n = n(), .by = "leaflet") |>
+  pivot_wider(names_from = "leaflet", values_from = "n") |>
+  mutate(
+    percent_terminal = prettyNum(terminal / (terminal + lateral) * 100, digits = 3),
+    percent_lateral = prettyNum(lateral / (terminal + lateral) * 100, digits = 3)
+  )
+
+percent_terminal = df_leaflet_type$percent_terminal
+percent_lateral = df_leaflet_type$percent_lateral
 percent_change_leaflet = "10.0" # percent of time that anatomical traits were measured on different leaflet than LICOR measurements
 percent_aa_and_aq = "90.0" # percent of times where AA and AQ curves were done on same leaflet
+
+# data on chamber light conditions
 p_red_high = "97.7" # percent red LED in high light-intensity treatment
 p_blue_high = "2.3"
 p_red_low = "87.0"
@@ -133,6 +219,15 @@ Plastic changes in the structure of sun leaves can increase the intercellular CO
 2. design of experiment to test competing hypotheses (with actual #'s of replicate, curves, etc.)
 3. Results on acclimatory, plastic, constitutive hypotheses
 4. Additional supporting figure on change in LMA, reduction of Amass, and relationship between LMA and AA? Modeling?
+
+## Abstract
+
+(use for GRC)
+
+Developmental plasticity to light intensity modulates amphistomy advantage
+
+The presence of stomata on both leaf surfaces (amphistomy) can increase photosynthesis in C$_3$ plants by reducing the path length for CO$_2$ diffusion between substomatal cavities and chloroplasts. Amphistomatous leaves are most common among herbaceous plants growing in sunny habitats, including many crop species. The distribution of amphistomatous leaves in nature may result from an increased photosynthetic benefit of amphistomy under high light intensity, either because of acclimatory, plastic, or constitutive variation in CO$_2$ supply or demand. We used a recently developed method to quantify amphistomy advantage, the photosynthetic rate of an amphistomatous leaf relative to an otherwise identical hypostomatous leaf, in 29 diverse populations representing 15 species of wild tomatoes (*Solanum* sect. *Lycopersicon* and sect. *Lycopersicoides*). Plant grown under high light intensity benefit more from amphostomy than those grown under low light, regardless of acclimation or native light intensity. Curvature of light response curves indicates that high-light leaves benefit more from amphistomy because of greater resistance to CO$_2$ diffusion within the mesophyll. Developmental plasticity in leaf thickness and/or cell arrangement to optimize light interception likely increases under varying light intensity modulates CO$_2$ diffusion within the leaf and, hence, amphistomy advantage as a byproduct. Developmental plasticity may therefore play an important and previously unnoticed role in explaining the adaptive significance of amphistomy and the distribution of amphistomatous leaves in nature.
+
 
 
 ## Outline
@@ -234,37 +329,42 @@ Sun leaves from high light habitats \[not sure if htis result is true yet\] bene
 
 ## Materials and Methods
 
-\[this will be moved to SI eventually\]
+\[this will be moved to SI eventually. note that much of it also the same in solanum-aq project, so might change to cite that paper?\]
 
 ### Accessions
 
 We compared AA among `r n_acc` ecologically diverse accessions of wild tomato, including representatives of all described species of *Solanum* sect. *Lycopersicon* and sect. *Lycopersicoides* [@peralta_taxonomy_2008] and the cultivated tomato *S. lycopersicum* var. *lycopersicum* \autoref{tab:accessions}. Due to constraints on growth space and time, we spread out measurements over `r n_weeks` weeks from `r start_licor_date` to `r end_licor_date`. Replicates within accession were evenly spread out over this period to prevent confounding of temporal variation in growth conditions with accession. [anything else to say here? maybe explain accession selection and phylogeny?]
 
-```{r, accessions, eval=FALSE,echo=FALSE,message=FALSE,warning=FALSE}
+```{r, accessions, eval=TRUE,echo=FALSE,message=FALSE,warning=FALSE}
 #| label: tbl-accessions
-#| tbl-cap: "Solanum accessions"
+#| tbl-cap: "Accessions of *Solanum* used in this study. The species name, accession number, collection latitude, longitude, elevation, and daily solar radiation estimated using the SPLASH algorithm (see 'Climate data'). TGRC: Tomato Genetics Resource Center; PPFD: Photosynthetic Photon Flux Density."
 
-# outline of tab:accessions LA number,Species name, lat, lon, elev, SPLASH light value
+# Copied from solanum-aq project
 
-# copied code from stomata-ilima to emulate
-# read_rds("../processed-data/site.rds") |>
-#   filter(site_code != "nnpl") |>
-#   mutate(Island = case_when(
-#     island == "oahu" ~ "Oʻahu",
-#     island == "hawaii" ~ "Hawaiʻi"
-#   )) |>
-#   arrange(site_type, site) |>
-#   select(Site = site, Island, Habitat = site_type, Latitude = latitude_degree,
-#          Longitude = longitude_degree, `Elevation (mas)` = elevation_m) |>
-#   knitr::kable(format = "latex", digits = c(rep(0, 3), 3, 3, 0),
-#                booktabs = TRUE) |>
-#   kableExtra::kable_styling(latex_options = c("striped", "no_vertical_lines")) |>
-#   kableExtra::column_spec(1, width = "4cm") |>
-#   kableExtra::column_spec(2, width = "1.5cm") |>
-#   kableExtra::column_spec(3, width = "1.5cm") |>
-#   kableExtra::column_spec(4, width = "1.5cm") |>
-#   kableExtra::column_spec(5, width = "1.5cm") |>
-#   kableExtra::column_spec(6, width = "1.5cm")
+accession_info = read_rds("../data/accession-info.rds") |>
+  filter(accession %in% light_curves$acc) |>
+  left_join(read_rds("../data/accession-climate.rds") |>
+              select(accession, ppfd_mol_m2), by = join_by(accession)) |>
+  arrange(species, accession) |>
+  select(
+    Species = species,
+    `TGRC accession` = accession,
+    `Latitude` = lat,
+    `Longitude` = lon,
+    `Elevation (mas)` = elev,
+    `$\\mathrm{PPFD}~(\\mathrm{mol}~\\mathrm{m}^2)$` = ppfd_mol_m2
+  )
+
+accession_info |>
+  knitr::kable(
+    format = "latex",
+    digits = c(rep(0, 2), 3, 3, 0, 1),
+    booktabs = TRUE,
+    longtable = TRUE,
+    escape = FALSE
+  ) |>
+  kableExtra::kable_styling(latex_options = c("striped", "no_vertical_lines")) |>
+  kableExtra::column_spec(1, width = "3.25cm", italic = TRUE)
 
 ```
 
