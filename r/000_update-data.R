@@ -4,11 +4,13 @@ source("r/header.R")
 c("processed-data/accession-climate",
   "processed-data/plant-info",
   "filtered-data/rh_curves",
-  "filtered-data/stomata") |>
+  "filtered-data/stomata",
+  "objects/df_germ_summary",
+  "objects/df_growth_summary") |>
   walk(\(.x) {
     file.copy(
       glue("../../data/adaptive-amphistomy/{.x}.rds"),
-      glue("data/{.y}.rds", .y = str_remove(.x, "(process|filter)ed-data/")),
+      glue("data/{.y}.rds", .y = str_remove(.x, "^.*/")),
       overwrite = TRUE
     )
   })
