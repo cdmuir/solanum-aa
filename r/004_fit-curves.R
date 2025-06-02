@@ -2,10 +2,13 @@
 source("r/header.R")
 
 rh_curves = read_rds("data/trimmed_rh_curves.rds")
+rh_curves = read_rds("data/prepared_rh_curves.rds") |>
+  mutate(log_A = log(A))
 
 rh_curves |>
   split(~ curve) |>
   iwalk(\(df, curve_id) {
+    if (!file.exists(paste0("objects/curve-fits/", curve_id, ".rds"))) {
     x = 1
     ad = 0.8
     n_divergent = Inf
@@ -36,5 +39,7 @@ rh_curves |>
     }
     
     write_rds(fit_curve, paste0("objects/curve-fits/", curve_id, ".rds"))
-    
+    } else {
+      message(paste0("Curve fit for ", curve_id, " already exists. Skipping."))
+    }
   })

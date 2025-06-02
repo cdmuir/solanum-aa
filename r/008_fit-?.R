@@ -7,7 +7,7 @@ stan_data = read_rds("data/stan_data.rds")
 n_draw = length(stan_data)
 names(stan_data) = str_pad(seq_len(n_draw), floor(log10(n_draw)) + 1, "left", "0")
 
-stan_data[1:3] |>
+stan_data[687:4000] |>
   iwalk(\(ll, draw_id) {
 
     # need to fix par_table
@@ -26,11 +26,11 @@ stan_data[1:3] |>
       "b_log_sigma_aa_light_treatment_high"
     )
     
-    x = 1
+    x = 5
     ad = 0.8
     n_divergent = Inf
     converged = FALSE
-    while (n_divergent > 10 | !converged) {
+    while ((n_divergent > 10 | !converged) & (x < 11)) {
       fit_aa1 = aa1$sample(
         data = ll,
         seed = 987587829 + as.numeric(draw_id) + x,
@@ -49,10 +49,13 @@ stan_data[1:3] |>
       s = fit_aa1$summary(focal_pars)
       converged = all(s$rhat < 1.01)
       x = x + 1
+      # x = 2 * x
       ad = min(ad * 1.1, 0.99)
     }
     
-    fit_aa1$save_object(paste0("objects/fit-aa1/", draw_id, ".rds"))
+    if (n_divergent <= 10 & converged) {
+      fit_aa1$save_object(paste0("objects/fit-aa1/", draw_id, ".rds"))
+    }
     
   })
 

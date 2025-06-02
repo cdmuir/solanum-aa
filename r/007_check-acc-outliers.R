@@ -16,9 +16,10 @@ fit1 = brm(
   family = student,
   data = aa_summary1,
   backend = "cmdstanr",
-  iter = 2000,
-  warmup = 2000,
+  iter = 4e3,
+  warmup = 2e3,
   chains = 1,
+  refresh = 2e2,
   seed = 125409099
 )
 

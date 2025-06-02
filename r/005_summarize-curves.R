@@ -9,7 +9,7 @@ curve_fits |>
     read_rds(paste0("objects/curve-fits/", .x)) |>
       posterior::summarize_draws() |>
       mutate(file = .x)
-  }) |>
+  }, .progress = TRUE) |>
   write_rds("objects/curve-fits-summary.rds")
 
 # Curve fit draws
@@ -18,5 +18,5 @@ curve_fits |>
     read_rds(paste0("objects/curve-fits/", .x)) |>
       as_draws_df() |>
       mutate(file = .x)
-  }) |>
+  }, .progress = TRUE) |>
   write_rds("objects/curve-fits-draws.rds")

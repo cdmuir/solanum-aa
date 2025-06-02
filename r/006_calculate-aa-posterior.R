@@ -2,7 +2,8 @@
 source("r/header.R")
 
 # Summarize RH curves to get overlap of log_gsw values ----
-trimmed_rh_curves = read_rds("data/trimmed_rh_curves.rds") |>
+trimmed_rh_curves = #read_rds("data/trimmed_rh_curves.rds") |>
+  read_rds("data/prepared_rh_curves.rds") |>
   summarize(
     min_log_gsw = min(log_gsw),
     max_log_gsw = max(log_gsw),

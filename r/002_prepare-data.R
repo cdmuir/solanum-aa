@@ -9,9 +9,6 @@ read_rds("data/thinned_rh_curves.rds") |>
       curve_type == "2-sided RH" ~ "amphi"
     )
   ) |>
-  # this step is doing in adaptive-amphistomy/10_filter-rh-curves.R
-  # filter out Hawaiian, cultivated Solanum, and LA3909 (not enough reps)
-  # dplyr::filter(str_detect(acc, "^LA[0-9]{4}"), acc != "LA3475", acc != "LA3909") |>
   # make unique ID for each leaf_type within acc_id
   unite("lightintensity_x_acc_id", acc_id, light_intensity, remove = FALSE) |>
   # make unique ID for each curve
@@ -24,7 +21,7 @@ read_rds("data/thinned_rh_curves.rds") |>
 
 # phylogeny
 tr = read.tree("data/Pease_etal_TomatoPhylo_RAxMLConcatTree_alltaxa_FigS2A.nwk") |>
-  drop.tip(c("LA3475", "SL2.50"))
+  drop.tip(c("LA1269", "LA3475", "SL2.50"))
 
 # Use LA3909 position for LA1044
 tr$tip.label[tr$tip.label == "LA3909"] = "LA1044"
