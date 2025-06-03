@@ -20,7 +20,7 @@ rh_curves1 = rh_curves |>
     b2 = terms[[3]],
     log_gsw = min_log_gsw * (leaf_type == "amphi") + max_log_gsw * (leaf_type == "pseudohypo")
   ) |>
-  select(-fit, -terms, -min_log_gsw, -max_log_gsw) |>
+  dplyr::select(-fit, -terms, -min_log_gsw, -max_log_gsw) |>
   pivot_wider(names_from = leaf_type, values_from = c(b0, b1, b2, log_gsw, licor_date)) |>
   mutate(
     upper_int = aa_int(log_gsw_pseudohypo, b0_amphi, b0_pseudohypo, b1_amphi, b1_pseudohypo, b2_amphi, b2_pseudohypo),
@@ -35,7 +35,7 @@ rh_curves1$resid = rstudent(fit1)
 
 acc_id_outlier = rh_curves1 |>
   filter(abs(resid) > aa_args$aa_outlier_threshold) |>
-  select(acc_id, aa, resid) |>
+  dplyr::select(acc_id, aa, resid) |>
   pull(acc_id)
 
 do.call(
@@ -53,6 +53,6 @@ do.call(
     as.list()
 )
 
-rh_curves1 |> 
+rh_curves |> 
   filter(!(acc_id %in% acc_id_outlier)) |>
   write_rds("data/trimmed_rh_curves.rds")
