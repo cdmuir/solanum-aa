@@ -316,7 +316,7 @@ solanum_aa_model = function(model) {
     solanum_aa_priors(model),
     solanum_aa_aa(model),
     solanum_aa_rh(),
-    solanum_aa_ppfd(model),
+    solanum_aa_pai(model),
     "}"
   )
   
@@ -399,7 +399,7 @@ solanum_aa_rh = function() {
   read_lines("stan/solanum-aa-rh.stan")
 }
 
-solanum_aa_ppfd = function(model) {
+solanum_aa_pai = function(model) {
   
   aa_acc = switch(
     model,
@@ -410,7 +410,7 @@ solanum_aa_ppfd = function(model) {
     aa5 = "b0_aa + b_aa_acc + b_aa_light_intensity_2000 + b_aa_light_intensity_2000_acc + b_aa_light_treatment_high + b_aa_light_treatment_high_acc;"
   )
   
-  read_lines("stan/solanum-aa-ppfd.stan") |>
+  read_lines("stan/solanum-aa-pai.stan") |>
     str_replace("\\{aa_acc\\}", aa_acc)
   
 }

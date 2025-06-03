@@ -56,3 +56,8 @@ do.call(
 rh_curves |> 
   filter(!(acc_id %in% acc_id_outlier)) |>
   write_rds("data/trimmed_rh_curves.rds")
+
+rh_curves1 |> 
+  filter(!(acc_id %in% acc_id_outlier)) |>
+  summarize(amphi_first = first(amphi_first), .by = c("acc_id", "light_treatment", "light_intensity")) |>
+  write_rds("data/trimmed_amphi_first.rds")

@@ -26,6 +26,7 @@ data {
   // variables indexed by lightintensity_x_id groups
   array[n_lightintensity_x_acc_id] int<lower=1,upper=n_acc> acc;
   array[n_lightintensity_x_acc_id] int<lower=1,upper=n_acc_id> acc_id;
+  array[n_lightintensity_x_acc_id] int<lower=0,upper=1> amphi_first;
   array[n_lightintensity_x_acc_id] int<lower=1,upper=n_light_intensity> light_intensity;
   array[n_lightintensity_x_acc_id] int<lower=1,upper=n_light_treatment> light_treatment;
 
@@ -34,8 +35,8 @@ data {
   array[n_curve] real max_scaled_log_gsw;
   array[n_curve] real S;
   
-  // SPLASH data
-  vector[n_acc] scaled_ppfd_mol_m2;
+  // GEDI data
+  vector[n_acc] scaled_pai;
 
   // distance matrix for Gaussian Process
   matrix[n_acc,n_acc] Dmat;

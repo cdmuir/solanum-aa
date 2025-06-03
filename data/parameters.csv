@@ -7,6 +7,7 @@ b0_log_sigma_resid,real,0,NA,NA,"normal(-3,5)",1,1,1,1,1
 b_log_sigma_resid_S,real,0,NA,NA,"normal(0,1)",1,1,1,1,1
 rho_resid,real,1,-1,1,"normal(0,1)",1,1,1,1,1
 b0_aa,real,0,NA,NA,"normal(0,1)",1,1,1,1,1
+b_aa_amphi_first,real,0,NA,NA,"normal(0,1)",1,1,1,1,1
 b_aa_light_intensity_2000,real,0,NA,NA,"normal(0,1)",1,1,1,1,1
 b_aa_light_treatment_high,real,0,NA,NA,"normal(0,1)",1,1,1,1,1
 b_aa_acc,vector[n_acc],0,NA,NA,"multi_normal(rep_vector(0.0, n_acc), Sigma_aa_acc)",1,1,1,1,1
@@ -17,10 +18,10 @@ log_sigma_aa_acc_id,real,0,NA,NA,"normal(-3,5)",1,1,1,1,1
 b0_log_sigma_aa,real,0,NA,NA,"normal(-3,5)",1,1,1,1,1
 b_log_sigma_aa_light_intensity_2000,real,0,NA,NA,"normal(0,1)",1,1,1,1,1
 b_log_sigma_aa_light_treatment_high,real,0,NA,NA,"normal(0,1)",1,1,1,1,1
-b0_ppfd_aa,real,0,NA,NA,"normal(0,1)",1,1,1,1,1
-b1_ppfd_aa,real,0,NA,NA,"normal(0,1)",1,1,1,1,1
-rhosq_ppfd_aa,real,1,0,NA,"normal(0,10)",1,1,1,1,1
-etasq_ppfd_aa,real,1,0,NA,"normal(0,10)",1,1,1,1,1
+b0_pai_aa,real,0,NA,NA,"normal(0,1)",1,1,1,1,1
+b1_pai_aa,real,0,NA,NA,"normal(0,1)",1,1,1,1,1
+rhosq_pai_aa,real,1,0,NA,"normal(0,10)",1,1,1,1,1
+etasq_pai_aa,real,1,0,NA,"normal(0,10)",1,1,1,1,1
 b_aa_2000_high,real,0,NA,NA,"normal(0,1)",0,1,0,0,1
 b_aa_light_intensity_2000_acc,vector[n_acc],0,NA,NA,"multi_normal(rep_vector(0.0, n_acc), Sigma_aa_light_intensity_2000_acc)",0,0,1,0,1
 rhosq_aa_light_intensity_2000_acc,real,1,0,NA,"normal(0, 10)",0,0,1,0,1

@@ -52,6 +52,7 @@ data {
   // variables indexed by lightintensity_x_id groups
   array[n_lightintensity_x_acc_id] int<lower=1,upper=n_acc> acc;
   array[n_lightintensity_x_acc_id] int<lower=1,upper=n_acc_id> acc_id;
+  array[n_lightintensity_x_acc_id] int<lower=0,upper=1> amphi_first;
   array[n_lightintensity_x_acc_id] int<lower=1,upper=n_light_intensity> light_intensity;
   array[n_lightintensity_x_acc_id] int<lower=1,upper=n_light_treatment> light_treatment;
 
@@ -60,8 +61,8 @@ data {
   array[n_curve] real max_scaled_log_gsw;
   array[n_curve] real S;
   
-  // SPLASH data
-  vector[n_acc] scaled_ppfd_mol_m2;
+  // GEDI data
+  vector[n_acc] scaled_pai;
 
   // distance matrix for Gaussian Process
   matrix[n_acc,n_acc] Dmat;
@@ -80,6 +81,7 @@ parameters {
   real b_log_sigma_resid_S;
   real<lower=-1, upper=1> rho_resid;
   real b0_aa;
+  real b_aa_amphi_first;
   real b_aa_light_intensity_2000;
   real b_aa_light_treatment_high;
   vector[n_acc] b_aa_acc;
@@ -90,10 +92,10 @@ parameters {
   real b0_log_sigma_aa;
   real b_log_sigma_aa_light_intensity_2000;
   real b_log_sigma_aa_light_treatment_high;
-  real b0_ppfd_aa;
-  real b1_ppfd_aa;
-  real<lower=0> rhosq_ppfd_aa;
-  real<lower=0> etasq_ppfd_aa;
+  real b0_pai_aa;
+  real b1_pai_aa;
+  real<lower=0> rhosq_pai_aa;
+  real<lower=0> etasq_pai_aa;
   vector[n_acc] b_aa_light_intensity_2000_acc;
   real<lower=0> rhosq_aa_light_intensity_2000_acc;
   real<lower=0> etasq_aa_light_intensity_2000_acc;
@@ -122,6 +124,7 @@ model {
   b_log_sigma_resid_S ~ normal(0,1);
   rho_resid ~ normal(0,1);
   b0_aa ~ normal(0,1);
+  b_aa_amphi_first ~ normal(0,1);
   b_aa_light_intensity_2000 ~ normal(0,1);
   b_aa_light_treatment_high ~ normal(0,1);
   b_aa_acc ~ multi_normal(rep_vector(0.0, n_acc), Sigma_aa_acc);
@@ -132,10 +135,10 @@ model {
   b0_log_sigma_aa ~ normal(-3,5);
   b_log_sigma_aa_light_intensity_2000 ~ normal(0,1);
   b_log_sigma_aa_light_treatment_high ~ normal(0,1);
-  b0_ppfd_aa ~ normal(0,1);
-  b1_ppfd_aa ~ normal(0,1);
-  rhosq_ppfd_aa ~ normal(0,10);
-  etasq_ppfd_aa ~ normal(0,10);
+  b0_pai_aa ~ normal(0,1);
+  b1_pai_aa ~ normal(0,1);
+  rhosq_pai_aa ~ normal(0,10);
+  etasq_pai_aa ~ normal(0,10);
   b_aa_light_intensity_2000_acc ~ multi_normal(rep_vector(0.0, n_acc), Sigma_aa_light_intensity_2000_acc);
   rhosq_aa_light_intensity_2000_acc ~ normal(0, 10);
   etasq_aa_light_intensity_2000_acc ~ normal(0, 10);
@@ -154,6 +157,7 @@ model {
     b_high = b_aa_light_treatment_high;
       
     mu1 = b0_aa + 
+      b_aa_amphi_first * (amphi_first[i]) +
       b_2000 * (light_intensity[i] == 2) +
       b_high * (light_treatment[i] == 2) +
       
@@ -213,12 +217,12 @@ model {
   }
     
   target += normal_lpdf(log_A | mu2, sigma2);
-  // regression of scaled_ppfd_mol_m2 on aa_acc
+  // regression of scaled_pai on aa_acc
   vector[n_acc] aa_acc;
-  matrix[n_acc,n_acc] Sigma_ppfd;
+  matrix[n_acc,n_acc] Sigma_pai;
   aa_acc = b0_aa + b_aa_acc + b_aa_light_intensity_2000 + b_aa_light_intensity_2000_acc;;
-  Sigma_ppfd = cov_GPL1(Dmat, etasq_ppfd_aa, rhosq_ppfd_aa, 0);
-  aa_acc ~ multi_normal(b0_ppfd_aa + b1_ppfd_aa * scaled_ppfd_mol_m2, Sigma_ppfd);
+  Sigma_pai = cov_GPL1(Dmat, etasq_pai_aa, rhosq_pai_aa, 0);
+  aa_acc ~ multi_normal(b0_pai_aa + b1_pai_aa * scaled_pai, Sigma_pai);
 }
 generated quantities {
   // calculated log-likelihood to estimate LOOIC for model comparison
@@ -237,6 +241,7 @@ generated quantities {
     b_high = b_aa_light_treatment_high;
       
     mu1 = b0_aa + 
+      b_aa_amphi_first * (amphi_first[i]) +
       b_2000 * (light_intensity[i] == 2) +
       b_high * (light_treatment[i] == 2) +
       
