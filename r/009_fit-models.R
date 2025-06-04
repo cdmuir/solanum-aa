@@ -24,6 +24,11 @@ s$variable[5000:6000]
 
 test = cmdstan_model("stan/test.stan")
 
+# FOR LA0107, 2e3 sampling iterations gets convergence for most things. Only the B_curve() parameters need some time.
+# try:
+# - more iters
+# - scaling up to 2+ accessions at once
+# adding resid covariance back in.
 fit = test$sample(
   data = stan_rh_curves,
   seed = 508504744,
