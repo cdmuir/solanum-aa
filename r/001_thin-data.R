@@ -34,7 +34,7 @@ do.call(
 
 thinned_rh_curves |>
   filter(keep) |>
-  select(-keep) |>
+  dplyr::select(-keep) |>
   write_rds("data/thinned_rh_curves.rds")
 
 write_rds(thinning_summary, "objects/thinning_summary.rds")

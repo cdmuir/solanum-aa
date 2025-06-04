@@ -4,11 +4,12 @@ source("r/header.R")
 message("Note that phylogeny is still unrooted. Need to adjust before final model fitting.")
 phy = read_rds("data/phylogeny.rds")
 
-# MAKE VARIABLE ABOUT WHETHER PSEUDOHYPO OR AMPHI LEAF WAS FIRST
 trimmed_alphi_first = read_rds("data/trimmed_amphi_first.rds")
 
 rh_curves = read_rds("data/trimmed_rh_curves.rds") |>
-  full_join(
+  # FILTER FOR TESTING
+  filter(acc == "LA0107") |>
+  left_join(
     trimmed_alphi_first,
     by = join_by(acc_id, light_treatment, light_intensity)
   ) |>

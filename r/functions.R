@@ -28,7 +28,7 @@ thin_data = function(.d, bin_width, min_n = 20L) {
   if (nrow(.d) > min_n) {
     d1 = .d |>
       mutate(log_gsw = log(gsw)) |>
-      select(gsw, log_gsw) |>
+      dplyr::select(gsw, log_gsw) |>
       arrange(log_gsw)
     
     n = 1
@@ -60,7 +60,7 @@ thin_data = function(.d, bin_width, min_n = 20L) {
       bin_width = bin_width / 2
     }
     
-    return(full_join(.d, select(ret, gsw, keep), by = join_by(gsw)))
+    return(full_join(.d, dplyr::select(ret, gsw, keep), by = join_by(gsw)))
     
   } else {
     return(mutate(.d, keep = TRUE))
