@@ -56,6 +56,7 @@ parameters {
   vector[3] Mu_curve;
   vector[3] log_sigma_curve;
   corr_matrix[3] R_curve;
+  real<lower=-1, upper=1> rho_resid;
   real b0_log_sigma_resid;
   real b_log_sigma_resid_S;
 }
@@ -77,6 +78,7 @@ model {
 
   // Estimate RH curve parameters
   vector[n] mu2;
+  vector[n] resid;
   vector[n] sigma2;
   
   for (i in 1:n) {
@@ -88,6 +90,12 @@ model {
     sigma2[i] = exp(b0_log_sigma_resid + (6 - S[curve[i]]) * b_log_sigma_resid_S);
   
   }
-    
+  
+  resid[1] = log_A[1] - mu2[1];
+  for (i in 2:n) {
+    resid[i] = log_A[i] - mu2[i];
+    mu2[i] += rho_resid * resid[i - 1] * (curve[i] == curve[i - 1]);
+  }
+  
   target += normal_lpdf(log_A | mu2, sigma2);
 }
