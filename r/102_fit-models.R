@@ -3,7 +3,7 @@ source("r/header.R")
 stan_rh_curves = read_rds("data/stan_rh_curves.rds")
 stan_rh_curves$acc1 = NULL
 
-m5 = cmdstan_model("stan/solanum-aa5.stan")
+m5 = cmdstan_model("stan/solanum-aa5.stan", dir = "stan/bin")
 
 fit5 = m5$sample(
   data = stan_rh_curves,
@@ -24,29 +24,31 @@ mcmc_trace(fit5$draws("lp__"))
 mcmc_trace(fit5$draws("b_aa_light_intensity_2000"))
 s$variable[5000:6000]
 
-test = cmdstan_model("stan/test.stan")
+test = cmdstan_model("stan/test.stan", dir = "stan/bin")
 
 # FOR LA0107, 2e3 sampling iterations gets convergence for most things. Only the B_curve() parameters need some time.
+# FOR LA0107 + LA4778, 4e3 sampling iterations converges well. Scaling up to all species before trying resid
+# FOR ALL ACCESSIONS, 4e3 sampling iterations converges well
 # try:
-# - more iters
-# - scaling up to 2+ accessions at once
 # adding resid covariance back in.
+
 fit = test$sample(
   data = stan_rh_curves,
   seed = 508504744,
   chains = 4,
   parallel_chains = 4,
-  refresh = 2e2,
-  iter_warmup = 2e3,
-  iter_sampling = 2e3,
-  thin = 2
+  refresh = 4e2,
+  iter_warmup = 4e3,
+  iter_sampling = 4e3,
+  thin = 4
 )
 
 s = fit$summary()
 s |>
-  print(n = Inf)
+  arrange(desc(rhat)) |>
+  print(n = 100)
 
-i = 60
+i = 900
 ii = (stan_rh_curves$curve == i)
 
 # data

@@ -44,6 +44,7 @@ parameters {
   real b_aa_amphi_first;
   real b_aa_light_intensity_2000;
   real b_aa_light_treatment_high;
+  real b_aa_2000_high;
   vector[n_acc] b_aa_acc;
   real<lower=0> rhosq_aa_acc;
   real<lower=0> etasq_aa_acc;
@@ -63,6 +64,7 @@ model {
   b_aa_amphi_first ~ normal(0,1);
   b_aa_light_intensity_2000 ~ normal(0,1);
   b_aa_light_treatment_high ~ normal(0,1);
+  b_aa_2000_high ~ normal(0,1);
   b_aa_acc ~ multi_normal(rep_vector(0.0, n_acc), Sigma_aa_acc);
   rhosq_aa_acc ~ normal(0,10);
   etasq_aa_acc ~ normal(0,10);
@@ -88,6 +90,7 @@ model {
       b_aa_amphi_first * amphi_first[i] + 
       b_2000 * (light_intensity[i] == 2) +
       b_high * (light_treatment[i] == 2) +
+      b_aa_2000_high * (light_intensity[i] == 2) * (light_treatment[i] == 2) +
       b_aa_acc[acc[i]] +
       b_aa_acc_id[acc_id[i]];
     
@@ -122,7 +125,7 @@ generated quantities {
       b_aa_amphi_first * amphi_first[i] +
       b_2000 * (light_intensity[i] == 2) +
       b_high * (light_treatment[i] == 2) +
-      
+      b_aa_2000_high * (light_intensity[i] == 2) * (light_treatment[i] == 2) +
       b_aa_acc[acc[i]] +
       b_aa_acc_id[acc_id[i]];
     
