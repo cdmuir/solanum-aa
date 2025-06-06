@@ -29,9 +29,10 @@ test = cmdstan_model("stan/test.stan", dir = "stan/bin")
 # FOR LA0107, 2e3 sampling iterations gets convergence for most things. Only the B_curve() parameters need some time.
 # FOR LA0107 + LA4778, 4e3 sampling iterations converges well. Scaling up to all species before trying resid
 # FOR ALL ACCESSIONS, 4e3 sampling iterations converges well
+# FOR LA0107 + LA4778, 4e3 sampling iterations + resid covariance converges well
+# FOR ALL ACCESSIONS, 4e3 sampling iterations + resid covariance converges well, took 33250.3 seconds
 # try:
-# adding resid covariance back in.
-
+# ?
 fit = test$sample(
   data = stan_rh_curves,
   seed = 508504744,
@@ -42,13 +43,13 @@ fit = test$sample(
   iter_sampling = 4e3,
   thin = 4
 )
-
+fit$save_object("objects/test.rds")
 s = fit$summary()
 s |>
   arrange(desc(rhat)) |>
   print(n = 100)
-
-i = 900
+fit$summary("rho_resid")
+i = 20
 ii = (stan_rh_curves$curve == i)
 
 # data

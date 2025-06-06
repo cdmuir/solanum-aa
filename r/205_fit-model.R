@@ -1,21 +1,12 @@
-# Fit model on posterior estimate of AA ----
+# Fit phylogenetic model in Stan
 source("r/header.R")
 
-d1 = read_rds("objects/stan_data_df.rds")
-fit1 = brm(bf(
-  aa ~ amphi_first + light_treatment * light_intensity + (1 + light_treatment | acc),
-  sigma ~ light_intensity
-  ), data = d1, backend = "cmdstanr", chains = 1)
-summary(fit1)
-
-aa1 = cmdstan_model("stan/aa1.stan", dir = "stan/bin")
 aa5 = cmdstan_model("stan/aa5.stan", dir = "stan/bin")
 
 stan_data = read_rds("data/stan_data.rds")
 
 focal_pars = c(
   "b0_aa",
-  "b_aa_amphi_first",
   "b_aa_light_intensity_2000",
   "b_aa_light_treatment_high",
   "b_aa_2000_high",
@@ -32,7 +23,7 @@ ad = 0.8
 n_divergent = Inf
 converged = FALSE
 while ((n_divergent > 10 | !converged) & (x < 11)) {
-  fit_aa1 = aa1$sample(
+  fit_aa5 = aa5$sample(
     data = stan_data,
     seed = 987587829 + x,
     refresh = x * 2000 * 0.1,

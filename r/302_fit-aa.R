@@ -1,7 +1,7 @@
-# Fit preliminary model to each RH curve to identify and trim AA outliers
+# Estimate AA for HI Solanum
 source("r/header.R")
 
-rh_curves = read_rds("data/prepared_rh_curves.rds") |>
+rh_curves = read_rds("data/prepared_rh_hi_curves.rds") |>
   mutate(log_A = log(A))
 
 rh_curves1 = rh_curves |>
@@ -29,38 +29,10 @@ rh_curves1 = rh_curves |>
     aa = (upper_int - lower_int) / (log_gsw_pseudohypo - log_gsw_amphi),
     amphi_first = ymd(licor_date_amphi) < ymd(licor_date_pseudohypo)
   ) 
+
 fit1 = lm(aa ~ amphi_first + acc * light_treatment * light_intensity, data = rh_curves1)
 summary(aov(fit1))
-rh_curves1$resid = rstudent(fit1)
 
-acc_id_outlier = rh_curves1 |>
-  filter(abs(resid) > aa_args$aa_outlier_threshold) |>
-  dplyr::select(acc_id, aa, resid) |>
-  pull(acc_id)
-
-do.call(
-  "add_to_stats",
-  rh_curves |>
-    filter(!(acc_id %in% acc_id_outlier)) |>
-    dplyr::summarize(
-      n_point = length(obs),
-      .by = c("acc_id", "curve_type", "light_intensity")
-    ) |>
-    dplyr::summarize(
-      n_rh_curve7 = n(),
-      n_point_per_rh_curve7 = mean(n_point)
-    ) |>
-    as.list()
-)
-
-rh_curves |>
-  filter(!(acc_id %in% acc_id_outlier)) |>
-  write_rds("data/trimmed_rh_curves.rds")
-
-rh_curves1 |>
-  filter(!(acc_id %in% acc_id_outlier)) |>
-  summarize(
-    amphi_first = first(amphi_first),
-    .by = c("acc_id", "light_treatment", "light_intensity")
-  ) |>
-  write_rds("data/trimmed_amphi_first.rds")
+ggplot(filter(rh_curves1, light_intensity == "2000"), aes(x = light_treatment, y = aa)) +
+  geom_point(position = position_jitter(width = 0.1)) +
+  facet_wrap(~ acc) 

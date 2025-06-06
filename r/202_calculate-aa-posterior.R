@@ -60,8 +60,19 @@ aa_post = full_join(curve_fits_draws,
       b2_amphi,
       b2_pseudohypo
     ),
-    aa = upper_int - lower_int
+    aa = (upper_int - lower_int) / (log_gsw_pseudohypo - log_gsw_amphi)
   )
+
+# Export figures ----
+tmp = full_join(curve_fits_draws,
+          trimmed_rh_curves,
+          by = join_by(acc_id, leaf_type, light_intensity)) |>
+  mutate(log_gsw = min_log_gsw * (leaf_type == "amphi") + max_log_gsw * (leaf_type == "pseudohypo")) |>
+  filter(.draw < 11, acc == "LA0107") |>
+  split(~ acc_id)
+
+tmp$max_log_gsw
+
 
 # Check that AA estimates converged ----
 aa_summary = aa_post |>
