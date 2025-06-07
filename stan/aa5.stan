@@ -55,6 +55,7 @@ parameters {
   real<lower=0> rhosq_aa_light_intensity_2000_acc;
   real<lower=0> etasq_aa_light_intensity_2000_acc;
   vector[n_acc] b_aa_light_treatment_high_acc;
+  real<lower=0> etasq_aa_light_treatment_high_acc;
   real<lower=0> rhosq_aa_light_treatment_high_acc;
   vector[n_acc] b_aa_2000_high_acc;
   real<lower=0> rhosq_aa_2000_high_acc;
