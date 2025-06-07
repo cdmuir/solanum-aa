@@ -34,7 +34,7 @@ theme_set(theme_cowplot())
 # options 
 aa_args = read_rds("objects/aa_args.rds") |>
   c(
-    aa_outlier_threshold = 2,
+    aa_outlier_threshold = 3,
     thinning_interval = 0.05
   )
 

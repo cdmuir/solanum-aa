@@ -2,8 +2,7 @@
 source("r/header.R")
 
 # Summarize RH curves to get overlap of log_gsw values ----
-trimmed_rh_curves = #read_rds("data/trimmed_rh_curves.rds") |>
-  read_rds("data/prepared_rh_curves.rds") |>
+trimmed_rh_curves = read_rds("data/trimmed_rh_curves.rds") |>
   summarize(
     min_log_gsw = min(log_gsw),
     max_log_gsw = max(log_gsw),
@@ -25,7 +24,7 @@ curve_fits_summary |>
 # Draws from the curve fits ----
 curve_fits_draws = read_rds("objects/curve-fits-draws.rds") |>
   rename(b0 = b_Intercept, b1 = b_polylog_gsw2rawEQTRUE1, b2 = b_polylog_gsw2rawEQTRUE2) |>
-  select(starts_with("."), matches("b[0-2]"), file) |>
+  dplyr::select(starts_with("."), matches("b[0-2]"), file) |>
   mutate(accid_leaftype_lightintensity = str_remove(file, ".rds"),
          .keep = "unused") |>
   separate_wider_delim(
@@ -61,20 +60,32 @@ aa_post = full_join(curve_fits_draws,
       b2_amphi,
       b2_pseudohypo
     ),
-    aa = upper_int - lower_int
+    aa = (upper_int - lower_int) / (log_gsw_pseudohypo - log_gsw_amphi)
   )
+
+# Export figures ----
+tmp = full_join(curve_fits_draws,
+          trimmed_rh_curves,
+          by = join_by(acc_id, leaf_type, light_intensity)) |>
+  mutate(log_gsw = min_log_gsw * (leaf_type == "amphi") + max_log_gsw * (leaf_type == "pseudohypo")) |>
+  filter(.draw < 11, acc == "LA0107") |>
+  split(~ acc_id)
+
+tmp$max_log_gsw
+
 
 # Check that AA estimates converged ----
 aa_summary = aa_post |>
-  select(starts_with("."), acc_id, aa) |>
-  split( ~ acc_id) |>
+  dplyr::select(starts_with("."), acc_id, aa, light_intensity) |>
+  split(~ acc_id + light_intensity) |>
   map_dfr(\(.x) {
     .x |>
-      select(-acc_id) |>
+      select(-acc_id, -light_intensity) |>
       as_draws_df() |>
       posterior::summarise_draws() |>
-      mutate(acc_id = .x$acc_id[1])
-  })
+      mutate(acc_id = .x$acc_id[1],
+             light_intensity = .x$light_intensity[1])
+  }, .progress = TRUE)
 
 # I need to decide if any of these require re-fitting
 aa_summary |>
@@ -82,3 +93,4 @@ aa_summary |>
 
 # Write posterior of AA estimates ----
 write_rds(aa_post, "objects/aa_post.rds")
+write_rds(aa_summary, "objects/aa_summary.rds")

@@ -12,6 +12,7 @@
     b_high = {b_high};
       
     mu1 = b0_aa + 
+      b_aa_amphi_first * (amphi_first[i]) +
       b_2000 * (light_intensity[i] == 2) +
       b_high * (light_treatment[i] == 2) +
       {b_aa_2000_high}

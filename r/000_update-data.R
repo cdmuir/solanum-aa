@@ -5,6 +5,7 @@ c("processed-data/accession-climate",
   "processed-data/accession-gedi",
   "processed-data/plant-info",
   "filtered-data/rh_curves",
+  "filtered-data/rh_hi_curves",
   "filtered-data/stomata",
   "objects/df_germ_summary",
   "objects/df_growth_summary") |>

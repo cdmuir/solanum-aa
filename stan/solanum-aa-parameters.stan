@@ -6,6 +6,7 @@ parameters {
   real b_log_sigma_resid_S;
   real rho_resid;
   real b0_aa;
+  real b_aa_amphi_first;
   real b_aa_light_intensity_2000;
   real b_aa_light_treatment_high;
   vector[n_acc] b_aa_acc;
@@ -16,10 +17,10 @@ parameters {
   real b0_log_sigma_aa;
   real b_log_sigma_aa_light_intensity_2000;
   real b_log_sigma_aa_light_treatment_high;
-  real b0_ppfd_aa;
-  real b1_ppfd_aa;
-  real rhosq_ppfd_aa;
-  real etasq_ppfd_aa;
+  real b0_pai_aa;
+  real b1_pai_aa;
+  real rhosq_pai_aa;
+  real etasq_pai_aa;
   real b_aa_2000_high;
   vector[n_acc] b_aa_light_intensity_2000_acc;
   real rhosq_aa_light_intensity_2000_acc;
