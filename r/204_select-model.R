@@ -2,6 +2,9 @@
 source("r/header.R")
 
 d1 = read_rds("objects/stan_data_df.rds")
+tr = read_rds("data/phylogeny.rds")
+A = vcv(tr, corr = TRUE)
+
 # based on loo_compare, no evidence for amphi_first being significant, so removed
 
 fixed_effects = c(
@@ -13,17 +16,25 @@ fixed_effects = c(
 )
 
 random_effects = c(
-  "(1 | acc)",
-  "(1 + light_treatment | acc)",
-  "(1 + light_intensity | acc)",
-  "(1 + light_treatment + light_intensity | acc)",
-  "(1 + light_treatment * light_intensity | acc)"
+  "(1 | gr(acc, cov = A))",
+  "(1 + light_treatment | gr(acc, cov = A))",
+  "(1 + light_intensity | gr(acc, cov = A))",
+  "(1 + light_treatment + light_intensity | gr(acc, cov = A))",
+  "(1 + light_treatment * light_intensity | gr(acc, cov = A))"
+)
+
+sigma_effects = c(
+  "1",
+  "light_treatment",
+  "light_intensity",
+  "light_treatment + light_intensity"
 )
 
 # Cross all combinations
 set.seed(602275201)
 model_forms = expand.grid(fixed = fixed_effects,
                           random = random_effects,
+                          sigma = sigma_effects,
                           stringsAsFactors = FALSE) %>%
   mutate(seed = sample(1e9, nrow(.)))
 
@@ -31,10 +42,11 @@ model_forms = expand.grid(fixed = fixed_effects,
 plan(multisession, workers = 19)
 
 aa_models = future_pmap(model_forms, function(fixed, random, seed) {
-  fml = as.formula(paste("aa ~", fixed, "+", random))
+  fml = bf(as.formula(paste("aa ~", fixed, "+", random)), as.formula(paste("sigma ~", sigma)))
   brm(
     formula = fml,
     data = d1,
+    data2 = list(A = A),
     backend = "cmdstanr",
     chains = 1,
     family = student(),
@@ -63,43 +75,47 @@ aa_loo_table = tibble(
   )
 
 write_rds(aa_loo_table, "objects/aa_loo_table.rds")
-<<<<<<< HEAD
-
-
-fixed = fixed_effects[5]
-random = random_effects[5]
-seed = 20250607
-fml = as.formula(paste("aa ~", fixed, "+", random))
-fit = brm(
-  formula = fml,
-  data = d1,
-  backend = "cmdstanr",
-  chains = 1,
-  family = student(),
-  save_pars = save_pars(all = TRUE),
-  seed = seed
-) 
 
 df_new = crossing(
   acc = unique(d1$acc),
-  light_treatment = unique(d1$light_treatment),
-  light_intensity = unique(d1$light_intensity)
-)
+  light_treatment = c("low", "high"),
+  light_intensity = c("150", "2000")
+) |>
+  mutate(row = row_number())
 
-df_pred = predict(fit, newdata = df_new, re_formula = NULL) |>
-  as_tibble() |>
-  bind_cols(df_new)
+df_pred1 = posterior_epred(aa_models[[25]], newdata = df_new) |>
+  t() |>
+  as_draws_df() |>
+  mutate(row = row_number()) |>
+  pivot_longer(cols = -row, names_to = "draw", values_to = "aa") |>
+  full_join(df_new, by = "row") |>
+  group_by(acc, light_treatment, light_intensity) |>
+  point_interval(aa) |>
+  group_by(light_treatment, light_intensity) |>
+  arrange(aa) |>
+  mutate(x = order(aa))
+  
+ggplot(df_pred1, aes(x, aa, ymin = .lower, ymax = .upper, group = acc)) +
+  facet_grid(light_intensity ~ light_treatment) +
+  geom_pointinterval() +
+  geom_hline(yintercept = 0, linetype = "dashed") 
 
-ggplot(df_pred, aes(light_treatment, Estimate, group = acc)) +
-  facet_wrap(~ light_intensity) +
-  geom_line()
-
-df_pred |>
-  dplyr::select(-Est.Error, -Q2.5, -Q97.5) |>
-  pivot_wider(values_from = Estimate, names_from = light_treatment) |>
+df_pred2 = posterior_epred(aa_models[[25]], newdata = df_new) |>
+  t() |>
+  as_draws_df() |>
+  mutate(row = row_number()) |>
+  pivot_longer(cols = -row, names_to = "draw", values_to = "aa") |>
+  full_join(df_new, by = "row") |>
+  dplyr::select(-row) |>
+  pivot_wider(names_from = light_treatment, values_from = aa) |>
   mutate(d_aa = high - low) |>
-  filter(light_intensity == "2000") |>
-  arrange(desc(d_aa)) |>
-  print(n = 20)
-=======
->>>>>>> e9e9fcdb876ee7ced60bb82dbeca09d02c4b2a4a
+  group_by(acc, light_intensity) |>
+  point_interval(d_aa) |>   
+  group_by(light_intensity) |>
+  arrange(d_aa) |>
+  mutate(x = order(d_aa))
+
+ggplot(df_pred2, aes(x, d_aa, ymin = .lower, ymax = .upper, group = acc)) +
+  facet_grid(light_intensity ~ .) +
+  geom_pointinterval() +
+  geom_hline(yintercept = 0, linetype = "dashed") 

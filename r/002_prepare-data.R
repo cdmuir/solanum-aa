@@ -21,6 +21,8 @@ read_rds("data/thinned_rh_curves.rds") |>
 
 # phylogeny
 tr = read.tree("data/Pease_etal_TomatoPhylo_RAxMLConcatTree_alltaxa_FigS2A.nwk") |>
+  phangorn::midpoint() |>
+  chronos(control = chronos.control(dual.iter.max = 40)) |>
   drop.tip(c("LA3475", "SL2.50"))
 
 # Use LA3909 position for LA1044
@@ -28,6 +30,6 @@ tr$tip.label[tr$tip.label == "LA3909"] = "LA1044"
 
 # graft LA0750 as sister to LA 0716
 el = tr$edge.length[tr$edge[,2] == which(tr$tip.label == "LA0716")] / 2
-tr1 = AddTip(tr, "LA0716", "LA0750", el)
+tr1 = AddTip(tr, "LA0716", "LA0750", edgeLength = el)
 
 write_rds(tr1, "data/phylogeny.rds")
