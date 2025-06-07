@@ -63,6 +63,7 @@ aa_loo_table = tibble(
   )
 
 write_rds(aa_loo_table, "objects/aa_loo_table.rds")
+<<<<<<< HEAD
 
 
 fixed = fixed_effects[5]
@@ -100,3 +101,5 @@ df_pred |>
   filter(light_intensity == "2000") |>
   arrange(desc(d_aa)) |>
   print(n = 20)
+=======
+>>>>>>> e9e9fcdb876ee7ced60bb82dbeca09d02c4b2a4a

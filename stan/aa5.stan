@@ -57,9 +57,12 @@ parameters {
   vector[n_acc] b_aa_light_treatment_high_acc;
   real<lower=0> rhosq_aa_light_treatment_high_acc;
   real<lower=0> etasq_aa_light_treatment_high_acc;
+<<<<<<< HEAD
   vector[n_acc] b_aa_2000_high_acc;
   real<lower=0> rhosq_aa_2000_high_acc;
   real<lower=0> etasq_aa_2000_high_acc;
+=======
+>>>>>>> e9e9fcdb876ee7ced60bb82dbeca09d02c4b2a4a
   real<lower=0> nu;
 }
 transformed parameters {
@@ -71,11 +74,17 @@ model {
   matrix[n_acc,n_acc] Sigma_aa_acc;
   matrix[n_acc,n_acc] Sigma_aa_light_intensity_2000_acc;
   matrix[n_acc,n_acc] Sigma_aa_light_treatment_high_acc;
+<<<<<<< HEAD
   matrix[n_acc,n_acc] Sigma_aa_2000_high_acc;
   Sigma_aa_acc = cov_GPL1(Dmat, etasq_aa_acc, rhosq_aa_acc, 0);
   Sigma_aa_light_intensity_2000_acc = cov_GPL1(Dmat, etasq_aa_light_intensity_2000_acc, rhosq_aa_light_intensity_2000_acc, 0);
   Sigma_aa_light_treatment_high_acc = cov_GPL1(Dmat, etasq_aa_light_treatment_high_acc, rhosq_aa_light_treatment_high_acc, 0);
   Sigma_aa_2000_high_acc = cov_GPL1(Dmat, etasq_aa_2000_high_acc, rhosq_aa_2000_high_acc, 0);
+=======
+  Sigma_aa_acc = cov_GPL1(Dmat, etasq_aa_acc, rhosq_aa_acc, 0);
+  Sigma_aa_light_intensity_2000_acc = cov_GPL1(Dmat, etasq_aa_light_intensity_2000_acc, rhosq_aa_light_intensity_2000_acc, 0);
+  Sigma_aa_light_treatment_high_acc = cov_GPL1(Dmat, etasq_aa_light_treatment_high_acc, rhosq_aa_light_treatment_high_acc, 0);
+>>>>>>> e9e9fcdb876ee7ced60bb82dbeca09d02c4b2a4a
 
   // priors
   b0_aa ~ normal(0,1);
@@ -96,21 +105,28 @@ model {
   b_aa_light_treatment_high_acc ~ multi_normal(rep_vector(0.0, n_acc), Sigma_aa_light_treatment_high_acc);
   rhosq_aa_light_treatment_high_acc ~ normal(0, 10);
   etasq_aa_light_treatment_high_acc ~ normal(0, 10);
+<<<<<<< HEAD
   b_aa_2000_high_acc ~ multi_normal(rep_vector(0.0, n_acc), Sigma_aa_2000_high_acc);
   rhosq_aa_2000_high_acc ~ normal(0, 10);
   etasq_aa_2000_high_acc ~ normal(0, 10);
+=======
+>>>>>>> e9e9fcdb876ee7ced60bb82dbeca09d02c4b2a4a
   nu ~ gamma(2, 0.1);
   
   for (i in 1:n) {
     
     real b_2000;
     real b_high;
+<<<<<<< HEAD
     real b_2000_high;
+=======
+>>>>>>> e9e9fcdb876ee7ced60bb82dbeca09d02c4b2a4a
     real mu1;
     real sigma;
     
     // regression on aa
     b_2000 = b_aa_light_intensity_2000 + b_aa_light_intensity_2000_acc[acc[i]];
+<<<<<<< HEAD
     b_high = b_aa_light_treatment_high + b_aa_light_treatment_high_acc[acc[i]];
     b_2000_high = b_aa_2000_high + b_aa_2000_high_acc[acc[i]];
     
@@ -118,6 +134,15 @@ model {
       b_2000 * (light_intensity[i] == 2) +
       b_high * (light_treatment[i] == 2) +
       b_2000_high * (light_intensity[i] == 2) * (light_treatment[i] == 2) +
+=======
+
+    b_high = b_aa_light_treatment_high + b_aa_light_treatment_high_acc[acc[i]];
+      
+    mu1 = b0_aa + 
+      b_2000 * (light_intensity[i] == 2) +
+      b_high * (light_treatment[i] == 2) +
+      b_aa_2000_high * (light_intensity[i] == 2) * (light_treatment[i] == 2) +
+>>>>>>> e9e9fcdb876ee7ced60bb82dbeca09d02c4b2a4a
       b_aa_acc[acc[i]] +
       b_aa_acc_id[acc_id[i]];
     
@@ -140,12 +165,16 @@ generated quantities {
     
     real b_2000;
     real b_high;
+<<<<<<< HEAD
     real b_2000_high;
+=======
+>>>>>>> e9e9fcdb876ee7ced60bb82dbeca09d02c4b2a4a
     real mu1;
     real sigma;
     
     // regression on aa
     b_2000 = b_aa_light_intensity_2000 + b_aa_light_intensity_2000_acc[acc[i]];
+<<<<<<< HEAD
     b_high = b_aa_light_treatment_high + b_aa_light_treatment_high_acc[acc[i]];
     b_2000_high = b_aa_2000_high + b_aa_2000_high_acc[acc[i]];
     
@@ -153,6 +182,15 @@ generated quantities {
       b_2000 * (light_intensity[i] == 2) +
       b_high * (light_treatment[i] == 2) +
       b_2000_high * (light_intensity[i] == 2) * (light_treatment[i] == 2) +
+=======
+
+    b_high = b_aa_light_treatment_high + b_aa_light_treatment_high_acc[acc[i]];
+      
+    mu1 = b0_aa + 
+      b_2000 * (light_intensity[i] == 2) +
+      b_high * (light_treatment[i] == 2) +
+      b_aa_2000_high * (light_intensity[i] == 2) * (light_treatment[i] == 2) +
+>>>>>>> e9e9fcdb876ee7ced60bb82dbeca09d02c4b2a4a
       b_aa_acc[acc[i]] +
       b_aa_acc_id[acc_id[i]];
     
@@ -161,7 +199,11 @@ generated quantities {
       b_log_sigma_aa_light_intensity_2000 * (light_intensity[i] == 2) +
       b_log_sigma_aa_light_treatment_high * (light_treatment[i] == 2));
 
+<<<<<<< HEAD
     log_lik[i] = student_t_lpdf(scaled_aa[i] | nu, mu1, sigma);
+=======
+    log_lik[i] = normal_lpdf(scaled_aa[i] | mu1, sigma);
+>>>>>>> e9e9fcdb876ee7ced60bb82dbeca09d02c4b2a4a
 
   }
   

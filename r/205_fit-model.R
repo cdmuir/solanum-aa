@@ -9,6 +9,7 @@ focal_pars = c(
   "b0_aa",
   "b_aa_light_intensity_2000",
   "b_aa_light_treatment_high",
+<<<<<<< HEAD
   "rhosq_aa_acc",
   "etasq_aa_acc",
   "log_sigma_aa_acc_id",
@@ -22,6 +23,15 @@ focal_pars = c(
   "etasq_aa_light_treatment_high_acc",
   "rhosq_aa_2000_high_acc",
   "etasq_aa_2000_high_acc",
+=======
+  "b_aa_2000_high",
+  "rhosq_aa_acc",
+  "etasq_aa_acc",
+  "sigma_aa_acc_id",
+  "b0_log_sigma_aa" ,
+  "b_log_sigma_aa_light_intensity_2000",
+  "b_log_sigma_aa_light_treatment_high",
+>>>>>>> e9e9fcdb876ee7ced60bb82dbeca09d02c4b2a4a
   "nu"
 )
 
