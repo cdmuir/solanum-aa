@@ -1,5 +1,66 @@
 source("r/header.R")
 
+fit_aa = read_rds("objects/fit_aa.rds")
+d1 = fit_aa$data
+
+# code for brms model
+
+df_new = crossing(
+  acc = unique(d1$acc),
+  light_treatment = c("low", "high"),
+  light_intensity = c("150", "2000")
+) |>
+  mutate(row = row_number())
+
+df_aa_pred1 = posterior_epred(fit_aa, newdata = df_new) |>
+  t() |>
+  as_draws_df() |>
+  mutate(row = row_number()) |>
+  pivot_longer(cols = -row, names_to = "draw", values_to = "aa") |>
+  full_join(df_new, by = "row") |>
+  group_by(acc, light_treatment, light_intensity) |>
+  point_interval(aa) |>
+  group_by(light_treatment, light_intensity) |>
+  arrange(aa) |>
+  mutate(x = order(aa))
+
+ggplot(df_pred1, aes(x, aa, ymin = .lower, ymax = .upper, group = acc)) +
+  facet_grid(light_intensity ~ light_treatment) +
+  geom_pointinterval() +
+  geom_hline(yintercept = 0, linetype = "dashed") 
+
+df_pred2 = posterior_epred(fit_aa, newdata = df_new) |>
+  t() |>
+  as_draws_df() |>
+  mutate(row = row_number()) |>
+  pivot_longer(cols = -row, names_to = "draw", values_to = "aa") |>
+  full_join(df_new, by = "row") |>
+  dplyr::select(-row) |>
+  pivot_wider(names_from = light_treatment, values_from = aa) |>
+  mutate(d_aa = high - low) |>
+  group_by(acc, light_intensity) |>
+  point_interval(d_aa) |>   
+  group_by(light_intensity) |>
+  arrange(d_aa) |>
+  mutate(x = order(d_aa))
+
+ggplot(df_pred2, aes(x, d_aa, ymin = .lower, ymax = .upper, group = acc)) +
+  facet_grid(light_intensity ~ .) +
+  geom_pointinterval() +
+  geom_hline(yintercept = 0, linetype = "dashed") 
+
+df_pred2 |>
+  ungroup() |>
+  dplyr::select(acc, light_intensity, d_aa) |>
+  pivot_wider(
+    names_from = light_intensity,
+    values_from = d_aa
+  ) |>
+  ggplot(aes(`150`, `2000`, label = acc)) +
+  geom_point() +
+  geom_label()
+
+# code for Stan model
 fit_aa = read_rds("objects/fit_aa5.rds")
 
 post1 = fit_aa$draws() |>
