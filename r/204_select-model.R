@@ -41,7 +41,7 @@ model_forms = expand.grid(fixed = fixed_effects,
 # Build and fit each model
 plan(multisession, workers = 19)
 
-aa_models = future_pmap(model_forms, function(fixed, random, seed) {
+aa_models = future_pmap(model_forms, function(fixed, random, sigma, seed) {
   fml = bf(as.formula(paste("aa ~", fixed, "+", random)), as.formula(paste("sigma ~", sigma)))
   brm(
     formula = fml,
@@ -75,6 +75,10 @@ aa_loo_table = tibble(
   )
 
 write_rds(aa_loo_table, "objects/aa_loo_table.rds")
+best_model_index = str_extract(aa_loo_table[1, "model"], "\\d+") |>
+  as.integer()
+write_rds(aa_models[[best_model_index]], "objects/fit_aa.rds")
+
 
 df_new = crossing(
   acc = unique(d1$acc),
