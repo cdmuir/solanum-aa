@@ -6,7 +6,7 @@ c("processed-data/accession-climate",
   "processed-data/plant-info",
   "filtered-data/rh_curves",
   "filtered-data/rh_hi_curves",
-  "filtered-data/stomata",
+  "processed-data/stomata",
   "objects/df_germ_summary",
   "objects/df_growth_summary") |>
   walk(\(.x) {

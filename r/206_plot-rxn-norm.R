@@ -22,12 +22,44 @@ df_aa_pred1 = posterior_epred(fit_aa, newdata = df_new) |>
   point_interval(aa) |>
   group_by(light_treatment, light_intensity) |>
   arrange(aa) |>
-  mutate(x = order(aa))
+  mutate(
+    x = order(aa),
+    Growth = light_treatment |>
+      factor(levels = c("low", "high")) |>
+      fct_recode(sun = "high", shade = "low"),
+    Measurement = light_intensity |>
+      factor(levels = c("150", "2000")) |>
+      fct_recode(low = "150", high = "2000")
+)
 
-ggplot(df_pred1, aes(x, aa, ymin = .lower, ymax = .upper, group = acc)) +
-  facet_grid(light_intensity ~ light_treatment) +
-  geom_pointinterval() +
-  geom_hline(yintercept = 0, linetype = "dashed") 
+df_aa_text = df_aa_pred1 |>
+  ungroup() |>
+  summarize(
+    x = median(x),
+    label = round(mean(aa), 3),
+    aa = 0.20,
+    .by = c("Growth", "Measurement")
+  )
+
+ggplot(df_aa_pred1, aes(x, aa, ymin = .lower, ymax = .upper, group = acc,
+                        color = Growth, shape = Measurement)) +
+  facet_grid(Measurement ~ Growth) +
+  geom_pointinterval(fill = "white") +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_text(data = df_aa_text, aes(x, aa, label = label), inherit.aes = FALSE) +
+  scale_color_manual(values = c("shade" = "tomato4", "sun" = "tomato")) +
+  scale_shape_manual(values = c("low" = 19, "high" = 21)) +
+  ylab("amphi advantage") +
+  theme(
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.title.x = element_blank(),
+    legend.position = "none"
+  )
+
+ggsave("figures/aa-plot1.pdf", width = 6, height = 4, device = cairo_pdf, bg = "transparent")
+
+
 
 df_pred2 = posterior_epred(fit_aa, newdata = df_new) |>
   t() |>
