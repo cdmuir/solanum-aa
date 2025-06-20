@@ -293,17 +293,21 @@ Constitutive hypothesis: In environments that are relatively constant or where e
 
 CONCEPTUAL FIGURE HERE
 
-We distinguished among these hypotheses by comparing AA among wild tomato species from different native light habitats, grown under simulated sun and shade light treatments, and measured under contrasting light intensity (Figure of hypotheses and predictions). We measured AA on `r n_plant` individual plants from `r n_acc` accessions (average of `r mean_n_rep` replicates per light treatment) using a recently developed method [@triplett_amphistomy_2024]. With this method, we directly compare the photosynthetic rate of an untreated amphistomatous leaf to that of the same leaf with gas exchange blocked through the adaxial (upper) surface by transparent plastic, which we refer to as 'pseudohypostomy'. To compare amphi- and pseudohypostomatous leaves at identical whole-leaf $g_\text{sc}$, we measure $A$ over a range of $g_\text{sc}$, inducing stomatal opening and closure by modulating humidity (see Materials and Methods for further details).
+caption: Directional predictions associated with each hypothesis explaining why amphistomy advantage (AA) might be greater for leaves in sunny, open habitats. For each hypothesis, we make predictions for how native plant area index (PAI), growth light treatment, and measurement light intensity would affect AA.
 
-Table of directional predictions (with table summarizing results? part of conceptual figure? in supplement?)
+|  hypothesis  | measurement light intensity | growth light intensity  | native PAI |
+|:------------:|:---------------------------:|:------------------------:|:----------:|
+| acclimatory  | AA2000 > AA150             | AAsun = AAshade          | cor(PAI, AA) = 0 |
+| plastic      | AA2000 = AA150             | AAsun > AAshade          | cor(PAI, AA) = 0 |
+| constitutive | AA2000 = AA150             | AAsun = AAshade          | cor(PAI, AA) > 0 |
 
-caption: Directional predictions associated with each hypothesis explaining why amphistomy advantage (AA) might be greater for leaves in sunny, open habitats. For each hypothesis, we make predictions for how native light habitat, light treatment, and light intensity would affect AA.
+<!-- Paragraph 5 (summarize methods) -->
+We tested these hypotheses by comparing AA among amphistomatous wild tomato species (systematic cites) from different native light habitats, grown under simulated sun and shade light treatments, and measured under contrasting light intensity (Figure of hypotheses and predictions). We measured AA on `r n_plant` individual plants from `r n_acc` accessions (average of `r mean_n_rep` replicates per light treatment) using a recently developed method [@triplett_amphistomy_2024]. With this method, we directly compare the photosynthetic rate of an untreated amphistomatous leaf to that of the same leaf with gas exchange blocked through the adaxial (upper) surface by transparent plastic, which we refer to as 'pseudohypostomy'. To compare amphi- and pseudohypostomatous leaves at identical whole-leaf $g_\text{sc}$, we measure $A$ over a range of $g_\text{sc}$, inducing stomatal opening and closure by modulating humidity (see Materials and Methods for further details). We estimated 'amphistomy advantage' (\aax) *sensu* @parkhurst_adaptive_1978, but with modifications previously described in @triplett_amphistomy_2024 and here (Materials and Methods). The native light intensity was represented by plant area index (PAI $\unit{\meter\squared\per\meter\squared}$), estimated using a global gridded X-m2 resolution data set derived from the Global Ecosystem Dynamics Investigation (GEDI; cite) and georeferenced accession collection information (cite TGRC). The growth light intensities were `r ppfd_sun` (sun treatment) and `r ppfd_shade` (shade treatment) while all other environment conditions were nearly identical (see @sec-methods for supporting detail). The high and low measurements intensities were \ppfdequals{2000} (`r p_red_high`:`r p_blue_high` red:blue) and \ppfdequals{150} (`r p_red_low`:`r p_blue_low` red:blue), respectively. 
 
-|  hypothesis  | native light habitat | light treatment  | light intensity |
-|:------------:|:--------------------:|:----------------:|:---------------:|
-| acclimatory  | cor(PAR, AA) = 0   | AAsun = AAshade  | AA2000 \> AA150 |
-|   plastic    | cor(PAR, AA) = 0 | AAsun \> AAshade | AA2000 = AA150  |
-| constitutive | cor(PAR, AA) \> 0   | AAsun = AAshade  | AA2000 = AA150  |
+#### MARKER
+(not sure where this goes)  * We acclimated the focal leaf to high light (\ppfdequals{2000}) and high relative humidity (\rhequals{70}) until $A$ and \gsw{} reach their maximum. After that, we decreased \rh{} to $\approx 10\%$ to induce rapid stomatal closure without biochemical down
+
+
 
 \[add rows for when multiple hypotheses are supported simultaneously? or put that in SI?\]
 
@@ -316,9 +320,9 @@ Sun leaves from high light habitats \[not sure if htis result is true yet\] bene
 ## Outtro - I think this goes at the end??
 It is commonly assumed in comparative studies that most trait variation between species is constitutive and genetically determined, but our results suggest that plastic responses to light are necessary to explain why \gmaxratio{} increases with light habitat. Reaction norms to light intensity among wild tomatoes indicate that accessions from low light habitats express low \gmaxratio{} when grown in shade, whereas accessions from high light habitats have constitutively higher \gmaxratio{} (Fig. rxn-norm). The larger response to light intensity is driven by greater plasticty in leaf structure in accessions from low-light habitats (Fig/table - I haven't tested this yet, so this is a placeholder.) We infer that these structural changes in sun leaves are costly because they increase the diffusion path length for CO$_2$ and reduce photosynthesis. As a consequence, sun leaves benefit more from amphistomy. This is the first demonstration that sun leaves benefit more from amphistomy because it compensates for developmental plasticity in leaf structure.
 
-Two outstanding areas for further research are 1) the specific anatomical changes, such as leaf thickness or mesophyll porosity, that increase the diffusion path length for CO$_2$ in sun leaves, and 2) the costs of amphistomy that could explain plasticity in \gmaxratio{} in accessions from low-light habitats. Resolving the first question will require detailed anatomical measurements on a large number of shade and sun leaves with concomitant estimates of \aax. The fact that accessions from low-light habitats are more plastic suggests that costs of amphistomy are greatest in these environments. WORKING HERE
+Two outstanding areas for further research are 1) the specific anatomical changes, such as leaf thickness or mesophyll porosity, that increase the diffusion path length for CO$_2$ in sun leaves, and 2) the costs of amphistomy that could explain plasticity in \gmaxratio{} in accessions from low-light habitats. Resolving the first question will require detailed anatomical measurements on a large number of shade and sun leaves with concomitant estimates of \aax. The fact that accessions from low-light habitats are more plastic suggests that costs of amphistomy are greatest in these environments. (not finished yet)
 
-## Materials and Methods
+## Materials and Methods [#sec-methods]
 
 \[this will be moved to SI eventually. note that much of it also the same in solanum-aq project, so might change to cite that paper?\]
 
