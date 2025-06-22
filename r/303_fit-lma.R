@@ -4,7 +4,13 @@ source("r/header.r")
 plant_info = read_rds("data/plant-info.rds")
 
 plant_info |>
-  filter(lma_gm2 < 20)
+  filter(lma_gm2 < 20) 
+
+plant_info |>
+  arrange(desc(lma_gm2)) |>
+  select(acc_id, lma_gm2) |>
+  print(n = 100)
+  
 aa_summary = read_rds("objects/aa_summary.rds")
 
 df1 = plant_info |>
