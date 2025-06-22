@@ -12,7 +12,7 @@ fixed_effects = c(
   "light_treatment",
   "light_intensity",
   "light_treatment + light_intensity",
-  "light_treatment * light_intensity",
+  "light_treatment * light_intensity"
 )
 
 random_effects = c(
@@ -39,7 +39,7 @@ model_forms = expand.grid(fixed = fixed_effects,
   mutate(seed = sample(1e9, nrow(.)))
 
 # Build and fit each model
-plan(multisession, workers = 9)
+plan(multisession, workers = 19)
 
 aa_models = future_pmap(model_forms, function(fixed, random, sigma, seed) {
   fml = bf(as.formula(paste("aa ~", fixed, "+", random)), as.formula(paste("sigma ~", sigma)))
