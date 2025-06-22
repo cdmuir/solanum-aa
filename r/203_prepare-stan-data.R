@@ -2,7 +2,8 @@
 source("r/header.R")
 
 plant_info = read_rds("data/plant-info.rds") |>
-  dplyr::select(accession, acc_id, light_treatment) 
+  mutate(llma = log(lma_gm2)) |>
+  dplyr::select(accession, acc_id, light_treatment, llma) 
 
 trimmed_amphi_first = read_rds("data/trimmed_amphi_first.rds") |>
   summarize(

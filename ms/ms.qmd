@@ -230,51 +230,10 @@ The presence of stomata on both leaf surfaces (amphistomy) can increase photosyn
 
 What's surprising: role of developmental plasticity in explaining comparative results; diffusional limitations through palisade ias is strong and needs to be considered with light gradients in understanding leaf strucuture- funciton
 
-## Outline
-
-1. Stomata are important
-  * organismal level, they help plants respond in variable environments (mention as key innovation of land plants, getting tall on land)
-  * ecosystem level, collectively stomata contribute to global carbon and water cycles
-  * because of their importance, stomata are useful for understanding adaptation, improving crops, predicting paleoclimate, and modeling future climate
-
-2. Describe amphistomy
-
-3. Despite extensive theoretical and empirical progress understanding stomata, stomatal ratio is important unsolved problem
-  * SR varies both qualitatively and quantitatively among leaves
-  * Presumably there is some relationship SR and conductance ratio
-  * More even conductance ratio increase CO2 supply without increasing water loss
-  * But we don't understand why SR varies so much even among dorsiventral leaves
-  
-4. Here we focus on the idea amphistomy may be more common in sunny habitats because sun leaves benefit more.
-  * three nonmutually exclusive hypotheses: acclimatory, plastic, constitutive
-  * I've already drafted brief explanations of these hypotheses below
-  
-5. (a lot of this is AI generated text that I need to refine) We tested these hypotheses by comparing AA among wild tomato species from different native light habitats, grown under simulated sun and shade light treatments, and measured under contrasting light intensity
-  * We measured AA on `r n_plant` individual plants from `r n_acc` accessions (average of `r mean_n_rep` replicates per light treatment) using a recently developed method [@triplett_amphistomy_2024]
-  * We directly compare the photosynthetic rate of an untreated amphistomatous leaf to that of the same leaf with gas exchange blocked through the adaxial (upper) surface by transparent plastic, which we refer to as 'pseudohypostomy'
-  * We measured AA over a range of $g_\text{sc}$, inducing stomatal opening and closure by modulating humidity
-  * We estimated 'amphistomy advantage' (\aax) *sensu* @parkhurst_adaptive_1978, but with modifications previously described in @triplett_amphistomy_2024
-  * We collected four \agcurve{} curves per leaf, an amphi (untreated) curve and a pseudohypo (treated) curve at high light-intensity (\ppfdequals{2000}; `r p_red_high`:`r p_blue_high` red:blue) and low light-intensity (\ppfdequals{150}; `r p_red_low`:`r p_blue_low` red:blue)
-  * We acclimated the focal leaf to high light (\ppfdequals{2000}) and high relative humidity (\rhequals{70}) until $A$ and \gsw{} reach their maximum. After that, we decreased \rh{} to $\approx 10\%$ to induce rapid stomatal closure without biochemical down
-
-6. Sun leaves have consistently higher SD and LMA and AQ parameters, but only accessions from low light habitats increased gmax ratio
-  * Large plastic responses to light intensity
-  * gmax ratio is positively associated with native light habitat of shade leaves (what is the take-away here?)
-  
-8. Data support the plasticity hypothesis
-  * AA was actually greater at low light intensity
-  * No association between native PPFD and AA
-  * Consistent increase in AA in sun leaves across all accessions
-
-8. What it all means
-  * Our study reveals an important role for plasticity in explaining why amphi leaves are more common in sunny habitats
-  * Confirms that leaf structure of sun leaves incurs costs that amphistomy can mitigate
-  * It will be useful to consider coordination between leaf anatomy, stomatal density, and ratio in future studies of leaf structure-function and in crops (or something)
-
 ## Intro
 
 <!-- Paragraph 1 -->
-Stomata are microscopic pores on the surfaces of leaves and other photosynthetic organs formed by a pair of guard cells. They are essential for growing tall on land because they allow plants to access CO$_2$ for photosynthetic carbon assimilation while preventing hydraulic failure in variable environments (citations). Optimal stomatal function depends on both dynamic changes in aperture on the scale of minutes to hours, as well as static anatomy determined by developmental plasticity and constitutive genetic differences [@boer__2016; harrison__2020; more citations]. Understanding how stomata respond to environmental change over daily, developmental, and evolutionary time is important for understanding adaptation (cites), predicting paleoclimate from fossil cuticles (cites), and improving crops (cites). Stomatal function contributes to global carbon and water cycles and therefore predicting future climate (cites).
+Stomata are microscopic pores on the surfaces of leaves and other photosynthetic organs formed by a pair of guard cells. They are essential for balancing carbon gained per unit water lost and permitted vascular plants to grow tall on land by enabling access to CO$_2$ for photosynthetic carbon assimilation while preventing hydraulic failure in variable environments [@raven_selection_2002; @mccadam_stomata_2021; @clark_origin_2022]. Optimal stomatal function depends on both dynamic changes in aperture on the scale of minutes to hours, as well as static anatomy determined by developmental plasticity and constitutive genetic differences [@boer_optimal_2016; @harrison_influence_2020; more citations]. Understanding how stomata respond to environmental change over daily, developmental, and evolutionary time is important for understanding adaptation (cites), predicting paleoclimate from fossil cuticles (cites), and improving crops (cites). Stomatal function contributes to global carbon and water cycles and therefore predicting future climate (cites).
 
 <!-- Paragraph 2 -->
 Despite extensive theoretical and empirical progress understanding stomata function and anatomy from molecular to ecosystem levels, the adaptive significance of amphistomatous leaves remains an important unsolved problem in leaf structure-function relationships (parkhurst, grubb, gibson, drake). Amphistomatous leaves develop abaxial and adaxial stomata that can be independently regulated (reich, mott) to allow gas exchange through each surface (wall, marquez). In theory, gas exchange through stomata on each surface increases CO$_2$ supply to chloroplasts, all else being equal, enhancing photosynthesis (parkhurst, gutschick, fig. 1). Amphistomatous leaves also lose more water through evaporation because of a second boundary layer conductance (Smith), but the additional carbon gain should be enough to offset this cost in most realistic scenarios (Muir 2019). 
@@ -291,6 +250,8 @@ Plastic hypothesis: Individuals of the same genotype often develop dramatically 
 
 Constitutive hypothesis: In environments that are relatively constant or where environmental change cannot be anticipated by a reliable cue, natural selection will favor constitutive expression of optimal phenotypes. We therefore predict genotypes from more sunny, open habitats will have consistently greater AA under also measurement and growth light intensities. For herbaceous plants, light intensity is largely a function of the tree canopy (cites?). Herbs growing in the open will regularly experience high light intensity; herbs growing under a forest canopy will often experience low light intensity.
 
+The primary directional predictions for each hypothesis are summarized in Table X; detailed predictions for results that would indicate support for multiple hypotheses are in Table SX.
+
 CONCEPTUAL FIGURE HERE
 
 caption: Directional predictions associated with each hypothesis explaining why amphistomy advantage (AA) might be greater for leaves in sunny, open habitats. For each hypothesis, we make predictions for how native plant area index (PAI), growth light treatment, and measurement light intensity would affect AA.
@@ -304,27 +265,34 @@ caption: Directional predictions associated with each hypothesis explaining why 
 <!-- Paragraph 5 (summarize methods) -->
 We tested these hypotheses by comparing AA among amphistomatous wild tomato species (systematic cites) from different native light habitats, grown under simulated sun and shade light treatments, and measured under contrasting light intensity (Figure of hypotheses and predictions). We measured AA on `r n_plant` individual plants from `r n_acc` accessions (average of `r mean_n_rep` replicates per light treatment) using a recently developed method [@triplett_amphistomy_2024]. With this method, we directly compare the photosynthetic rate of an untreated amphistomatous leaf to that of the same leaf with gas exchange blocked through the adaxial (upper) surface by transparent plastic, which we refer to as 'pseudohypostomy'. To compare amphi- and pseudohypostomatous leaves at identical whole-leaf $g_\text{sc}$, we measure $A$ over a range of $g_\text{sc}$, inducing stomatal opening and closure by modulating humidity (see Materials and Methods for further details). We estimated 'amphistomy advantage' (\aax) *sensu* @parkhurst_adaptive_1978, but with modifications previously described in @triplett_amphistomy_2024 and here (Materials and Methods). The native light intensity was represented by plant area index (PAI $\unit{\meter\squared\per\meter\squared}$), estimated using a global gridded X-m2 resolution data set derived from the Global Ecosystem Dynamics Investigation (GEDI; cite) and georeferenced accession collection information (cite TGRC). The growth light intensities were `r ppfd_sun` (sun treatment) and `r ppfd_shade` (shade treatment) while all other environment conditions were nearly identical (see @sec-methods for supporting detail). The high and low measurements intensities were \ppfdequals{2000} (`r p_red_high`:`r p_blue_high` red:blue) and \ppfdequals{150} (`r p_red_low`:`r p_blue_low` red:blue), respectively. 
 
-#### MARKER
-(not sure where this goes)  * We acclimated the focal leaf to high light (\ppfdequals{2000}) and high relative humidity (\rhequals{70}) until $A$ and \gsw{} reach their maximum. After that, we decreased \rh{} to $\approx 10\%$ to induce rapid stomatal closure without biochemical down
+<!-- Paragraph 6 (summarize main results) -->
+Consistent with biophysical theory of CO2 diffusion within leaves, AA > 0 for all accessions (Figure X). AA varied substantially between measurement light intensities, growth light intensities, and among accessions (point to model comparison evidence). Measured under high light intensity, AA was consistently greater for sun plants. The average AA among accessions in the shade treat was X (X of 29 accessions significantly greater than 0); however, the same accessions grown at high light intensity had an AA of X (X of 29 accession greater than 0). Contrary to the predictions of the assimilatory hypothesis, AA was consistently greater under low measurement light intensity. Among sun and shade grown plants, AA was greater under low light intensity in X of 29 accessions (significantly greater than 0 in X of 29 accessions). The overall average AA of shade and sun grown plants measured under low light intensity was X (+/-) and X (+/-), respectively. There was a slight tendency for accessions from more closed habitats (greater PAI), but AA varied widely among accessions from open habitats (low PAI) regardless of growth and measurement light intensities (Figure X). The pattern of AA across wild tomatoes strongly supports the plasticity hypothesis, argues against the acclimatory hypothesis, and provides only weak support for the constitutive hypothesis. 
+Not sure where this goes: We infer this from the fact that blocking gas exchange in pseudohypostomatous leaves reduced $A$ by X-X% depending on the accession, light treatment, and light intensity (Table/figure). The AA is equivalent to an X-X% change in total $g_\text{sc}$ (see SI section gs equivalency). But whereas increasing $g_\text{sc}$ would increase water loss as a necessary by-product, amphistomy can increase $A$ without any appreciable affect on transpiration.
 
 
-
-\[add rows for when multiple hypotheses are supported simultaneously? or put that in SI?\]
-
-\[results\] Amphistomy increases $A$ in all accessions, in both sun and shade leaves, and light intensities. We infer this from the fact that blocking gas exchange in pseudohypostomatous leaves reduced $A$ by X-X% depending on the accession, light treatment, and light intensity (Table/figure). The AA is equivalent to an X-X% change in total $g_\text{sc}$ (see SI section gs equivalency). But whereas increasing $g_\text{sc}$ would increase water loss as a necessary by-product, amphistomy can increase $A$ without any appreciable affect on transpiration.
-
-Sun leaves from high light habitats \[not sure if htis result is true yet\] benefit the most from amphistomy because of a both developmental plasticity and constitutive differences among accessions. \[quantify difference in AA and contribution of different affects\]. Surprisingly, light intensity had a little effect... (should this be in this paragraph, or it's own?).
-
-\[discussion\] - sun/shade has long been appreciated and this shows new trait that should be considered and that CO2 diffusion becomes major limitation
+<!-- Paragraph 7 (summarize secondary results) -->
+These results suggest that developmental plasticity, as opposed to acclimation or adaptation to open habitats, may explain the explain the long-standing observation taht amphistomatous leaves are more common in sunny habitats. Our results add to existing explanations by showing high light intensity *per se* does not increase the benefit of amphistomy, but rather than anatomical and biochemical change associated with higher light intensity modulate AA. We cannot yet attribute specific changes wrought by plasticity, but correlational evidence suggests that changes in leaf anatomy may be important. Species responded consistently by increasing stomatal density, especially on the adaxial surface, increasing stomatal density ratio. Sun leaves also had greater gs, Amax. However, these traits were not associated with change in AA (table/figures).
 
 ## Outtro - I think this goes at the end??
 It is commonly assumed in comparative studies that most trait variation between species is constitutive and genetically determined, but our results suggest that plastic responses to light are necessary to explain why \gmaxratio{} increases with light habitat. Reaction norms to light intensity among wild tomatoes indicate that accessions from low light habitats express low \gmaxratio{} when grown in shade, whereas accessions from high light habitats have constitutively higher \gmaxratio{} (Fig. rxn-norm). The larger response to light intensity is driven by greater plasticty in leaf structure in accessions from low-light habitats (Fig/table - I haven't tested this yet, so this is a placeholder.) We infer that these structural changes in sun leaves are costly because they increase the diffusion path length for CO$_2$ and reduce photosynthesis. As a consequence, sun leaves benefit more from amphistomy. This is the first demonstration that sun leaves benefit more from amphistomy because it compensates for developmental plasticity in leaf structure.
 
 Two outstanding areas for further research are 1) the specific anatomical changes, such as leaf thickness or mesophyll porosity, that increase the diffusion path length for CO$_2$ in sun leaves, and 2) the costs of amphistomy that could explain plasticity in \gmaxratio{} in accessions from low-light habitats. Resolving the first question will require detailed anatomical measurements on a large number of shade and sun leaves with concomitant estimates of \aax. The fact that accessions from low-light habitats are more plastic suggests that costs of amphistomy are greatest in these environments. (not finished yet)
 
+Problems to bring up in discussion:
+- all our species were amphi, so they may all live in PAI below threshold to favor amphi
+- other microclimate diffs not considered
+- don't know specific anatomical change
+
+8. What it all means
+  * Our study reveals an important role for plasticity in explaining why amphi leaves are more common in sunny habitats
+  * Confirms that leaf structure of sun leaves incurs costs that amphistomy can mitigate
+  * It will be useful to consider coordination between leaf anatomy, stomatal density, and ratio in future studies of leaf structure-function and in crops (or something)
+
 ## Materials and Methods [#sec-methods]
 
 \[this will be moved to SI eventually. note that much of it also the same in solanum-aq project, so might change to cite that paper?\]
+
+(not sure where this goes)  * We acclimated the focal leaf to high light (\ppfdequals{2000}) and high relative humidity (\rhequals{70}) until $A$ and \gsw{} reach their maximum. After that, we decreased \rh{} to $\approx 10\%$ to induce rapid stomatal closure without biochemical down
 
 ### Accessions
 
