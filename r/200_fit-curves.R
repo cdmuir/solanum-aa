@@ -9,7 +9,7 @@ plan(multisession, workers = 19)
 rh_curves |>
   split( ~ curve) |>
   future_iwalk(\(df, curve_id) {
-    # if (!file.exists(paste0("objects/curve-fits/", curve_id, ".rds"))) {
+    if (!file.exists(paste0("objects/curve-fits/", curve_id, ".rds"))) {
       x = 2
       ad = 0.8
       n_divergent = Inf
@@ -35,7 +35,7 @@ rh_curves |>
       
       write_rds(fit_curve,
                 paste0("objects/curve-fits/", curve_id, ".rds"))
-    # } else {
-    #   message(paste0("Curve fit for ", curve_id, " already exists. Skipping."))
-    # }
+    } else {
+      message(paste0("Curve fit for ", curve_id, " already exists. Skipping."))
+    }
   }, .progress = TRUE, .options = furrr_options(seed = TRUE))

@@ -40,9 +40,6 @@ library(tibble)
 
 source("../r/functions.R")
 
-# I am mostly putting placeholders here for objects/values that will need to be
-# loaded eventually to use in paper.
-# See code in 'solanum-aq' which can probably be reused here.
 aa_args = read_rds("../objects/aa_args1.rds")
 aa_stats = read_rds("../objects/aa_stats.rds")
 # sort list by name
@@ -50,16 +47,39 @@ aa_stats = aa_stats[order(names(aa_stats))]
 
 plant_info = read_rds("../data/plant-info.rds")
 
+rh_curves = read_rds("../data/trimmed_rh_curves.rds")
+
+stomata = read_rds("../data/stomata.rds")
+
 fit_aa = read_rds("../objects/fit_dummy.rds")
 dim_fit_aa = dim(fit_aa$fit)
 
-n_plant = 600
-n_acc = 30
-mean_n_rep = 10 # average number of individual replicates for accession per light treatment
+df_aa_pred1 = read_rds("../objects/df_aa_pred1.rds")
 
-n_weeks = 80 # number of weeks for LICOR measurements
-start_licor_date = "May 1, 2022"
-end_licor_date = "October 31, 2023"
+n_plant = length(unique(rh_curves$acc_id))
+n_acc = length(unique(rh_curves$acc))
+# average number of individual replicates for accession per light treatment
+mean_n_rep = rh_curves |>
+  summarize(
+    n = length(unique(acc_id)),
+    .by = c("acc", "light_treatment")
+  ) |>
+  pull(n) |>
+  mean() |>
+  prettyNum(digits = 3)
+
+licor_date_range = plant_info |>
+  filter(acc_id %in% unique(rh_curves$acc_id)) |>
+  dplyr::select(`1s_rh_response_date`, `2s_rh_response_date`) |>
+  pivot_longer(cols = everything()) |>
+  pull(value) |>
+  ymd() |>
+  range(na.rm = TRUE) 
+
+n_weeks = prettyNum(as.numeric(difftime(licor_date_range[2], licor_date_range[1], units = "days")) / 7, digits = 3)
+ # number of weeks for LICOR measurements
+start_licor_date = format(licor_date_range[1], "%B %d, %Y")
+end_licor_date = format(licor_date_range[2], "%B %d, %Y")
 
 # Environmental data
 df_germ_summary = read_rds("../data/df_germ_summary.rds") |>
@@ -158,34 +178,93 @@ df_leaflet_type = plant_info |>
 
 percent_terminal = df_leaflet_type$percent_terminal
 percent_lateral = df_leaflet_type$percent_lateral
-percent_change_leaflet = "10.0" # percent of time that anatomical traits were measured on different leaflet than LICOR measurements
-percent_aa_and_aq = "90.0" # percent of times where AA and AQ curves were done on same leaflet
+# percent of time that anatomical traits were measured on different leaflet than LICOR measurements
+percent_change_leaflet = full_join(
+  plant_info |>
+    filter(acc_id %in% unique(rh_curves$acc_id)) |>
+    select(acc_id, licor = leaflet),
+  stomata |>
+    mutate(acc_id = str_c(accession, replicate, sep = "-")) |>
+    filter(acc_id %in% unique(rh_curves$acc_id)) |>
+    select(acc_id, stomata = leaflet),
+  by = join_by(acc_id)
+) |>
+  summarize(x = mean(licor != stomata, na.rm = TRUE)) |>
+  pull(x) |>
+  multiply_by(100) |>
+  prettyNum(digits = 3)
+
+ # percent of times where AA and AQ curves were done on same leaflet
+percent_aa_and_aq = plant_info |>
+  filter(acc_id %in% unique(rh_curves$acc_id)) |>
+  mutate(same_leaflets = !switch_leaflets) |>
+  pull(same_leaflets) |>
+  mean() |>
+  multiply_by(100) |>
+  prettyNum(digits = 3)
 
 # data on chamber light conditions
-p_red_high = "97.7" # percent red LED in high light-intensity treatment
-p_blue_high = "2.3"
-p_red_low = "87.0"
-p_blue_low = "13.0"
+percent_red = rh_curves |>
+  mutate(p_red = Q_red / Q) |>
+  summarize(p_red = mean(p_red, na.rm = TRUE),
+            .by = c(acc_id, light_intensity)) |>
+  summarize(p_red = mean(p_red, na.rm = TRUE), .by = light_intensity) |>
+  pivot_wider(names_from = light_intensity, values_from = p_red)
 
-percent_lma_switch = "5.0" # percent measure LMA on alternate leaflet
-percent_lma_missing = "3.0" # percent leaves missing LMA
+p_red_high = format(signif(100 * percent_red$`2000`, 3), nsmall = 1)
+p_blue_high = format(signif(100 * (1 - percent_red$`2000`), 3), nsmall = 1)
+p_red_low = format(signif(100 * percent_red$`150`, 3), nsmall = 1)
+p_blue_low = format(signif(100 * (1 - percent_red$`150`), 3), nsmall = 1)
+
+# percent measure LMA on alternate leaflet
+percent_lma_switch = plant_info |>
+  filter(acc_id %in% rh_curves$acc_id) |> 
+  summarize(x = mean(leaflet != lma_leaflet, na.rm = TRUE)) |>
+  pull(x) |>
+  multiply_by(100) |>
+  prettyNum(digits = 3)
+
+ # percent leaves missing LMA
+percent_lma_missing = plant_info |>
+  filter(acc_id %in% rh_curves$acc_id) |> 
+  summarize(x = mean(is.na(lma_leaflet))) |>
+  pull(x) |>
+  multiply_by(100) |>
+  prettyNum(digits = 3)
 
 ### Cleaning RH curves
-n_rh_curve_raw = 2400 # export from adaptive-amphistomy/r/07_process-licor.R
-n_points_per_rh_curves_raw = 100 # export from adaptive-amphistomy/r/07_process-licor.R
 ca_min = aa_args$ca_min
 ca_max = aa_args$ca_max
 n_min_points_per_rh_curve = aa_args$n_min_points_per_rh_curve
 point_outlier_threshold = aa_args$point_outlier_threshold
 aa_outlier_threshold = aa_args$aa_outlier_threshold
 thinning_interval = aa_args$thinning_interval
-aq_r2_threshold = aa_args$aq_r2_threshold
 
 ### Cleaning AQ curves
+aq_r2_threshold = aa_args$aq_r2_threshold
 
 ### Bayesian data analysis
-n_model = 5 |>
+n_model = 5 |> # i don't think I need this anymore
   number_to_word()
+
+### Summarizing AA results
+aa_mean_range = df_aa_pred1 |>
+  ungroup() |>
+  mutate(signif = sign(.lower) == sign(.upper)) |>
+  summarize(
+    min = min(aa),
+    max = max(aa),
+    aa = mean(aa),
+    n_signif = sum(signif),
+    .by = c(light_treatment, light_intensity)
+  ) |>
+  mutate(x = sprintf(
+    "%.3f (range: %.3f–%.3f; %.0f of 29 accessions significant)",
+    aa,
+    min,
+    max,
+    n_signif
+  ))
 
 ```
 
@@ -242,16 +321,16 @@ Stomata are microscopic pores on the surfaces of leaves and other photosynthetic
 Despite extensive theoretical and empirical progress understanding stomata function and anatomy from molecular to ecosystem levels, the adaptive significance of amphistomatous leaves remains an important unsolved problem in leaf structure-function relationships [@grubb_leaf_1977; @parkhurst_adaptive_1978; @mott_adaptive_1982; @gibson_structure_1996; @smith_leaf_1997; @oguchi_leaf_2018; @drake_two_2019; @grubb_leaf_2020]. Amphistomatous leaves develop abaxial and adaxial stomata whose aperture can be independently regulated [@pospisilova_stomatal_1980; @mott_stomatal_1984; @reich_effects_1985; @mott_asymmetric_1993; @wall_stomata_2022] to control gas exchange through each surface. All else being equal, gas exchange through stomata on both surfaces increases CO$_2$ supply to chloroplasts by providing a second parallel pathway through leaf intercellular airspaces, enhancing photosynthesis [@parkhurst_adaptive_1978; @gutschick_photosynthesis_1984]. The extent to which amphistomy increases CO$_2$ supply depends on resistance to diffusion in intercellular airspaces. This resistance can be low in thin, porous, amphistomatous leaves [@mott_stomatal_1984; @marquez_assessing_2023], but may be more substantial in thick, dense, hypostomatous leaves [@syvertsen_relationship_1995]. Amphistomatous leaves also lose more water through evaporation because of a second boundary layer conductance [@foster_influence_1986], but the additional carbon gain should be enough to offset this cost in most realistic scenarios [@muir_amphistomy_2019]. 
 
 <!-- Paragraph 3 -->
-The paradoxical fact is that, despite the photosynthetic benefit, most leaves are not amphistomatous. Many vertically oriented and/or isobilateral leaves are amphistomatous [@howell_concerning_1945, @drake_two_2019]. But among dorsiventral leaves, herbaceous plants in open, high light habitats tend to have have amphistomatous leaves [salisbury, @jordan_using_2014; @bucher_stomatal_2017; @muir_light_2018]. Most other leaves, except those from aquatic habitats, are hypostomatous, producing stomata only on the lower, abaxial surface. Even resupinate leaves develop stomata on the lower, albeit adaxial surface (Lesheyde?), suggesting that leaf orientation (lower vs. upper) rather than leaf polarity (abaxial vs. adaxial) is causal. The covariation between stomatal density ratio and light habitat is both qualitative and quantitative. A higher proportion of sun leaves are amphistomatous (salisbury) and the proportion of stomata on the upper, adaxial surface increases with light (muir 2018, bucher?). Resolving why high light intensity favors amphistomatous dorsivental leaves is an important first step toward understanding variation in stomatal density ratio and leaf structure-function relationships more generally.
+The paradoxical fact is that, despite the photosynthetic benefit, most leaves are not amphistomatous. Many vertically oriented and/or isobilateral leaves are amphistomatous [@wood_physiology_1934; @howell_concerning_1945, @drake_two_2019]. But among dorsiventral leaves, herbaceous plants in open, high light habitats tend to have have amphistomatous leaves [@salisbury_causes_1928; @peat_comparative_1994; @gibson_structure_1996; @jordan_using_2014; @bucher_stomatal_2017; @muir_light_2018; @triplett_stomatal_2025]. Most other leaves, except those from aquatic habitats, are hypostomatous, producing stomata only on the lower, abaxial surface. Even resupinate leaves develop stomata on the lower, albeit adaxial surface [@lyshede_comparative_2002], suggesting that leaf orientation (lower vs. upper) rather than leaf polarity (abaxial vs. adaxial) is causal. The covariation between stomatal density ratio and light habitat is both qualitative and quantitative. A higher proportion of sun leaves are amphistomatous [@salisbury_causes_1928] and the proportion of stomata on the upper, adaxial surface increases with light [@bucher_stomatal_2017; @muir_light_2018]. Resolving why high light intensity favors amphistomatous dorsivental leaves is an important first step toward understanding variation in stomatal density ratio and leaf structure-function relationships more generally.
 
 <!-- Paragraph 4+, hypotheses and predictions -->
-The overarching hypothesis is that leaves with greater stomatal density ratio are more common in open, sunny habitats because they increase photosynthesis most in those circumstances. An amphistomatous leaf increases photosynthetic carbon gain compared to an otherwise identical hypostomatous leaf by increasing conductance through the leaf intercellular airspaces and boudary layers; the additional water loss through a second boundary layer is typically small (smith paper, muir 2019). We quantify this benefit as the amphistomy advantage (AA = log(Aamphi/Ahypo) (Parkhurst, Triplett). Why would AA be greater in sun than shade? We consider three nonmutually exclusive hypotheses that we classify as 'acclimatory', 'plastic', and 'constitutive'.
+The overarching hypothesis is that leaves with greater stomatal density ratio are more common in open, sunny habitats because they increase photosynthesis most in those circumstances. An amphistomatous leaf increases photosynthetic carbon gain compared to an otherwise identical hypostomatous leaf by increasing conductance through the leaf intercellular airspaces and boudary layers; the additional water loss through a second boundary layer is typically small [@foster_influence_1986]. We quantify this benefit as the amphistomy advantage (AA = log(Aamphi/Ahypo) [@parkhurst_adaptive_1978; @triplett_amphistomy_2024]. Why would AA be greater in sun than shade? We consider three nonmutually exclusive hypotheses that we classify as 'acclimatory', 'plastic', and 'constitutive'.
 
-Acclimatory hypothesis: Photosynthetic induction to high light intensity typically involves increases in total leaf stomatal conductance (increased CO\$\_2\$ supply), the concentration of active Rubisco, and electron transport capacity (increased CO\$*2\$* demand). A one-dimensional circuit model using the Farquhar-von Caemmerer-Berry biochemical model of C\$\_3\$ photosynthesis shows that both increased stomatal conductance and Rubisco activity should increase AA, all else being equal (Supporting Information). If the acclimatory hypothesis is correct, we predict that AAhigh \> AAlow for all species regardless of native habitat or growth environment. Plants adapted to sunny, open habitats will evolve greater stomatal density ratio to take advantage of regular exposure to high light intensity.
+Acclimatory hypothesis: Photosynthetic induction to high light intensity typically involves increases in total leaf stomatal conductance (increased CO$_2$ supply), the concentration of active Rubisco, and electron transport capacity (increased CO$_2$ demand). A one-dimensional circuit model using the Farquhar-von Caemmerer-Berry biochemical model of C$_3$ photosynthesis [@farquhar_biochemical_1980] shows that both increased stomatal conductance and Rubisco activity should increase AA, all else being equal (Supporting Information). If the acclimatory hypothesis is correct, we predict that AAhigh \> AAlow for all species regardless of native habitat or growth environment. Plants adapted to sunny, open habitats will evolve greater stomatal density ratio to take advantage of regular exposure to high light intensity.
 
-Plastic hypothesis: Individuals of the same genotype often develop dramatically different leaves in sun and shade conditions (cite). Plastic responses are likely adaptations to optimize photosynthesis at different light intensities in variable environments (cites). Plastic changes in leaf anatomy and biochemistry could modulate AA as a byproduct. Thicker or less porous leaves, both of which are associated with high leaf mass per area (LMA), will have lower $g_\mathrm{ias}$; leaves with increased total stomatal density and photosynthetic capacity have greater potential CO$_2$ supply and demand. Under the plastic hypothesis, we predict that AAsun \> AAshade for all species and light intensities. Secondarily, AAsun and gsmax,sun should also be positively associated with native light habitat if genotypes adapted to sunny, open habitats if they can express a phenotype best adapted to that environment when leaves develop under high light intensity. Genotypes adapted to shaded, closed habitats may be plastic, but limits on the width of their reaction norms prevent them from developing traits optimal for conditions they do not regularly experience in nature.
+Plastic hypothesis: Individuals of the same genotype often develop dramatically different leaves in sun and shade conditions [@poorter_meta-analysis_2019]. Plastic responses are likely adaptations to optimize photosynthesis at different light intensities in variable environments [@givnish_common-garden_2014]. Plastic changes in leaf anatomy and biochemistry could modulate AA as a byproduct. Thicker or less porous leaves, both of which are associated with high leaf mass per area (LMA), will have lower $g_\mathrm{ias}$; leaves with increased total stomatal density and photosynthetic capacity have greater potential CO$_2$ supply and demand. Under the plastic hypothesis, we predict that AAsun \> AAshade for all species and light intensities. Secondarily, AAsun and gsmax,sun should also be positively associated with native light habitat if genotypes adapted to sunny, open habitats if they can express a phenotype best adapted to that environment when leaves develop under high light intensity. Genotypes adapted to shaded, closed habitats may be plastic, but limits on the width of their reaction norms prevent them from developing traits optimal for conditions they do not regularly experience in nature.
 
-Constitutive hypothesis: In environments that are relatively constant or where environmental change cannot be anticipated by a reliable cue, natural selection will favor constitutive expression of optimal phenotypes. We therefore predict genotypes from more sunny, open habitats will have consistently greater AA under also measurement and growth light intensities. For herbaceous plants, light intensity is largely a function of the tree canopy (cites?). Herbs growing in the open will regularly experience high light intensity; herbs growing under a forest canopy will often experience low light intensity.
+Constitutive hypothesis: In environments that are relatively constant or where environmental change cannot be anticipated by a reliable cue, natural selection will favor constitutive expression of optimal phenotypes. We therefore predict genotypes from more sunny, open habitats will have consistently greater AA under also measurement and growth light intensities. For herbaceous plants, light intensity is largely a function of the tree canopy [@engelbrecht_evaluation_2001]. Herbs growing in the open will regularly experience high light intensity; herbs growing under a forest canopy will often experience low light intensity.
 
 The primary directional predictions for each hypothesis are summarized in Table X; detailed predictions for results that would indicate support for multiple hypotheses are in Table SX.
 
@@ -266,10 +345,12 @@ caption: Directional predictions associated with each hypothesis explaining why 
 | constitutive | AA2000 = AA150             | AAsun = AAshade          | cor(PAI, AA) > 0 |
 
 <!-- Paragraph 5 (summarize methods) -->
-We tested these hypotheses by comparing AA among amphistomatous wild tomato species (systematic cites) from different native light habitats, grown under simulated sun and shade light treatments, and measured under contrasting light intensity (Figure of hypotheses and predictions). We measured AA on `r n_plant` individual plants from `r n_acc` accessions (average of `r mean_n_rep` replicates per light treatment) using a recently developed method [@triplett_amphistomy_2024]. With this method, we directly compare the photosynthetic rate of an untreated amphistomatous leaf to that of the same leaf with gas exchange blocked through the adaxial (upper) surface by transparent plastic, which we refer to as 'pseudohypostomy'. To compare amphi- and pseudohypostomatous leaves at identical whole-leaf $g_\text{sc}$, we measure $A$ over a range of $g_\text{sc}$, inducing stomatal opening and closure by modulating humidity (see Materials and Methods for further details). We estimated 'amphistomy advantage' (\aax) *sensu* @parkhurst_adaptive_1978, but with modifications previously described in @triplett_amphistomy_2024 and here (Materials and Methods). The native light intensity was represented by plant area index (PAI $\unit{\meter\squared\per\meter\squared}$), estimated using a global gridded X-m2 resolution data set derived from the Global Ecosystem Dynamics Investigation (GEDI; cite) and georeferenced accession collection information (cite TGRC). The growth light intensities were `r ppfd_sun` (sun treatment) and `r ppfd_shade` (shade treatment) while all other environment conditions were nearly identical (see @sec-methods for supporting detail). The high and low measurements intensities were \ppfdequals{2000} (`r p_red_high`:`r p_blue_high` red:blue) and \ppfdequals{150} (`r p_red_low`:`r p_blue_low` red:blue), respectively. 
+We tested these hypotheses by comparing AA among amphistomatous wild tomato species [@peralta_taxonomy_2008] from different native light habitats, grown under simulated sun and shade light treatments, and measured under contrasting light intensity (Figure of hypotheses and predictions). We measured AA on `r n_plant` individual plants from `r n_acc` accessions (average of `r mean_n_rep` replicates per light treatment) using a recently developed method [@triplett_amphistomy_2024]. With this method, we directly compare the photosynthetic rate of an untreated amphistomatous leaf to that of the same leaf with gas exchange blocked through the adaxial (upper) surface by transparent plastic, which we refer to as 'pseudohypostomy'. To compare amphi- and pseudohypostomatous leaves at identical whole-leaf $g_\text{sc}$, we measure $A$ over a range of $g_\text{sc}$, inducing stomatal opening and closure by modulating humidity (see Materials and Methods for further details). We estimated 'amphistomy advantage' (\aax) *sensu* @parkhurst_adaptive_1978, but with modifications previously described in @triplett_amphistomy_2024 and here (Materials and Methods). The native light intensity was represented by plant area index (PAI $\unit{\meter\squared\per\meter\squared}$), estimated using a global gridded X-m2 resolution data set derived from the Global Ecosystem Dynamics Investigation [GEDI; @burns_multi-resolution_2024] and georeferenced accession collection information from the Tomato Genetics Resource Center. The growth light intensities were `r ppfd_sun` (sun treatment) and `r ppfd_shade` (shade treatment) while all other environment conditions were nearly identical (see @sec-methods for supporting detail). The high and low measurements intensities were \ppfdequals{2000} (`r p_red_high`:`r p_blue_high` red:blue) and \ppfdequals{150} (`r p_red_low`:`r p_blue_low` red:blue), respectively. 
 
+#### MARKER
 <!-- Paragraph 6 (summarize main results) -->
-Consistent with biophysical theory of CO2 diffusion within leaves, AA > 0 for all accessions (Figure X). AA varied substantially between measurement light intensities, growth light intensities, and among accessions (point to model comparison evidence). Measured under high light intensity, AA was consistently greater for sun plants. The average AA among accessions in the shade treat was X (X of 29 accessions significantly greater than 0); however, the same accessions grown at high light intensity had an AA of X (X of 29 accession greater than 0). Contrary to the predictions of the assimilatory hypothesis, AA was consistently greater under low measurement light intensity. Among sun and shade grown plants, AA was greater under low light intensity in X of 29 accessions (significantly greater than 0 in X of 29 accessions). The overall average AA of shade and sun grown plants measured under low light intensity was X (+/-) and X (+/-), respectively. There was a slight tendency for accessions from more closed habitats (greater PAI), but AA varied widely among accessions from open habitats (low PAI) regardless of growth and measurement light intensities (Figure X). The pattern of AA across wild tomatoes strongly supports the plasticity hypothesis, argues against the acclimatory hypothesis, and provides only weak support for the constitutive hypothesis. 
+Consistent with biophysical theory of CO$_2$ diffusion within leaves, AA > 0 for all accessions (Figure X). AA varied substantially between measurement light intensities, growth light intensities, and among accessions (point to model comparison evidence). Measured under high light intensity, AA was consistently greater for sun plants. The average AA among accessions in the shade treatment was `r filter(aa_mean_range, light_treatment == "low", light_intensity == "2000")$x`; however, the same accessions grown at high light intensity showed a mean AA of `r filter(aa_mean_range, light_treatment == "high", light_intensity == "2000")$x`. Contrary to the predictions of the assimilatory hypothesis, AA was consistently greater under low measurement light intensity. Among sun and shade grown plants, AA was greater under low light intensity in X of 29 accessions (significantly greater than 0 in X of 29 accessions). The overall average AA of shade and sun grown plants measured under low light intensity was `r filter(aa_mean_range, light_treatment == "low", light_intensity == "150")$x` and `r filter(aa_mean_range, light_treatment == "high", light_intensity == "150")$x`, respectively. There was a slight tendency for accessions from more closed habitats (greater PAI), but AA varied widely among accessions from open habitats (low PAI) regardless of growth and measurement light intensities (Figure X). The pattern of AA across wild tomatoes strongly supports the plasticity hypothesis, argues against the acclimatory hypothesis, and provides only weak support for the constitutive hypothesis. 
+
 Not sure where this goes: We infer this from the fact that blocking gas exchange in pseudohypostomatous leaves reduced $A$ by X-X% depending on the accession, light treatment, and light intensity (Table/figure). The AA is equivalent to an X-X% change in total $g_\text{sc}$ (see SI section gs equivalency). But whereas increasing $g_\text{sc}$ would increase water loss as a necessary by-product, amphistomy can increase $A$ without any appreciable affect on transpiration.
 
 

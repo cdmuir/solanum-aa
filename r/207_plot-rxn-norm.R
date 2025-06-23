@@ -4,7 +4,6 @@ fit_aa = read_rds("objects/fit_aa1.rds")
 d1 = fit_aa$data
 
 # code for brms model
-
 df_new = crossing(
   acc = unique(d1$acc),
   light_treatment = c("low", "high"),
@@ -12,6 +11,7 @@ df_new = crossing(
 ) |>
   mutate(row = row_number())
 
+# Estimates of AA for each accession in each light treatment and light intensity
 df_aa_pred1 = posterior_epred(fit_aa, newdata = df_new) |>
   t() |>
   as_draws_df() |>
@@ -31,6 +31,54 @@ df_aa_pred1 = posterior_epred(fit_aa, newdata = df_new) |>
       factor(levels = c("150", "2000")) |>
       fct_recode(low = "150", high = "2000")
 )
+
+# Estimate difference in AA between high and low light treatment
+# This would need to be changed for model where effect of light_treatment varies 
+# by accession
+df_new = crossing(
+  acc = first(d1$acc),
+  light_treatment = c("low", "high"),
+  light_intensity = c("150", "2000")
+) |>
+  mutate(row = row_number())
+
+df_aa_pred2 = posterior_epred(fit_aa, newdata = df_new) |>
+  t() |>
+  as_draws_df() |>
+  mutate(row = row_number()) |>
+  pivot_longer(cols = -row, names_to = "draw", values_to = "aa") |>
+  full_join(df_new, by = "row") |>
+  dplyr::select(-row) |>
+  pivot_wider(    
+    names_from = light_treatment,
+    values_from = aa
+  ) |>
+  mutate(d_aa = high - low) |>
+  group_by(light_intensity) |>
+  point_interval(d_aa) 
+
+# Estimate difference in AA between high and low light intensity
+df_new = crossing(
+  acc = unique(d1$acc),
+  light_treatment = c("low", "high"),
+  light_intensity = c("150", "2000")
+) |>
+  mutate(row = row_number())
+
+df_aa_pred3 = posterior_epred(fit_aa, newdata = df_new) |>
+  t() |>
+  as_draws_df() |>
+  mutate(row = row_number()) |>
+  pivot_longer(cols = -row, names_to = "draw", values_to = "aa") |>
+  full_join(df_new, by = "row") |>
+  dplyr::select(-row) |>
+  pivot_wider(    
+    names_from = light_intensity,
+    values_from = aa
+  ) |>
+  mutate(d_aa = `2000` - `150`) |>
+  group_by(acc, light_treatment) |>
+  point_interval(d_aa) 
 
 df_aa_text = df_aa_pred1 |>
   ungroup() |>
@@ -59,8 +107,12 @@ ggplot(df_aa_pred1, aes(x, aa, ymin = .lower, ymax = .upper, group = acc,
 
 ggsave("figures/aa-plot1.pdf", width = 6, height = 4, device = cairo_pdf, bg = "transparent")
 
+# Predictions for values in ms
+write_rds(df_aa_pred1, "objects/df_aa_pred1.rds")
+write_rds(df_aa_pred2, "objects/df_aa_pred2.rds")
+write_rds(df_aa_pred3, "objects/df_aa_pred3.rds")
 
-
+# code I am not sure I need
 df_pred2 = posterior_epred(fit_aa, newdata = df_new) |>
   t() |>
   as_draws_df() |>
