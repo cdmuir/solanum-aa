@@ -1,4 +1,4 @@
-# not totally working yet, but will plot theta vs AA
+# revise to plot rxn norm in Amax
 source("r/header.R")
 
 # phylogenetic models
