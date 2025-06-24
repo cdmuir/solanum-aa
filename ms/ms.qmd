@@ -34,9 +34,12 @@ csl: https://www.zotero.org/styles/science
 
 ```{r load-objects, echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 library(dplyr)
+library(lubridate)
+library(magrittr)
 library(readr)
 library(stringr)
 library(tibble)
+library(tidyr)
 
 source("../r/functions.R")
 
@@ -51,10 +54,12 @@ rh_curves = read_rds("../data/trimmed_rh_curves.rds")
 
 stomata = read_rds("../data/stomata.rds")
 
-fit_aa = read_rds("../objects/fit_dummy.rds")
+fit_aa = read_rds("../objects/fit_aa1.rds")
 dim_fit_aa = dim(fit_aa$fit)
 
 df_aa_pred1 = read_rds("../objects/df_aa_pred1.rds")
+# df_aa_pred2 = read_rds("../objects/df_aa_pred2.rds")
+df_aa_pred3 = read_rds("../objects/df_aa_pred3.rds")
 
 n_plant = length(unique(rh_curves$acc_id))
 n_acc = length(unique(rh_curves$acc))
@@ -86,7 +91,7 @@ df_germ_summary = read_rds("../data/df_germ_summary.rds") |>
   ungroup() |>
   summarize(value = median(value), .by = c("period", "variable", "parameter"))
 
-df_growth_summary = read_rds("data/df_growth_summary.rds") |>
+df_growth_summary = read_rds("../data/df_growth_summary.rds") |>
   ungroup() |>
   filter(!is.na(value)) 
 
@@ -256,15 +261,22 @@ aa_mean_range = df_aa_pred1 |>
     max = max(aa),
     aa = mean(aa),
     n_signif = sum(signif),
+    n_acc = n(),
     .by = c(light_treatment, light_intensity)
   ) |>
   mutate(x = sprintf(
-    "%.3f (range: %.3f–%.3f; %.0f of 29 accessions significant)",
+    "%.3f (range: %.3f–%.3f; %.0f of %.0f accessions significant)",
     aa,
     min,
     max,
-    n_signif
+    n_signif,
+    n_acc
   ))
+
+aa_summary3 = df_aa_pred3 |>
+  mutate(signif = (.upper < 0)) |>
+  summarize(n_signif = sum(signif), .by = light_treatment) |>
+  pull(n_signif, light_treatment)
 
 ```
 
@@ -312,23 +324,23 @@ What's surprising: role of developmental plasticity in explaining comparative re
 ## Intro
 
 <!-- Paragraph 1 -->
-Stomata are microscopic pores on the surfaces of leaves and other photosynthetic organs formed by a pair of guard cells. They are essential for balancing carbon gained per unit water lost and permitted vascular plants to grow tall on land by enabling access to CO$_2$ for photosynthetic carbon assimilation while preventing hydraulic failure in variable environments [@raven_selection_2002; @mccadam_stomata_2021; @clark_origin_2022]. Optimal stomatal function depends on both dynamic changes in aperture on the scale of minutes to hours, as well as static anatomy determined by developmental plasticity and constitutive genetic differences [@hetherington_role_2003; @boer_optimal_2016; @harrison_influence_2020]. Understanding how stomata respond to environmental change over daily, developmental, and evolutionary time is important for understanding adaptation [@woodward_stomatal_1987; @buckley_modeling_2013; @raven_selection_2002; @haworth_coordination_2013; @liang_stomatal_2023; @chua_stomatal_2024; @lang_century_2024], predicting paleoclimate from fossil cuticles [@franks_new_2014; @mcelwain_paleoecology_2017; @honisch_toward_2023], and improving crops [@hofmann_impact_2025]. Stomatal function contributes to global carbon and water cycles [@berry_stomata_2010] and therefore predicting future climate [@franks_stomatal_2017].
+Stomata are microscopic pores on the surfaces of leaves and other photosynthetic organs formed by a pair of guard cells. They are essential for balancing carbon gained per unit water lost and permitted vascular plants to grow tall on land by enabling access to CO$_2$ for photosynthetic carbon assimilation while preventing hydraulic failure in variable environments [@raven_selection_2002; @mcadam_stomata_2021; @clark_origin_2022]. Optimal stomatal function depends on both dynamic changes in aperture on the scale of minutes to hours, as well as static anatomy determined by developmental plasticity and constitutive genetic differences [@hetherington_role_2003; @de_boer_optimal_2016; @harrison_influence_2020]. Understanding how stomata respond to environmental change over daily, developmental, and evolutionary time is important for understanding adaptation [@woodward_stomatal_1987; @buckley_modelling_2013; @raven_selection_2002; @haworth_co-ordination_2013; @liang_stomatal_2023; @chua_stomatal_2024; @lang_century-long_2024], predicting paleoclimate from fossil cuticles [@franks_new_2014; @mcelwain_paleoecology_2017; @the_cenozoic_co_proxy_integration_project_cencopip_consortium_toward_2023], and improving crops [@hofmann_impact_2025]. Stomatal function contributes to global carbon and water cycles [@berry_stomata:_2010] and therefore predicting future climate [@franks_stomatal_2017].
 
 <!-- Paragraph 2 -->
 <!-- Parkhurst gradients 1988 -->
 <!-- Syvertsen et al 1995 - may be more here to check about gi in sun and shade-->
 <!-- "Farquhar and Raschke (2). However, using a technique similar to ours, Sharkey et al. (11) estimate r, in Xan:hium to be closer to 1.0 m2 s mol-', and state that they believe the estimate of 3.2 m2 s mol-' to be high" -->
-Despite extensive theoretical and empirical progress understanding stomata function and anatomy from molecular to ecosystem levels, the adaptive significance of amphistomatous leaves remains an important unsolved problem in leaf structure-function relationships [@grubb_leaf_1977; @parkhurst_adaptive_1978; @mott_adaptive_1982; @gibson_structure_1996; @smith_leaf_1997; @oguchi_leaf_2018; @drake_two_2019; @grubb_leaf_2020]. Amphistomatous leaves develop abaxial and adaxial stomata whose aperture can be independently regulated [@pospisilova_stomatal_1980; @mott_stomatal_1984; @reich_effects_1985; @mott_asymmetric_1993; @wall_stomata_2022] to control gas exchange through each surface. All else being equal, gas exchange through stomata on both surfaces increases CO$_2$ supply to chloroplasts by providing a second parallel pathway through leaf intercellular airspaces, enhancing photosynthesis [@parkhurst_adaptive_1978; @gutschick_photosynthesis_1984]. The extent to which amphistomy increases CO$_2$ supply depends on resistance to diffusion in intercellular airspaces. This resistance can be low in thin, porous, amphistomatous leaves [@mott_stomatal_1984; @marquez_assessing_2023], but may be more substantial in thick, dense, hypostomatous leaves [@syvertsen_relationship_1995]. Amphistomatous leaves also lose more water through evaporation because of a second boundary layer conductance [@foster_influence_1986], but the additional carbon gain should be enough to offset this cost in most realistic scenarios [@muir_amphistomy_2019]. 
+Despite extensive theoretical and empirical progress understanding stomata function and anatomy from molecular to ecosystem levels, the adaptive significance of amphistomatous leaves remains an important unsolved problem in leaf structure-function relationships [@grubb_leaf_1977; @parkhurst_adaptive_1978; @mott_adaptive_1982; @gibson_structure-function_1996; @smith_leaf_1997; @oguchi_leaf_2018; @drake_two_2019; @grubb_leaf_2020]. Amphistomatous leaves develop abaxial and adaxial stomata whose aperture can be independently regulated [@pospisilova_environmental_1980; @mott_stomatal_1984; @reich_effects_1985; @mott_asymmetric_1993; @wall_stomata_2022] to control gas exchange through each surface. All else being equal, gas exchange through stomata on both surfaces increases CO$_2$ supply to chloroplasts by providing a second parallel pathway through leaf intercellular airspaces, enhancing photosynthesis [@parkhurst_adaptive_1978; @gutschick_photosynthesis_1984]. The extent to which amphistomy increases CO$_2$ supply depends on resistance to diffusion in intercellular airspaces. This resistance can be low in thin, porous, amphistomatous leaves [@mott_stomatal_1984; @marquez_assessing_2023], but may be more substantial in thick, dense, hypostomatous leaves [@parkhurst_intercellular_1990]. Amphistomatous leaves also lose more water through evaporation because of a second boundary layer conductance [@foster_influence_1986], but the additional carbon gain should be enough to offset this cost in most realistic scenarios [@muir_is_2019]. 
 
 <!-- Paragraph 3 -->
-The paradoxical fact is that, despite the photosynthetic benefit, most leaves are not amphistomatous. Many vertically oriented and/or isobilateral leaves are amphistomatous [@wood_physiology_1934; @howell_concerning_1945, @drake_two_2019]. But among dorsiventral leaves, herbaceous plants in open, high light habitats tend to have have amphistomatous leaves [@salisbury_causes_1928; @peat_comparative_1994; @gibson_structure_1996; @jordan_using_2014; @bucher_stomatal_2017; @muir_light_2018; @triplett_stomatal_2025]. Most other leaves, except those from aquatic habitats, are hypostomatous, producing stomata only on the lower, abaxial surface. Even resupinate leaves develop stomata on the lower, albeit adaxial surface [@lyshede_comparative_2002], suggesting that leaf orientation (lower vs. upper) rather than leaf polarity (abaxial vs. adaxial) is causal. The covariation between stomatal density ratio and light habitat is both qualitative and quantitative. A higher proportion of sun leaves are amphistomatous [@salisbury_causes_1928] and the proportion of stomata on the upper, adaxial surface increases with light [@bucher_stomatal_2017; @muir_light_2018]. Resolving why high light intensity favors amphistomatous dorsivental leaves is an important first step toward understanding variation in stomatal density ratio and leaf structure-function relationships more generally.
+The paradoxical fact is that, despite the photosynthetic benefit, most leaves are not amphistomatous. Many vertically oriented and/or isobilateral leaves are amphistomatous [@wood_physiology_1934; @howell_concerning_1945, @drake_two_2019]. But among dorsiventral leaves, herbaceous plants in open, high light habitats tend to have have amphistomatous leaves [@salisbury_i_1928; @peat_comparative_1994; @gibson_structure-function_1996; @jordan_using_2014; @bucher_stomatal_2017; @muir_light_2018; @triplett_stomatal_2025]. Most other leaves, except those from aquatic habitats, are hypostomatous, producing stomata only on the lower, abaxial surface. Even resupinate leaves develop stomata on the lower, albeit adaxial surface [@lyshede_comparative_2002], suggesting that leaf orientation (lower vs. upper) rather than leaf polarity (abaxial vs. adaxial) is causal. The covariation between stomatal density ratio and light habitat is both qualitative and quantitative. A higher proportion of sun leaves are amphistomatous [@salisbury_i_1928] and the proportion of stomata on the upper, adaxial surface increases with light [@bucher_stomatal_2017; @muir_light_2018]. Resolving why high light intensity favors amphistomatous dorsivental leaves is an important first step toward understanding variation in stomatal density ratio and leaf structure-function relationships more generally.
 
 <!-- Paragraph 4+, hypotheses and predictions -->
 The overarching hypothesis is that leaves with greater stomatal density ratio are more common in open, sunny habitats because they increase photosynthesis most in those circumstances. An amphistomatous leaf increases photosynthetic carbon gain compared to an otherwise identical hypostomatous leaf by increasing conductance through the leaf intercellular airspaces and boudary layers; the additional water loss through a second boundary layer is typically small [@foster_influence_1986]. We quantify this benefit as the amphistomy advantage (AA = log(Aamphi/Ahypo) [@parkhurst_adaptive_1978; @triplett_amphistomy_2024]. Why would AA be greater in sun than shade? We consider three nonmutually exclusive hypotheses that we classify as 'acclimatory', 'plastic', and 'constitutive'.
 
 Acclimatory hypothesis: Photosynthetic induction to high light intensity typically involves increases in total leaf stomatal conductance (increased CO$_2$ supply), the concentration of active Rubisco, and electron transport capacity (increased CO$_2$ demand). A one-dimensional circuit model using the Farquhar-von Caemmerer-Berry biochemical model of C$_3$ photosynthesis [@farquhar_biochemical_1980] shows that both increased stomatal conductance and Rubisco activity should increase AA, all else being equal (Supporting Information). If the acclimatory hypothesis is correct, we predict that AAhigh \> AAlow for all species regardless of native habitat or growth environment. Plants adapted to sunny, open habitats will evolve greater stomatal density ratio to take advantage of regular exposure to high light intensity.
 
-Plastic hypothesis: Individuals of the same genotype often develop dramatically different leaves in sun and shade conditions [@poorter_meta-analysis_2019]. Plastic responses are likely adaptations to optimize photosynthesis at different light intensities in variable environments [@givnish_common-garden_2014]. Plastic changes in leaf anatomy and biochemistry could modulate AA as a byproduct. Thicker or less porous leaves, both of which are associated with high leaf mass per area (LMA), will have lower $g_\mathrm{ias}$; leaves with increased total stomatal density and photosynthetic capacity have greater potential CO$_2$ supply and demand. Under the plastic hypothesis, we predict that AAsun \> AAshade for all species and light intensities. Secondarily, AAsun and gsmax,sun should also be positively associated with native light habitat if genotypes adapted to sunny, open habitats if they can express a phenotype best adapted to that environment when leaves develop under high light intensity. Genotypes adapted to shaded, closed habitats may be plastic, but limits on the width of their reaction norms prevent them from developing traits optimal for conditions they do not regularly experience in nature.
+Plastic hypothesis: Individuals of the same genotype often develop dramatically different leaves in sun and shade conditions [@poorter_metaanalysis_2019]. Plastic responses are likely adaptations to optimize photosynthesis at different light intensities in variable environments [@givnish_common-garden_2014]. Plastic changes in leaf anatomy and biochemistry could modulate AA as a byproduct. Thicker or less porous leaves, both of which are associated with high leaf mass per area (LMA), will have lower $g_\mathrm{ias}$; leaves with increased total stomatal density and photosynthetic capacity have greater potential CO$_2$ supply and demand. Under the plastic hypothesis, we predict that AAsun \> AAshade for all species and light intensities. Secondarily, AAsun and gsmax,sun should also be positively associated with native light habitat if genotypes adapted to sunny, open habitats if they can express a phenotype best adapted to that environment when leaves develop under high light intensity. Genotypes adapted to shaded, closed habitats may be plastic, but limits on the width of their reaction norms prevent them from developing traits optimal for conditions they do not regularly experience in nature.
 
 Constitutive hypothesis: In environments that are relatively constant or where environmental change cannot be anticipated by a reliable cue, natural selection will favor constitutive expression of optimal phenotypes. We therefore predict genotypes from more sunny, open habitats will have consistently greater AA under also measurement and growth light intensities. For herbaceous plants, light intensity is largely a function of the tree canopy [@engelbrecht_evaluation_2001]. Herbs growing in the open will regularly experience high light intensity; herbs growing under a forest canopy will often experience low light intensity.
 
@@ -349,7 +361,7 @@ We tested these hypotheses by comparing AA among amphistomatous wild tomato spec
 
 #### MARKER
 <!-- Paragraph 6 (summarize main results) -->
-Consistent with biophysical theory of CO$_2$ diffusion within leaves, AA > 0 for all accessions (Figure X). AA varied substantially between measurement light intensities, growth light intensities, and among accessions (point to model comparison evidence). Measured under high light intensity, AA was consistently greater for sun plants. The average AA among accessions in the shade treatment was `r filter(aa_mean_range, light_treatment == "low", light_intensity == "2000")$x`; however, the same accessions grown at high light intensity showed a mean AA of `r filter(aa_mean_range, light_treatment == "high", light_intensity == "2000")$x`. Contrary to the predictions of the assimilatory hypothesis, AA was consistently greater under low measurement light intensity. Among sun and shade grown plants, AA was greater under low light intensity in X of 29 accessions (significantly greater than 0 in X of 29 accessions). The overall average AA of shade and sun grown plants measured under low light intensity was `r filter(aa_mean_range, light_treatment == "low", light_intensity == "150")$x` and `r filter(aa_mean_range, light_treatment == "high", light_intensity == "150")$x`, respectively. There was a slight tendency for accessions from more closed habitats (greater PAI), but AA varied widely among accessions from open habitats (low PAI) regardless of growth and measurement light intensities (Figure X). The pattern of AA across wild tomatoes strongly supports the plasticity hypothesis, argues against the acclimatory hypothesis, and provides only weak support for the constitutive hypothesis. 
+Consistent with biophysical theory of CO$_2$ diffusion within leaves, AA > 0 for all accessions (Figure X). AA varied substantially between measurement light intensities, growth light intensities, and among accessions (point to model comparison evidence). Measured under high light intensity, AA was consistently greater for sun plants. The average AA among accessions in the shade treatment was `r filter(aa_mean_range, light_treatment == "low", light_intensity == "2000")$x`; however, the same accessions grown at high light intensity showed a mean AA of `r filter(aa_mean_range, light_treatment == "high", light_intensity == "2000")$x`. Contrary to the predictions of the assimilatory hypothesis, AA was greater in all accessions under low measurement light intensity for both sun and shade grown plants. The effect of low light on AA was more pronounced in the sun-grown plants, where AA was significantly greater under low measurement light intensity in `r aa_summary3["high"]` of `r n_acc` accessions compared to to `r aa_summary3["low"]` accessions for shade-grown plants. The overall average AA of shade and sun grown plants measured under low light intensity was `r filter(aa_mean_range, light_treatment == "low", light_intensity == "150")$x` and `r filter(aa_mean_range, light_treatment == "high", light_intensity == "150")$x`, respectively. There was a slight tendency for accessions from more closed habitats (greater PAI), but AA varied widely among accessions from open habitats (low PAI) regardless of growth and measurement light intensities (Figure X). The pattern of AA across wild tomatoes strongly supports the plasticity hypothesis, argues against the acclimatory hypothesis, and provides only weak support for the constitutive hypothesis. 
 
 Not sure where this goes: We infer this from the fact that blocking gas exchange in pseudohypostomatous leaves reduced $A$ by X-X% depending on the accession, light treatment, and light intensity (Table/figure). The AA is equivalent to an X-X% change in total $g_\text{sc}$ (see SI section gs equivalency). But whereas increasing $g_\text{sc}$ would increase water loss as a necessary by-product, amphistomy can increase $A$ without any appreciable affect on transpiration.
 
@@ -392,9 +404,9 @@ We compared AA among `r n_acc` ecologically diverse accessions of wild tomato, i
 # Copied from solanum-aq project
 
 accession_info = read_rds("../data/accession-info.rds") |>
-  filter(accession %in% light_curves$acc) |>
-  left_join(read_rds("../data/accession-climate.rds") |>
-              select(accession, ppfd_mol_m2), by = join_by(accession)) |>
+  filter(accession %in% rh_curves$acc) |>
+  left_join(read_rds("../data/accession-gedi.rds") |>
+              select(accession, pai), by = join_by(accession)) |>
   arrange(species, accession) |>
   select(
     Species = species,
@@ -402,13 +414,13 @@ accession_info = read_rds("../data/accession-info.rds") |>
     `Latitude` = lat,
     `Longitude` = lon,
     `Elevation (mas)` = elev,
-    `$\\mathrm{PPFD}~(\\mathrm{mol}~\\mathrm{m}^2)$` = ppfd_mol_m2
+    `$\\mathrm{PAI}~(\\unit{\\meter\\squared\\per\\meter\\squared})$` = pai
   )
 
 accession_info |>
   knitr::kable(
     format = "latex",
-    digits = c(rep(0, 2), 3, 3, 0, 1),
+    digits = c(rep(0, 2), 3, 3, 0, 2),
     booktabs = TRUE,
     longtable = TRUE,
     escape = FALSE
@@ -484,7 +496,7 @@ step_description_col = c(
   "3. remove outliers within each \\agcurve{} curve",
   "4. remove replicates with no overlap between amphi and pseudohypo \\agcurve{} curves",
   "5. thin redundant data points within each \\agcurve{} curve",
-  "6. Trim extreme \\aax{} values"
+  "6. trim extreme \\aax{} values"
 )
 
 n_curve_col = unlist(aa_stats[str_detect(names(aa_stats), "^n_rh_curve[1-9]$")]) |>
@@ -631,7 +643,7 @@ tribble(
 
 #### Fitting models in *Stan* {#sec-fitting}
 
-We fit Bayesian models with MCMC sampling in the probabilistic programming language *Stan* [@stan_development_team_stan_2023]. We used CmdStan version `r fit_aa$version$cmdstan` and **cmdstanr** version `r fit_aa$version$cmdstanr` [@gabry_cmdstanr_2023] to interface with *R* version `r getRversion()` [@r_core_team_r:_2023]. We sampled the posterior distribution from `r dim_fit_aa[2]` chains with `r dim_fit_aa[1]` iterations each after `r dim_fit_aa[1]` warmup iterations per chain. We estimated parameters and confidence intervals as the median and 95% quantile intervals of the posterior, respectively. We chose the number of chains, warmup and sampling iterations, and maximum treedepth so that parameter estimates converged ($\hat{R} < 1.01$ [@gelman_inference_1992]) and the effective sample size (ESS) for each parameter was $> 10^3$.
+We fit Bayesian models with MCMC sampling in the probabilistic programming language *Stan* [@stan_development_team_stan_2025] using the *R* package **brms** version `r fit_aa$version$brms` [@burkner_brms_2017]. We used CmdStan version `r fit_aa$version$cmdstan` and **cmdstanr** version `r fit_aa$version$cmdstanr` [@gabry_cmdstanr_2025] to interface with *R* version `r getRversion()` [@r_core_team_r:_2025]. We sampled the posterior distribution from `r dim_fit_aa[2]` chains with `r dim_fit_aa[1]` iterations each after `r dim_fit_aa[1]` warmup iterations per chain. We estimated parameters and confidence intervals as the median and 95% quantile intervals of the posterior, respectively. We chose the number of chains, warmup and sampling iterations, and maximum treedepth so that parameter estimates converged ($\hat{R} < 1.01$ [@gelman_inference_1992]) and the effective sample size (ESS) for each parameter was $> 10^3$.
 
 #### Parameter estimation and priors {#sec-parameters}
 

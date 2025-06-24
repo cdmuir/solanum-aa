@@ -3,6 +3,7 @@ source("r/header.R")
 
 c("processed-data/accession-climate",
   "processed-data/accession-gedi",
+  "processed-data/accession-info",
   "processed-data/plant-info",
   "filtered-data/rh_curves",
   "filtered-data/rh_hi_curves",

@@ -138,6 +138,7 @@
 \newcommand{\ca}{$C_\mathrm{a}$}
 \newcommand{\caequals}[1]{$C_\mathrm{a} = \qty{#1}{\micro\mol\raiseto{-1}\mol}$}
 \newcommand{\cabetween}[2]{#1 < $C_\mathrm{a} < \qty{#2}{\micro\mol\raiseto{-1}\mol}$}
+\newcommand{\gmaxratio}{$g_\text{max,ratio}$}
 \newcommand{\gsw}{$g_\text{sw}$}
 \newcommand{\loggsw}{$\log(g_\text{sw})$}
 \newcommand{\logA}{$\log(A)$}
@@ -219,8 +220,6 @@
 }
 \section{Notes}\label{notes}
 
-In preamble: - short codes for commonly used symbols - ?
-
 Terminology to standardize:
 
 \begin{itemize}
@@ -236,183 +235,440 @@ Terminology to standardize:
 
 \section{Authors}\label{authors}
 
-definite: Wei Shen Lim, Dachuan Wang, Chris Muir question: Sam McKlin,
-Tom Buckley
+definite: Wei Shen Lim, Dachuan Wang, Chris Muir
 
-\section{Main}\label{main}
+question: Sam McKlin, Tom Buckley
 
-{[}introduction{]} Stomata are important
+I am using this approach to drafting the paper:
 
-Stomatal ratio is important unsolved problem
+https://blogs.nature.com/nyc/2011/08/10/how-to-write-a-paper-one-possible-answer
 
-Amphi leaves are more common in sunny habitats and confer a great
-benefit. (this pattern is also true in Solanum? could we analyze
-herbarium data here?)
+\section{Punchline}\label{punchline}
 
-{[}maybe make distinction between amphi leaves and var in SR here since
-all tomato species are amphi{]}
+Plastic changes in the structure of sun leaves can increase the
+intercellular CO\(_2\) diffusion path length. Gas exchange through
+stomata on both upper and lower leaf surfaces, amphistomy, may be a
+compensatory mechanism to reduce the impact of increased diffusion path
+length on photosynthesis without increasing water loss. We demonstrate
+for the first time that sun leaves benefit most from amphistomy because
+it compensates for plastic structural changes in leaf anatomy.
 
-Leaves with greater stomatal density ratio are more in open, sunny
-habitats because they deliver the greatest benefit in those
-circumstances. An amphistomatous leaf increases photosynthetic carbon
-gain compared to an otherwise identical hypostomatous leaf by increasing
-conductance through the leaf intercellular airspaces and boudary layers;
-the additional water loss through a second boundary layer is typically
-small {[}cites{]}. We quantify this benefit as the amphistomy advantage
-(AA = log(Aamphi/Ahypo). Why would AA be greater in sun than shade?
-There are three nonmutually exclusive hypotheses that we classify as
-`acclimatory', `plastic', and `constitutive'.
+\section{Figures}\label{figures}
 
-Acclimatory hypothesis: Leaves acclimated to high light intensity
-typically increase total leaf stomatal conductance (increased CO\$\_2\$
-supply) and upregulate Rubisco activation (increased CO\$\emph{2\$}
-demand). A one-dimensional circuit model using the Farquhar-von
-Caemmerer-Berry biochemical model of C\$\_3\$ photosynthesis shows that
-both increased stomatal conductance and Rubisco activity should increase
-AA, all else being equal (Supporting Information). If the acclimatory
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  competing hypotheses and predictions (or predictions after methods?)
+  for the benefit of amphistomy
+\item
+  design of experiment to test competing hypotheses (with actual \#'s of
+  replicate, curves, etc.)
+\item
+  Results on acclimatory, plastic, constitutive hypotheses
+\item
+  Additional supporting figure on change in LMA, reduction of Amass, and
+  relationship between LMA and AA? Modeling?
+\end{enumerate}
+
+\section{Abstract}\label{abstract}
+
+(use for GRC)
+
+Developmental plasticity to light intensity modulates amphistomy
+advantage
+
+The presence of stomata on both leaf surfaces (amphistomy) can increase
+photosynthesis in C\(_3\) plants by reducing the path length for
+CO\(_2\) diffusion between substomatal cavities and chloroplasts.
+Amphistomatous leaves are most common among herbaceous plants growing in
+sunny habitats, including many crop species. The distribution of
+amphistomatous leaves in nature may result from an increased
+photosynthetic benefit of amphistomy under high light intensity, either
+because of acclimatory, plastic, or constitutive variation in CO\(_2\)
+supply or demand. We used a recently developed method to quantify
+amphistomy advantage, the photosynthetic rate of an amphistomatous leaf
+relative to an otherwise identical hypostomatous leaf, in 29 diverse
+populations representing 15 species of wild tomatoes (\emph{Solanum}
+sect. \emph{Lycopersicon} and sect. \emph{Lycopersicoides}). Plant grown
+under high light intensity benefit more from amphostomy than those grown
+under low light, regardless of acclimation or native light intensity.
+Curvature of light response curves indicates that high-light leaves
+benefit more from amphistomy because of greater resistance to CO\(_2\)
+diffusion within the mesophyll. Developmental plasticity in leaf
+thickness and/or cell arrangement to optimize light interception likely
+increases under varying light intensity modulates CO\(_2\) diffusion
+within the leaf and, hence, amphistomy advantage as a byproduct.
+Developmental plasticity may therefore play an important and previously
+unnoticed role in explaining the adaptive significance of amphistomy and
+the distribution of amphistomatous leaves in nature.
+
+What's surprising: role of developmental plasticity in explaining
+comparative results; diffusional limitations through palisade ias is
+strong and needs to be considered with light gradients in understanding
+leaf strucuture- funciton
+
+\section{Intro}\label{intro}
+
+Stomata are microscopic pores on the surfaces of leaves and other
+photosynthetic organs formed by a pair of guard cells. They are
+essential for balancing carbon gained per unit water lost and permitted
+vascular plants to grow tall on land by enabling access to CO\(_2\) for
+photosynthetic carbon assimilation while preventing hydraulic failure in
+variable environments (\emph{1}--\emph{3}). Optimal stomatal function
+depends on both dynamic changes in aperture on the scale of minutes to
+hours, as well as static anatomy determined by developmental plasticity
+and constitutive genetic differences (\emph{4}--\emph{6}). Understanding
+how stomata respond to environmental change over daily, developmental,
+and evolutionary time is important for understanding adaptation
+(\emph{1}, \emph{7}--\emph{12}), predicting paleoclimate from fossil
+cuticles (\emph{13}--\emph{15}), and improving crops (\emph{16}).
+Stomatal function contributes to global carbon and water cycles
+(\emph{17}) and therefore predicting future climate (\emph{18}).
+
+Despite extensive theoretical and empirical progress understanding
+stomata function and anatomy from molecular to ecosystem levels, the
+adaptive significance of amphistomatous leaves remains an important
+unsolved problem in leaf structure-function relationships
+(\emph{19}--\emph{26}). Amphistomatous leaves develop abaxial and
+adaxial stomata whose aperture can be independently regulated
+(\emph{27}--\emph{31}) to control gas exchange through each surface. All
+else being equal, gas exchange through stomata on both surfaces
+increases CO\(_2\) supply to chloroplasts by providing a second parallel
+pathway through leaf intercellular airspaces, enhancing photosynthesis
+(\emph{20}, \emph{32}). The extent to which amphistomy increases
+CO\(_2\) supply depends on resistance to diffusion in intercellular
+airspaces. This resistance can be low in thin, porous, amphistomatous
+leaves (\emph{28}, \emph{33}), but may be more substantial in thick,
+dense, hypostomatous leaves (\emph{34}). Amphistomatous leaves also lose
+more water through evaporation because of a second boundary layer
+conductance (\emph{35}), but the additional carbon gain should be enough
+to offset this cost in most realistic scenarios (\emph{36}).
+
+The paradoxical fact is that, despite the photosynthetic benefit, most
+leaves are not amphistomatous. Many vertically oriented and/or
+isobilateral leaves are amphistomatous (\emph{25}). But among
+dorsiventral leaves, herbaceous plants in open, high light habitats tend
+to have have amphistomatous leaves (\emph{22}, \emph{39}--\emph{44}).
+Most other leaves, except those from aquatic habitats, are
+hypostomatous, producing stomata only on the lower, abaxial surface.
+Even resupinate leaves develop stomata on the lower, albeit adaxial
+surface (\emph{45}), suggesting that leaf orientation (lower vs.~upper)
+rather than leaf polarity (abaxial vs.~adaxial) is causal. The
+covariation between stomatal density ratio and light habitat is both
+qualitative and quantitative. A higher proportion of sun leaves are
+amphistomatous (\textbf{salisbury\_causes\_1928?}) and the proportion of
+stomata on the upper, adaxial surface increases with light (\emph{42},
+\emph{43}). Resolving why high light intensity favors amphistomatous
+dorsivental leaves is an important first step toward understanding
+variation in stomatal density ratio and leaf structure-function
+relationships more generally.
+
+The overarching hypothesis is that leaves with greater stomatal density
+ratio are more common in open, sunny habitats because they increase
+photosynthesis most in those circumstances. An amphistomatous leaf
+increases photosynthetic carbon gain compared to an otherwise identical
+hypostomatous leaf by increasing conductance through the leaf
+intercellular airspaces and boudary layers; the additional water loss
+through a second boundary layer is typically small (\emph{35}). We
+quantify this benefit as the amphistomy advantage (AA =
+log(Aamphi/Ahypo) (\emph{20}, \emph{46}). Why would AA be greater in sun
+than shade? We consider three nonmutually exclusive hypotheses that we
+classify as `acclimatory', `plastic', and `constitutive'.
+
+Acclimatory hypothesis: Photosynthetic induction to high light intensity
+typically involves increases in total leaf stomatal conductance
+(increased CO\(_2\) supply), the concentration of active Rubisco, and
+electron transport capacity (increased CO\(_2\) demand). A
+one-dimensional circuit model using the Farquhar-von Caemmerer-Berry
+biochemical model of C\(_3\) photosynthesis (\emph{47}) shows that both
+increased stomatal conductance and Rubisco activity should increase AA,
+all else being equal (Supporting Information). If the acclimatory
 hypothesis is correct, we predict that AAhigh \textgreater{} AAlow for
 all species regardless of native habitat or growth environment. Plants
 adapted to sunny, open habitats will evolve greater stomatal density
 ratio to take advantage of regular exposure to high light intensity.
 
 Plastic hypothesis: Individuals of the same genotype often develop
-dramatically different leaves in sun and shade conditions (cite).
+dramatically different leaves in sun and shade conditions (\emph{48}).
 Plastic responses are likely adaptations to optimize photosynthesis at
-different light intensities (cites), but changes in leaf anatomy and
-biochemistry could modulate AA as a byproduct. Thicker or less porous
-leaves, both of which are associated with high leaf mass per area (LMA),
-will have lower g\_ias; leaves with increased total stomatal density and
-Rubisco concentration have greater potential CO2 supply and demand.
-Under the plastic hypothesis, we predict that AAsun \textgreater{}
-AAshade for all species and light intensities. AAsun and gsmax,sun
-should be positively associated with native light habitat.
-{[}transition{]} We assume that genotypes adapted to sunny, open
-habitats will express a phenotype best adapted to that environment when
-leaves develop under high light intensity; genotypes adapted to shaded
-closed habitats may be plastic, but suboptimal for light intensities
-they do not regularly experience in nature.
+different light intensities in variable environments (\emph{49}).
+Plastic changes in leaf anatomy and biochemistry could modulate AA as a
+byproduct. Thicker or less porous leaves, both of which are associated
+with high leaf mass per area (LMA), will have lower \(g_\mathrm{ias}\);
+leaves with increased total stomatal density and photosynthetic capacity
+have greater potential CO\(_2\) supply and demand. Under the plastic
+hypothesis, we predict that AAsun \textgreater{} AAshade for all species
+and light intensities. Secondarily, AAsun and gsmax,sun should also be
+positively associated with native light habitat if genotypes adapted to
+sunny, open habitats if they can express a phenotype best adapted to
+that environment when leaves develop under high light intensity.
+Genotypes adapted to shaded, closed habitats may be plastic, but limits
+on the width of their reaction norms prevent them from developing traits
+optimal for conditions they do not regularly experience in nature.
 
-{[}conceptual figure could also show differential benefit of amphi
-leaves in sun/shade{]}
+Constitutive hypothesis: In environments that are relatively constant or
+where environmental change cannot be anticipated by a reliable cue,
+natural selection will favor constitutive expression of optimal
+phenotypes. We therefore predict genotypes from more sunny, open
+habitats will have consistently greater AA under also measurement and
+growth light intensities. For herbaceous plants, light intensity is
+largely a function of the tree canopy (\emph{50}). Herbs growing in the
+open will regularly experience high light intensity; herbs growing under
+a forest canopy will often experience low light intensity.
 
-to plants growing there. in those It has been hypothesized that
-amphistomy increases photosynthesis more in sunny places. Three
-nonmutually exclusive adaptive explanations for why amphi leaves:
+The primary directional predictions for each hypothesis are summarized
+in Table X; detailed predictions for results that would indicate support
+for multiple hypotheses are in Table SX.
 
-Conceptual figure explaining each hypothesis
-
-\begin{itemize}
-\tightlist
-\item
-  acclimation: greater demand, higher gs increase AA
-\item
-  developmental plasticity: light-induced changes in leaf anatomy
-  modulate AA
-\item
-  constitutive: genetic differences in leaves adapted to different light
-  habitats
-\end{itemize}
-
-We distinguished among these hypotheses by comparing AA among wild
-tomato species from different native light habitats, grown under
-simulated sun and shade light treatments, and measured under contrasting
-light intensity (Figure of hypotheses and predictions). We measured AA
-on 600 individual plants from 30 accessions (average of 10 replicates
-per light treatment) using a recently developed method (\emph{1}). With
-this method, we directly compare the photosynthetic rate of an untreated
-amphistomatous leaf to that of the same leaf with gas exchange blocked
-through the adaxial (upper) surface by transparent plastic, which we
-refer to as `pseudohypostomy'. To compare amphi- and pseudohypostomatous
-leaves at identical whole-leaf \(g_\text{sc}\), we measure \(A\) over a
-range of \(g_\text{sc}\), inducing stomatal opening and closure by
-modulating humidity (see Materials and Methods for further details).
-
-Table of directional predictions (with table summarizing results? part
-of conceptual figure? in supplement?)
+CONCEPTUAL FIGURE HERE
 
 caption: Directional predictions associated with each hypothesis
 explaining why amphistomy advantage (AA) might be greater for leaves in
 sunny, open habitats. For each hypothesis, we make predictions for how
-native light habitat, light treatment, and light intensity would affect
-AA.
+native plant area index (PAI), growth light treatment, and measurement
+light intensity would affect AA.
 
 \begin{longtable}[]{@{}
-  >{\centering\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1972}}
-  >{\centering\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.3099}}
-  >{\centering\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.2535}}
-  >{\centering\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.2394}}@{}}
+  >{\centering\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1728}}
+  >{\centering\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.3580}}
+  >{\centering\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.3210}}
+  >{\centering\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1481}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\centering
 hypothesis
 \end{minipage} & \begin{minipage}[b]{\linewidth}\centering
-native light habitat
+measurement light intensity
 \end{minipage} & \begin{minipage}[b]{\linewidth}\centering
-light treatment
+growth light intensity
 \end{minipage} & \begin{minipage}[b]{\linewidth}\centering
-light intensity
+native PAI
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-acclimatory & cor(PAR, AA) = 0 & AAsun = AAshade & AA2000 \textgreater{}
-AA150 \\
-plastic & cor(PAR, AA) = 0 & AAsun \textgreater{} AAshade & AA2000 =
-AA150 \\
-constitutive & cor(PAR, AA) \textgreater{} 0 & AAsun = AAshade & AA2000
-= AA150 \\
+acclimatory & AA2000 \textgreater{} AA150 & AAsun = AAshade & cor(PAI,
+AA) = 0 \\
+plastic & AA2000 = AA150 & AAsun \textgreater{} AAshade & cor(PAI, AA) =
+0 \\
+constitutive & AA2000 = AA150 & AAsun = AAshade & cor(PAI, AA)
+\textgreater{} 0 \\
 \end{longtable}
 
-{[}add rows for when multiple hypotheses are supported simultaneously?
-or put that in SI?{]}
+We tested these hypotheses by comparing AA among amphistomatous wild
+tomato species (\emph{51}) from different native light habitats, grown
+under simulated sun and shade light treatments, and measured under
+contrasting light intensity (Figure of hypotheses and predictions). We
+measured AA on 572 individual plants from 29 accessions (average of 9.86
+replicates per light treatment) using a recently developed method
+(\emph{46}). With this method, we directly compare the photosynthetic
+rate of an untreated amphistomatous leaf to that of the same leaf with
+gas exchange blocked through the adaxial (upper) surface by transparent
+plastic, which we refer to as `pseudohypostomy'. To compare amphi- and
+pseudohypostomatous leaves at identical whole-leaf \(g_\text{sc}\), we
+measure \(A\) over a range of \(g_\text{sc}\), inducing stomatal opening
+and closure by modulating humidity (see Materials and Methods for
+further details). We estimated `amphistomy advantage' (\aax)
+\emph{sensu} (\emph{20}), but with modifications previously described in
+(\emph{46}) and here (Materials and Methods). The native light intensity
+was represented by plant area index (PAI
+\(\unit{\meter\squared\per\meter\squared}\)), estimated using a global
+gridded X-m2 resolution data set derived from the Global Ecosystem
+Dynamics Investigation {[}GEDI; (\emph{52}){]} and georeferenced
+accession collection information from the Tomato Genetics Resource
+Center. The growth light intensities were 761 (sun treatment) and 115
+(shade treatment) while all other environment conditions were nearly
+identical (see \textbf{?@sec-methods} for supporting detail). The high
+and low measurements intensities were \ppfdequals{2000} (97.8:2.24
+red:blue) and \ppfdequals{150} (87.0:13.0 red:blue), respectively.
 
-{[}results{]} Amphistomy increases \(A\) in all accessions, in both sun
-and shade leaves, and light intensities. We infer this from the fact
-that blocking gas exchange in pseudohypostomatous leaves reduced \(A\)
-by X-X\% depending on the accession, light treatment, and light
-intensity (Table/figure). The AA is equivalent to an X-X\% change in
-total \(g_\text{sc}\) (see SI section gs equivalency). But whereas
-increasing \(g_\text{sc}\) would increase water loss as a necessary
-by-product, amphistomy can increase \(A\) without any appreciable affect
-on transpiration.
+\subsubsection{MARKER}\label{marker}
 
-Sun leaves from high light habitats {[}not sure if htis result is true
-yet{]} benefit the most from amphistomy because of a both developmental
-plasticity and constitutive differences among accessions. {[}quantify
-difference in AA and contribution of different affects{]}. Surprisingly,
-light intensity had a little effect\ldots{} (should this be in this
-paragraph, or it's own?).
+Consistent with biophysical theory of CO\(_2\) diffusion within leaves,
+AA \textgreater{} 0 for all accessions (Figure X). AA varied
+substantially between measurement light intensities, growth light
+intensities, and among accessions (point to model comparison evidence).
+Measured under high light intensity, AA was consistently greater for sun
+plants. The average AA among accessions in the shade treatment was 0.039
+(range: 0.012--0.109; 21 of 29 accessions significant); however, the
+same accessions grown at high light intensity showed a mean AA of 0.050
+(range: 0.024--0.120; 25 of 29 accessions significant). Contrary to the
+predictions of the assimilatory hypothesis, AA was greater in all
+accessions under low measurement light intensity for both sun and shade
+grown plants. The effect of low light on AA was more pronounced in the
+sun-grown plants, where AA was significantly greater under low
+measurement light intensity in 28 of 29 accessions compared to to 11
+accessions for shade-grown plants. The overall average AA of shade and
+sun grown plants measured under low light intensity was 0.066 (range:
+0.019--0.143; 27 of 29 accessions significant) and 0.098 (range:
+0.051--0.175; 29 of 29 accessions significant), respectively. There was
+a slight tendency for accessions from more closed habitats (greater
+PAI), but AA varied widely among accessions from open habitats (low PAI)
+regardless of growth and measurement light intensities (Figure X). The
+pattern of AA across wild tomatoes strongly supports the plasticity
+hypothesis, argues against the acclimatory hypothesis, and provides only
+weak support for the constitutive hypothesis.
 
-{[}discussion{]} - sun/shade has long been appreciated and this shows
-new trait that should be considered and that CO2 diffusion becomes major
-limitation
+Not sure where this goes: We infer this from the fact that blocking gas
+exchange in pseudohypostomatous leaves reduced \(A\) by X-X\% depending
+on the accession, light treatment, and light intensity (Table/figure).
+The AA is equivalent to an X-X\% change in total \(g_\text{sc}\) (see SI
+section gs equivalency). But whereas increasing \(g_\text{sc}\) would
+increase water loss as a necessary by-product, amphistomy can increase
+\(A\) without any appreciable affect on transpiration.
 
-\section{Materials and Methods}\label{materials-and-methods}
+These results suggest that developmental plasticity, as opposed to
+acclimation or adaptation to open habitats, may explain the explain the
+long-standing observation taht amphistomatous leaves are more common in
+sunny habitats. Our results add to existing explanations by showing high
+light intensity \emph{per se} does not increase the benefit of
+amphistomy, but rather than anatomical and biochemical change associated
+with higher light intensity modulate AA. We cannot yet attribute
+specific changes wrought by plasticity, but correlational evidence
+suggests that changes in leaf anatomy may be important. Species
+responded consistently by increasing stomatal density, especially on the
+adaxial surface, increasing stomatal density ratio. Sun leaves also had
+greater gs, Amax. However, these traits were not associated with change
+in AA (table/figures).
 
-{[}this will be moved to SI eventually{]}
+from Mott and Oleary: ``However, Jones and Slatyer (5) reported a higher
+mesophyll resistance for CO, entering through the upper stomata than for
+the lower, and the data of Vaclavik (12) appear to support this
+conclusion''
+
+\section{Outtro - I think this goes at the
+end??}\label{outtro---i-think-this-goes-at-the-end}
+
+It is commonly assumed in comparative studies that most trait variation
+between species is constitutive and genetically determined, but our
+results suggest that plastic responses to light are necessary to explain
+why \gmaxratio{} increases with light habitat. Reaction norms to light
+intensity among wild tomatoes indicate that accessions from low light
+habitats express low \gmaxratio{} when grown in shade, whereas
+accessions from high light habitats have constitutively higher
+\gmaxratio{} (Fig. rxn-norm). The larger response to light intensity is
+driven by greater plasticty in leaf structure in accessions from
+low-light habitats (Fig/table - I haven't tested this yet, so this is a
+placeholder.) We infer that these structural changes in sun leaves are
+costly because they increase the diffusion path length for CO\(_2\) and
+reduce photosynthesis. As a consequence, sun leaves benefit more from
+amphistomy. This is the first demonstration that sun leaves benefit more
+from amphistomy because it compensates for developmental plasticity in
+leaf structure.
+
+Two outstanding areas for further research are 1) the specific
+anatomical changes, such as leaf thickness or mesophyll porosity, that
+increase the diffusion path length for CO\(_2\) in sun leaves, and 2)
+the costs of amphistomy that could explain plasticity in \gmaxratio{} in
+accessions from low-light habitats. Resolving the first question will
+require detailed anatomical measurements on a large number of shade and
+sun leaves with concomitant estimates of \aax. The fact that accessions
+from low-light habitats are more plastic suggests that costs of
+amphistomy are greatest in these environments. (not finished yet)
+
+Problems to bring up in discussion: - all our species were amphi, so
+they may all live in PAI below threshold to favor amphi - other
+microclimate diffs not considered - don't know specific anatomical
+change
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{7}
+\tightlist
+\item
+  What it all means
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  Our study reveals an important role for plasticity in explaining why
+  amphi leaves are more common in sunny habitats
+\item
+  Confirms that leaf structure of sun leaves incurs costs that
+  amphistomy can mitigate
+\item
+  It will be useful to consider coordination between leaf anatomy,
+  stomatal density, and ratio in future studies of leaf
+  structure-function and in crops (or something)
+\end{itemize}
+
+\section{Materials and Methods
+{[}\#sec-methods{]}}\label{materials-and-methods-sec-methods}
+
+{[}this will be moved to SI eventually. note that much of it also the
+same in solanum-aq project, so might change to cite that paper?{]}
+
+(not sure where this goes) * We acclimated the focal leaf to high light
+(\ppfdequals{2000}) and high relative humidity (\rhequals{70}) until
+\(A\) and \gsw{} reach their maximum. After that, we decreased \rh{} to
+\(\approx 10\%\) to induce rapid stomatal closure without biochemical
+down
 
 \subsection{Accessions}\label{accessions}
 
-We compared AA among 30 ecologically diverse accessions of wild tomato,
+We compared AA among 29 ecologically diverse accessions of wild tomato,
 including representatives of all described species of \emph{Solanum}
-sect. \emph{Lycopersicon} and sect. \emph{Lycopersicoides} (\emph{2})
+sect. \emph{Lycopersicon} and sect. \emph{Lycopersicoides} (\emph{51})
 and the cultivated tomato \emph{S. lycopersicum} var.
 \emph{lycopersicum} \autoref{tab:accessions}. Due to constraints on
-growth space and time, we spread out measurements over 80 weeks from May
-1, 2022 to October 31, 2023. Replicates within accession were evenly
-spread out over this period to prevent confounding of temporal variation
-in growth conditions with accession. {[}anything else to say here? maybe
-explain accession selection and phylogeny?{]}
+growth space and time, we spread out measurements over 61.1 weeks from
+August 29, 2022 to October 31, 2023. Replicates within accession were
+evenly spread out over this period to prevent confounding of temporal
+variation in growth conditions with accession. {[}anything else to say
+here? maybe explain accession selection and phylogeny?{]}
 
-\begin{table}
+\begin{longtable}{>{\raggedright\arraybackslash}p{3.25cm}lrrrr}
 
-\caption{\label{tbl-accessions}Solanum accessions}
+\caption{\label{tbl-accessions}Accessions of \emph{Solanum} used in this
+study. The species name, accession number, collection latitude,
+longitude, elevation, and daily solar radiation estimated using the
+SPLASH algorithm (see `Climate data'). TGRC: Tomato Genetics Resource
+Center; PPFD: Photosynthetic Photon Flux Density.}
 
-\centering{
+\tabularnewline
 
-}
+\toprule
+Species & TGRC accession & Latitude & Longitude & Elevation (mas) & $\mathrm{PAI}~(\unit{\meter\squared\per\meter\squared}$\\
+\midrule
+\em{\cellcolor{gray!10}{S. arcanum}} & \cellcolor{gray!10}{LA2172} & \cellcolor{gray!10}{-6.008} & \cellcolor{gray!10}{-78.858} & \cellcolor{gray!10}{662} & \cellcolor{gray!10}{0.7}\\
+\em{S. cheesmaniae} & LA0429 & -0.644 & -90.329 & 800 & 0.6\\
+\em{\cellcolor{gray!10}{S. cheesmaniae}} & \cellcolor{gray!10}{LA3124} & \cellcolor{gray!10}{-0.804} & \cellcolor{gray!10}{-90.042} & \cellcolor{gray!10}{1} & \cellcolor{gray!10}{0.4}\\
+\em{S. chilense} & LA1782 & -15.267 & -74.633 & 1000 & 0.3\\
+\em{\cellcolor{gray!10}{S. chilense}} & \cellcolor{gray!10}{LA4117A} & \cellcolor{gray!10}{-22.907} & \cellcolor{gray!10}{-67.941} & \cellcolor{gray!10}{3540} & \cellcolor{gray!10}{0.2}\\
+\addlinespace
+\em{S. chmielewskii} & LA1028 & -13.883 & -73.017 & 3000 & 0.4\\
+\em{\cellcolor{gray!10}{S. chmielewskii}} & \cellcolor{gray!10}{LA1316} & \cellcolor{gray!10}{-13.400} & \cellcolor{gray!10}{-73.906} & \cellcolor{gray!10}{2920} & \cellcolor{gray!10}{1.1}\\
+\em{S. corneliomulleri} & LA0107 & -13.117 & -76.383 & 60 & 0.0\\
+\em{\cellcolor{gray!10}{S. corneliomulleri}} & \cellcolor{gray!10}{LA0444} & \cellcolor{gray!10}{-13.433} & \cellcolor{gray!10}{-76.133} & \cellcolor{gray!10}{100} & \cellcolor{gray!10}{0.5}\\
+\em{S. galapagense} & LA0436 & -0.953 & -90.978 & 40 & 0.2\\
+\addlinespace
+\em{\cellcolor{gray!10}{S. galapagense}} & \cellcolor{gray!10}{LA1044} & \cellcolor{gray!10}{-0.284} & \cellcolor{gray!10}{-90.548} & \cellcolor{gray!10}{0} & \cellcolor{gray!10}{0.2}\\
+\em{S. habrochaites} & LA0407 & -2.181 & -79.884 & 70 & 0.5\\
+\em{\cellcolor{gray!10}{S. habrochaites}} & \cellcolor{gray!10}{LA1777} & \cellcolor{gray!10}{-9.550} & \cellcolor{gray!10}{-77.700} & \cellcolor{gray!10}{3216} & \cellcolor{gray!10}{0.4}\\
+\em{S. huaylasense} & LA1358 & -9.533 & -77.967 & 750 & 0.6\\
+\em{\cellcolor{gray!10}{S. huaylasense}} & \cellcolor{gray!10}{LA1360} & \cellcolor{gray!10}{-9.546} & \cellcolor{gray!10}{-77.929} & \cellcolor{gray!10}{1490} & \cellcolor{gray!10}{0.5}\\
+\addlinespace
+\em{S. huaylasense} & LA1364 & -10.133 & -77.383 & 2920 & 0.9\\
+\em{\cellcolor{gray!10}{S. lycopersicoides}} & \cellcolor{gray!10}{LA2951} & \cellcolor{gray!10}{-19.317} & \cellcolor{gray!10}{-69.450} & \cellcolor{gray!10}{2200} & \cellcolor{gray!10}{0.5}\\
+\em{S. lycopersicoides} & LA4126 & -19.287 & -69.396 & 3120 & 0.4\\
+\em{\cellcolor{gray!10}{S. neorickii}} & \cellcolor{gray!10}{LA1322} & \cellcolor{gray!10}{-13.483} & \cellcolor{gray!10}{-72.442} & \cellcolor{gray!10}{2380} & \cellcolor{gray!10}{0.7}\\
+\em{S. neorickii} & LA2133 & -3.400 & -79.183 & 1980 & 1.1\\
+\addlinespace
+\em{\cellcolor{gray!10}{S. pennellii}} & \cellcolor{gray!10}{LA0716} & \cellcolor{gray!10}{-16.225} & \cellcolor{gray!10}{-73.617} & \cellcolor{gray!10}{50} & \cellcolor{gray!10}{0.2}\\
+\em{S. pennellii} & LA0750 & -14.775 & -75.034 & 550 & 0.1\\
+\em{\cellcolor{gray!10}{S. pennellii}} & \cellcolor{gray!10}{LA3778} & \cellcolor{gray!10}{-14.775} & \cellcolor{gray!10}{-75.034} & \cellcolor{gray!10}{616} & \cellcolor{gray!10}{0.1}\\
+\em{S. peruvianum} & LA2744 & -18.550 & -70.150 & 400 & 0.2\\
+\em{\cellcolor{gray!10}{S. peruvianum}} & \cellcolor{gray!10}{LA2964} & \cellcolor{gray!10}{-18.028} & \cellcolor{gray!10}{-70.835} & \cellcolor{gray!10}{75} & \cellcolor{gray!10}{1.2}\\
+\addlinespace
+\em{S. pimpinellifolium} & LA1269 & -11.483 & -77.075 & 400 & 0.5\\
+\em{\cellcolor{gray!10}{S. pimpinellifolium}} & \cellcolor{gray!10}{LA1589} & \cellcolor{gray!10}{-8.433} & \cellcolor{gray!10}{-78.817} & \cellcolor{gray!10}{30} & \cellcolor{gray!10}{0.1}\\
+\em{S. pimpinellifolium} & LA2933 & -1.442 & -80.562 & 375 & 1.6\\
+\em{\cellcolor{gray!10}{S. sitiens}} & \cellcolor{gray!10}{LA4116} & \cellcolor{gray!10}{-22.159} & \cellcolor{gray!10}{-68.782} & \cellcolor{gray!10}{2960} & \cellcolor{gray!10}{0.1}\\
+\bottomrule
 
-\end{table}%
+\end{longtable}
 
 \subsection{Plant growth conditions}\label{plant-growth-conditions}
 
@@ -436,9 +692,10 @@ a thorough rinse. We transferred seedlings to cell-pack flats containing
 Pro-Mix BX potting mix (Premier Tech, Rivière-du-Loup, Quebec, Canada)
 once cotyledons fully emerged, typically within 1-2 weeks of sowing. We
 grew seeds and seedlings for both sun and shade treatments under the
-same environmental conditions (12:12 h, 25:\(\qty{20}{\degreeCelsius}\),
-40:60 RH day:night cycle). LED light provided
-\(\mathrm{PPFD} = \qty{200}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}\)
+same environmental conditions (12:12 h,
+24.3:\(\qty{21.7}{\degreeCelsius}\), 49.6:58.4 RH day:night cycle). LED
+light provided
+\(\mathrm{PPFD} = \qty{267}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}\)
 (Fluence RAZRx, Austin, Texas, USA).
 
 \subsubsection{Light treatments}\label{light-treatments}
@@ -460,7 +717,7 @@ We assigned sun and shade treatment to lower and upper racks of a
 \(\qty{1.22}{\meter} \times \qty{2.44}{\meter}\) shelving unit in a
 climate-controlled growth room. We assigned the sun treatment to the
 lower rack to limit diffuse light from reaching the shade treatment. The
-average daytime \ppfd{} was \ppfdqty{800} and \ppfdqty{125} for sun and
+average daytime \ppfd{} was \ppfdqty{761} and \ppfdqty{115} for sun and
 shade treatments, respectively. To isolate the effect of light intensity
 from quality, we used the same LED model with the the same spectrum
 (Fluence SPYDR 2i, Austin, Texas, USAS), but dimmed the lights in the
@@ -469,10 +726,10 @@ than light, we mixed air within the growth room using an air circulator
 (Vornado 693DC, Andover, Kansas, USA) and within racks using a miniature
 oscillating air circulator (Vornado Atom 1, Andover, Kansas, USA).
 Despite these efforts, the air in the sun treatment was on average
-\(\qty{1}{\degreeCelsius}\) warmer and the average RH was consequently 5
-lower. However, because of evaporative cooling, the leaves in the sun
-treatment were only \(\qty{1}{\degreeCelsius}\) on average (\(n = 600\)
-leaves).
+\(\qty{2.56}{\degreeCelsius}\) warmer and the average RH was
+consequently 5.75 lower. However, because of evaporative cooling, the
+leaves in the sun treatment were only \(\qty{0.886}{\degreeCelsius}\) on
+average (\(n = 699\) leaves).
 
 \subsection{Leaf trait measurements}\label{leaf-trait-measurements}
 
@@ -481,24 +738,24 @@ the cotyledons during early vegetative growth. This typically meant that
 plants had grown in light treatments for \(\approx\) 4 weeks, ensuring
 they had time to sense and respond developmentally to the light
 intensity of the treatment rather than the seedling conditions
-(\emph{3}). Shade plants grew slower than sun plants, hence leaves at
+(\emph{53}). Shade plants grew slower than sun plants, hence leaves at
 the same developmental stage were measured on chronologically older
 plants in the shade treatment. In some sun plants, we had to use leaves
 higher on the stem because short internodes made lower leaves
 inaccessible with the gas exchange equipment. We measured terminal
-leaflets in 70.0\% of cases, but used the lateral leaflet closest to the
+leaflets in 82.6\% of cases, but used the lateral leaflet closest to the
 terminal leaflet when it was damaged or difficult to clamp into the gas
 exchange chamber. When a leaflet was damaged during gas exchange
 measurements, we collected anatomical data from the nearest leaflet on
-the same leaf (10.0)\%. We measured chlorophyll concentration index
+the same leaf (1.58)\%. We measured chlorophyll concentration index
 (CCI) using a chrolophyll concentration meter (MC-100, Apogee
 Instruments, Logan, Utah, USA) on the lamina of focal leaflets before
 gas exchange measurements at the same time we measured leaf temperature.
 
 \subsubsection{Amphistomy advantage}\label{amphistomy-advantage}
 
-We estimated `amphistomy advantage' (\aax) \emph{sensu} (\emph{4}), but
-with modifications previously described in (\emph{1}). \aax{} is
+We estimated `amphistomy advantage' (\aax) \emph{sensu} (\emph{20}), but
+with modifications previously described in (\emph{46}). \aax{} is
 calculated as the log-response ratio of \(A\) compared at the same total
 \gsw:
 
@@ -527,12 +784,12 @@ following manufacturer directions.
 
 We collected four \agcurve{} curves per leaf, an amphi (untreated) curve
 and a pseudohypo (treated) curve at high light-intensity
-(\ppfdequals{2000}; 97.7:2.3 red:blue) and low light-intensity
+(\ppfdequals{2000}; 97.8:2.24 red:blue) and low light-intensity
 (\ppfdequals{150}; 87.0:13.0 red:blue). We always measured high
 light-intensity curves first because photosynthetic downregulation is
 faster than upregulation in these species. To control for order effects,
 we alternated between starting with amphi or pseudohypo leaf
-measurements. Unlike (\emph{1}), preliminary experiments with
+measurements. Unlike (\emph{46}), preliminary experiments with
 \emph{Solanum} indicated a strong order effect in that \(A\) declined in
 the second curve. Therefore, we made measurements over two days. On the
 first day, we measured high and low light-intensity curves for either
@@ -553,7 +810,7 @@ stomatal closure with low \rh and logging data as described above.
 \subsubsection{\texorpdfstring{Light-response (\aqcurve)
 curves}{Light-response () curves}}\label{light-response-curves}
 
-In 90.0\% of plants, we measured light-response (\aqcurve) curves on the
+In 91.3\% of plants, we measured light-response (\aqcurve) curves on the
 same leaflets as \agcurve{} curves. However, when a leaflet was damaged
 during \agcurve{} curves, we used the next closest leaflet for
 \aqcurve{} curves. Leaves acclimated to high light-intensity
@@ -567,16 +824,16 @@ descending order.
 
 We estimated the stomatal density and size on ab- and adaxial leaf
 surfaces from all leaves, using guard cell length as a proxy for
-stomatal size since it proportional to maximum conductance (\emph{5}).
+stomatal size since it proportional to maximum conductance (\emph{54}).
 We made surface impressions of leaf lamina from the same area used for
 gas exchange measurements using a-silicone impression material (Zhermack
 elite HD+, light body, fast set, Rovigo, Italy). We applied clear nail
 polish to make positive replicas of the impression. After nail polish
 dried, we mounted replicas on a microscope slide using transparent tape
-(\emph{6}). We digitized a portion of each leaf surface replica using a
+(\emph{55}). We digitized a portion of each leaf surface replica using a
 brightfield microscope (Leica DM2000, Wetzlar, Germany). We counted and
 measured guard cell length on all stomata using the FIJI implementation
-of ImageJ2 version 2.3.0 (\emph{7}), then divided the count by the
+of ImageJ2 version 2.3.0 (\emph{56}), then divided the count by the
 visible leaf area (\(\qty{0.890}{\raiseto{2}\milli\meter}\)) to estimate
 stomatal density.
 
@@ -585,14 +842,14 @@ stomatal density.
 Leaf mass per area (LMA) is the dry mass divided by the leaflet area. We
 scanned fresh leaflets on a flat bed scanner (Epson V600, Los Alamitos,
 California. USA) and measured leaflet area from digital images using the
-FIJI implementation of ImageJ2 version 2.3.0 (\emph{7}). We dried leaves
-for 72 hours at \(\qty{74}{\degreeCelsius}\) in a food dehydrator
+FIJI implementation of ImageJ2 version 2.3.0 (\emph{56}). We dried
+leaves for 72 hours at \(\qty{74}{\degreeCelsius}\) in a food dehydrator
 (Cosori CP267-FD, Vesync Co., Anaheim, California, USA) and weighed
 using a benchtop analytical balance (Ohaus PR64 Analytical Balance,
-Parsippany, New Jersey, USA). In \(5.0\%\) we measured LMA on the
+Parsippany, New Jersey, USA). In \(10.5\%\) we measured LMA on the
 adjacent leaflet because the focal leaflet was damaged or wilted while
 making surface impressions and we could not reliably estimate area. LMA
-data are missing from \(3.0\%\) of individuals because the area or mass
+data are missing from \(3.32\%\) of individuals because the area or mass
 was not recorded at all or recorded incorrectly.
 
 \subsection{\texorpdfstring{Cleaning \agcurve{}
@@ -627,7 +884,7 @@ Step: description & Number of curves & Number of points per curve\\
 4. remove replicates with no overlap between amphi and pseudohypo \agcurve{} curves & 2,268 & 58.5\\
 \cellcolor{gray!10}{5. thin redundant data points within each \agcurve{} curve} & \cellcolor{gray!10}{2,268} & \cellcolor{gray!10}{28.1}\\
 \addlinespace
-6. Trim extreme \aax{} values & 2,210 & 28.0\\
+6. trim extreme \aax{} values & 2,214 & 28.1\\
 \bottomrule
 \end{tabular}
 
@@ -720,7 +977,7 @@ with light treatment, light intensity, accession, and all interactions
 as explanatory variables. This model was also fit using ordinary least
 squares with the \texttt{lm()} function in \emph{R}. We classified
 extreme \aax{} values as those with an absolute internal studentized
-residual \(> 3.5\). Because these values likely indicate significant
+residual \(> 3\). Because these values likely indicate significant
 measurement error or leaf damage, we removed \agcurve{} curves at both
 light intensities if either was classified as extreme.
 
@@ -764,10 +1021,10 @@ caused by transitory changes in chamber conditions, exert undue leverage
 on parameter estimates and cause bias and/or low precision in parameter
 estimates.
 
-\emph{Procedure}: We fit provisional nonrectangular hyperbola (\emph{8})
-to each \aqcurve{} curve using nonlinear regression with the
+\emph{Procedure}: We fit provisional nonrectangular hyperbola
+(\emph{57}) to each \aqcurve{} curve using nonlinear regression with the
 \texttt{nlsLM()} function from the \emph{R} package \textbf{minpack.lm}
-version 1.2.4 (\emph{9}). We sequentially removed data points with an
+version 1.2.4 (\emph{58}). We sequentially removed data points with an
 absolute external studentized residual \(> 3\) until none remained.
 
 \subsubsection{\texorpdfstring{Remove \aqcurve{} curves with poor
@@ -846,15 +1103,16 @@ Model & Fixed effects & Phylogenetic random effects & Response to native \ppfd\\
 \emph{Stan}}{Fitting models in Stan}}\label{sec-fitting}
 
 We fit Bayesian models with MCMC sampling in the probabilistic
-programming language \emph{Stan} (\emph{10}). We used CmdStan version
-2.33.1 and \textbf{cmdstanr} version 0.7.1 (\emph{11}) to interface with
-\emph{R} version 4.3.2 (\emph{12}). We sampled the posterior
-distribution from 4 chains with 1000 iterations each after 1000 warmup
+programming language \emph{Stan} (\emph{59}) using the \emph{R} package
+\textbf{brms} version 2.22.0 (\emph{60}). We used CmdStan version 2.36.0
+and \textbf{cmdstanr} version 0.9.0 (\emph{61}) to interface with
+\emph{R} version 4.5.0 (\emph{62}). We sampled the posterior
+distribution from 1 chains with 1000 iterations each after 1000 warmup
 iterations per chain. We estimated parameters and confidence intervals
 as the median and 95\% quantile intervals of the posterior,
 respectively. We chose the number of chains, warmup and sampling
 iterations, and maximum treedepth so that parameter estimates converged
-(\(\hat{R} < 1.01\) (\emph{13})) and the effective sample size (ESS) for
+(\(\hat{R} < 1.01\) (\emph{63})) and the effective sample size (ESS) for
 each parameter was \(> 10^3\).
 
 \subsubsection{Parameter estimation and priors}\label{sec-parameters}
@@ -1015,7 +1273,7 @@ treatment. We used a weakly informative normal prior with mean \(-3\)
 and standard deviation \(5\) for the the random effect standard
 deviation of replicate within accession. We accounted for the
 phylogenetic structure among the random effects of accession using an
-Ornstein-Uhlenbeck (OU) process (\emph{14}). The expected covariance
+Ornstein-Uhlenbeck (OU) process (\emph{64}). The expected covariance
 between accessions \(i\) and \(j\) (\(\text{Cov}(i, j)\) ) is:
 
 \[\text{Cov}(i, j) = \frac{\sigma^2}{2 \alpha} \exp(-\alpha D_{ij})\]
@@ -1077,7 +1335,7 @@ confidence intervals for a parameter did not overlap zero, we considered
 the parameter to be significantly different from zero. We used the
 leave-one-out cross-validation information criterion (LOOIC) to compare
 the fit of models (\autoref{tbl-models}) using the \emph{R} package
-\textbf{loo} version 2.7.0 (\emph{15}) to calculate LOOIC values. Note
+\textbf{loo} version 2.8.0 (\emph{65}) to calculate LOOIC values. Note
 that LOOIC was calculated only from pointwise likelihood values of the
 submodel estimating effects of light intensity, light treatments, and
 accession on \aax{} (see Section~\ref{sec-parameters}). We considered
@@ -1137,58 +1395,440 @@ Assimilatory $\times$ Plastic $\times$ Constitutive & $\beta_{\mathrm{AA},2000,\
 \section{Acknowledgements}\label{acknowledgements}
 
 Justin Alter, Max Gatlin, Joana Kim, Jenna Matsuyama, Brandon Najarian,
-Kai Yasuda
+Kai Yasuda. Sarah Friedrich helped with figures.
 
 \section*{References}\label{references}
 \addcontentsline{toc}{section}{References}
 
 \phantomsection\label{refs}
 \begin{CSLReferences}{0}{1}
-\bibitem[\citeproctext]{ref-triplett_amphistomy_2024}
+\bibitem[\citeproctext]{ref-raven_selection_2002}
 \CSLLeftMargin{1. }%
+\CSLRightInline{J. A. Raven,
+\href{https://doi.org/10.1046/j.0028-646X.2001.00334.x}{Selection
+pressures on stomatal evolution}. \emph{New Phytologist} \textbf{153},
+371--386 (2002).}
+
+\bibitem[\citeproctext]{ref-mcadam_stomata_2021}
+\CSLLeftMargin{2. }%
+\CSLRightInline{S. A. M. McAdam, J. G. Duckett, F. C. Sussmilch, S.
+Pressel, K. S. Renzaglia, R. Hedrich, T. J. Brodribb, A. Merced,
+\href{https://doi.org/10.1002/ajb2.1619}{Stomata: The holey grail of
+plant evolution}. \emph{American Journal of Botany} \textbf{108},
+366--371 (2021).}
+
+\bibitem[\citeproctext]{ref-clark_origin_2022}
+\CSLLeftMargin{3. }%
+\CSLRightInline{J. W. Clark, B. J. Harris, A. J. Hetherington, N.
+Hurtado-Castano, R. A. Brench, S. Casson, T. A. Williams, J. E. Gray, A.
+M. Hetherington, \href{https://doi.org/10.1016/j.cub.2022.04.040}{The
+origin and evolution of stomata}. \emph{Current Biology} \textbf{32},
+R539--R553 (2022).}
+
+\bibitem[\citeproctext]{ref-hetherington_role_2003}
+\CSLLeftMargin{4. }%
+\CSLRightInline{A. M. Hetherington, F. I. Woodward,
+\href{https://doi.org/10.1038/nature01843}{The role of stomata in
+sensing and driving environmental change}. \emph{Nature} \textbf{424},
+901--908 (2003).}
+
+\bibitem[\citeproctext]{ref-de_boer_optimal_2016}
+\CSLLeftMargin{5. }%
+\CSLRightInline{H. J. de Boer, C. A. Price, F. Wagner‐Cremer, S. C.
+Dekker, P. J. Franks, E. J. Veneklaas,
+\href{https://doi.org/10.1111/nph.13929}{Optimal allocation of leaf
+epidermal area for gas exchange}. \emph{New Phytologist} \textbf{210},
+1219--1228 (2016).}
+
+\bibitem[\citeproctext]{ref-harrison_influence_2020}
+\CSLLeftMargin{6. }%
+\CSLRightInline{E. L. Harrison, L. Arce Cubas, J. E. Gray, C. Hepworth,
+\href{https://doi.org/10.1111/tpj.14560}{The influence of stomatal
+morphology and distribution on photosynthetic gas exchange}. \emph{The
+Plant Journal} \textbf{101}, 768--779 (2020).}
+
+\bibitem[\citeproctext]{ref-woodward_stomatal_1987}
+\CSLLeftMargin{7. }%
+\CSLRightInline{F. I. Woodward,
+\href{https://doi.org/10.1038/327617a0}{Stomatal numbers are sensitive
+to increases in {CO2} from pre-industrial levels}. \emph{Nature}
+\textbf{327}, 617--618 (1987).}
+
+\bibitem[\citeproctext]{ref-buckley_modelling_2013}
+\CSLLeftMargin{8. }%
+\CSLRightInline{T. N. Buckley, K. A. Mott,
+\href{https://doi.org/10.1111/pce.12140}{Modelling stomatal conductance
+in response to environmental factors: {Modelling} stomatal conductance}.
+\emph{Plant, Cell \& Environment} \textbf{36}, 1691--1699 (2013).}
+
+\bibitem[\citeproctext]{ref-haworth_co-ordination_2013}
+\CSLLeftMargin{9. }%
+\CSLRightInline{M. Haworth, C. Elliott-Kingston, J. C. McElwain,
+\href{https://doi.org/10.1007/s00442-012-2406-9}{Co-ordination of
+physiological and morphological responses of stomata to elevated
+{[}{CO2}{]} in vascular plants}. \emph{Oecologia} \textbf{171}, 71--82
+(2013).}
+
+\bibitem[\citeproctext]{ref-liang_stomatal_2023}
+\CSLLeftMargin{10. }%
+\CSLRightInline{X. Liang, D. Wang, Q. Ye, J. Zhang, M. Liu, H. Liu, K.
+Yu, Y. Wang, E. Hou, B. Zhong, L. Xu, T. Lv, S. Peng, H. Lu, P. Sicard,
+A. Anav, D. S. Ellsworth,
+\href{https://doi.org/10.1038/s41467-023-37934-7}{Stomatal responses of
+terrestrial plants to global change}. \emph{Nature Communications}
+\textbf{14}, 2188 (2023).}
+
+\bibitem[\citeproctext]{ref-chua_stomatal_2024}
+\CSLLeftMargin{11. }%
+\CSLRightInline{L. C. Chua, O. S. Lau,
+\href{https://doi.org/10.1242/dev.202681}{Stomatal development in the
+changing climate}. \emph{Development} \textbf{151}, dev202681 (2024).}
+
+\bibitem[\citeproctext]{ref-lang_century-long_2024}
+\CSLLeftMargin{12. }%
+\CSLRightInline{P. L. M. Lang, J. M. Erberich, L. Lopez, C. L. Weiß, G.
+Amador, H. F. Fung, S. M. Latorre, J. R. Lasky, H. A. Burbano, M.
+Expósito-Alonso, D. C. Bergmann,
+\href{https://doi.org/10.1038/s41559-024-02481-x}{Century-long timelines
+of herbarium genomes predict plant stomatal response to climate change}.
+\emph{Nature Ecology \& Evolution} \textbf{8}, 1641--1653 (2024).}
+
+\bibitem[\citeproctext]{ref-franks_new_2014}
+\CSLLeftMargin{13. }%
+\CSLRightInline{P. J. Franks, D. L. Royer, D. J. Beerling, P. K. Van de
+Water, D. J. Cantrill, M. M. Barbour, J. A. Berry,
+\href{https://doi.org/10.1002/2014GL060457}{New constraints on
+atmospheric {CO}\(_{\textrm{2}}\) concentration for the {Phanerozoic}}.
+\emph{Geophysical Research Letters} \textbf{41}, 4685--4694 (2014).}
+
+\bibitem[\citeproctext]{ref-mcelwain_paleoecology_2017}
+\CSLLeftMargin{14. }%
+\CSLRightInline{J. C. McElwain, M. Steinthorsdottir, Paleoecology,
+ploidy, paleoatmospheric composition, and developmental biology: A
+review of the multiple uses of fossil stomata. \emph{Plant Physiology}
+\textbf{174}, 650--664 (2017).}
+
+\bibitem[\citeproctext]{ref-the_cenozoic_co_proxy_integration_project_cencopip_consortium_toward_2023}
+\CSLLeftMargin{15. }%
+\CSLRightInline{The Cenozoic CO Proxy Integration Project (CenCOPIP)
+Consortium*†, B. Hönisch, D. L. Royer, D. O. Breecker, P. J. Polissar,
+G. J. Bowen, M. J. Henehan, Y. Cui, M. Steinthorsdottir, J. C. McElwain,
+M. J. Kohn, A. Pearson, S. R. Phelps, K. T. Uno, A. Ridgwell, E.
+Anagnostou, J. Austermann, M. P. S. Badger, R. S. Barclay, P. K. Bijl,
+T. B. Chalk, C. R. Scotese, E. De La Vega, R. M. DeConto, K. A. Dyez, V.
+Ferrini, P. J. Franks, C. F. Giulivi, M. Gutjahr, D. T. Harper, L. L.
+Haynes, M. Huber, K. E. Snell, B. A. Keisling, W. Konrad, T. K.
+Lowenstein, A. Malinverno, M. Guillermic, L. M. Mejía, J. N. Milligan,
+J. J. Morton, L. Nordt, R. Whiteford, A. Roth-Nebelsick, J. K. C.
+Rugenstein, M. F. Schaller, N. D. Sheldon, S. Sosdian, E. B. Wilkes, C.
+R. Witkowski, Y. G. Zhang, L. Anderson, D. J. Beerling, C. Bolton, T. E.
+Cerling, J. M. Cotton, J. Da, D. D. Ekart, G. L. Foster, D. R.
+Greenwood, E. G. Hyland, E. A. Jagniecki, J. P. Jasper, J. B. Kowalczyk,
+L. Kunzmann, W. M. Kürschner, C. E. Lawrence, C. H. Lear, M. A.
+Martínez-Botí, D. P. Maxbauer, P. Montagna, B. D. A. Naafs, J. W. B.
+Rae, M. Raitzsch, G. J. Retallack, S. J. Ring, O. Seki, J. Sepúlveda, A.
+Sinha, T. F. Tesfamichael, A. Tripati, J. Van Der Burgh, J. Yu, J. C.
+Zachos, L. Zhang, \href{https://doi.org/10.1126/science.adi5177}{Toward
+a {Cenozoic} history of atmospheric {CO}\(_{\textrm{2}}\)}.
+\emph{Science} \textbf{382}, eadi5177 (2023).}
+
+\bibitem[\citeproctext]{ref-hofmann_impact_2025}
+\CSLLeftMargin{16. }%
+\CSLRightInline{T. A. Hofmann, W. Atkinson, M. Fan, A. J. Simkin, P.
+Jindal, T. Lawson, \href{https://doi.org/10.1098/rstb.2024.0244}{Impact
+of climate-driven changes in temperature on stomatal anatomy and
+physiology}. \emph{Philosophical Transactions of the Royal Society B:
+Biological Sciences} \textbf{380}, 20240244 (2025).}
+
+\bibitem[\citeproctext]{ref-berry_stomata:_2010}
+\CSLLeftMargin{17. }%
+\CSLRightInline{J. A. Berry, D. J. Beerling, P. J. Franks,
+\href{https://doi.org/10.1016/j.pbi.2010.04.013}{Stomata: Key players in
+the earth system, past and present}. \emph{Current Opinion in Plant
+Biology} \textbf{13}, 232--239 (2010).}
+
+\bibitem[\citeproctext]{ref-franks_stomatal_2017}
+\CSLLeftMargin{18. }%
+\CSLRightInline{P. J. Franks, J. A. Berry, D. L. Lombardozzi, G. B.
+Bonan, \href{https://doi.org/10.1104/pp.17.00287}{Stomatal {Function}
+across {Temporal} and {Spatial} {Scales}: {Deep}-{Time} {Trends},
+{Land}-{Atmosphere} {Coupling} and {Global} {Models}}. \emph{Plant
+Physiology} \textbf{174}, 583--602 (2017).}
+
+\bibitem[\citeproctext]{ref-grubb_leaf_1977}
+\CSLLeftMargin{19. }%
+\CSLRightInline{P. J. Grubb, {``Leaf structure and function''} in
+\emph{The Encyclopedia of Ignorance}, R. Duncan, M. Weston-Smith, Eds.
+(Pergamon, Oxford, 1977)vol. 2, pp. 317--330.}
+
+\bibitem[\citeproctext]{ref-parkhurst_adaptive_1978}
+\CSLLeftMargin{20. }%
+\CSLRightInline{D. F. Parkhurst,
+\href{https://doi.org/10.2307/2259142}{The adaptive significance of
+stomatal occurrence on one or both surfaces of leaves}. \emph{The
+Journal of Ecology} \textbf{66}, 367--383 (1978).}
+
+\bibitem[\citeproctext]{ref-mott_adaptive_1982}
+\CSLLeftMargin{21. }%
+\CSLRightInline{K. A. Mott, A. C. Gibson, J. W. O'Leary,
+\href{https://doi.org/10.1111/1365-3040.ep11611750}{The adaptive
+significance of amphistomatic leaves}. \emph{Plant, Cell \& Environment}
+\textbf{5}, 455--460 (1982).}
+
+\bibitem[\citeproctext]{ref-gibson_structure-function_1996}
+\CSLLeftMargin{22. }%
+\CSLRightInline{A. C. Gibson, \emph{Structure-{Function} {Relations} of
+{Warm} {Desert} {Plants}} (Springer Berlin / Heidelberg, Berlin,
+Heidelberg, 1996;
+\url{http://public.eblib.com/choice/PublicFullRecord.aspx?p=6495247}).}
+
+\bibitem[\citeproctext]{ref-smith_leaf_1997}
+\CSLLeftMargin{23. }%
+\CSLRightInline{W. K. Smith, T. C. Vogelmann, E. H. DeLucia, D. T. Bell,
+K. A. Shepherd, \href{https://doi.org/10.2307/1313100}{Leaf {Form} and
+{Photosynthesis}}. \emph{BioScience} \textbf{47}, 785--793 (1997).}
+
+\bibitem[\citeproctext]{ref-oguchi_leaf_2018}
+\CSLLeftMargin{24. }%
+\CSLRightInline{R. Oguchi, Y. Onoda, I. Terashima, D. Tholen, {``Leaf
+{Anatomy} and {Function}''} in \emph{The {Leaf}: {A} {Platform} for
+{Performing} {Photosynthesis}}, W. W. Adams III, I. Terashima, Eds.
+(Springer International Publishing, Cham, 2018;
+\url{https://doi.org/10.1007/978-3-319-93594-2_5})\emph{Advances in
+{Photosynthesis} and {Respiration}}, pp. 97--139.}
+
+\bibitem[\citeproctext]{ref-drake_two_2019}
+\CSLLeftMargin{25. }%
+\CSLRightInline{P. L. Drake, H. J. de Boer, S. J. Schymanski, E. J.
+Veneklaas, \href{https://doi.org/10.1111/nph.15652}{Two sides to every
+leaf: Water and {CO}\(_{\textrm{2}}\) transport in hypostomatous and
+amphistomatous leaves}. \emph{New Phytologist} \textbf{222}, 1179--1187
+(2019).}
+
+\bibitem[\citeproctext]{ref-grubb_leaf_2020}
+\CSLLeftMargin{26. }%
+\CSLRightInline{P. J. Grubb, {``Leaf structure and function''} in
+\emph{Unsolved {Problems} in {Ecology}}, A. Dobson, D. Tilman, R. D.
+Holt, Eds. (Princeton University Press, Princeton, 2020), pp. 124--144.}
+
+\bibitem[\citeproctext]{ref-pospisilova_environmental_1980}
+\CSLLeftMargin{27. }%
+\CSLRightInline{J. Pospíŝilová, J. Solárová, Environmental and
+biological control of diffusive conductances of adaxial and abaxial leaf
+epidermes. \emph{Photosynthetica} \textbf{14}, 90--127 (1980).}
+
+\bibitem[\citeproctext]{ref-mott_stomatal_1984}
+\CSLLeftMargin{28. }%
+\CSLRightInline{K. A. Mott, J. W. O'Leary,
+\href{http://www.jstor.org/stable/4268406}{Stomatal {Behavior} and {CO}₂
+{Exchange} {Characteristics} in {Amphistomatous} {Leaves}}. \emph{Plant
+Physiology} \textbf{74}, 47--51 (1984).}
+
+\bibitem[\citeproctext]{ref-reich_effects_1985}
+\CSLLeftMargin{29. }%
+\CSLRightInline{P. B. Reich, A. W. Schoettle, R. G. Amundson,
+\href{https://doi.org/10.1111/j.1399-3054.1985.tb02818.x}{Effects of low
+concentrations of {O3}, leaf age and water stress on leaf diffusive
+conductance and water use efficiency in soybean}. \emph{Physiologia
+Plantarum} \textbf{63}, 58--64 (1985).}
+
+\bibitem[\citeproctext]{ref-mott_asymmetric_1993}
+\CSLLeftMargin{30. }%
+\CSLRightInline{K. A. Mott, Z. G. Cardon, J. A. Berry,
+\href{https://doi.org/10.1111/j.1365-3040.1993.tb00841.x}{Asymmetric
+patchy stomatal closure for the two surfaces of \emph{{Xanthium}
+strumarium} {L}. Leaves at low humidity}. \emph{Plant, Cell \&
+Environment} \textbf{16}, 25--34 (1993).}
+
+\bibitem[\citeproctext]{ref-wall_stomata_2022}
+\CSLLeftMargin{31. }%
+\CSLRightInline{S. Wall, S. Vialet‐Chabrand, P. Davey, J. Van Rie, A.
+Galle, J. Cockram, T. Lawson,
+\href{https://doi.org/10.1111/nph.18257}{Stomata on the abaxial and
+adaxial leaf surfaces contribute differently to leaf gas exchange and
+photosynthesis in wheat}. \emph{New Phytologist} \textbf{235},
+1743--1756 (2022).}
+
+\bibitem[\citeproctext]{ref-gutschick_photosynthesis_1984}
+\CSLLeftMargin{32. }%
+\CSLRightInline{V. P. Gutschick, Photosynthesis model for
+{C}\(_{\textrm{3}}\) leaves incorporating {CO}\(_{\textrm{2}}\)
+transport, propagation of radiation, and biochemistry 2. Ecological and
+agricultural utility. \emph{Photosynthetica} \textbf{18}, 569--595
+(1984).}
+
+\bibitem[\citeproctext]{ref-marquez_assessing_2023}
+\CSLLeftMargin{33. }%
+\CSLRightInline{D. A. Márquez, H. Stuart‐Williams, L. A. Cernusak, G. D.
+Farquhar, \href{https://doi.org/10.1111/nph.18784}{Assessing the
+{\textless{}}span style="font-variant:small-caps;"{\textgreater{}}
+{CO}\(_{\textrm{2}}\) {\textless{}}/span{\textgreater{}} concentration
+at the surface of photosynthetic mesophyll cells}. \emph{New
+Phytologist} \textbf{238}, 1446--1460 (2023).}
+
+\bibitem[\citeproctext]{ref-parkhurst_intercellular_1990}
+\CSLLeftMargin{34. }%
+\CSLRightInline{D. F. Parkhurst, K. A. Mott,
+\href{https://doi.org/10.1104/pp.94.3.1024}{Intercellular diffusion
+limits to {CO}\(_{\textrm{2}}\) uptake in leaves: Studies in air and
+helox}. \emph{Plant Physiology} \textbf{94}, 1024--1032 (1990).}
+
+\bibitem[\citeproctext]{ref-foster_influence_1986}
+\CSLLeftMargin{35. }%
+\CSLRightInline{J. R. Foster, W. K. Smith,
+\href{https://doi.org/10.1111/j.1365-3040.1986.tb02108.x}{Influence of
+stomatal distribution on transpiration in low-wind environments}.
+\emph{Plant, Cell and Environment} \textbf{9}, 751--759 (1986).}
+
+\bibitem[\citeproctext]{ref-muir_is_2019}
+\CSLLeftMargin{36. }%
+\CSLRightInline{C. D. Muir, \href{https://doi.org/10.1093/icb/icz085}{Is
+amphistomy an adaptation to high light? {Optimality} models of stomatal
+traits along light gradients}. \emph{Integrative and Comparative
+Biology} \textbf{59}, 571--584 (2019).}
+
+\bibitem[\citeproctext]{ref-wood_physiology_1934}
+\CSLLeftMargin{37. }%
+\CSLRightInline{J. G. Wood, The physiology of xerophytism in
+{Australian} plants: The stomatal frequencies, transpiration and osmotic
+pressures of sclerophyll and tomentose-succulent leaved plants.
+\emph{Journal of Ecology} \textbf{22}, 69--87 (1934).}
+
+\bibitem[\citeproctext]{ref-howell_concerning_1945}
+\CSLLeftMargin{38. }%
+\CSLRightInline{J. T. Howell, Concerning stomata on leaves in
+\emph{a}rctostaphylos. \emph{The Wasmann Collector} \textbf{6}, 57--65
+(1945).}
+
+\bibitem[\citeproctext]{ref-salisbury_i_1928}
+\CSLLeftMargin{39. }%
+\CSLRightInline{E. J. Salisbury,
+\href{https://doi.org/10.1098/rstb.1928.0001}{I. {On} the causes and
+ecological significance of stomatal frequency, with special reference to
+the woodland flora}. \emph{Philosophical Transactions of the Royal
+Society of London. Series B, Containing Papers of a Biological
+Character} \textbf{216}, 1--65 (1928).}
+
+\bibitem[\citeproctext]{ref-peat_comparative_1994}
+\CSLLeftMargin{40. }%
+\CSLRightInline{H. J. Peat, A. H. Fitter, A comparative study of the
+distribution and density of stomata in the {British} flora.
+\emph{Biological Journal of the Linnean Society} \textbf{52}, 377--393
+(1994).}
+
+\bibitem[\citeproctext]{ref-jordan_using_2014}
+\CSLLeftMargin{41. }%
+\CSLRightInline{G. J. Jordan, R. J. Carpenter, T. J. Brodribb,
+\href{https://doi.org/10.1016/j.palaeo.2013.12.035}{Using fossil leaves
+as evidence for open vegetation}. \emph{Palaeogeography,
+Palaeoclimatology, Palaeoecology} \textbf{395}, 168--175 (2014).}
+
+\bibitem[\citeproctext]{ref-bucher_stomatal_2017}
+\CSLLeftMargin{42. }%
+\CSLRightInline{S. F. Bucher, K. Auerswald, C. Grün-Wenzel, S. I.
+Higgins, J. Garcia Jorge, C. Römermann,
+\href{https://doi.org/10.1016/j.flora.2017.02.011}{Stomatal traits
+relate to habitat preferences of herbaceous species in a temperate
+climate}. \emph{Flora} \textbf{229}, 107--115 (2017).}
+
+\bibitem[\citeproctext]{ref-muir_light_2018}
+\CSLLeftMargin{43. }%
+\CSLRightInline{C. D. Muir, Light and growth form interact to shape
+stomatal ratio among {British} angiosperms. \emph{New Phytologist}
+\textbf{218}, 242--252 (2018).}
+
+\bibitem[\citeproctext]{ref-triplett_stomatal_2025}
+\CSLLeftMargin{44. }%
+\CSLRightInline{G. Triplett, A. S. David,
+\href{https://doi.org/10.1002/ajb2.70050}{Stomatal distribution and
+post‐fire recovery: {Intra}‐ and interspecific variation in plants of
+the pyrogenic {Florida} scrub}. \emph{American Journal of Botany},
+e70050 (2025).}
+
+\bibitem[\citeproctext]{ref-lyshede_comparative_2002}
+\CSLLeftMargin{45. }%
+\CSLRightInline{O. B. Lyshede, Comparative and functional leaf anatomy
+of selected {Alstroemeriaceae} of mainly {Chilean} origin.
+\emph{Botanical Journal of the Linnean Society} \textbf{140}, 261--272
+(2002).}
+
+\bibitem[\citeproctext]{ref-triplett_amphistomy_2024}
+\CSLLeftMargin{46. }%
 \CSLRightInline{G. Triplett, T. N. Buckley, C. D. Muir,
 \href{https://doi.org/10.1002/ajb2.16284}{Amphistomy increases leaf
 photosynthesis more in coastal than montane plants of {Hawaiian} ʻilima
-( \emph{{Sida} fallax} )}. \emph{American Journal of Botany}
-\textbf{111}, e16284 (2024).}
+(\emph{{Sida} fallax})}. \emph{American Journal of Botany} \textbf{111},
+e16284 (2024).}
+
+\bibitem[\citeproctext]{ref-farquhar_biochemical_1980}
+\CSLLeftMargin{47. }%
+\CSLRightInline{G. D. Farquhar, S. von Caemmerer, J. A. Berry,
+\href{https://doi.org/10.1007/BF00386231}{A biochemical model of
+photosynthetic {CO}\(_{\textrm{2}}\) assimilation in leaves of
+{C}\(_{\textrm{3}}\) species}. \emph{Planta} \textbf{149}, 78--90
+(1980).}
+
+\bibitem[\citeproctext]{ref-poorter_metaanalysis_2019}
+\CSLLeftMargin{48. }%
+\CSLRightInline{H. Poorter, Ü. Niinemets, N. Ntagkas, A. Siebenkäs, M.
+Mäenpää, S. Matsubara, T. L. Pons,
+\href{https://doi.org/10.1111/nph.15754}{A meta‐analysis of plant
+responses to light intensity for 70 traits ranging from molecules to
+whole plant performance}. \emph{New Phytologist} \textbf{223},
+1073--1105 (2019).}
+
+\bibitem[\citeproctext]{ref-givnish_common-garden_2014}
+\CSLLeftMargin{49. }%
+\CSLRightInline{T. J. Givnish, R. A. Montgomery,
+\href{https://doi.org/10.1098/rspb.2013.2944}{Common-garden studies on
+adaptive radiation of photosynthetic physiology among {Hawaiian}
+lobeliads}. \emph{Proceedings of the Royal Society B: Biological
+Sciences} \textbf{281}, 20132944--20132944 (2014).}
+
+\bibitem[\citeproctext]{ref-engelbrecht_evaluation_2001}
+\CSLLeftMargin{50. }%
+\CSLRightInline{B. M. J. Engelbrecht, H. M. Herz,
+\href{https://doi.org/10.1017/S0266467401001146}{Evaluation of different
+methods to estimate understorey light conditions in tropical forests}.
+\emph{Journal of Tropical Ecology} \textbf{17}, 207--224 (2001).}
 
 \bibitem[\citeproctext]{ref-peralta_taxonomy_2008}
-\CSLLeftMargin{2. }%
+\CSLLeftMargin{51. }%
 \CSLRightInline{I. E. Peralta, D. M. Spooner, S. Knapp, Taxonomy of wild
 tomatoes and their relatives (\emph{solanum} sect.
 \emph{Lycopersicoides}, sect. \emph{Juglandifolia}, sect.
 \emph{Lycopersicon}; {Solanaceae}). \textbf{84} (2008).}
 
+\bibitem[\citeproctext]{ref-burns_multi-resolution_2024}
+\CSLLeftMargin{52. }%
+\CSLRightInline{P. Burns, C. R. Hakkenberg, S. J. Goetz,
+\href{https://doi.org/10.1038/s41597-024-03668-4}{Multi-resolution
+gridded maps of vegetation structure from {GEDI}}. \emph{Scientific
+Data} \textbf{11}, 881 (2024).}
+
 \bibitem[\citeproctext]{ref-schoch_dependence_1980}
-\CSLLeftMargin{3. }%
+\CSLLeftMargin{53. }%
 \CSLRightInline{P.-G. Schoch, C. Zinsou, M. Sibi,
 \href{https://doi.org/10.1093/jxb/31.5.1211}{Dependence of the stomatal
 index on environmental factors during stomatal differentiation in leaves
 of \emph{{Vigna} sinensis} {L}.: 1. {Effect} of light intensity}.
 \emph{Journal of Experimental Botany} \textbf{31}, 1211--1216 (1980).}
 
-\bibitem[\citeproctext]{ref-parkhurst_adaptive_1978}
-\CSLLeftMargin{4. }%
-\CSLRightInline{D. F. Parkhurst,
-\href{https://doi.org/10.2307/2259142}{The adaptive significance of
-stomatal occurrence on one or both surfaces of leaves}. \emph{The
-Journal of Ecology} \textbf{66}, 367--383 (1978).}
-
 \bibitem[\citeproctext]{ref-sack_developmental_2016}
-\CSLLeftMargin{5. }%
+\CSLLeftMargin{54. }%
 \CSLRightInline{L. Sack, T. N. Buckley,
 \href{https://doi.org/10.1104/pp.16.00476}{The developmental basis of
 stomatal density and flux}. \emph{Plant Physiology} \textbf{171},
 2358--2363 (2016).}
 
 \bibitem[\citeproctext]{ref-mott_amphistomy_1991}
-\CSLLeftMargin{6. }%
+\CSLLeftMargin{55. }%
 \CSLRightInline{K. A. Mott, O. Michaelson, Amphistomy as an adaptation
 to high light intensity in \emph{{Ambrosia} cordifolia} ({Compositae}).
 \emph{American Journal of Botany} \textbf{78}, 76--79 (1991).}
 
 \bibitem[\citeproctext]{ref-schindelin_fiji_2012}
-\CSLLeftMargin{7. }%
+\CSLLeftMargin{56. }%
 \CSLRightInline{J. Schindelin, I. Arganda-Carreras, E. Frise, V. Kaynig,
 M. Longair, T. Pietzsch, S. Preibisch, C. Rueden, S. Saalfeld, B.
 Schmid, J.-Y. Tinevez, D. J. White, V. Hartenstein, K. Eliceiri, P.
@@ -1197,7 +1837,7 @@ open-source platform for biological-image analysis}. \emph{Nature
 Methods} \textbf{9}, 676--682 (2012).}
 
 \bibitem[\citeproctext]{ref-marshall_model_1980}
-\CSLLeftMargin{8. }%
+\CSLLeftMargin{57. }%
 \CSLRightInline{B. Marshall, P. V. Biscoe,
 \href{https://doi.org/10.1093/jxb/31.1.29}{A {Model} for
 {C}\(_{\textrm{3}}\) {Leaves} {Describing} the {Dependence} of {Net}
@@ -1205,47 +1845,55 @@ Methods} \textbf{9}, 676--682 (2012).}
 \textbf{31}, 29--39 (1980).}
 
 \bibitem[\citeproctext]{ref-elzhov_minpacklm_2023}
-\CSLLeftMargin{9. }%
+\CSLLeftMargin{58. }%
 \CSLRightInline{T. V. Elzhov, K. M. Mullen, A.-N. Spiess, B. M. Bolker,
 \emph{Minpack.lm: {R} {Interface} to the {Levenberg}-{Marquardt}
 {Nonlinear} {Least}-{Squares} {Algorithm} {Found} in {MINPACK}, {Plus}
 {Support} for {Bounds}} (2023;
 \url{https://CRAN.R-project.org/package=minpack.lm}).}
 
-\bibitem[\citeproctext]{ref-stan_development_team_stan_2023}
-\CSLLeftMargin{10. }%
+\bibitem[\citeproctext]{ref-stan_development_team_stan_2025}
+\CSLLeftMargin{59. }%
 \CSLRightInline{Stan Development Team, \emph{Stan {Modeling} {Language}
-{Users} {Guide} and {Reference} {Manual}} (2023;
+{Users} {Guide} and {Reference} {Manual}} (2025;
 \url{https://mc-stan.org}).}
 
-\bibitem[\citeproctext]{ref-gabry_cmdstanr_2023}
-\CSLLeftMargin{11. }%
-\CSLRightInline{J. Gabry, R. Češnovar, \emph{Cmdstanr: {R} {Interface}
-to '{CmdStan}'} (2023;
+\bibitem[\citeproctext]{ref-burkner_brms_2017}
+\CSLLeftMargin{60. }%
+\CSLRightInline{P.-C. Bürkner,
+\href{https://doi.org/10.18637/jss.v080.i01}{\textbf{Brms} : {An}
+\emph{r} {Package} for {Bayesian} {Multilevel} {Models} {Using}
+\emph{stan}}. \emph{Journal of Statistical Software} \textbf{80}
+(2017).}
+
+\bibitem[\citeproctext]{ref-gabry_cmdstanr_2025}
+\CSLLeftMargin{61. }%
+\CSLRightInline{J. Gabry, R. Češnovar, A. Johnson, S. Bronder,
+\emph{Cmdstanr: {R} {Interface} to '{CmdStan}'} (2025;
 \href{https://mc-stan.org/cmdstanr,\%20https://discourse.mc-stan.org}{https://mc-stan.org/cmdstanr,
 https://discourse.mc-stan.org}).}
 
-\bibitem[\citeproctext]{ref-r_core_team_r:_2023}
-\CSLLeftMargin{12. }%
+\bibitem[\citeproctext]{ref-r_core_team_r:_2025}
+\CSLLeftMargin{62. }%
 \CSLRightInline{R Core Team, \emph{R: {A} {Language} and {Environment}
 for {Statistical} {Computing}} (R Foundation for Statistical Computing,
-Vienna, Austria, 2023; \url{http://www.R-project.org/}).}
+Vienna, Austria, 2025; \url{http://www.R-project.org/}).}
 
 \bibitem[\citeproctext]{ref-gelman_inference_1992}
-\CSLLeftMargin{13. }%
+\CSLLeftMargin{63. }%
 \CSLRightInline{A. Gelman, D. B. Rubin, Inference from iterative
 simulation using multiple sequences. \emph{Statistical Science}
 \textbf{7}, 457--472 (1992).}
 
 \bibitem[\citeproctext]{ref-hansen_stabilizing_1997}
-\CSLLeftMargin{14. }%
+\CSLLeftMargin{64. }%
 \CSLRightInline{T. F. Hansen,
 \href{https://doi.org/10.1111/j.1558-5646.1997.tb01457.x}{Stabilizing
 selection and the comparative analysis of adaptation}. \emph{Evolution}
 \textbf{51}, 1341--1351 (1997).}
 
 \bibitem[\citeproctext]{ref-vehtari_practical_2017}
-\CSLLeftMargin{15. }%
+\CSLLeftMargin{65. }%
 \CSLRightInline{A. Vehtari, A. Gelman, J. Gabry,
 \href{https://doi.org/10.1007/s11222-016-9696-4}{Practical {Bayesian}
 model evaluation using leave-one-out cross-validation and {WAIC}}.
