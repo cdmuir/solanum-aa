@@ -5,11 +5,13 @@ fit_aa = read_rds("objects/fit_aa2.rds")
 
 # Estimated llma for each acc, light_intensity, and light_treatment
 df_new1 = crossing(
-    acc = unique(fit_aa$data$acc),
+    # acc = unique(fit_aa$data$acc),
+    acc_id = unique(fit_aa$data$acc_id),
     light_intensity = unique(fit_aa$data$light_intensity),
     light_treatment = unique(fit_aa$data$light_treatment)
   ) |>
-  mutate(row = row_number())
+  mutate(acc = str_extract(acc_id, acc_string),
+         row = row_number())
 
 df_pred1 = posterior_epred(fit_aa, newdata = df_new1, resp = "llma") |>
   as_draws_df() |>
@@ -64,21 +66,92 @@ df1 = full_join(
   )
 
 # Regression lines
-fit_aa$fit$draws
-
-as_draws_df(fit_aa) %>%
-  colnames()
-  dplyr::select("b_aa_Intercept", "b_aa_light_intensity2000", "bsp_aa_millma",
-                "bsp_aa_millma:light_intensity2000")
+ce = conditional_effects(fit_aa)
+df2 = ce[["aa.aa_llma:light_intensity"]] |>
+  mutate(lma = exp(llma), aa = estimate__, .lower = lower__, .upper = upper__,
+         Measurement = light_intensity |>
+           factor(levels = c("150", "2000")) |>
+           fct_recode(low = "150", high = "2000"), Growth = NA)
   
 # Plot
-ggplot(df1, aes(x = lma, y = aa, color = Growth, shape = Measurement)) +
+ggplot(df1, aes(x = lma, y = aa, shape = Measurement)) +
+  geom_ribbon(data = df2, mapping = aes(ymin = .lower, ymax = .upper, group = Measurement), alpha = 0.5, color = NA, fill = "grey") + 
+  geom_line(data = df2, aes(linetype = Measurement), linewidth = 1.1) +
   # geom_interval(aes(ymin = aa_lower, ymax = aa_upper), linewidth = 0.5) +
   # geom_interval(aes(xmin = lma_lower, xmax = lma_upper), linewidth = 0.5) +
-  geom_point(fill = "white") +
+  geom_point(mapping = aes(color = Growth), fill = "white", size = 2) +
   scale_color_manual(values = c("shade" = "tomato4", "sun" = "tomato")) +
   scale_shape_manual(values = c("low" = 19, "high" = 21)) +
   labs(
     x = expression(paste("leaf mass per area [g ", m^-2, "]")),,
     y = "amphi advantage"
-  ) 
+  ) +
+  xlim(min(df1$lma), max(df1$lma)) +
+  theme(legend.key.width = unit(1.5, "cm")) 
+
+ggsave("figures/lma-aa.pdf", width = 6, height = 4)
+
+
+# other code. not using at the moment
+fit_aa$data |>
+  mutate(
+    lma = exp(llma),
+    Growth = light_treatment |>
+      factor(levels = c("low", "high")) |>
+      fct_recode(sun = "high", shade = "low"),
+    Measurement = light_intensity |>
+      factor(levels = c("150", "2000")) |>
+      fct_recode(low = "150", high = "2000")
+  ) |>
+  ggplot(aes(
+    x = lma,
+    y = aa,
+    color = Growth,
+    shape = Measurement
+  )) +
+  geom_ribbon(
+    data = df2,
+    mapping = aes(ymin = .lower, ymax = .upper, group = Measurement),
+    alpha = 0.5
+  ) +
+  geom_line(data = df2,
+            aes(group = Measurement),
+            linewidth = 2) +
+  # geom_interval(aes(ymin = aa_lower, ymax = aa_upper), linewidth = 0.5) +
+  # geom_interval(aes(xmin = lma_lower, xmax = lma_upper), linewidth = 0.5) +
+  geom_point(fill = "white") +
+  scale_color_manual(values = c("shade" = "tomato4", "sun" = "tomato")) +
+  scale_shape_manual(values = c("low" = 19, "high" = 21)) +
+  labs(x = expression(paste("leaf mass per area [g ", m^-2, "]")), , y = "amphi advantage") +
+  scale_x_log10()
+
+
+a1 = predict(fit_aa) |>
+  as_tibble()
+
+a1 |>
+  dplyr::select(starts_with("Estimate")) |>
+  rename_with(\(.x) str_remove(.x, "^Estimate\\."), .cols = everything()) |>
+  bind_cols(dplyr::select(fit_aa$data, light_intensity, light_treatment)) |>
+  mutate(
+    lma = exp(llma),
+    Growth = light_treatment |>
+      factor(levels = c("low", "high")) |>
+      fct_recode(sun = "high", shade = "low"),
+    Measurement = light_intensity |>
+      factor(levels = c("150", "2000")) |>
+      fct_recode(low = "150", high = "2000")
+  ) |>
+  ggplot(aes(lma, aa, color = Growth, shape = Measurement)) +
+  geom_ribbon(
+    data = df2,
+    mapping = aes(ymin = .lower, ymax = .upper, group = Measurement),
+    alpha = 0.5
+  ) +
+  geom_line(data = df2,
+            aes(group = Measurement),
+            linewidth = 2) +
+  geom_point() +
+  geom_point(fill = "white") +
+  scale_color_manual(values = c("shade" = "tomato4", "sun" = "tomato")) +
+  scale_shape_manual(values = c("low" = 19, "high" = 21))
