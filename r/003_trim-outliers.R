@@ -29,6 +29,7 @@ rh_curves1 = rh_curves |>
     aa = (upper_int - lower_int) / (log_gsw_pseudohypo - log_gsw_amphi),
     amphi_first = ymd(licor_date_amphi) < ymd(licor_date_pseudohypo)
   ) 
+
 fit1 = lm(aa ~ amphi_first + acc * light_treatment * light_intensity, data = rh_curves1)
 summary(aov(fit1))
 rh_curves1$resid = rstudent(fit1)

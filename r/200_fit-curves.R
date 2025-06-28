@@ -1,5 +1,5 @@
 # Fit quadratic parameters to each curve separately
-# Note: I removed ARMA because it was causing strange issues. Custon Stan model does it correctly.
+# Note: I removed ARMA because it was causing strange issues. Custom Stan model does it correctly.
 source("r/header.R")
 
 rh_curves = read_rds("data/trimmed_rh_curves.rds") |>
