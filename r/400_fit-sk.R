@@ -10,10 +10,9 @@ rh_curves = read_rds("data/trimmed_rh_curves.rds") |>
   mutate(ci = as.numeric(as.factor(curve))) |>
   mutate(t_sec = elapsed - min(elapsed), .by = ci)
   
-plan(multisession, workers = 2)
+plan(multisession, workers = 19)
 rh_curves |>
   split( ~ curve) |>
-  magrittr::extract(seq_len(4)) |>
   future_iwalk(\(df, curve_id) {
     file = paste0(sk_dir, curve_id, ".rds")
     if (!file.exists(file)) {
@@ -57,6 +56,12 @@ rh_curves |>
     }
   }, .progress = TRUE, .options = furrr_options(seed = TRUE))
 
+# zip
+zip::zipr(
+  "objects/sk-curves.zip",
+  list.files(sk_dir, full.names = TRUE),
+  recurse = TRUE
+)
 
 
 fit1 = read_rds(paste0(sk_dir, "LA0107-C_pseudohypo_150.rds")) 
