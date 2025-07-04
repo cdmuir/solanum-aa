@@ -5,13 +5,12 @@ fit_aa = read_rds("objects/fit_aa2.rds")
 
 # Estimated llma for each acc, light_intensity, and light_treatment
 df_new1 = crossing(
-    # acc = unique(fit_aa$data$acc),
-    acc_id = unique(fit_aa$data$acc_id),
+    acc = unique(fit_aa$data$acc),
+    # acc_id = unique(fit_aa$data$acc_id),
     light_intensity = unique(fit_aa$data$light_intensity),
     light_treatment = unique(fit_aa$data$light_treatment)
   ) |>
-  mutate(acc = str_extract(acc_id, acc_string),
-         row = row_number())
+  mutate(row = row_number())
 
 df_pred1 = posterior_epred(fit_aa, newdata = df_new1, resp = "llma") |>
   as_draws_df() |>
@@ -74,7 +73,7 @@ df2 = ce[["aa.aa_llma:light_intensity"]] |>
            fct_recode(low = "150", high = "2000"), Growth = NA)
   
 # Plot
-ggplot(df1, aes(x = lma, y = aa, shape = Measurement)) +
+fig_lma_aa = ggplot(df1, aes(x = lma, y = aa, shape = Measurement)) +
   geom_ribbon(data = df2, mapping = aes(ymin = .lower, ymax = .upper, group = Measurement), alpha = 0.5, color = NA, fill = "grey") + 
   geom_line(data = df2, aes(linetype = Measurement), linewidth = 1.1) +
   # geom_interval(aes(ymin = aa_lower, ymax = aa_upper), linewidth = 0.5) +
@@ -89,7 +88,8 @@ ggplot(df1, aes(x = lma, y = aa, shape = Measurement)) +
   xlim(min(df1$lma), max(df1$lma)) +
   theme(legend.key.width = unit(1.5, "cm")) 
 
-ggsave("figures/lma-aa.pdf", width = 6, height = 4)
+write_rds(fig_lma_aa, "objects/fig_lma_aa.rds")
+ggsave("figures/lma-aa.pdf", fig_lma_aa, width = 6, height = 4)
 
 
 # other code. not using at the moment

@@ -36,18 +36,23 @@ df_aa_pred1 = posterior_epred(fit_aa1, newdata = df_new) |>
       fct_recode(low = "150", high = "2000")
   )
 
-ggplot(df_aa_pred1, aes(pai, aa, color = Growth, shape = Measurement)) +
+fig_aa_pai = ggplot(df_aa_pred1, aes(pai, aa, color = Growth, shape = Measurement)) +
   facet_grid(Measurement ~ Growth) +
   geom_point() +
   scale_color_manual(values = c("shade" = "tomato4", "sun" = "tomato")) +
   scale_shape_manual(values = c("low" = 19, "high" = 21)) +
   scale_x_continuous(breaks = c(0.01, 0.1, 1), trans = reverselog10_trans()) +
-  xlab(expression(paste("plant area index [", m^2~m^-2, "]"))) +
+  xlab(expression(paste("native plant area index [", m^2~m^-2, "]"))) +
   ylab("amphi advantage") +
+  ylim(0, 0.2) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
   theme(legend.position = "none")
+
+write_rds(fig_aa_pai, "objects/fig_aa_pai.rds")
 
 ggsave(
   "figures/pai-aa.pdf",
+  fig_aa_pai,
   width = 6,
   height = 4,
   device = cairo_pdf,

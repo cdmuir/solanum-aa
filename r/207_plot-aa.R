@@ -89,7 +89,7 @@ df_aa_text = df_aa_pred1 |>
     .by = c("Growth", "Measurement")
   )
 
-ggplot(
+fig_aa = ggplot(
   df_aa_pred1,
   aes(
     x,
@@ -117,8 +117,11 @@ ggplot(
     legend.position = "none"
   )
 
+write_rds(fig_aa, "objects/fig_aa.rds")
+
 ggsave(
   "figures/aa.pdf",
+  fig_aa,
   width = 6,
   height = 4,
   device = cairo_pdf,
