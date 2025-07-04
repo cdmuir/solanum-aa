@@ -22,7 +22,7 @@
 \usepackage{lmodern}
 \ifPDFTeX\else  
     % xetex/luatex font selection
-    \setmainfont[]{Times New Roman}
+  \setmainfont[]{Times New Roman}
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -44,28 +44,14 @@
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 % Make \paragraph and \subparagraph free-standing
-\makeatletter
 \ifx\paragraph\undefined\else
   \let\oldparagraph\paragraph
-  \renewcommand{\paragraph}{
-    \@ifstar
-      \xxxParagraphStar
-      \xxxParagraphNoStar
-  }
-  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
-  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
+  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
 \fi
 \ifx\subparagraph\undefined\else
   \let\oldsubparagraph\subparagraph
-  \renewcommand{\subparagraph}{
-    \@ifstar
-      \xxxSubParagraphStar
-      \xxxSubParagraphNoStar
-  }
-  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
-  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
+  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
-\makeatother
 
 
 \providecommand{\tightlist}{%
@@ -81,17 +67,15 @@
 \makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
-\newsavebox\pandoc@box
-\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
-  \sbox\pandoc@box{#1}%
-  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
-  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
-  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
-  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
-  \else\usebox{\pandoc@box}%
-  \fi%
-}
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
 % Set default figure placement to htbp
+\makeatletter
 \def\fps@figure{htbp}
 \makeatother
 % definitions for citeproc citations
@@ -212,7 +196,9 @@
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
-
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
 \usepackage{bookmark}
 
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
@@ -227,7 +213,6 @@
   urlcolor={Blue},
   pdfcreator={LaTeX via pandoc}}
 
-
 \title{Developmental plasticity to high light intensity amplifies the
 advantage of amphistomous leaves}
 \author{Christopher D. Muir\(^{1,2*}\) \and Wei Shen
@@ -236,7 +221,6 @@ Lim\(^{1}\) \and Dachuan Wang\(^{1,2}\)}
 
 \begin{document}
 \maketitle
-
 
 \begin{center}
 $^1$School of Life Sciences, University of Hawaiʻi, Mānoa, Hawaiʻi, USA\\
@@ -383,7 +367,7 @@ a forest canopy will often experience low light intensity.
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{../figures/amphisomy draft 2024-03-28.jpg}}
+\includegraphics[width=2.24in,height=\textheight]{../figures/amphisomy draft 2024-03-28.jpg}
 
 }
 
@@ -449,44 +433,46 @@ humidity (see Materials and Methods for further details). We estimated
 modifications previously described in (\emph{46}) and here (Materials
 and Methods). The native light intensity was represented by plant area
 index (PAI \(\unit{\meter\squared\per\meter\squared}\)), estimated using
-a global gridded X-m2 resolution data set derived from the Global
-Ecosystem Dynamics Investigation {[}GEDI; (\emph{52}){]} and
-georeferenced accession collection information from the Tomato Genetics
-Resource Center. The growth light intensities were \ppfdequals{761} (sun
-treatment) and \ppfdqty{115} (shade treatment) while all other
-environment conditions were nearly identical (see materials and methods
-in supplementary materials). The high and low measurements intensities
-were \ppfdequals{2000} (97.8:2.24 red:blue) and \ppfdequals{150}
-(87.0:13.0 red:blue), respectively.
+a global gridded data set derived from the Global Ecosystem Dynamics
+Investigation {[}GEDI; (\emph{52}){]} and georeferenced accession
+collection information from the Tomato Genetics Resource Center. The
+growth light intensities were \ppfdequals{761} (sun treatment) and
+\ppfdqty{115} (shade treatment) while all other environment conditions
+were nearly identical (see materials and methods in supplementary
+materials). The high and low measurements intensities were
+\ppfdequals{2000} (97.8:2.24 red:blue) and \ppfdequals{150} (87.0:13.0
+red:blue), respectively.
 
 Consistent with biophysical theory of CO\(_2\) diffusion within leaves,
-\(\aay{} > 0\) for all populations (Fig.~\ref{fig-aa}A). \aax{} varied
-substantially between measurement light intensities, growth light
-intensities, and among populations (point to model comparison evidence).
-Measured under high light intensity, \aax{} was consistently greater for
-sun plants. The average \aax{} among populations in the shade treatment
-was 0.039 (range: 0.012--0.109; 21 of 29 populations significant);
-however, the same populations grown at high light intensity showed a
-mean \aax{} of 0.050 (range: 0.024--0.120; 25 of 29 populations
-significant). Contrary to the predictions of the assimilatory
-hypothesis, \aax{} was greater in all populations under low measurement
-light intensity for both sun and shade grown plants. The effect of low
-light on \aax{} was more pronounced in the sun-grown plants, where
-\aax{} was significantly greater under low measurement light intensity
-in 28 of 29 populations compared to to 11 populations for shade-grown
-plants. The overall average \aax{} of shade and sun grown plants
-measured under low light intensity was 0.066 (range: 0.019--0.143; 27 of
-29 populations significant) and 0.098 (range: 0.051--0.175; 29 of 29
-populations significant), respectively. There was a slight tendency for
-populations from more closed habitats (greater PAI), but \aax{} varied
-widely among populations from open habitats (low PAI) regardless of
-growth and measurement light intensities (Fig.~\ref{fig-aa}B).
+\(\aay{} > 0\) for all populations (Fig.~\ref{fig-aa}A). Bayesian
+phylogenetic mixed effects models that allowed \aax{} to vary between
+measurement light intensities, growth light intensities, and among
+populations outperformed simpler models based on their information
+criteria (Table~\ref{tbl-aa_loo1}). Measured under high light intensity,
+\aax{} was consistently greater for sun plants. The average \aax{} among
+populations in the shade treatment was 0.039 (range: 0.012--0.109; 21 of
+29 populations significant); however, the same populations grown at high
+light intensity showed a mean \aax{} of 0.050 (range: 0.024--0.120; 25
+of 29 populations significant). Contrary to the predictions of the
+assimilatory hypothesis, \aax{} was greater in all populations under low
+measurement light intensity for both sun and shade grown plants. The
+effect of low light on \aax{} was more pronounced in the sun-grown
+plants, where \aax{} was significantly greater under low measurement
+light intensity in 28 of 29 populations compared to to 11 populations
+for shade-grown plants. The overall average \aax{} of shade and sun
+grown plants measured under low light intensity was 0.066 (range:
+0.019--0.143; 27 of 29 populations significant) and 0.098 (range:
+0.051--0.175; 29 of 29 populations significant), respectively. There was
+a slight tendency for populations from more closed habitats (greater
+PAI), but \aax{} varied widely among populations from open habitats (low
+PAI) regardless of growth and measurement light intensities
+(Fig.~\ref{fig-aa}B).
 
 \begin{figure}
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-aa-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-aa-1.pdf}
 
 }
 
@@ -500,7 +486,7 @@ growth and measurement light intensities (Fig.~\ref{fig-aa}B).
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-aacap-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-aacap-1.pdf}
 
 }
 
@@ -554,7 +540,7 @@ limitations.
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-lma_aa-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-lma_aa-1.pdf}
 
 }
 
@@ -582,6 +568,12 @@ intensity modulate \aax{}. Developmental plasticity needs to be
 considered when interpreting phylogenetic comparative analyses of
 adaptation, because plastic differences may be mistaken for genetic
 differences.
+
+maybe this wording is better: Amphistomy likely plays a significant, but
+under appreciated, role in the carbon and water balance of plant groups
+where this trait is common, such as herbaceous plants in sunny habitats
+and woody species in arid biomes (cites). If our estimates of AA from
+the wild tomato clades
 
 A second major conclusion is that the significant photosynthetic gain of
 amphistomatous leaves implies that the many hypostomatous leaves that
@@ -1066,30 +1058,14 @@ Tomancak, A. Cardona, \href{https://doi.org/10.1038/nmeth.2019}{Fiji: An
 open-source platform for biological-image analysis}. \emph{Nature
 Methods} \textbf{9}, 676--682 (2012).}
 
-\bibitem[\citeproctext]{ref-marshall_model_1980}
-\CSLLeftMargin{59. }%
-\CSLRightInline{B. Marshall, P. V. Biscoe,
-\href{https://doi.org/10.1093/jxb/31.1.29}{A {Model} for
-{C}\(_{\textrm{3}}\) {Leaves} {Describing} the {Dependence} of {Net}
-{Photosynthesis} on {Irradiance}}. \emph{Journal of Experimental Botany}
-\textbf{31}, 29--39 (1980).}
-
-\bibitem[\citeproctext]{ref-elzhov_minpacklm_2023}
-\CSLLeftMargin{60. }%
-\CSLRightInline{T. V. Elzhov, K. M. Mullen, A.-N. Spiess, B. M. Bolker,
-\emph{Minpack.lm: {R} {Interface} to the {Levenberg}-{Marquardt}
-{Nonlinear} {Least}-{Squares} {Algorithm} {Found} in {MINPACK}, {Plus}
-{Support} for {Bounds}} (2023;
-\url{https://CRAN.R-project.org/package=minpack.lm}).}
-
 \bibitem[\citeproctext]{ref-stan_development_team_stan_2025}
-\CSLLeftMargin{61. }%
+\CSLLeftMargin{59. }%
 \CSLRightInline{Stan Development Team, \emph{Stan {Modeling} {Language}
 {Users} {Guide} and {Reference} {Manual}} (2025;
 \url{https://mc-stan.org}).}
 
 \bibitem[\citeproctext]{ref-burkner_brms_2017}
-\CSLLeftMargin{62. }%
+\CSLLeftMargin{60. }%
 \CSLRightInline{P.-C. Bürkner,
 \href{https://doi.org/10.18637/jss.v080.i01}{\textbf{Brms} : {An}
 \emph{r} {Package} for {Bayesian} {Multilevel} {Models} {Using}
@@ -1097,33 +1073,33 @@ Methods} \textbf{9}, 676--682 (2012).}
 (2017).}
 
 \bibitem[\citeproctext]{ref-gabry_cmdstanr_2025}
-\CSLLeftMargin{63. }%
+\CSLLeftMargin{61. }%
 \CSLRightInline{J. Gabry, R. Češnovar, A. Johnson, S. Bronder,
 \emph{Cmdstanr: {R} {Interface} to '{CmdStan}'} (2025;
 \href{https://mc-stan.org/cmdstanr,\%20https://discourse.mc-stan.org}{https://mc-stan.org/cmdstanr,
 https://discourse.mc-stan.org}).}
 
 \bibitem[\citeproctext]{ref-r_core_team_r:_2025}
-\CSLLeftMargin{64. }%
+\CSLLeftMargin{62. }%
 \CSLRightInline{R Core Team, \emph{R: {A} {Language} and {Environment}
 for {Statistical} {Computing}} (R Foundation for Statistical Computing,
 Vienna, Austria, 2025; \url{http://www.R-project.org/}).}
 
 \bibitem[\citeproctext]{ref-gelman_inference_1992}
-\CSLLeftMargin{65. }%
+\CSLLeftMargin{63. }%
 \CSLRightInline{A. Gelman, D. B. Rubin, Inference from iterative
 simulation using multiple sequences. \emph{Statistical Science}
 \textbf{7}, 457--472 (1992).}
 
 \bibitem[\citeproctext]{ref-hansen_stabilizing_1997}
-\CSLLeftMargin{66. }%
+\CSLLeftMargin{64. }%
 \CSLRightInline{T. F. Hansen,
 \href{https://doi.org/10.1111/j.1558-5646.1997.tb01457.x}{Stabilizing
 selection and the comparative analysis of adaptation}. \emph{Evolution}
 \textbf{51}, 1341--1351 (1997).}
 
 \bibitem[\citeproctext]{ref-vehtari_practical_2017}
-\CSLLeftMargin{67. }%
+\CSLLeftMargin{65. }%
 \CSLRightInline{A. Vehtari, A. Gelman, J. Gabry,
 \href{https://doi.org/10.1007/s11222-016-9696-4}{Practical {Bayesian}
 model evaluation using leave-one-out cross-validation and {WAIC}}.
@@ -1171,6 +1147,16 @@ Genetics Resource Center; PAI: Plant area index.}
 \toprule
 Species & TGRC accession & Latitude & Longitude & Elevation (mas) & $\mathrm{PAI}~(\unit{\meter\squared\per\meter\squared})$\\
 \midrule
+\endfirsthead
+\multicolumn{6}{@{}l}{\textit{(continued)}}\\
+\toprule
+Species & TGRC accession & Latitude & Longitude & Elevation (mas) & $\mathrm{PAI}~(\unit{\meter\squared\per\meter\squared})$\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
 \em{\cellcolor{gray!10}{S. arcanum}} & \cellcolor{gray!10}{LA2172} & \cellcolor{gray!10}{-6.008} & \cellcolor{gray!10}{-78.858} & \cellcolor{gray!10}{662} & \cellcolor{gray!10}{0.70}\\
 \em{S. cheesmaniae} & LA0429 & -0.644 & -90.329 & 800 & 0.60\\
 \em{\cellcolor{gray!10}{S. cheesmaniae}} & \cellcolor{gray!10}{LA3124} & \cellcolor{gray!10}{-0.804} & \cellcolor{gray!10}{-90.042} & \cellcolor{gray!10}{1} & \cellcolor{gray!10}{0.36}\\
@@ -1204,8 +1190,7 @@ Species & TGRC accession & Latitude & Longitude & Elevation (mas) & $\mathrm{PAI
 \em{S. pimpinellifolium} & LA1269 & -11.483 & -77.075 & 400 & 0.50\\
 \em{\cellcolor{gray!10}{S. pimpinellifolium}} & \cellcolor{gray!10}{LA1589} & \cellcolor{gray!10}{-8.433} & \cellcolor{gray!10}{-78.817} & \cellcolor{gray!10}{30} & \cellcolor{gray!10}{0.11}\\
 \em{S. pimpinellifolium} & LA2933 & -1.442 & -80.562 & 375 & 1.62\\
-\em{\cellcolor{gray!10}{S. sitiens}} & \cellcolor{gray!10}{LA4116} & \cellcolor{gray!10}{-22.159} & \cellcolor{gray!10}{-68.782} & \cellcolor{gray!10}{2960} & \cellcolor{gray!10}{0.06}\\
-\bottomrule
+\em{\cellcolor{gray!10}{S. sitiens}} & \cellcolor{gray!10}{LA4116} & \cellcolor{gray!10}{-22.159} & \cellcolor{gray!10}{-68.782} & \cellcolor{gray!10}{2960} & \cellcolor{gray!10}{0.06}\\*
 
 \end{longtable}
 
@@ -1520,68 +1505,12 @@ residual \(> 3\). Because these values likely indicate significant
 measurement error or leaf damage, we removed \agcurve{} curves at both
 light intensities if either was classified as extreme.
 
-\subsubsection{\texorpdfstring{Cleaning \aqcurve{}
-curves}{Cleaning  curves}}\label{cleaning-curves-1}
+\subsubsection{\texorpdfstring{Bayesian phylogenetic mixed effects
+models in
+\emph{Stan}}{Bayesian phylogenetic mixed effects models in Stan}}\label{bayesian-phylogenetic-mixed-effects-models-in-stan}
 
-The raw data set consisted of 658 \aqcurve{} curves with an average of
-19.4. Manual curation of a data set this size in a principled,
-consistent manner is not feasible. Therefore, we automated data cleaning
-using custom \emph{R} scripts. Cleaning is divided into two sequential
-steps (\autoref{tbl-cleaning2}).
-
-\begin{table}
-
-\caption{\label{tbl-cleaning2}Two sequential steps for cleaning
-\agcurve{} curves. The rationale and procedure for each step are
-described in the text. The rightmost columns summarize the number of
-curves and mean number of points per curve remaining after each step.}
-
-\centering{
-
-\centering
-\begin{tabular}{>{\raggedright\arraybackslash}p{9cm}>{\centering\arraybackslash}p{2.5cm}>{\centering\arraybackslash}p{2.5cm}}
-\toprule
-Step: description & Number of curves & Number of points per curve\\
-\midrule
-\cellcolor{gray!10}{1. remove outliers within each \aqcurve{} curve} & \cellcolor{gray!10}{658} & \cellcolor{gray!10}{19.1}\\
-2. remove \aqcurve{} curves with poor fit & 652 & 19.1\\
-\bottomrule
-\end{tabular}
-
-}
-
-\end{table}%
-
-\paragraph{\texorpdfstring{Remove outliers within each \aqcurve{}
-curve}{Remove outliers within each  curve}}\label{remove-outliers-within-each-curve-1}
-
-\emph{Rationale}: Individual outliers within \agcurve{} curves, usually
-caused by transitory changes in chamber conditions, exert undue leverage
-on parameter estimates and cause bias and/or low precision in parameter
-estimates.
-
-\emph{Procedure}: We fit provisional nonrectangular hyperbola
-(\emph{59}) to each \aqcurve{} curve using nonlinear regression with the
-\texttt{nlsLM()} function from the \emph{R} package \textbf{minpack.lm}
-version 1.2.4 (\emph{60}). We sequentially removed data points with an
-absolute external studentized residual \(> 3\) until none remained.
-
-\paragraph{\texorpdfstring{Remove \aqcurve{} curves with poor
-fit}{Remove  curves with poor fit}}\label{remove-curves-with-poor-fit}
-
-\emph{Rationale}: \aqcurve{} curves with a poor fit to the
-nonrectangular hyperbola most likely indicate systematic measurement
-error and/or the leaf was not fully acclimated to the chamber
-environment.
-
-\emph{Procedure}: As described above, we fit provisional nonrectangular
-hyperbola to each \aqcurve{} curve and calculated the model \(r^2\).
-There was a clear break between typical curves and poorly fitting curves
-where \(r^2 < 0.99\). We therefore removed \aqcurve{} curves with
-\(r^2 < 0.99\).
-
-\subsubsection{\texorpdfstring{Bayesian data analysis in
-\emph{Stan}}{Bayesian data analysis in Stan}}\label{bayesian-data-analysis-in-stan}
+\paragraph{MARKER - REVISE MODEL
+DESCRIPTION}\label{marker---revise-model-description}
 
 We fit five models to test predictions of competing hypotheses about why
 amphistomy advantage (\aax) might be greater for leaves in sunny, open
@@ -1642,16 +1571,16 @@ Model & Fixed effects & Phylogenetic random effects & Response to native \ppfd\\
 \emph{Stan}}{Fitting models in Stan}}\label{sec-fitting}
 
 We fit Bayesian models with MCMC sampling in the probabilistic
-programming language \emph{Stan} (\emph{61}) using the \emph{R} package
-\textbf{brms} version 2.22.0 (\emph{62}). We used \emph{CmdStan} version
-2.35.0 and \textbf{cmdstanr} version 0.9.0 (\emph{63}) to interface with
-\emph{R} version 4.5.0 (\emph{64}). We sampled the posterior
+programming language \emph{Stan} (\emph{59}) using the \emph{R} package
+\textbf{brms} version 2.22.0 (\emph{60}). We used \emph{CmdStan} version
+2.35.0 and \textbf{cmdstanr} version 0.9.0 (\emph{61}) to interface with
+\emph{R} version 4.5.0 (\emph{62}). We sampled the posterior
 distribution from 1 chains with 2000 iterations each after 2000 warmup
 iterations per chain. We estimated parameters and confidence intervals
 as the median and 95\% quantile intervals of the posterior,
 respectively. We chose the number of chains, warmup and sampling
 iterations, and maximum treedepth so that parameter estimates converged
-(\(\hat{R} < 1.01\) (\emph{65})) and the effective sample size (ESS) for
+(\(\hat{R} < 1.01\) (\emph{63})) and the effective sample size (ESS) for
 each parameter was \(> 400\).
 
 \paragraph{Parameter estimation and priors}\label{sec-parameters}
@@ -1812,7 +1741,7 @@ treatment. We used a weakly informative normal prior with mean \(-3\)
 and standard deviation \(5\) for the the random effect standard
 deviation of replicate within population. We accounted for the
 phylogenetic structure among the random effects of population using an
-Ornstein-Uhlenbeck (OU) process (\emph{66}). The expected covariance
+Ornstein-Uhlenbeck (OU) process (\emph{64}). The expected covariance
 between populations \(i\) and \(j\) (\(\text{Cov}(i, j)\) ) is:
 
 \[\text{Cov}(i, j) = \frac{\sigma^2}{2 \alpha} \exp(-\alpha D_{ij})\]
@@ -1874,7 +1803,7 @@ confidence intervals for a parameter did not overlap zero, we considered
 the parameter to be significantly different from zero. We used the
 leave-one-out cross-validation information criterion (LOOIC) to compare
 the fit of models (\autoref{tbl-models}) using the \emph{R} package
-\textbf{loo} version 2.8.0 (\emph{67}) to calculate LOOIC values. Note
+\textbf{loo} version 2.8.0 (\emph{65}) to calculate LOOIC values. Note
 that LOOIC was calculated only from pointwise likelihood values of the
 submodel estimating effects of light intensity, light treatments, and
 population on \aax{} (see Section~\ref{sec-parameters}). We considered
@@ -1946,105 +1875,160 @@ Assimilatory $\times$ Plastic $\times$ Constitutive & $\beta_{\mathrm{AA},2000,\
   same A with less R
 \end{itemize}
 
-\newpage{}
+\begin{longtable}[t]{>{\centering\arraybackslash}p{0.7in}>{\centering\arraybackslash}p{0.5in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{}c|>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{}c|>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}}
 
-\subsubsection{MANUSCRAPS}\label{manuscraps}
+\caption{\label{tbl-aa_loo1}Leave-one-out cross-validation information
+criterion (LOOIC) for models of \aax{} as a function of light intensity,
+light treatment, and population. The model with the lowest LOOIC is
+considered the best fit to the data. The LOOIC column lists the LOOIC
+value for each model; the \(\Delta\)LOOIC column lists the difference
+between the LOOIC of the corresponding model and the best model (lowest
+LOOIC). Checkmarks in each row indicate whether the corresponding model
+included affects of measurement light intensity (``Meas.'') or growth
+light intensity (``Growth'') as fixed effects, random effects, or
+distributional effect on the residual variance. We also test for fixed
+and random interaction effects (``Inter.'') between measurement and
+growth light intensity. All models included phylogenetically structured
+random effects of population.}
 
-(not sure where this goes) * We acclimated the focal leaf to high light
-(\ppfdequals{2000}) and high relative humidity (\rhequals{70}) until
-\(A\) and \gsw{} reach their maximum. After that, we decreased \rh{} to
-\(\approx 10\%\) to induce rapid stomatal closure without biochemical
-down
+\tabularnewline
 
-Problems to bring up in discussion: - all our species were amphi, so
-they may all live in PAI below threshold to favor amphi - other
-microclimate diffs not considered - don't know specific anatomical
-change
+\toprule
+\multicolumn{2}{c}{ } & \multicolumn{3}{c}{Fixed} & \multicolumn{3}{c}{Random} & \multicolumn{2}{c}{Distributional} \\
+\cmidrule(l{3pt}r{3pt}){3-5} \cmidrule(l{3pt}r{3pt}){6-8} \cmidrule(l{3pt}r{3pt}){9-10}
+LOOIC & $\Delta$LOOIC & Meas. & Growth & Inter. & Meas. & Growth & Inter. & Meas. & Growth\\
+\midrule
+\endfirsthead
+\multicolumn{10}{@{}l}{\textit{(continued)}}\\
+\toprule
+LOOIC & $\Delta$LOOIC & Meas. & Growth & Inter. & Meas. & Growth & Inter. & Meas. & Growth\\
+\midrule
+\endhead
 
-Two outstanding areas for further research are 1) the specific
-anatomical changes, such as leaf thickness or mesophyll porosity, that
-increase the diffusion path length for CO\(_2\) in sun leaves, and 2)
-the costs of amphistomy that could explain plasticity in \gmaxratio{} in
-populations from low-light habitats. Resolving the first question will
-require detailed anatomical measurements on a large number of shade and
-sun leaves with concomitant estimates of \aax. The fact that populations
-from low-light habitats are more plastic suggests that costs of
-amphistomy are greatest in these environments. (not finished yet)
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!10}{-1839.94} & \cellcolor{gray!10}{0.00} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+-1839.19 & 0.76 &  &  &  & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$\\
+\cellcolor{gray!10}{-1838.83} & \cellcolor{gray!10}{1.11} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+-1838.44 & 1.50 & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ &  & $\checkmark$ & $\checkmark$\\
+\cellcolor{gray!10}{-1838.42} & \cellcolor{gray!10}{1.53} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+\addlinespace
+-1838.33 & 1.61 & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$ &  & $\checkmark$ & $\checkmark$\\
+\cellcolor{gray!10}{-1838.13} & \cellcolor{gray!10}{1.81} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+-1838.05 & 1.90 &  & $\checkmark$ &  & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$\\
+\cellcolor{gray!10}{-1837.62} & \cellcolor{gray!10}{2.32} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+-1837.23 & 2.71 &  &  &  & $\checkmark$ & $\checkmark$ &  & $\checkmark$ & $\checkmark$\\
+\addlinespace
+\cellcolor{gray!10}{-1836.90} & \cellcolor{gray!10}{3.05} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+-1836.76 & 3.19 & $\checkmark$ & $\checkmark$ & $\checkmark$ &  &  &  & $\checkmark$ & $\checkmark$\\
+\cellcolor{gray!10}{-1836.51} & \cellcolor{gray!10}{3.44} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+-1836.46 & 3.48 & $\checkmark$ & $\checkmark$ &  & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$\\
+\cellcolor{gray!10}{-1836.29} & \cellcolor{gray!10}{3.65} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+\addlinespace
+-1835.53 & 4.41 & $\checkmark$ & $\checkmark$ &  &  & $\checkmark$ &  & $\checkmark$ & $\checkmark$\\
+\cellcolor{gray!10}{-1835.08} & \cellcolor{gray!10}{4.86} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+-1834.95 & 4.99 & $\checkmark$ & $\checkmark$ &  &  &  &  & $\checkmark$ & $\checkmark$\\
+\cellcolor{gray!10}{-1831.01} & \cellcolor{gray!10}{8.93} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+-1828.80 & 11.14 & $\checkmark$ &  &  & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$\\
+\addlinespace
+\cellcolor{gray!10}{-1828.36} & \cellcolor{gray!10}{11.58} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+-1828.35 & 11.59 & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$ & $\checkmark$ &  & $\checkmark$\\
+\cellcolor{gray!10}{-1828.24} & \cellcolor{gray!10}{11.70} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$}\\
+-1827.57 & 12.37 & $\checkmark$ & $\checkmark$ &  & $\checkmark$ &  &  &  & $\checkmark$\\
+\cellcolor{gray!10}{-1827.43} & \cellcolor{gray!10}{12.51} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$}\\
+\addlinespace
+-1827.34 & 12.60 & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$ &  &  & $\checkmark$\\
+\cellcolor{gray!10}{-1827.29} & \cellcolor{gray!10}{12.65} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$}\\
+-1827.05 & 12.89 &  & $\checkmark$ &  & $\checkmark$ & $\checkmark$ &  &  & $\checkmark$\\
+\cellcolor{gray!10}{-1826.92} & \cellcolor{gray!10}{13.03} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$}\\
+-1826.77 & 13.17 &  & $\checkmark$ &  & $\checkmark$ &  &  &  & $\checkmark$\\
+\addlinespace
+\cellcolor{gray!10}{-1826.69} & \cellcolor{gray!10}{13.25} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$}\\
+-1826.30 & 13.64 &  & $\checkmark$ &  & $\checkmark$ & $\checkmark$ & $\checkmark$ &  & $\checkmark$\\
+\cellcolor{gray!10}{-1826.26} & \cellcolor{gray!10}{13.68} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$}\\
+-1826.16 & 13.79 & $\checkmark$ & $\checkmark$ & $\checkmark$ &  & $\checkmark$ &  &  & $\checkmark$\\
+\cellcolor{gray!10}{-1826.00} & \cellcolor{gray!10}{13.94} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$}\\
+\addlinespace
+-1825.83 & 14.11 & $\checkmark$ & $\checkmark$ &  & $\checkmark$ & $\checkmark$ &  &  & $\checkmark$\\
+\cellcolor{gray!10}{-1824.27} & \cellcolor{gray!10}{15.68} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$}\\
+-1823.90 & 16.04 & $\checkmark$ & $\checkmark$ &  &  &  &  &  & $\checkmark$\\
+\cellcolor{gray!10}{-1823.59} & \cellcolor{gray!10}{16.36} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$}\\
+-1822.71 & 17.23 & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & \\
+\addlinespace
+\cellcolor{gray!10}{-1822.60} & \cellcolor{gray!10}{17.34} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{}\\
+-1822.29 & 17.65 & $\checkmark$ & $\checkmark$ &  & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & \\
+\cellcolor{gray!10}{-1821.08} & \cellcolor{gray!10}{18.87} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{}\\
+-1821.06 & 18.88 &  & $\checkmark$ &  & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & \\
+\cellcolor{gray!10}{-1820.56} & \cellcolor{gray!10}{19.39} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{}\\
+\addlinespace
+-1819.66 & 20.28 &  &  &  & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & \\
+\cellcolor{gray!10}{-1819.58} & \cellcolor{gray!10}{20.37} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{}\\
+-1819.01 & 20.94 & $\checkmark$ & $\checkmark$ &  & $\checkmark$ & $\checkmark$ &  & $\checkmark$ & \\
+\cellcolor{gray!10}{-1818.51} & \cellcolor{gray!10}{21.43} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{}\\
+-1818.44 & 21.51 &  & $\checkmark$ &  & $\checkmark$ &  &  & $\checkmark$ & \\
+\addlinespace
+\cellcolor{gray!10}{-1818.43} & \cellcolor{gray!10}{21.51} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{}\\
+-1818.43 & 21.51 & $\checkmark$ & $\checkmark$ &  & $\checkmark$ &  &  & $\checkmark$ & \\
+\cellcolor{gray!10}{-1818.26} & \cellcolor{gray!10}{21.68} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{}\\
+-1818.23 & 21.71 & $\checkmark$ & $\checkmark$ &  &  &  &  & $\checkmark$ & \\
+\cellcolor{gray!10}{-1818.15} & \cellcolor{gray!10}{21.80} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{}\\
+\addlinespace
+-1817.85 & 22.09 & $\checkmark$ &  &  & $\checkmark$ &  &  &  & $\checkmark$\\
+\cellcolor{gray!10}{-1817.07} & \cellcolor{gray!10}{22.87} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$}\\
+-1816.97 & 22.98 & $\checkmark$ &  &  &  & $\checkmark$ &  & $\checkmark$ & \\
+\cellcolor{gray!10}{-1815.82} & \cellcolor{gray!10}{24.12} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{}\\
+-1814.29 & 25.65 & $\checkmark$ &  &  &  &  &  &  & $\checkmark$\\
+\addlinespace
+\cellcolor{gray!10}{-1811.97} & \cellcolor{gray!10}{27.97} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{}\\
+-1811.85 & 28.10 & $\checkmark$ &  &  & $\checkmark$ &  &  & $\checkmark$ & \\
+\cellcolor{gray!10}{-1811.44} & \cellcolor{gray!10}{28.50} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+-1811.06 & 28.88 & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$ & $\checkmark$ &  & \\
+\cellcolor{gray!10}{-1810.70} & \cellcolor{gray!10}{29.24} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+-1809.72 & 30.23 & $\checkmark$ & $\checkmark$ &  & $\checkmark$ & $\checkmark$ & $\checkmark$ &  & \\
+\cellcolor{gray!10}{-1809.67} & \cellcolor{gray!10}{30.27} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+-1809.41 & 30.54 & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$ &  &  & \\
+\cellcolor{gray!10}{-1809.15} & \cellcolor{gray!10}{30.79} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{}\\
+-1809.09 & 30.86 & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ &  &  & \\
+\addlinespace
+\cellcolor{gray!10}{-1809.03} & \cellcolor{gray!10}{30.91} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+-1808.89 & 31.06 &  &  &  & $\checkmark$ & $\checkmark$ &  &  & \\
+\cellcolor{gray!10}{-1808.76} & \cellcolor{gray!10}{31.18} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+-1807.88 & 32.06 &  & $\checkmark$ &  & $\checkmark$ &  &  &  & \\
+\cellcolor{gray!10}{-1807.84} & \cellcolor{gray!10}{32.10} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+-1807.16 & 32.78 & $\checkmark$ & $\checkmark$ &  & $\checkmark$ &  &  &  & \\
+\cellcolor{gray!10}{-1806.33} & \cellcolor{gray!10}{33.61} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+-1806.04 & 33.90 &  & $\checkmark$ &  &  &  &  & $\checkmark$ & $\checkmark$\\
+\cellcolor{gray!10}{-1805.87} & \cellcolor{gray!10}{34.07} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+-1805.61 & 34.33 & $\checkmark$ & $\checkmark$ & $\checkmark$ &  & $\checkmark$ &  &  & \\
+\addlinespace
+\cellcolor{gray!10}{-1805.31} & \cellcolor{gray!10}{34.64} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+-1804.67 & 35.27 & $\checkmark$ & $\checkmark$ &  &  &  &  &  & \\
+\cellcolor{gray!10}{-1804.53} & \cellcolor{gray!10}{35.41} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+-1804.49 & 35.45 &  &  &  &  & $\checkmark$ &  & $\checkmark$ & $\checkmark$\\
+\cellcolor{gray!10}{-1800.46} & \cellcolor{gray!10}{39.49} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+\addlinespace
+-1799.42 & 40.52 &  &  &  & $\checkmark$ &  &  &  & \\
+\cellcolor{gray!10}{-1797.93} & \cellcolor{gray!10}{42.01} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+-1795.85 & 44.09 & $\checkmark$ &  &  &  &  &  &  & \\
+\cellcolor{gray!10}{-1794.84} & \cellcolor{gray!10}{45.10} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$}\\
+-1793.22 & 46.72 &  &  &  &  & $\checkmark$ &  &  & $\checkmark$\\
+\addlinespace
+\cellcolor{gray!10}{-1792.49} & \cellcolor{gray!10}{47.45} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$}\\
+-1787.14 & 52.80 &  &  &  &  &  &  &  & $\checkmark$\\
+\cellcolor{gray!10}{-1783.17} & \cellcolor{gray!10}{56.77} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{}\\
+-1781.97 & 57.97 &  &  &  &  & $\checkmark$ &  & $\checkmark$ & \\
+\cellcolor{gray!10}{-1780.61} & \cellcolor{gray!10}{59.33} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{}\\
+\addlinespace
+-1777.91 & 62.04 &  &  &  &  &  &  & $\checkmark$ & \\
+\cellcolor{gray!10}{-1771.89} & \cellcolor{gray!10}{68.06} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+-1771.87 & 68.08 &  &  &  &  & $\checkmark$ &  &  & \\
+\cellcolor{gray!10}{-1770.84} & \cellcolor{gray!10}{69.10} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+-1766.11 & 73.83 &  &  &  &  &  &  &  & \\*
 
-Not sure where this goes: We infer this from the fact that blocking gas
-exchange in pseudohypostomatous leaves reduced \(A\) by X-X\% depending
-on the population, light treatment, and light intensity (Table/figure).
-The AA is equivalent to an X-X\% change in total \(g_\text{sc}\) (see SI
-section gs equivalency). But whereas increasing \(g_\text{sc}\) would
-increase water loss as a necessary by-product, amphistomy can increase
-\(A\) without any appreciable affect on transpiration.
-
-from Mott and Oleary: ``However, Jones and Slatyer (5) reported a higher
-mesophyll resistance for CO, entering through the upper stomata than for
-the lower, and the data of Vaclavik (12) appear to support this
-conclusion''
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\setcounter{enumi}{7}
-\tightlist
-\item
-  What it all means
-\end{enumerate}
-
-\begin{itemize}
-\tightlist
-\item
-  Our study reveals an important role for plasticity in explaining why
-  amphi leaves are more common in sunny habitats
-\item
-  Confirms that leaf structure of sun leaves incurs costs that
-  amphistomy can mitigate
-\item
-  It will be useful to consider coordination between leaf anatomy,
-  stomatal density, and ratio in future studies of leaf
-  structure-function and in crops (or something)
-\end{itemize}
-
-I am using this approach to drafting the paper:
-
-https://blogs.nature.com/nyc/2011/08/10/how-to-write-a-paper-one-possible-answer
-
-\subsection{Punchline}\label{punchline}
-
-Plastic changes in the structure of sun leaves can increase the
-intercellular CO\(_2\) diffusion path length. Gas exchange through
-stomata on both upper and lower leaf surfaces, amphistomy, may be a
-compensatory mechanism to reduce the impact of increased diffusion path
-length on photosynthesis without increasing water loss. We demonstrate
-for the first time that sun leaves benefit most from amphistomy because
-it compensates for plastic structural changes in leaf anatomy.
-
-What's surprising: role of developmental plasticity in explaining
-comparative results; diffusional limitations through palisade ias is
-strong and needs to be considered with light gradients in understanding
-leaf strucuture- funciton
-
-big implications - if trees were amphi, more more carbon sink or reduced
-transpiration
-
-It is commonly assumed in comparative studies that most trait variation
-between species is constitutive and genetically determined, but our
-results suggest that plastic responses to light are necessary to explain
-why \gmaxratio{} increases with light habitat. Reaction norms to light
-intensity among wild tomatoes indicate that populations from low light
-habitats express low \gmaxratio{} when grown in shade, whereas
-populations from high light habitats have constitutively higher
-\gmaxratio{} (Fig. rxn-norm). The larger response to light intensity is
-driven by greater plasticty in leaf structure in populations from
-low-light habitats (Fig/table - I haven't tested this yet, so this is a
-placeholder.) We infer that these structural changes in sun leaves are
-costly because they increase the diffusion path length for CO\(_2\) and
-reduce photosynthesis. As a consequence, sun leaves benefit more from
-amphistomy. This is the first demonstration that sun leaves benefit more
-from amphistomy because it compensates for developmental plasticity in
-leaf structure.
-
+\end{longtable}
 
 
 

@@ -36,7 +36,10 @@ model_forms = expand.grid(fixed = fixed_effects,
                           random = random_effects,
                           sigma = sigma_effects,
                           stringsAsFactors = FALSE) %>%
-  mutate(seed = sample(1e9, nrow(.)))
+  mutate(
+    seed = sample(1e9, nrow(.)),
+    model = paste0("model_", row_number())
+  )
 
 # Build and fit each model
 plan(multisession, workers = 19)
@@ -81,8 +84,10 @@ aa_loo_table = tibble(
   mutate(
     delta_looic = looic - min(looic),
     best_model = delta_looic == 0
-  )
+  ) |>
+  left_join(model_forms, by = join_by(model))
 
+# Write results
 write_rds(aa_loo_table, "objects/aa_loo_table1.rds")
 best_model_index = str_extract(aa_loo_table[1, "model"], "\\d+") |>
   as.integer()

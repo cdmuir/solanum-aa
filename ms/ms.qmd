@@ -96,6 +96,10 @@ df_aa_pred1 = read_rds("../objects/df_aa_pred1.rds")
 # df_aa_pred2 = read_rds("../objects/df_aa_pred2.rds")
 df_aa_pred3 = read_rds("../objects/df_aa_pred3.rds")
 
+aa_loo_table1 = read_rds("../objects/aa_loo_table1.rds")
+aa_loo_table2 = read_rds("../objects/aa_loo_table2.rds")
+
+
 n_plant = length(unique(rh_curves$acc_id))
 n_acc = length(unique(rh_curves$acc))
 n_sp = accession_info |>
@@ -404,10 +408,10 @@ kableExtra::kable(
 ```
 
 <!-- Paragraph 5 (summarize methods) -->
-We tested these hypotheses by comparing \aax{} among amphistomatous wild tomato species [@peralta_taxonomy_2008] from different native light habitats, grown under simulated sun and shade light treatments, and measured under contrasting light intensity (). We measured AA on `r n_plant` individual plants from `r n_acc` populations (average of `r mean_n_rep` replicates per light treatment) using a recently developed method [@triplett_amphistomy_2024]. With this method, we directly compare the photosynthetic rate of an untreated amphistomatous leaf to that of the same leaf with gas exchange blocked through the adaxial (upper) surface by transparent plastic, which we refer to as 'pseudohypostomy'. To compare amphi- and pseudohypostomatous leaves at identical whole-leaf $g_\text{sc}$, we measure $A$ over a range of $g_\text{sc}$, inducing stomatal opening and closure by modulating humidity (see Materials and Methods for further details). We estimated 'amphistomy advantage' (\aax) *sensu* @parkhurst_adaptive_1978, but with modifications previously described in @triplett_amphistomy_2024 and here (Materials and Methods). The native light intensity was represented by plant area index (PAI $\unit{\meter\squared\per\meter\squared}$), estimated using a global gridded X-m2 resolution data set derived from the Global Ecosystem Dynamics Investigation [GEDI; @burns_multi-resolution_2024] and georeferenced accession collection information from the Tomato Genetics Resource Center. The growth light intensities were \ppfdequals{`r ppfd_sun`} (sun treatment) and \ppfdqty{`r ppfd_shade`} (shade treatment) while all other environment conditions were nearly identical (see materials and methods in supplementary materials). The high and low measurements intensities were \ppfdequals{2000} (`r p_red_high`:`r p_blue_high` red:blue) and \ppfdequals{150} (`r p_red_low`:`r p_blue_low` red:blue), respectively. 
+We tested these hypotheses by comparing \aax{} among amphistomatous wild tomato species [@peralta_taxonomy_2008] from different native light habitats, grown under simulated sun and shade light treatments, and measured under contrasting light intensity (). We measured AA on `r n_plant` individual plants from `r n_acc` populations (average of `r mean_n_rep` replicates per light treatment) using a recently developed method [@triplett_amphistomy_2024]. With this method, we directly compare the photosynthetic rate of an untreated amphistomatous leaf to that of the same leaf with gas exchange blocked through the adaxial (upper) surface by transparent plastic, which we refer to as 'pseudohypostomy'. To compare amphi- and pseudohypostomatous leaves at identical whole-leaf $g_\text{sc}$, we measure $A$ over a range of $g_\text{sc}$, inducing stomatal opening and closure by modulating humidity (see Materials and Methods for further details). We estimated 'amphistomy advantage' (\aax) *sensu* @parkhurst_adaptive_1978, but with modifications previously described in @triplett_amphistomy_2024 and here (Materials and Methods). The native light intensity was represented by plant area index (PAI $\unit{\meter\squared\per\meter\squared}$), estimated using a global gridded data set derived from the Global Ecosystem Dynamics Investigation [GEDI; @burns_multi-resolution_2024] and georeferenced accession collection information from the Tomato Genetics Resource Center. The growth light intensities were \ppfdequals{`r ppfd_sun`} (sun treatment) and \ppfdqty{`r ppfd_shade`} (shade treatment) while all other environment conditions were nearly identical (see materials and methods in supplementary materials). The high and low measurements intensities were \ppfdequals{2000} (`r p_red_high`:`r p_blue_high` red:blue) and \ppfdequals{150} (`r p_red_low`:`r p_blue_low` red:blue), respectively. 
 
 <!-- Paragraph 6 (summarize main results) -->
-Consistent with biophysical theory of CO$_2$ diffusion within leaves, $\aay{} > 0$ for all populations ([Fig. @fig-aa]A). \aax{} varied substantially between measurement light intensities, growth light intensities, and among populations (point to model comparison evidence). Measured under high light intensity, \aax{} was consistently greater for sun plants. The average \aax{} among populations in the shade treatment was `r filter(aa_mean_range, light_treatment == "low", light_intensity == "2000")$x`; however, the same populations grown at high light intensity showed a mean \aax{} of `r filter(aa_mean_range, light_treatment == "high", light_intensity == "2000")$x`. Contrary to the predictions of the assimilatory hypothesis, \aax{} was greater in all populations under low measurement light intensity for both sun and shade grown plants. The effect of low light on \aax{} was more pronounced in the sun-grown plants, where \aax{} was significantly greater under low measurement light intensity in `r aa_summary3["high"]` of `r n_acc` populations compared to to `r aa_summary3["low"]` populations for shade-grown plants. The overall average \aax{} of shade and sun grown plants measured under low light intensity was `r filter(aa_mean_range, light_treatment == "low", light_intensity == "150")$x` and `r filter(aa_mean_range, light_treatment == "high", light_intensity == "150")$x`, respectively. There was a slight tendency for populations from more closed habitats (greater PAI), but \aax{} varied widely among populations from open habitats (low PAI) regardless of growth and measurement light intensities ([Fig. @fig-aa]B). 
+Consistent with biophysical theory of CO$_2$ diffusion within leaves, $\aay{} > 0$ for all populations ([Fig. @fig-aa]A). Bayesian phylogenetic mixed effects models that allowed \aax{} to vary between measurement light intensities, growth light intensities, and among populations outperformed simpler models based on their information criteria (@tbl-aa_loo1). Measured under high light intensity, \aax{} was consistently greater for sun plants. The average \aax{} among populations in the shade treatment was `r filter(aa_mean_range, light_treatment == "low", light_intensity == "2000")$x`; however, the same populations grown at high light intensity showed a mean \aax{} of `r filter(aa_mean_range, light_treatment == "high", light_intensity == "2000")$x`. Contrary to the predictions of the assimilatory hypothesis, \aax{} was greater in all populations under low measurement light intensity for both sun and shade grown plants. The effect of low light on \aax{} was more pronounced in the sun-grown plants, where \aax{} was significantly greater under low measurement light intensity in `r aa_summary3["high"]` of `r n_acc` populations compared to to `r aa_summary3["low"]` populations for shade-grown plants. The overall average \aax{} of shade and sun grown plants measured under low light intensity was `r filter(aa_mean_range, light_treatment == "low", light_intensity == "150")$x` and `r filter(aa_mean_range, light_treatment == "high", light_intensity == "150")$x`, respectively. There was a slight tendency for populations from more closed habitats (greater PAI), but \aax{} varied widely among populations from open habitats (low PAI) regardless of growth and measurement light intensities ([Fig. @fig-aa]B). 
 
 ```{r, aa, echo = FALSE, warning=FALSE, message=FALSE} 
 #| label: fig-aa
@@ -530,7 +534,7 @@ accession_info |>
     longtable = TRUE,
     escape = FALSE
   ) |>
-  kableExtra::kable_styling(latex_options = c("striped", "no_vertical_lines")) |>
+  kableExtra::kable_styling(latex_options = c("striped", "no_vertical_lines", "repeat_header")) |>
   kableExtra::column_spec(1, width = "3.25cm", italic = TRUE)
 
 ```
@@ -662,54 +666,8 @@ tibble(
 
 *Procedure*: We provionsally estimated \aax{} for each replicate by integrating over the range of \gsw{} values where amphi and pseudohypo \agcurve{} curves overlap. In this procedure, curve parameters were provisionally estimated using ordinary least squares with the `lm()` function in *R*. We then used point estimates of \aax{} for each replicate as the response variable in a linear model with light treatment, light intensity, population, and all interactions as explanatory variables. This model was also fit using ordinary least squares with the `lm()` function in *R*. We classified  extreme \aax{} values as those with an absolute internal studentized residual $> `r aa_outlier_threshold`$. Because these values likely indicate significant measurement error or leaf damage, we removed \agcurve{} curves at both light intensities if either was classified as extreme.
 
-### Cleaning \aqcurve{} curves
-
-The raw data set consisted of `r prettyNum(aa_stats$n_aq_curve0, big.mark = ",")` \aqcurve{} curves with an average of `r formatC(aa_stats$n_point_per_aq_curve0, digits = 3)`. Manual curation of a data set this size in a principled, consistent manner is not feasible. Therefore, we automated data cleaning using custom *R* scripts. Cleaning is divided into two sequential steps (\autoref{tbl-cleaning2}).
-
-```{r, cleaning2,echo=FALSE,message=FALSE,warning=FALSE}
-#| label: tbl-cleaning2
-#| tbl-cap: "Two sequential steps for cleaning \\agcurve{} curves. The rationale and procedure for each step are described in the text. The rightmost columns summarize the number of curves and mean number of points per curve remaining after each step."
-
-step_description_col = c(
-  "1. remove outliers within each \\aqcurve{} curve",
-  "2. remove \\aqcurve{} curves with poor fit"
-)
-
-n_curve_col = unlist(aa_stats[str_detect(names(aa_stats), "^n_aq_curve[1-9]$")]) |>
-  prettyNum(big.mark = ",")
-
-n_point_col = unlist(aa_stats[str_detect(names(aa_stats), "^n_point_per_aq_curve[1-9]$")])
-
-tibble(
-  `Step: description` = step_description_col,
-  `Number of curves` = n_curve_col,
-  `Number of points per curve` = n_point_col
-) |>
-  knitr::kable(format = "latex",
-               align = c("l", "c", "c"),
-               digits = c(0, 0, 1),
-               booktabs = TRUE, escape = FALSE) |>
-  kableExtra::kable_styling(latex_options = c("striped", "no_vertical_lines")) |>
-  kableExtra::column_spec(1, width = "9cm") |>
-  kableExtra::column_spec(2, width = "2.5cm") |>
-  kableExtra::column_spec(3, width = "2.5cm")
-
-```
-
-#### Remove outliers within each \aqcurve{} curve
-
-*Rationale*: Individual outliers within \agcurve{} curves, usually caused by transitory changes in chamber conditions, exert undue leverage on parameter estimates and cause bias and/or low precision in parameter estimates.
-
-*Procedure*: We fit provisional nonrectangular hyperbola [@marshall_model_1980] to each \aqcurve{} curve using nonlinear regression with the `nlsLM()` function from the *R* package **minpack.lm** version `r packageVersion("minpack.lm")` [@elzhov_minpacklm_2023]. We sequentially removed data points with an absolute external studentized residual $> `r point_outlier_threshold`$ until none remained.
-
-#### Remove \aqcurve{} curves with poor fit
-
-*Rationale*: \aqcurve{} curves with a poor fit to the nonrectangular hyperbola most likely indicate systematic measurement error and/or the leaf was not fully acclimated to the chamber environment. 
-
-*Procedure*: As described above, we fit provisional nonrectangular hyperbola to each \aqcurve{} curve and calculated the model $r^2$. There was a clear break between typical curves and poorly fitting curves where $r^2 < `r aq_r2_threshold`$. We therefore removed \aqcurve{} curves with $r^2 < `r aq_r2_threshold`$.
-
-### Bayesian data analysis in *Stan*
-
+### Bayesian phylogenetic mixed effects models in *Stan*
+#### MARKER - REVISE MODEL DESCRIPTION
 We fit `r n_model` models to test predictions of competing hypotheses about why amphistomy advantage (\aax) might be greater for leaves in sunny, open habitats. This section provides an overview of differences among models (\autoref{tbl-models}). The next sections describe how we fit models in *Stan*, all model parameters and priors, and specific predictions about parameter values for each hypothesis.
 
 ```{r, models, echo=FALSE,message=FALSE,warning=FALSE}
@@ -889,44 +847,61 @@ tribble(
 * Table S8: Model comparison LOOIC tables with LMA
 * Table S9: Calculation of alternate scenario where amphi leaves can get same A with less R
 
-{{< pagebreak >}}
+```{r, aa_loo1, echo=FALSE,message=FALSE,warning=FALSE}
+#| label: tbl-aa_loo1
+#| tbl-cap: 'Leave-one-out cross-validation information criterion (LOOIC) for models of \\aax{} as a function of light intensity, light treatment, and population. The model with the lowest LOOIC is considered the best fit to the data. The LOOIC column lists the LOOIC value for each model; the $\\Delta$LOOIC column lists the difference between the LOOIC of the corresponding model and the best model (lowest LOOIC). Checkmarks in each row indicate whether the corresponding model included affects of measurement light intensity ("Meas.") or growth light intensity ("Growth") as fixed effects, random effects, or distributional effect on the residual variance. We also test for fixed and random interaction effects ("Inter.") between measurement and growth light intensity. All models included phylogenetically structured random effects of population.'
 
-### MANUSCRAPS
+df1 = aa_loo_table1 |>
+  mutate(
+    fixed_meas = str_detect(fixed, "light_intensity"),
+    fixed_growth = str_detect(fixed, "light_treatment"),
+    fixed_intrxn = str_detect(fixed, "\\*"),
+    # random_acc = TRUE,
+    random_meas = str_detect(random, "light_intensity"),
+    random_growth = str_detect(random, "light_treatment"),
+    random_intrxn = str_detect(random, "\\*"),
+    sigma_meas = str_detect(sigma, "light_intensity"),
+    sigma_growth = str_detect(sigma, "light_treatment"),
+  ) |>
+  dplyr::select(
+    LOOIC = looic,
+    `$\\Delta$LOOIC` = delta_looic,
+    starts_with("fixed_"),
+    starts_with("random_"),
+    starts_with("sigma_")
+  ) |>
+  mutate(across(where(is.logical), ~ ifelse(.x, "$\\checkmark$", "")))
 
-(not sure where this goes)  * We acclimated the focal leaf to high light (\ppfdequals{2000}) and high relative humidity (\rhequals{70}) until $A$ and \gsw{} reach their maximum. After that, we decreased \rh{} to $\approx 10\%$ to induce rapid stomatal closure without biochemical down
+c1 = colnames(df1)
+groupings = list(
+  " " = sum(str_detect(colnames(df1), "LOOIC")),
+  "Fixed" = sum(str_detect(colnames(df1), "fixed_")),
+  "Random" = sum(str_detect(colnames(df1), "random_")),
+  "Distributional" = sum(str_detect(colnames(df1), "sigma_"))
+)
 
-Problems to bring up in discussion:
-- all our species were amphi, so they may all live in PAI below threshold to favor amphi
-- other microclimate diffs not considered
-- don't know specific anatomical change
+c2 = case_when(
+  str_detect(c1, "_meas") ~ "Meas.",
+  str_detect(c1, "_growth") ~ "Growth",
+  str_detect(c1, "_intrxn") ~ "Inter.",
+  str_detect(c1, "_acc") ~ "Population",
+  .default = c1
+)
 
-Two outstanding areas for further research are 1) the specific anatomical changes, such as leaf thickness or mesophyll porosity, that increase the diffusion path length for CO$_2$ in sun leaves, and 2) the costs of amphistomy that could explain plasticity in \gmaxratio{} in populations from low-light habitats. Resolving the first question will require detailed anatomical measurements on a large number of shade and sun leaves with concomitant estimates of \aax. The fact that populations from low-light habitats are more plastic suggests that costs of amphistomy are greatest in these environments. (not finished yet)
+kbl(
+  df1,
+  col.names = c2,
+  booktabs = TRUE,
+  escape = FALSE,
+  align = "c",
+  longtable = TRUE,
+  digits = 2
+) |>
+  kable_styling(latex_options = c("striped", "repeat_header")) |>
+  add_header_above(groupings) |>
+  column_spec(1, width = "0.7in") |>
+  column_spec(2, width = "0.5in") |>
+  column_spec(3:10, width = "0.4in") |>
+  column_spec(c(5, 8), border_right = TRUE)
 
-Not sure where this goes: We infer this from the fact that blocking gas exchange in pseudohypostomatous leaves reduced $A$ by X-X% depending on the population, light treatment, and light intensity (Table/figure). The AA is equivalent to an X-X% change in total $g_\text{sc}$ (see SI section gs equivalency). But whereas increasing $g_\text{sc}$ would increase water loss as a necessary by-product, amphistomy can increase $A$ without any appreciable affect on transpiration.
-
-
-
-from Mott and Oleary: "However, Jones and Slatyer (5) reported a higher mesophyll resistance for CO, entering through the upper stomata than for the lower, and the data of Vaclavik (12) appear to support this conclusion"
-
-8. What it all means
-  * Our study reveals an important role for plasticity in explaining why amphi leaves are more common in sunny habitats
-  * Confirms that leaf structure of sun leaves incurs costs that amphistomy can mitigate
-  * It will be useful to consider coordination between leaf anatomy, stomatal density, and ratio in future studies of leaf structure-function and in crops (or something)
-
-
-I am using this approach to drafting the paper:
-
-https://blogs.nature.com/nyc/2011/08/10/how-to-write-a-paper-one-possible-answer
-
-## Punchline
-
-Plastic changes in the structure of sun leaves can increase the intercellular CO$_2$ diffusion path length. Gas exchange through stomata on both upper and lower leaf surfaces, amphistomy, may be a compensatory mechanism to reduce the impact of increased diffusion path length on photosynthesis without increasing water loss. We demonstrate for the first time that sun leaves benefit most from amphistomy because it compensates for plastic structural changes in leaf anatomy.
-
-What's surprising: role of developmental plasticity in explaining comparative results; diffusional limitations through palisade ias is strong and needs to be considered with light gradients in understanding leaf strucuture- funciton
-
-
-
-big implications - if trees were amphi, more more carbon sink or reduced transpiration
-
-It is commonly assumed in comparative studies that most trait variation between species is constitutive and genetically determined, but our results suggest that plastic responses to light are necessary to explain why \gmaxratio{} increases with light habitat. Reaction norms to light intensity among wild tomatoes indicate that populations from low light habitats express low \gmaxratio{} when grown in shade, whereas populations from high light habitats have constitutively higher \gmaxratio{} (Fig. rxn-norm). The larger response to light intensity is driven by greater plasticty in leaf structure in populations from low-light habitats (Fig/table - I haven't tested this yet, so this is a placeholder.) We infer that these structural changes in sun leaves are costly because they increase the diffusion path length for CO$_2$ and reduce photosynthesis. As a consequence, sun leaves benefit more from amphistomy. This is the first demonstration that sun leaves benefit more from amphistomy because it compensates for developmental plasticity in leaf structure.
-
+```

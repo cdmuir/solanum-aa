@@ -1,0 +1,96 @@
+---
+title: manuscraps
+format:
+  pdf:
+    keep-tex: false  
+    toc: false
+number-sections: false
+bibliography: solanum-aa.bib
+csl: https://www.zotero.org/styles/science
+---
+
+### MANUSCRAPS
+
+(not sure where this goes)  * We acclimated the focal leaf to high light (\ppfdequals{2000}) and high relative humidity (\rhequals{70}) until $A$ and \gsw{} reach their maximum. After that, we decreased \rh{} to $\approx 10\%$ to induce rapid stomatal closure without biochemical down
+
+Problems to bring up in discussion:
+- all our species were amphi, so they may all live in PAI below threshold to favor amphi
+- other microclimate diffs not considered
+- don't know specific anatomical change
+
+Two outstanding areas for further research are 1) the specific anatomical changes, such as leaf thickness or mesophyll porosity, that increase the diffusion path length for CO$_2$ in sun leaves, and 2) the costs of amphistomy that could explain plasticity in \gmaxratio{} in populations from low-light habitats. Resolving the first question will require detailed anatomical measurements on a large number of shade and sun leaves with concomitant estimates of \aax. The fact that populations from low-light habitats are more plastic suggests that costs of amphistomy are greatest in these environments. (not finished yet)
+
+Not sure where this goes: We infer this from the fact that blocking gas exchange in pseudohypostomatous leaves reduced $A$ by X-X% depending on the population, light treatment, and light intensity (Table/figure). The AA is equivalent to an X-X% change in total $g_\text{sc}$ (see SI section gs equivalency). But whereas increasing $g_\text{sc}$ would increase water loss as a necessary by-product, amphistomy can increase $A$ without any appreciable affect on transpiration.
+
+
+
+from Mott and Oleary: "However, Jones and Slatyer (5) reported a higher mesophyll resistance for CO, entering through the upper stomata than for the lower, and the data of Vaclavik (12) appear to support this conclusion"
+
+8. What it all means
+  * Our study reveals an important role for plasticity in explaining why amphi leaves are more common in sunny habitats
+  * Confirms that leaf structure of sun leaves incurs costs that amphistomy can mitigate
+  * It will be useful to consider coordination between leaf anatomy, stomatal density, and ratio in future studies of leaf structure-function and in crops (or something)
+
+
+I am using this approach to drafting the paper:
+
+https://blogs.nature.com/nyc/2011/08/10/how-to-write-a-paper-one-possible-answer
+
+## Punchline
+
+Plastic changes in the structure of sun leaves can increase the intercellular CO$_2$ diffusion path length. Gas exchange through stomata on both upper and lower leaf surfaces, amphistomy, may be a compensatory mechanism to reduce the impact of increased diffusion path length on photosynthesis without increasing water loss. We demonstrate for the first time that sun leaves benefit most from amphistomy because it compensates for plastic structural changes in leaf anatomy.
+
+What's surprising: role of developmental plasticity in explaining comparative results; diffusional limitations through palisade ias is strong and needs to be considered with light gradients in understanding leaf strucuture- funciton
+
+
+
+big implications - if trees were amphi, more more carbon sink or reduced transpiration
+
+It is commonly assumed in comparative studies that most trait variation between species is constitutive and genetically determined, but our results suggest that plastic responses to light are necessary to explain why \gmaxratio{} increases with light habitat. Reaction norms to light intensity among wild tomatoes indicate that populations from low light habitats express low \gmaxratio{} when grown in shade, whereas populations from high light habitats have constitutively higher \gmaxratio{} (Fig. rxn-norm). The larger response to light intensity is driven by greater plasticty in leaf structure in populations from low-light habitats (Fig/table - I haven't tested this yet, so this is a placeholder.) We infer that these structural changes in sun leaves are costly because they increase the diffusion path length for CO$_2$ and reduce photosynthesis. As a consequence, sun leaves benefit more from amphistomy. This is the first demonstration that sun leaves benefit more from amphistomy because it compensates for developmental plasticity in leaf structure.
+
+
+### Cleaning \aqcurve{} curves
+
+The raw data set consisted of `r prettyNum(aa_stats$n_aq_curve0, big.mark = ",")` \aqcurve{} curves with an average of `r formatC(aa_stats$n_point_per_aq_curve0, digits = 3)`. Manual curation of a data set this size in a principled, consistent manner is not feasible. Therefore, we automated data cleaning using custom *R* scripts. Cleaning is divided into two sequential steps (\autoref{tbl-cleaning2}).
+
+```{r, cleaning2,echo=FALSE,message=FALSE,warning=FALSE}
+#| label: tbl-cleaning2
+#| tbl-cap: "Two sequential steps for cleaning \\agcurve{} curves. The rationale and procedure for each step are described in the text. The rightmost columns summarize the number of curves and mean number of points per curve remaining after each step."
+
+step_description_col = c(
+  "1. remove outliers within each \\aqcurve{} curve",
+  "2. remove \\aqcurve{} curves with poor fit"
+)
+
+n_curve_col = unlist(aa_stats[str_detect(names(aa_stats), "^n_aq_curve[1-9]$")]) |>
+  prettyNum(big.mark = ",")
+
+n_point_col = unlist(aa_stats[str_detect(names(aa_stats), "^n_point_per_aq_curve[1-9]$")])
+
+tibble(
+  `Step: description` = step_description_col,
+  `Number of curves` = n_curve_col,
+  `Number of points per curve` = n_point_col
+) |>
+  knitr::kable(format = "latex",
+               align = c("l", "c", "c"),
+               digits = c(0, 0, 1),
+               booktabs = TRUE, escape = FALSE) |>
+  kableExtra::kable_styling(latex_options = c("striped", "no_vertical_lines")) |>
+  kableExtra::column_spec(1, width = "9cm") |>
+  kableExtra::column_spec(2, width = "2.5cm") |>
+  kableExtra::column_spec(3, width = "2.5cm")
+
+```
+
+#### Remove outliers within each \aqcurve{} curve
+
+*Rationale*: Individual outliers within \agcurve{} curves, usually caused by transitory changes in chamber conditions, exert undue leverage on parameter estimates and cause bias and/or low precision in parameter estimates.
+
+*Procedure*: We fit provisional nonrectangular hyperbola [@marshall_model_1980] to each \aqcurve{} curve using nonlinear regression with the `nlsLM()` function from the *R* package **minpack.lm** version `r packageVersion("minpack.lm")` [@elzhov_minpacklm_2023]. We sequentially removed data points with an absolute external studentized residual $> `r point_outlier_threshold`$ until none remained.
+
+#### Remove \aqcurve{} curves with poor fit
+
+*Rationale*: \aqcurve{} curves with a poor fit to the nonrectangular hyperbola most likely indicate systematic measurement error and/or the leaf was not fully acclimated to the chamber environment. 
+
+*Procedure*: As described above, we fit provisional nonrectangular hyperbola to each \aqcurve{} curve and calculated the model $r^2$. There was a clear break between typical curves and poorly fitting curves where $r^2 < `r aq_r2_threshold`$. We therefore removed \aqcurve{} curves with $r^2 < `r aq_r2_threshold`$.
