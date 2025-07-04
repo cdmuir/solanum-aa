@@ -86,7 +86,6 @@ write_rds(nls_summary, "objects/nls_summary.rds")
 plan(multisession, workers = 9)
 rh_curves |>
   split( ~ curve) |>
-  magrittr::extract(seq_len(4)) |>
   future_iwalk(\(df, curve_id) {
     file = paste0(sk_dir, curve_id, ".rds")
     if (!file.exists(file)) {
@@ -136,6 +135,12 @@ rh_curves |>
     }
   }, .progress = TRUE, .options = furrr_options(seed = TRUE))
 
+# zip
+zip::zipr(
+  "objects/sk-curves.zip",
+  list.files(sk_dir, full.names = TRUE),
+  recurse = TRUE
+)
 
 nls(gsw ~ gf + dg * exp(-(t_sec / tau)),
     data = df,
