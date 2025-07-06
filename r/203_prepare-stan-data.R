@@ -14,7 +14,7 @@ trimmed_amphi_first = read_rds("data/trimmed_amphi_first.rds") |>
 phy = read_rds("data/phylogeny.rds")
 
 aa_summary = read_rds("objects/aa_summary.rds") |>
-  dplyr::select(acc_id, light_intensity, aa = median) |>
+  dplyr::select(acc_id, light_intensity, aa = median, se_aa = sd) |>
   mutate(scaled_aa = (aa - mean(aa)) / sd(aa)) |>
   left_join(plant_info, by = join_by(acc_id)) |>
   left_join(trimmed_amphi_first, by = join_by(acc_id)) 
