@@ -42,7 +42,7 @@ model_forms = expand.grid(
 # Build and fit each model
 plan(multisession, workers = 19)
 
-aa_models = model_forms[1:19,] |>
+aa_models = model_forms |>
   dplyr::select(fixed, random, sigma, seed) |>
   future_pmap(function(fixed, random, sigma, seed) {
   fml = bf(as.formula(paste(
