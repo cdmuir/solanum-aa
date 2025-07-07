@@ -6,7 +6,7 @@ fit_aa = read_rds("objects/fit_aa2.rds")
 # Estimated llma for each acc, light_intensity, and light_treatment
 df_new1 = crossing(
     acc = unique(fit_aa$data$acc),
-    # acc_id = unique(fit_aa$data$acc_id),
+    acc_id = unique(fit_aa$data$acc_id),
     light_intensity = unique(fit_aa$data$light_intensity),
     light_treatment = unique(fit_aa$data$light_treatment)
   ) |>
@@ -19,7 +19,7 @@ df_pred1 = posterior_epred(fit_aa, newdata = df_new1, resp = "llma") |>
   full_join(df_new1, by = join_by(row)) |>
   group_by(acc, light_intensity, light_treatment) |>
   point_interval(llma) |>
-  mutate(row = row_number())
+  mutate(row = row_number(), se_aa = 0)
 
 # Estimated AA for each acc, light_intensity, and light_treatment at estimated llma
 df_pred2 = posterior_epred(fit_aa, newdata = df_pred1, resp = "aa") |>
@@ -66,7 +66,7 @@ df1 = full_join(
 
 # Regression lines
 ce = conditional_effects(fit_aa)
-df2 = ce[["aa.aa_llma:light_intensity"]] |>
+df2 = ce[["aa.aa_llma"]] |>
   mutate(lma = exp(llma), aa = estimate__, .lower = lower__, .upper = upper__,
          Measurement = light_intensity |>
            factor(levels = c("150", "2000")) |>
