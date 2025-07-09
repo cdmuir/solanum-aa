@@ -94,3 +94,106 @@ tibble(
 *Rationale*: \aqcurve{} curves with a poor fit to the nonrectangular hyperbola most likely indicate systematic measurement error and/or the leaf was not fully acclimated to the chamber environment. 
 
 *Procedure*: As described above, we fit provisional nonrectangular hyperbola to each \aqcurve{} curve and calculated the model $r^2$. There was a clear break between typical curves and poorly fitting curves where $r^2 < `r aq_r2_threshold`$. We therefore removed \aqcurve{} curves with $r^2 < `r aq_r2_threshold`$.
+
+## table describing 5 original competing models
+
+```{r, models, echo=FALSE,message=FALSE,warning=FALSE}
+#| label: tbl-models
+#| tbl-cap: "Summary of differences among competing models of how \\aax{} varies with light intensity, light treatment, and among populations as a function of native \\ppfd. The models are numbered from simpler to more complex. All models include fixed effects of light intensity and light treatment; some models include interactions between. All models include a phylogenetic random effect of population on \\aax; some models include varying effects of light intensity and light treatment among populations. The last column indicates the population-level \\aax{} variable we used as a response to native \\ppfd."
+
+tribble(
+    ~"Model", ~"Fixed effects", ~"Phylogenetic random effects", ~"Response to native \\ppfd",
+    "1", "light intensity", "varying intercept among populations", "$\\mathrm{AA}_{0, \\text{acc}}$",
+    "1", "light treatment", "", "",
+    "2", "light intensity", "varying intercept among populations", "$\\mathrm{AA}_{0, \\text{acc}}$",
+    "2", "light treatment", "", "",
+    "2", "intensity $\\times$ treatment", "", "",
+    "3", "light intensity", "varying intercept among populations", "$\\mathrm{AA}_{2000, \\text{acc}}$",
+    "3", "light treatment", "varying effect of high light intensity among populations", "",
+    "4", "light intensity", "varying intercept among populations", "$\\mathrm{AA}_{\\text{sun, acc}}$",
+    "4", "light treatment", "varying effect of sun treatment among populations", "",
+    "5", "light intensity", "varying intercept among populations", "$\\mathrm{AA}_{2000, \\text{sun, acc}}$",
+    "5", "light treatment", "varying effect of high light intensity among populations", "",
+    "5", "intensity $\\times$ treatment", "varying effect of sun treatment among populations", ""
+  ) |>
+  knitr::kable(
+    format = "latex",
+    align = c("c", "l", "l", "l"),
+    booktabs = TRUE,
+    escape = FALSE,
+    longtable = FALSE
+  ) |>
+    kableExtra::collapse_rows(columns = 1, latex_hline = "major", row_group_label_position = "first") |>
+  kableExtra::column_spec(1, width = "0.3in") |>
+  kableExtra::column_spec(2, width = "1.3in") |>
+  kableExtra::column_spec(3, width = "3.4in") |>
+  kableExtra::column_spec(4, width = "1in")
+
+```
+
+## table of all parameters
+
+```{r, parameters, echo=FALSE,message=FALSE,warning=FALSE}
+#| label: tbl-parameters
+#| tbl-cap: "Description of parameters estimated in the hierarchical Bayesian model. The `Parameter` column lists the parameter name as it appears in text. The `Description` column provides a brief description of the parameter."
+
+df_parameters = read_csv("../data/parameters1.csv", col_types = "ccccl") |>
+    dplyr::filter(include)
+
+df_parameters |>
+  dplyr::select(Parameter = latex, Description = description) |>
+  knitr::kable(
+    format = "latex",
+    align = c("l", "l"),
+    booktabs = TRUE,
+    escape = FALSE,
+    longtable = TRUE
+  ) |>
+  kableExtra::kable_styling(latex_options = c("striped", "no_vertical_lines")) |>
+  kableExtra::column_spec(1, width = "1in") |>
+  kableExtra::column_spec(2, width = "5in") |>
+  kableExtra::pack_rows("\\agcurve{} curve parameters",
+                        min(which(df_parameters$par_type == "ags")),
+                        max(which(df_parameters$par_type == "ags")),
+                        escape = FALSE) |>
+  kableExtra::pack_rows("\\aax{} for each light intensity with leaf using \\agcurve{} curve parameters",
+                        min(which(df_parameters$par_type == "aa_est")),
+                        max(which(df_parameters$par_type == "aa_est")),
+                        escape = FALSE) |>
+  kableExtra::pack_rows("effects of light intensity, light treatments, and population on \\aax",
+                        min(which(df_parameters$par_type == "aa")),
+                        max(which(df_parameters$par_type == "aa")),
+                        escape = FALSE) |>
+  kableExtra::pack_rows("effects of native light habitat on population-level \\aax",
+                        min(which(df_parameters$par_type == "ppfd_aa")),
+                        max(which(df_parameters$par_type == "ppfd_aa")),
+                        escape = FALSE)
+
+```
+
+# This was the old description based on custom model
+
+#### \agcurve{} curve parameters
+
+We modeled \logA as a quadratic function of \loggsw for each leaf using the following equation:
+
+$$\log(A_{ij}) = (\beta_0 + b_{0,j}) + (\beta_1 + b_{1,j}) \log{g_{\text{sw},i}} + (\beta_2 + b_{2,j}) \log{g_{\text{sw},i}}^2 + \epsilon_{i}$$
+
+where $\beta_0$, $\beta_1$, and $\beta_2$ are the average intercept, linear, and quadratic coefficients, respectively. We used diffuse normal priors with mean $0$ and standard deviation $10$ on these parameters. We estimated random effects of curve $j$ on the intercept ($b_{0,j}$), linear ($b_{1,j}$), and quadratic ($b_{2,j}$) coefficients. We assumed that the $j \times 3$ array of coefficients was multivariate normal a mean vector of $\vec{0}$ and covariance $\Sigma_\text{curve}$. We used a weakly informative normal prior with mean $0$ and standard deviation $1$ on the log-transformed standard deviations (i.e. the diagonal of $\Sigma_\text{curve}$). We used a weakly informative $\mathrm{LJK}(2)$ prior on the correlation matrix. The off diagonal elements of $\Sigma_\text{curve}$ can be calculated from its diagonal elements and the correlation matrix.
+
+The residuals $\epsilon_{i}$ were modeled as a lag-1 autocorrelated time-series. We further assumed that the residual standard deviation of the $j^{\text{th}}$ curve ($\sigma_{\epsilon,j}$) was inversely proportional to the leaf surface area ($S_j$) within the chamber:
+
+$$\log (\sigma_{\epsilon,j}) = \log (\sigma_{\qty{6}{\raiseto{2}\centi\meter},\epsilon}) + (6 - S_j) \beta_{S,\epsilon}$$
+where $\sigma_{\qty{6}{\raiseto{2}\centi\meter},\epsilon}$ is the minimum residual standard deviation when the $\qty{6}{\raiseto{2}\centi\meter}$ chamber is completely filled. The residual standard deviation increases on log-linear scale by $\beta_{S,\epsilon}$. We used a weakly informative normal prior with mean $-3$ and standard deviation $5$ on $\log (\sigma_{\qty{6}{\raiseto{2}\centi\meter},\epsilon})$ and a weakly informative normal prior with mean $0$ and standard deviation $1$ on $\beta_{S,\epsilon}$.
+
+#### \aax{} for each light intensity within leaf using \agcurve{} curve parameters
+
+We estimated \aax{} for each light intensity by integrating the difference in \logA{} between the amphi and pseudohypo \agcurve{} curves over the range of \gsw{} values where the curves overlap (from $\min(\log(g_\text{sw}))$ to $\max(\log(g_\text{sw}))$). The estimate of \aax{} for the $k^{\text{th}}$ leaf at light intensity $l$ in population $m$ is:
+
+$$\widehat{\mathrm{AA}}_{klm} = \int_{\text{min(log(}g_\text{sw}))}^{\text{max(log(}g_\text{sw}))} \text{log}\bigg(\frac{\hat{A}_\text{amphi}(x; \theta_{klm,\text{amphi})}}{\hat{A}_\text{hypo}(x; \theta_{klm,\text{hypo})}}\bigg) dx$$
+where:
+
+$$\theta_\text{amphi} \in \{\hat{b}_{0, f(\text{amphi}, k,l,m)}, \hat{b}_{1, f(\text{amphi}, k,l,m)}, \hat{b}_{2, f(\text{amphi}, k,l,m)}\}, \text{and}$$ 
+
+$$\theta_\text{hypo} \in \{\hat{b}_{0, f(\text{hypo}, k,l,m)}, \hat{b}_{1, f(\text{hypo}, k,l,m)}, \hat{b}_{2, f(\text{hypo}, k,l,m)}\}.$$ 
+The function $f : \Theta_1 \rightarrow \Theta_2$ maps the set $\Theta_1$ indexed by leaf type (amphi or pseudohypo), leaf replicate, light intensity, and population to set $\Theta_2$ indexed by individual \agcurve{} curve. This mapping is necessary because the random effects structure differs between models of \loggsw{} on \logA{} and that of models predicting \aax{} described in the next section.

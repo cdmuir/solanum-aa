@@ -92,3 +92,31 @@ reverselog10_trans = function() {
     domain = c(1e-100, Inf)
   )
 }
+
+## Function to get ggplot panel dimensions
+# Help from: https://stackoverflow.com/questions/71250264/figuring-out-panel-size-given-dimensions-for-the-final-plot-in-ggsave-to-show-c
+
+get_panel_dim = function(gp, fig_width, fig_height) {
+  output_width = unit(fig_width, "in")
+  output_height = unit(fig_height, "in")
+  
+  # Convert plot to gtable
+  gt = ggplotGrob(gp)
+  
+  # Find panel
+  is_panel = grep("panel", gt$layout$name)
+  panel_location = gt$layout[is_panel,]
+  
+  # Get widths/heights of everything except the panel
+  width  = gt$widths[-panel_location$l]
+  height = gt$heights[-panel_location$t]
+  
+  # Calculate as output size - size of plot decoration
+  panel_height = output_height - sum(height)
+  panel_width  = output_width - sum(width)
+  
+  list(
+    panel_height = convertUnit(panel_height, "in"),
+    panel_width = convertUnit(panel_width, "in")
+  )
+}

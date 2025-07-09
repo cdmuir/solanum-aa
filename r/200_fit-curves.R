@@ -1,41 +1,77 @@
 # Fit quadratic parameters to each curve separately
-# Note: I removed ARMA because it was causing strange issues. Custom Stan model does it correctly.
 source("r/header.R")
 
 rh_curves = read_rds("data/trimmed_rh_curves.rds") |>
   mutate(ci = as.numeric(as.factor(curve)))
 
-plan(multisession, workers = 19)
+# tmp = rh_curves |>
+#   split( ~ curve)
+# df = tmp[[1]]
+# curve_id = names(tmp)[[1]]
+
+plan(multisession, workers = 9)
+
 rh_curves |>
-  split( ~ curve) |>
+  split(~ curve) |>
   future_iwalk(\(df, curve_id) {
-    if (!file.exists(paste0("objects/curve-fits/", curve_id, ".rds"))) {
-      x = 2
+    s = paste0("objects/curve-fits/", curve_id, ".rds")
+    if (!file.exists(s)) {
+      crit = 0
+      x = 1
       ad = 0.8
-      n_divergent = Inf
-      while (n_divergent > 10) {
-        fit_curve = brm(
+      
+      while (crit == 0 & x < 24) {
+        m = brm(
           log_A ~ poly(log_gsw, 2, raw = TRUE),
-          iter = x * 2000,
+          iter = x * aa_args$n_iter_init,
           thin = x,
           data = df,
-          chains = 4,
-          cores = 4,
+          chains = 1,
+          cores = 1,
           backend = "cmdstanr",
           control = list(adapt_delta = ad),
           seed = 360036340 + df$ci[1]
         )
-        n_divergent = nuts_params(fit_curve) |>
-          subset(Parameter == "divergent__") |>
-          pull(Value) |>
-          sum()
+        
+        crit = summarise_draws(m) |>
+          summarize(c1 = (max(rhat, na.rm = TRUE) < aa_args$max_rhat),
+                    c2 = (min(ess_bulk, na.rm = TRUE) > aa_args$min_ess)) |>
+          mutate(
+            n_divergent = nuts_params(m) |>
+              subset(Parameter == "divergent__") |>
+              pull(Value) |>
+              sum(),
+            c3 = (n_divergent < aa_args$max_divergent),
+            c4 = c1 * c2 * c3
+          ) |>
+          pull(c4)
+        
         x = x + 1
         ad = min(ad * 1.1, 0.99)
+        
       }
       
-      write_rds(fit_curve,
-                paste0("objects/curve-fits/", curve_id, ".rds"))
+      write_rds(m, s)
     } else {
       message(paste0("Curve fit for ", curve_id, " already exists. Skipping."))
     }
   }, .progress = TRUE, .options = furrr_options(seed = TRUE))
+
+fit_curve_diagnostics = list.files("objects/curve-fits", full.names = TRUE) |>
+  future_map_dfr(\(.x) {
+    m = read_rds(.x)
+    s = summarise_draws(m) |>
+      filter(variable != "lprior")
+    tibble(
+      file = .x,
+      r2 = bayes_R2(m)[, "Estimate"],
+      max_rhat = max(s$rhat),
+      min_ess = min(s$ess_bulk),
+      n_divergent = nuts_params(m) |>
+        subset(Parameter == "divergent__") |>
+        pull(Value) |>
+        sum()
+    )
+  }, .progress = TRUE)
+
+write_rds(fit_curve_diagnostics, "objects/fit_curve_diagnostics.rds")

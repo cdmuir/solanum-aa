@@ -294,8 +294,8 @@ thinning_interval = aa_args$thinning_interval
 aq_r2_threshold = aa_args$aq_r2_threshold
 
 ### Bayesian data analysis
-n_model = 5 |> # i don't think I need this anymore
-  number_to_word()
+n_model1 = nrow(aa_loo_table1)
+n_model2 = nrow(aa_loo_table2)
 
 ### Summarizing AA results
 aa_mean_range = df_aa_pred1 |>
@@ -411,7 +411,7 @@ kableExtra::kable(
 We tested these hypotheses by comparing \aax{} among amphistomatous wild tomato species [@peralta_taxonomy_2008] from different native light habitats, grown under simulated sun and shade light treatments, and measured under contrasting light intensity (). We measured AA on `r n_plant` individual plants from `r n_acc` populations (average of `r mean_n_rep` replicates per light treatment) using a recently developed method [@triplett_amphistomy_2024]. With this method, we directly compare the photosynthetic rate of an untreated amphistomatous leaf to that of the same leaf with gas exchange blocked through the adaxial (upper) surface by transparent plastic, which we refer to as 'pseudohypostomy'. To compare amphi- and pseudohypostomatous leaves at identical whole-leaf $g_\text{sc}$, we measure $A$ over a range of $g_\text{sc}$, inducing stomatal opening and closure by modulating humidity (see Materials and Methods for further details). We estimated 'amphistomy advantage' (\aax) *sensu* @parkhurst_adaptive_1978, but with modifications previously described in @triplett_amphistomy_2024 and here (Materials and Methods). The native light intensity was represented by plant area index (PAI $\unit{\meter\squared\per\meter\squared}$), estimated using a global gridded data set derived from the Global Ecosystem Dynamics Investigation [GEDI; @burns_multi-resolution_2024] and georeferenced accession collection information from the Tomato Genetics Resource Center. The growth light intensities were \ppfdequals{`r ppfd_sun`} (sun treatment) and \ppfdqty{`r ppfd_shade`} (shade treatment) while all other environment conditions were nearly identical (see materials and methods in supplementary materials). The high and low measurements intensities were \ppfdequals{2000} (`r p_red_high`:`r p_blue_high` red:blue) and \ppfdequals{150} (`r p_red_low`:`r p_blue_low` red:blue), respectively. 
 
 <!-- Paragraph 6 (summarize main results) -->
-Consistent with biophysical theory of CO$_2$ diffusion within leaves, $\aay{} > 0$ for all populations ([Fig. @fig-aa]A). Bayesian phylogenetic mixed effects models that allowed \aax{} to vary between measurement light intensities, growth light intensities, and among populations outperformed simpler models based on their information criteria (@tbl-aa_loo1). Measured under high light intensity, \aax{} was consistently greater for sun plants. The average \aax{} among populations in the shade treatment was `r filter(aa_mean_range, light_treatment == "low", light_intensity == "2000")$x`; however, the same populations grown at high light intensity showed a mean \aax{} of `r filter(aa_mean_range, light_treatment == "high", light_intensity == "2000")$x`. Contrary to the predictions of the assimilatory hypothesis, \aax{} was greater in all populations under low measurement light intensity for both sun and shade grown plants. The effect of low light on \aax{} was more pronounced in the sun-grown plants, where \aax{} was significantly greater under low measurement light intensity in `r aa_summary3["high"]` of `r n_acc` populations compared to to `r aa_summary3["low"]` populations for shade-grown plants. The overall average \aax{} of shade and sun grown plants measured under low light intensity was `r filter(aa_mean_range, light_treatment == "low", light_intensity == "150")$x` and `r filter(aa_mean_range, light_treatment == "high", light_intensity == "150")$x`, respectively. There was a slight tendency for populations from more closed habitats (greater PAI), but \aax{} varied widely among populations from open habitats (low PAI) regardless of growth and measurement light intensities ([Fig. @fig-aa]B). 
+Consistent with biophysical theory of CO$_2$ diffusion within leaves, $\aay{} > 0$ for all populations ([Fig. @fig-aa]A). Bayesian phylogenetic mixed effects models that allowed \aax{} to vary between measurement light intensities, growth light intensities, and among populations outperformed simpler models based on their information criteria (@tbl-aa_loo1). Measured under high light intensity, \aax{} was consistently greater for sun plants. The average \aax{} among populations in the shade treatment was `r filter(aa_mean_range, light_treatment == "low", light_intensity == "2000")$x`; however, the same populations grown at high light intensity showed a mean \aax{} of `r filter(aa_mean_range, light_treatment == "high", light_intensity == "2000")$x`. Contrary to the predictions of the assimilatory hypothesis, \aax{} was greater in all populations under low measurement light intensity for both sun and shade grown plants. The effect of low light on \aax{} was more pronounced in the sun-grown plants, where \aax{} was significantly greater under low measurement light intensity in `r aa_summary3["high"]` of `r n_acc` populations compared to `r aa_summary3["low"]` populations for shade-grown plants. The overall average \aax{} of shade and sun grown plants measured under low light intensity was `r filter(aa_mean_range, light_treatment == "low", light_intensity == "150")$x` and `r filter(aa_mean_range, light_treatment == "high", light_intensity == "150")$x`, respectively. There was a slight tendency for populations from more closed habitats (greater PAI), but \aax{} varied widely among populations from open habitats (low PAI) regardless of growth and measurement light intensities ([Fig. @fig-aa]B). 
 
 ```{r, aa, echo = FALSE, warning=FALSE, message=FALSE} 
 #| label: fig-aa
@@ -467,6 +467,7 @@ We conclude that developmental plasticity, as opposed to acclimation or adaptati
 
 maybe this wording is better: Amphistomy likely plays a significant, but under appreciated, role in the carbon and water balance of plant groups where this trait is common, such as herbaceous plants in sunny habitats and woody species in arid biomes (cites). If our estimates of AA from the wild tomato clades
 
+note: estimates of AA are less than that described by Parkhurst and Mott (1990) and also less than that of Xiong and Flexas (2021). What does this tell us?
 
 A second major conclusion is that the significant photosynthetic gain of amphistomatous leaves implies that the many hypostomatous leaves that dominate mesic to wet forests globally are giving up 'free' carbon that would require little to no additional water loss. Under realistic assumptions, we estimate that hypostomatous leaves could achieve the same $A$ with X to X% less water loss if they were amphistomatous (Table S9). Ours is the first experimental demonstration that amphistomy is beneficial for sun leaves because of plastic changes, but future research needs to estimates the tradeoffs associated with amphistomatous leaves in order to fully explain their rarity among many woody plants and shade-tolerant herbs.
 
@@ -666,121 +667,45 @@ tibble(
 
 *Procedure*: We provionsally estimated \aax{} for each replicate by integrating over the range of \gsw{} values where amphi and pseudohypo \agcurve{} curves overlap. In this procedure, curve parameters were provisionally estimated using ordinary least squares with the `lm()` function in *R*. We then used point estimates of \aax{} for each replicate as the response variable in a linear model with light treatment, light intensity, population, and all interactions as explanatory variables. This model was also fit using ordinary least squares with the `lm()` function in *R*. We classified  extreme \aax{} values as those with an absolute internal studentized residual $> `r aa_outlier_threshold`$. Because these values likely indicate significant measurement error or leaf damage, we removed \agcurve{} curves at both light intensities if either was classified as extreme.
 
-### Bayesian phylogenetic mixed effects models in *Stan*
-#### MARKER - REVISE MODEL DESCRIPTION
-We fit `r n_model` models to test predictions of competing hypotheses about why amphistomy advantage (\aax) might be greater for leaves in sunny, open habitats. This section provides an overview of differences among models (\autoref{tbl-models}). The next sections describe how we fit models in *Stan*, all model parameters and priors, and specific predictions about parameter values for each hypothesis.
+### Bayesian data analysis with *Stan* {#sec-analysis}
 
-```{r, models, echo=FALSE,message=FALSE,warning=FALSE}
-#| label: tbl-models
-#| tbl-cap: "Summary of differences among competing models of how \\aax{} varies with light intensity, light treatment, and among populations as a function of native \\ppfd. The models are numbered from simpler to more complex. All models include fixed effects of light intensity and light treatment; some models include interactions between. All models include a phylogenetic random effect of population on \\aax; some models include varying effects of light intensity and light treatment among populations. The last column indicates the population-level \\aax{} variable we used as a response to native \\ppfd."
+Our analysis pipeline consisted of four main steps:
 
-tribble(
-    ~"Model", ~"Fixed effects", ~"Phylogenetic random effects", ~"Response to native \\ppfd",
-    "1", "light intensity", "varying intercept among populations", "$\\mathrm{AA}_{0, \\text{acc}}$",
-    "1", "light treatment", "", "",
-    "2", "light intensity", "varying intercept among populations", "$\\mathrm{AA}_{0, \\text{acc}}$",
-    "2", "light treatment", "", "",
-    "2", "intensity $\\times$ treatment", "", "",
-    "3", "light intensity", "varying intercept among populations", "$\\mathrm{AA}_{2000, \\text{acc}}$",
-    "3", "light treatment", "varying effect of high light intensity among populations", "",
-    "4", "light intensity", "varying intercept among populations", "$\\mathrm{AA}_{\\text{sun, acc}}$",
-    "4", "light treatment", "varying effect of sun treatment among populations", "",
-    "5", "light intensity", "varying intercept among populations", "$\\mathrm{AA}_{2000, \\text{sun, acc}}$",
-    "5", "light treatment", "varying effect of high light intensity among populations", "",
-    "5", "intensity $\\times$ treatment", "varying effect of sun treatment among populations", ""
-  ) |>
-  knitr::kable(
-    format = "latex",
-    align = c("c", "l", "l", "l"),
-    booktabs = TRUE,
-    escape = FALSE,
-    longtable = FALSE
-  ) |>
-    kableExtra::collapse_rows(columns = 1, latex_hline = "major", row_group_label_position = "first") |>
-  kableExtra::column_spec(1, width = "0.3in") |>
-  kableExtra::column_spec(2, width = "1.3in") |>
-  kableExtra::column_spec(3, width = "3.4in") |>
-  kableExtra::column_spec(4, width = "1in")
-
-```
-
-#### Fitting models in *Stan* {#sec-fitting}
-
-We fit Bayesian models with MCMC sampling in the probabilistic programming language *Stan* [@stan_development_team_stan_2025] using the *R* package **brms** version `r fit_aa1$version$brms` [@burkner_brms_2017]. We used *CmdStan* version `r fit_aa1$version$cmdstan` and **cmdstanr** version `r fit_aa1$version$cmdstanr` [@gabry_cmdstanr_2025] to interface with *R* version `r getRversion()` [@r_core_team_r:_2025]. We sampled the posterior distribution from `r dim_fit_aa[2]` chains with `r dim_fit_aa[1]` iterations each after `r dim_fit_aa[1]` warmup iterations per chain. We estimated parameters and confidence intervals as the median and 95% quantile intervals of the posterior, respectively. We chose the number of chains, warmup and sampling iterations, and maximum treedepth so that parameter estimates converged ($\hat{R} < `r aa_args['max_rhat']`$ [@gelman_inference_1992]) and the effective sample size (ESS) for each parameter was $> `r aa_args['min_ess']`$.
-
-#### Parameter estimation and priors {#sec-parameters}
-
-There were four levels of parameter estimation in our analysis:
-
-1. Estimate \agcurve{} curve parameters
-2. Estimate \aax{} for each light intensity with leaf using \agcurve{} curve parameters
+1. Estimate \agcurve{} curve parameters for each leaf
+2. Estimate \aax{} for both measurement light intensities using \agcurve{} curve parameters
 3. Estimate the effects of light intensity, light treatment, and population on \aax{} (assimilatory and plasticity hypotheses)
 4. Estimate the effects of native light habitat on population-level \aax{} (constitutive hypothesis)
 
-Although the higher-level parameter estimates depend on the lower-level parameter estimates, we fit all models simultaneously to ensure that the uncertainty in lower-level estimates propagated to higher-level estimates. 
+All models were using a Bayesian model with HMC sampling in the probabilistic programming language *Stan* [@stan_development_team_stan_2025] using the *R* package **brms** version `r fit_aa1$version$brms` [@burkner_brms_2017]. We used *CmdStan* version `r fit_aa1$version$cmdstan` and **cmdstanr** version `r fit_aa1$version$cmdstanr` [@gabry_cmdstanr_2025] to interface with *R* version `r getRversion()` [@r_core_team_r:_2025]. We sampled the posterior distribution from a single chain with a minimum of `r aa_args$n_iter_init / 2` iterations after `r aa_args$n_iter_init / 2` warmup iterations. If necessary, we refit models with more iterations to decrease the Gelman-Rubin convergence statistic ($\hat{R}$) [@gelman_inference_1992] to less than $`aa_stats[["max_rhat"]]`$ and the bulk effective sample size (ESS) to greater than $`aa_stats[["min_ess"]]`$ for all model parameters. We also increased the the `adapt_delta` parameter until there were fewer than $`aa_stats[["n_divergent"]]`$ divergent transitions.
 
-```{r, parameters, echo=FALSE,message=FALSE,warning=FALSE}
-#| label: tbl-parameters
-#| tbl-cap: "Description of parameters estimated in the hierarchical Bayesian model. The `Parameter` column lists the parameter name as it appears in text. The `Description` column provides a brief description of the parameter."
+#### \agcurve{} curve parameters
 
-df_parameters = read_csv("../data/parameters1.csv", col_types = "ccccl") |>
-    dplyr::filter(include)
+We modeled \logA as a quadratic function of \loggsw for each leaf, measured at low and high light intensity, in both amphistomatous (untreated) and pseudohypostomatous (propafilm treatment) states. 
 
-df_parameters |>
-  dplyr::select(Parameter = latex, Description = description) |>
-  knitr::kable(
-    format = "latex",
-    align = c("l", "l"),
-    booktabs = TRUE,
-    escape = FALSE,
-    longtable = TRUE
-  ) |>
-  kableExtra::kable_styling(latex_options = c("striped", "no_vertical_lines")) |>
-  kableExtra::column_spec(1, width = "1in") |>
-  kableExtra::column_spec(2, width = "5in") |>
-  kableExtra::pack_rows("\\agcurve{} curve parameters",
-                        min(which(df_parameters$par_type == "ags")),
-                        max(which(df_parameters$par_type == "ags")),
-                        escape = FALSE) |>
-  kableExtra::pack_rows("\\aax{} for each light intensity with leaf using \\agcurve{} curve parameters",
-                        min(which(df_parameters$par_type == "aa_est")),
-                        max(which(df_parameters$par_type == "aa_est")),
-                        escape = FALSE) |>
-  kableExtra::pack_rows("effects of light intensity, light treatments, and population on \\aax",
-                        min(which(df_parameters$par_type == "aa")),
-                        max(which(df_parameters$par_type == "aa")),
-                        escape = FALSE) |>
-  kableExtra::pack_rows("effects of native light habitat on population-level \\aax",
-                        min(which(df_parameters$par_type == "ppfd_aa")),
-                        max(which(df_parameters$par_type == "ppfd_aa")),
-                        escape = FALSE)
+#### \aax{} for each light intensity within leaf using \agcurve{} curve parameters
+##### MARKER - add figure of this
+We estimated \aax{} for each light intensity by integrating the difference in \logA{} between the amphi and pseudohypo \agcurve{} curves over the range of \gsw{} values where the curves overlap (from $\min(\log(g_\text{sw}))$ to $\max(\log(g_\text{sw}))$).
 
-```
+$$\widehat{\mathrm{AA}} = \int_{\text{min(log(}g_\text{sw}))}^{\text{max(log(}g_\text{sw}))} \text{log}\bigg(\frac{\hat{A}_\text{amphi}(x; \theta_{\text{amphi}})}{\hat{A}_\text{hypo}(x; \theta_{\text{hypo}})}\bigg) dx$$
+where $\theta_\text{amphi}$ and $\theta_\text{hypo}$ are the quadratic parameters of the amphi and pseudohypo \agcurve{} curves, respectively. We calculated $\widehat{\mathrm{AA}}$ from each draw of the posterior for the paired amphi and pseudohypo \agcurve{} curves to obtain the posterior distribution of \aax{} for each leaf at each light intensity. We then summarized the posterior distribution of \aax{} for each leaf at each light intensity by the posterior median, which became our estimate of \aax{} for subsequent analyses.
 
-##### \agcurve{} curve parameters
+### Bayesian phylogenetic mixed effects models 
 
-We modeled \logA as a quadratic function of \loggsw for each leaf using the following equation:
+We fit Bayesian mixed effects models with phylogenetically structured random effects to test predictions of competing hypotheses about why amphistomy advantage (\aax) might be greater for leaves in sunny, open habitats. We fit all models combinations of measurement light intensity, growth light intensity, and their interaction as both fixed effects and random effects among populations. In other words, we test whether there were main effects of light intensity treatments and/or whether populations varied in their response to light intensity treatments. In all models, we included population as a phylogenetically structured random effect. We crossed those fixed and random effect structures with fixed effects of measurement light intensity and/or growth light intensity on the distributional parameter, $\sigma$, the residual variance in \aax{}. In total, we fit `r n_model1` models, each with a different combination of fixed, random, and distributional effects. We used the RAxML whole-transcriptome concatenated phylogeny based on 2,745 100-kb genomic windows from @pease_phylogenomics_2016. Two of our populations were not in this tree. We used accession LA1044 in place of LA3909, two populations of *S. galapagnse*; LA0750 was added as sister to LA0716, two closely replated populations of *S. pennellii*. The node was placed half-way between the next deepest node. 
 
-$$\log(A_{ij}) = (\beta_0 + b_{0,j}) + (\beta_1 + b_{1,j}) \log{g_{\text{sw},i}} + (\beta_2 + b_{2,j}) \log{g_{\text{sw},i}}^2 + \epsilon_{i}$$
+NEED TO EDIT THIS: The next sections describe how we fit models in *Stan*, all model parameters and priors, and specific predictions about parameter values for each hypothesis.
+Each curve was fit For initial fits, we sampled the posterior distribution from a single chain with `r aa_args$n_iter_init / 2` iterations after `r aa_args$n_iter_init / 2` warmup iterations. After model selection (see below), we refit the selected model with more iterations if necessary to decrease the Gelman-Rubin convergence statistic ($\hat{R}$) [@gelman_inference_1992] to less than $`aa_stats[["max_rhat"]]`$ and the bulk effective sample size (ESS) to greater than $`aa_stats[["min_ess"]]`$ for all model parameters.
 
-where $\beta_0$, $\beta_1$, and $\beta_2$ are the average intercept, linear, and quadratic coefficients, respectively. We used diffuse normal priors with mean $0$ and standard deviation $10$ on these parameters. We estimated random effects of curve $j$ on the intercept ($b_{0,j}$), linear ($b_{1,j}$), and quadratic ($b_{2,j}$) coefficients. We assumed that the $j \times 3$ array of coefficients was multivariate normal a mean vector of $\vec{0}$ and covariance $\Sigma_\text{curve}$. We used a weakly informative normal prior with mean $0$ and standard deviation $1$ on the log-transformed standard deviations (i.e. the diagonal of $\Sigma_\text{curve}$). We used a weakly informative $\mathrm{LJK}(2)$ prior on the correlation matrix. The off diagonal elements of $\Sigma_\text{curve}$ can be calculated from its diagonal elements and the correlation matrix.
 
-The residuals $\epsilon_{i}$ were modeled as a lag-1 autocorrelated time-series. We further assumed that the residual standard deviation of the $j^{\text{th}}$ curve ($\sigma_{\epsilon,j}$) was inversely proportional to the leaf surface area ($S_j$) within the chamber:
+#### Fitting models in *Stan* using **brms** interface {#sec-fitting}
 
-$$\log (\sigma_{\epsilon,j}) = \log (\sigma_{\qty{6}{\raiseto{2}\centi\meter},\epsilon}) + (6 - S_j) \beta_{S,\epsilon}$$
-where $\sigma_{\qty{6}{\raiseto{2}\centi\meter},\epsilon}$ is the minimum residual standard deviation when the $\qty{6}{\raiseto{2}\centi\meter}$ chamber is completely filled. The residual standard deviation increases on log-linear scale by $\beta_{S,\epsilon}$. We used a weakly informative normal prior with mean $-3$ and standard deviation $5$ on $\log (\sigma_{\qty{6}{\raiseto{2}\centi\meter},\epsilon})$ and a weakly informative normal prior with mean $0$ and standard deviation $1$ on $\beta_{S,\epsilon}$.
+We fit Bayesian models with HMC sampling in the probabilistic programming language *Stan* [@stan_development_team_stan_2025] using the *R* package **brms** version `r fit_aa1$version$brms` [@burkner_brms_2017]. We used *CmdStan* version `r fit_aa1$version$cmdstan` and **cmdstanr** version `r fit_aa1$version$cmdstanr` [@gabry_cmdstanr_2025] to interface with *R* version `r getRversion()` [@r_core_team_r:_2025]. For initial fits, we sampled the posterior distribution from a single chain with `r aa_args$n_iter_init / 2` iterations after `r aa_args$n_iter_init / 2` warmup iterations. After model selection (see below), we refit the selected model with more iterations if necessary to decrease the Gelman-Rubin convergence statistic ($\hat{R}$) [@gelman_inference_1992] to less than $`aa_stats[["max_rhat"]]`$ and the bulk effective sample size (ESS) to greater than $`aa_stats[["min_ess"]]`$ for all model parameters.
 
-##### \aax{} for each light intensity with leaf using \agcurve{} curve parameters
 
-Within the $k^{\text{th}}$ leaf, we estimated \aax{} for each light intensity by integrating the difference in \logA{} between the amphi and pseudohypo \agcurve{} curves over the range of \gsw{} values where the curves overlap (from $\min(\log(g_\text{sw}))$ to $\max(\log(g_\text{sw}))$). The estimate of \aax{} for the $k^{\text{th}}$ leaf at light intensity $l$ in population $m$ is:
 
-$$\widehat{\mathrm{AA}}_{klm} = \int_{\text{min(log(}g_\text{sw}))}^{\text{max(log(}g_\text{sw}))} \text{log}\bigg(\frac{\hat{A}_\text{amphi}(x; \theta_{klm,\text{amphi})}}{\hat{A}_\text{hypo}(x; \theta_{klm,\text{hypo})}}\bigg) dx$$
-where:
 
-$$\theta_\text{amphi} \in \{\hat{b}_{0, f(\text{amphi}, k,l,m)}, \hat{b}_{1, f(\text{amphi}, k,l,m)}, \hat{b}_{2, f(\text{amphi}, k,l,m)}\}, \text{and}$$ 
 
-$$\theta_\text{hypo} \in \{\hat{b}_{0, f(\text{hypo}, k,l,m)}, \hat{b}_{1, f(\text{hypo}, k,l,m)}, \hat{b}_{2, f(\text{hypo}, k,l,m)}\}.$$ 
-The function $f : \Theta_1 \rightarrow \Theta_2$ maps the set $\Theta_1$ indexed by leaf type (amphi or pseudohypo), leaf replicate, light intensity, and population to set $\Theta_2$ indexed by individual \agcurve{} curve. This mapping is necessary because the random effects structure differs between models of \loggsw{} on \logA{} and that of models predicting \aax{} described in the next section.
+
 
 ##### Effects of light intensity, light treatment, and population on \aax
 
@@ -846,6 +771,7 @@ tribble(
 * Table S7: Model comparison LOOIC tables
 * Table S8: Model comparison LOOIC tables with LMA
 * Table S9: Calculation of alternate scenario where amphi leaves can get same A with less R
+* Each A-gs figure with fitted curves, R2, and AA
 
 ```{r, aa_loo1, echo=FALSE,message=FALSE,warning=FALSE}
 #| label: tbl-aa_loo1
