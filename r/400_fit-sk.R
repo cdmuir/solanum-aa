@@ -1,3 +1,33 @@
+# modeling ideas (move elsewhere, material below is good)
+# based on eq. A2 in Buckley et al. (2023)
+# X is osmolality gradient (delta pi in buckley paper)
+# X_f is target osmolality
+# dX / dt = a (X - X_f)  # buckley paper, results in Vico eqn I think
+#
+# Now suppose that a is a function of X
+# a = a0 + a1 * X
+# dX / dt = (a0 + a1 * X) * (X - X_f)
+# this only has implicit soln according to ChatGpt.
+# alternate forms usually result in sigmoidal
+# 
+# what if we go back to dX / dt = a (X - X_f) but assume that d X_f / dt = b (X_f - X_inf)
+# we get this according to chatGPT:
+solve_X_dynamics <- function(t, X0, Xf0, X_inf, a, b) {
+  if (a == b) {
+    # Special case: a == b
+    term1 <- X_inf
+    term2 <- a * (Xf0 - X_inf) * t * exp(-a * t)
+    term3 <- (X0 - X_inf) * exp(a * t)
+    return(term1 + term2 + term3)
+  } else {
+    # General case: a != b
+    term1 <- X_inf
+    term2 <- (a * (Xf0 - X_inf)) / (b - a) * exp((b - 2 * a) * t)
+    term3 <- (X0 - X_inf + (a * (Xf0 - X_inf)) / (b - a)) * exp(a * t)
+    return(term1 - term2 + term3)
+  }
+}
+
 # Fit CDWeibulll mode to each curve separately
 source("r/header.R")
 
