@@ -197,3 +197,22 @@ $$\theta_\text{amphi} \in \{\hat{b}_{0, f(\text{amphi}, k,l,m)}, \hat{b}_{1, f(\
 
 $$\theta_\text{hypo} \in \{\hat{b}_{0, f(\text{hypo}, k,l,m)}, \hat{b}_{1, f(\text{hypo}, k,l,m)}, \hat{b}_{2, f(\text{hypo}, k,l,m)}\}.$$ 
 The function $f : \Theta_1 \rightarrow \Theta_2$ maps the set $\Theta_1$ indexed by leaf type (amphi or pseudohypo), leaf replicate, light intensity, and population to set $\Theta_2$ indexed by individual \agcurve{} curve. This mapping is necessary because the random effects structure differs between models of \loggsw{} on \logA{} and that of models predicting \aax{} described in the next section.
+
+
+
+##### Effects of light intensity, light treatment, and population on \aax
+
+We tested for effects of light intensity, light treatment, population, and their interactions on \aax. All models included effects of light intensity and light treatment, as well as random effects of population and replicate within population. More complex models included interactions between light intensity and light treatment, as well as random effects of population on the effects of light intensity and light treatment. We used a weakly informative normal prior with mean $0$ and standard deviation $10$ for fixed effects of light intensity and treatment. We used a weakly informative normal prior with mean $-3$ and standard deviation $5$ for the the random effect standard deviation of replicate within population. We accounted for the phylogenetic structure among the random effects of population using an Ornstein-Uhlenbeck (OU) process [@hansen_stabilizing_1997]. The expected covariance between populations $i$ and $j$ ($\text{Cov}(i, j)$ ) is:
+
+$$\text{Cov}(i, j) = \frac{\sigma^2}{2 \alpha} \exp(-\alpha D_{ij})$$
+where $\sigma^2$ is the variance of the random effect, $\alpha$ is the rate of decay of the covariance with phylogenetic distance, $D_{ij}$, the phylogenetic distance between populations $i$ and $j$. We estimated $\sigma^2 / (2 \alpha)$ and $\alpha$ as a separate parameters and reparameterized them as $\sigma^2$ and $\alpha$. We used a weakly informative normal prior with mean $0$ and standard deviation $10$ on OU parameters. 
+
+We modeled the residual standard deviation of \aax, (i.e. phylogenetically unstructured variation unaccounted for by explanatory variables) on a log-link scale with effects of light intensity and light treatment. We used a weakly informative normal prior with mean $-3$ and standard deviation $5$ on the residual standard deviation intercept and a weakly informative normal prior with mean $0$ and standard deviation $1$ on the effects of light intensity and light treatment on the residual standard deviation.
+
+##### Effects of native light habitat on population-level \aax
+
+We tested a linear effect of native light habitat on population-level \aax. In Models 1 and 2, we used the random intercept of \aax{} as a response variable; in model 3 we used the random intercept plus the random effect of population at high light intensity; in model 4 we used the random intercept plus the random effect of population in the sun treatment; in model 5 we used the random intercept plus the random effects of population at high light intensity and sun treatment. We used a weakly informative normal prior with mean $0$ and standard deviation $1$ for the slope and intercept. We accounted for the phylogenetic structure among the model residuals using an (OU) process. We used a weakly informative normal prior with mean $0$ and standard deviation $10$ on OU parameters. 
+
+## note on LOOIC
+
+We considered models with two standard errors of the mean lower LOOIC value to be a better fit to the data; we considered models with LOOIC values within two standard errors of the mean to be have similar support.

@@ -110,15 +110,16 @@ gp_aa = ggplot(df_segment,
     axis.text = element_blank(),
     axis.ticks = element_blank(),
     axis.title = element_text(size = 12),
+    legend.key.height = unit(1.5, "cm"),
     title = element_text(size = 12)
   )
 
-gp_aa
+write_rds(gp_aa, "figures/example-aa.rds")
 
-ggsave(
-  "figures/example-aa.pdf",
-  gp_aa,
-  width = 6.5,
-  height = 3.5,
-  device = cairo_pdf
-)
+# ggsave(
+#   "figures/example-aa.pdf",
+#   gp_aa,
+#   width = 6.5,
+#   height = 3.5,
+#   device = cairo_pdf
+# )

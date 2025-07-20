@@ -678,53 +678,36 @@ Our analysis pipeline consisted of four main steps:
 
 All models were using a Bayesian model with HMC sampling in the probabilistic programming language *Stan* [@stan_development_team_stan_2025] using the *R* package **brms** version `r fit_aa1$version$brms` [@burkner_brms_2017]. We used *CmdStan* version `r fit_aa1$version$cmdstan` and **cmdstanr** version `r fit_aa1$version$cmdstanr` [@gabry_cmdstanr_2025] to interface with *R* version `r getRversion()` [@r_core_team_r:_2025]. We sampled the posterior distribution from a single chain with a minimum of `r aa_args$n_iter_init / 2` iterations after `r aa_args$n_iter_init / 2` warmup iterations. If necessary, we refit models with more iterations to decrease the Gelman-Rubin convergence statistic ($\hat{R}$) [@gelman_inference_1992] to less than $`aa_stats[["max_rhat"]]`$ and the bulk effective sample size (ESS) to greater than $`aa_stats[["min_ess"]]`$ for all model parameters. We also increased the the `adapt_delta` parameter until there were fewer than $`aa_stats[["n_divergent"]]`$ divergent transitions.
 
-#### \agcurve{} curve parameters
+#### \agcurve{} curve parameters {#sec-agcurve-pars}
 
 We modeled \logA as a quadratic function of \loggsw for each leaf, measured at low and high light intensity, in both amphistomatous (untreated) and pseudohypostomatous (propafilm treatment) states. 
 
-#### \aax{} for each light intensity within leaf using \agcurve{} curve parameters
-##### MARKER - add figure of this
+#### \aax{} for each light intensity within leaf using \agcurve{} curve parameters {#sec-aa-est}
+
 We estimated \aax{} for each light intensity by integrating the difference in \logA{} between the amphi and pseudohypo \agcurve{} curves over the range of \gsw{} values where the curves overlap (from $\min(\log(g_\text{sw}))$ to $\max(\log(g_\text{sw}))$).
 
 $$\widehat{\mathrm{AA}} = \int_{\text{min(log(}g_\text{sw}))}^{\text{max(log(}g_\text{sw}))} \text{log}\bigg(\frac{\hat{A}_\text{amphi}(x; \theta_{\text{amphi}})}{\hat{A}_\text{hypo}(x; \theta_{\text{hypo}})}\bigg) dx$$
-where $\theta_\text{amphi}$ and $\theta_\text{hypo}$ are the quadratic parameters of the amphi and pseudohypo \agcurve{} curves, respectively. We calculated $\widehat{\mathrm{AA}}$ from each draw of the posterior for the paired amphi and pseudohypo \agcurve{} curves to obtain the posterior distribution of \aax{} for each leaf at each light intensity. We then summarized the posterior distribution of \aax{} for each leaf at each light intensity by the posterior median, which became our estimate of \aax{} for subsequent analyses.
+where $\theta_\text{amphi}$ and $\theta_\text{hypo}$ are the quadratic parameters of the amphi and pseudohypo \agcurve{} curves, respectively (@fig-example-aa). We calculated $\widehat{\mathrm{AA}}$ from each draw of the posterior for the paired amphi and pseudohypo \agcurve{} curves to obtain the posterior distribution of \aax{} for each leaf at each light intensity. We then summarized the posterior distribution of \aax{} for each leaf at each light intensity by the posterior median and standard deviation, which became our point estimate of, and uncertainty in, \aax{} for the phylogenetic mixed effects model described below.
 
-### Bayesian phylogenetic mixed effects models 
+```{r, example-aa, echo=FALSE,message=FALSE,warning=FALSE}
+#| fig-align: center
+#| fig-width: 6.5
+#| fig-height: 3.5
+#| fig-cap: "Example amphistomy advantage (\\aax) calculation from \\agcurve{} curves in an amphistomatous leaf with gas exchange through both surfaces (blue) and the same leaf with gas exchange blocked on the upper surface only (orange). We integrate over the gray region between the curves to estimate \\aax{}. The \\aax{} is low (left facet) when the photosynthetic rate of an amphistomatous leaf is similar to a pseudohypostomatous leaf at the same total stomatal conductance ($x$-axes); large \\aax{} (right facet) is indicated when an amphistomatous leaf has a higher photosynthetic rate than a pseudohypostomatous leaf."
+read_rds("../figures/example-aa.rds")
+```
 
-We fit Bayesian mixed effects models with phylogenetically structured random effects to test predictions of competing hypotheses about why amphistomy advantage (\aax) might be greater for leaves in sunny, open habitats. We fit all models combinations of measurement light intensity, growth light intensity, and their interaction as both fixed effects and random effects among populations. In other words, we test whether there were main effects of light intensity treatments and/or whether populations varied in their response to light intensity treatments. In all models, we included population as a phylogenetically structured random effect. We crossed those fixed and random effect structures with fixed effects of measurement light intensity and/or growth light intensity on the distributional parameter, $\sigma$, the residual variance in \aax{}. In total, we fit `r n_model1` models, each with a different combination of fixed, random, and distributional effects. We used the RAxML whole-transcriptome concatenated phylogeny based on 2,745 100-kb genomic windows from @pease_phylogenomics_2016. Two of our populations were not in this tree. We used accession LA1044 in place of LA3909, two populations of *S. galapagnse*; LA0750 was added as sister to LA0716, two closely replated populations of *S. pennellii*. The node was placed half-way between the next deepest node. 
+#### Phylogenetic mixed effects models {#sec-phylo}
 
-NEED TO EDIT THIS: The next sections describe how we fit models in *Stan*, all model parameters and priors, and specific predictions about parameter values for each hypothesis.
-Each curve was fit For initial fits, we sampled the posterior distribution from a single chain with `r aa_args$n_iter_init / 2` iterations after `r aa_args$n_iter_init / 2` warmup iterations. After model selection (see below), we refit the selected model with more iterations if necessary to decrease the Gelman-Rubin convergence statistic ($\hat{R}$) [@gelman_inference_1992] to less than $`aa_stats[["max_rhat"]]`$ and the bulk effective sample size (ESS) to greater than $`aa_stats[["min_ess"]]`$ for all model parameters.
+We fit Bayesian mixed effects models with phylogenetically structured random effects to test predictions of competing hypotheses about why amphistomy advantage (\aax) might be greater for leaves in sunny, open habitats. We fit all models combinations of measurement light intensity, growth light intensity, and their interaction as both fixed effects and random effects among populations. In other words, we test whether there were main effects of light intensity treatments and/or whether populations varied in their response to light intensity treatments. In all models, we included population as a phylogenetically structured random effect. We accounted for uncertainty in estimates of \aax{} using the standard deviation of the posterior distribution of each \aax{} estimate (@sec-aa-est). We crossed fixed and random effect structures with fixed effects of measurement light intensity and/or growth light intensity on the distributional parameter, $\sigma$, the residual variance in \aax{}. In total, we fit `r n_model1` models, each with a different combination of fixed, random, and distributional effects. We used the RAxML whole-transcriptome concatenated phylogeny based on 2,745 100-kb genomic windows from @pease_phylogenomics_2016. Two of our populations were not in this tree. We used accession LA1044 in place of LA3909, two populations of *S. galapagnse*; LA0750 was added as sister to LA0716, two closely related populations of *S. pennellii*. The node separating LA0750 from LA0716 was placed half-way between the next deepest node. We used the leave-one-out cross-validation information criterion (LOOIC) to compare the fit of models (\autoref{tbl-models}) using the *R* package **loo** version `r packageVersion("loo")` [@vehtari_practical_2017] to calculate LOOIC values. We selected the model with the lowest LOOIC value to generate posterior predictions for hypothesis testing.
 
-
-#### Fitting models in *Stan* using **brms** interface {#sec-fitting}
-
-We fit Bayesian models with HMC sampling in the probabilistic programming language *Stan* [@stan_development_team_stan_2025] using the *R* package **brms** version `r fit_aa1$version$brms` [@burkner_brms_2017]. We used *CmdStan* version `r fit_aa1$version$cmdstan` and **cmdstanr** version `r fit_aa1$version$cmdstanr` [@gabry_cmdstanr_2025] to interface with *R* version `r getRversion()` [@r_core_team_r:_2025]. For initial fits, we sampled the posterior distribution from a single chain with `r aa_args$n_iter_init / 2` iterations after `r aa_args$n_iter_init / 2` warmup iterations. After model selection (see below), we refit the selected model with more iterations if necessary to decrease the Gelman-Rubin convergence statistic ($\hat{R}$) [@gelman_inference_1992] to less than $`aa_stats[["max_rhat"]]`$ and the bulk effective sample size (ESS) to greater than $`aa_stats[["min_ess"]]`$ for all model parameters.
-
-
-
-
-
-
-
-##### Effects of light intensity, light treatment, and population on \aax
-
-We tested for effects of light intensity, light treatment, population, and their interactions on \aax. All models included effects of light intensity and light treatment, as well as random effects of population and replicate within population. More complex models included interactions between light intensity and light treatment, as well as random effects of population on the effects of light intensity and light treatment. We used a weakly informative normal prior with mean $0$ and standard deviation $10$ for fixed effects of light intensity and treatment. We used a weakly informative normal prior with mean $-3$ and standard deviation $5$ for the the random effect standard deviation of replicate within population. We accounted for the phylogenetic structure among the random effects of population using an Ornstein-Uhlenbeck (OU) process [@hansen_stabilizing_1997]. The expected covariance between populations $i$ and $j$ ($\text{Cov}(i, j)$ ) is:
-
-$$\text{Cov}(i, j) = \frac{\sigma^2}{2 \alpha} \exp(-\alpha D_{ij})$$
-where $\sigma^2$ is the variance of the random effect, $\alpha$ is the rate of decay of the covariance with phylogenetic distance, $D_{ij}$, the phylogenetic distance between populations $i$ and $j$. We estimated $\sigma^2 / (2 \alpha)$ and $\alpha$ as a separate parameters and reparameterized them as $\sigma^2$ and $\alpha$. We used a weakly informative normal prior with mean $0$ and standard deviation $10$ on OU parameters. 
-
-We modeled the residual standard deviation of \aax, (i.e. phylogenetically unstructured variation unaccounted for by explanatory variables) on a log-link scale with effects of light intensity and light treatment. We used a weakly informative normal prior with mean $-3$ and standard deviation $5$ on the residual standard deviation intercept and a weakly informative normal prior with mean $0$ and standard deviation $1$ on the effects of light intensity and light treatment on the residual standard deviation.
-
-##### Effects of native light habitat on population-level \aax
-
-We tested a linear effect of native light habitat on population-level \aax. In Models 1 and 2, we used the random intercept of \aax{} as a response variable; in model 3 we used the random intercept plus the random effect of population at high light intensity; in model 4 we used the random intercept plus the random effect of population in the sun treatment; in model 5 we used the random intercept plus the random effects of population at high light intensity and sun treatment. We used a weakly informative normal prior with mean $0$ and standard deviation $1$ for the slope and intercept. We accounted for the phylogenetic structure among the model residuals using an (OU) process. We used a weakly informative normal prior with mean $0$ and standard deviation $10$ on OU parameters. 
-
-#### Predictions {#sec-predictions}
+#### Posterior predictions {#sec-predictions}
 
 The assimilatory, plastic, and constitutive hypotheses make different predictions about the relationship between \aax{} and light intensity, light treatment, and native \ppfd{} among populations. Since these hypotheses are not mutually exclusive, we describe how we assessed support for one, two, or all three hypotheses simultaneously in \autoref{tbl-predictions}. In general, the assimilatory hypothesis was supported if \aax{} was greater at high light intensity than low light intensity. The plastic hypothesis was supported if \aax{} was greater in sun leaves than shade leaves. The constitutive hypothesis was supported if population-level \aax{} increased with native \ppfd. In interactive models, we only consider positively reinforcing interactions between high light intensity, sun leaves, and native \ppfd{} because these are the only interactions which could explain why amphistomatous leaves are advantageous in high light habitats.
 
-We evaluated predictions using a combination of parameter estimation and model selection. In all cases, we estimated parameters and confidence intervals as described in @sec-fitting. If the 95% confidence intervals for a parameter did not overlap zero, we considered the parameter to be significantly different from zero. We used the leave-one-out cross-validation information criterion (LOOIC) to compare the fit of models (\autoref{tbl-models}) using the *R* package **loo** version `r packageVersion("loo")` [@vehtari_practical_2017] to calculate LOOIC values. Note that LOOIC was calculated only from pointwise likelihood values of the submodel estimating effects of light intensity, light treatments, and population on \aax{} (see @sec-parameters). We considered models with two standard errors of the mean lower LOOIC value to be a better fit to the data; we considered models with LOOIC values within two standard errors of the mean to be have similar support.
+From the posterior of the selected model (@sec-phylo), we predicted the posterior distribution of the expected \aax{} for each population at each measurement light intensity and growth light intensity. If the 95% confidence intervals for \aax{} did not overlap zero, we considered \aax{} to be significantly different from zero. We also calculated posterior distribution for the average \aax{} among populations in each condition. We tested a linear effect of native light habitat on population-level \aax{} in each treatment condition, integrating over the entire posterior distribution. We calculated the posterior distribution of the slope. If the 95\% confidence interval for the slope did not overlap zero, we considered the slope to be significant.
+
+## MARKER - need to update table
 
 ```{r, predictions, eval=TRUE, echo=FALSE,message=FALSE,warning=FALSE}
 #| label: tbl-predictions
@@ -764,6 +747,8 @@ tribble(
   kableExtra::column_spec(3, width = "3in")
 
 ```
+
+THIS COULD BE USED FOR LMA MODEL? Note that LOOIC was calculated only from pointwise likelihood values of the submodel estimating effects of light intensity, light treatments, and population on \aax{}. 
 
 ## Results
 
