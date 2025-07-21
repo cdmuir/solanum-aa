@@ -216,3 +216,7 @@ We tested a linear effect of native light habitat on population-level \aax. In M
 ## note on LOOIC
 
 We considered models with two standard errors of the mean lower LOOIC value to be a better fit to the data; we considered models with LOOIC values within two standard errors of the mean to be have similar support.
+
+#### Light-response (\aqcurve) curves
+
+In `r percent_aa_and_aq`\% of plants, we measured light-response (\aqcurve) curves on the same leaflets as \agcurve{} curves. However, when a leaflet was damaged during \agcurve{} curves, we used the next closest leaflet for \aqcurve{} curves. Leaves acclimated to high light-intensity (\ppfdequals{2000}), ambient CO$_2$ (\caequals{415}), \rhequals{50}, and \tleafequals{25}. After $A$ and \gsw{} stabilized, we measured $A$ at 20 light-intensity levels between $0$ and $\qty{2000}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$ in descending order.

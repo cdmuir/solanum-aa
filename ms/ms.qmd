@@ -572,9 +572,9 @@ We collected four \agcurve{} curves per leaf, an amphi (untreated) curve and a p
 
 In all cases, we acclimated the focal leaf to high light (\ppfdequals{2000}) and high relative humidity (\rhequals{70}) until $A$ and \gsw{} reach their maximum. After that, we decreased \rh{} to $\approx 10\%$ to induce rapid stomatal closure without biochemical downregulation. Hence, \Aamphi{} and \Ahypo{} were both measured at low chamber humidity after the leaf had acclimated to high humidity. All other environmental conditions in the leaf chamber remained the same. We logged data until \gsw{} reached its nadir. We then acclimated the leaf to low light (\ppfdequals{150}) and \rhequals{70} before inducing stomatal closure with low \rh and logging data as described above.
 
-#### Light-response (\aqcurve) curves
+#### Light-saturated photosynthetic rate
 
-In `r percent_aa_and_aq`\% of plants, we measured light-response (\aqcurve) curves on the same leaflets as \agcurve{} curves. However, when a leaflet was damaged during \agcurve{} curves, we used the next closest leaflet for \aqcurve{} curves. Leaves acclimated to high light-intensity (\ppfdequals{2000}), ambient CO$_2$ (\caequals{415}), \rhequals{50}, and \tleafequals{25}. After $A$ and \gsw{} stabilized, we measured $A$ at 20 light-intensity levels between $0$ and $\qty{2000}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$ in descending order.
+In `r percent_aa_and_aq`\% of plants, we measured the maximum photosynthetic rate ($A_\mathrm{max}$) on the same leaflets as \agcurve{} curves. However, when a leaflet was damaged during \agcurve{} curves, we used the next closest leaflet for $A_\mathrm{max}$. Leaves acclimated to high light-intensity (\ppfdequals{2000}), ambient CO$_2$ (\caequals{415}), \rhequals{50}, and \tleafequals{25}. After $A$ and \gsw{} stabilized, we measured $A$ at $\qty{2000}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$.
 
 #### Stomatal anatomy
 
@@ -687,9 +687,10 @@ We modeled \logA as a quadratic function of \loggsw for each leaf, measured at l
 We estimated \aax{} for each light intensity by integrating the difference in \logA{} between the amphi and pseudohypo \agcurve{} curves over the range of \gsw{} values where the curves overlap (from $\min(\log(g_\text{sw}))$ to $\max(\log(g_\text{sw}))$).
 
 $$\widehat{\mathrm{AA}} = \int_{\text{min(log(}g_\text{sw}))}^{\text{max(log(}g_\text{sw}))} \text{log}\bigg(\frac{\hat{A}_\text{amphi}(x; \theta_{\text{amphi}})}{\hat{A}_\text{hypo}(x; \theta_{\text{hypo}})}\bigg) dx$$
-where $\theta_\text{amphi}$ and $\theta_\text{hypo}$ are the quadratic parameters of the amphi and pseudohypo \agcurve{} curves, respectively (@fig-example-aa). We calculated $\widehat{\mathrm{AA}}$ from each draw of the posterior for the paired amphi and pseudohypo \agcurve{} curves to obtain the posterior distribution of \aax{} for each leaf at each light intensity. We then summarized the posterior distribution of \aax{} for each leaf at each light intensity by the posterior median and standard deviation, which became our point estimate of, and uncertainty in, \aax{} for the phylogenetic mixed effects model described below.
+where $\theta_\text{amphi}$ and $\theta_\text{hypo}$ are the quadratic parameters of the amphi and pseudohypo \agcurve{} curves, respectively (@fig-example-aa). We calculated $\widehat{\mathrm{AA}}$ from each draw of the posterior for the paired amphi and pseudohypo \agcurve{} curves to obtain the posterior distribution of $\widehat{\mathrm{AA}}$ for each leaf at each light intensity. We then summarized the posterior distribution of $\widehat{\mathrm{AA}}$ for each leaf at each light intensity by the posterior median and standard deviation, which became our point estimate of, and uncertainty in, $\widehat{\mathrm{AA}}$ for the phylogenetic mixed effects model described below.
 
 ```{r, example-aa, echo=FALSE,message=FALSE,warning=FALSE}
+#| label: fig-example-aa
 #| fig-align: center
 #| fig-width: 6.5
 #| fig-height: 3.5
@@ -699,7 +700,7 @@ read_rds("../figures/example-aa.rds")
 
 #### Phylogenetic mixed effects models {#sec-phylo}
 
-We fit Bayesian mixed effects models with phylogenetically structured random effects to test predictions of competing hypotheses about why amphistomy advantage (\aax) might be greater for leaves in sunny, open habitats. We fit all models combinations of measurement light intensity, growth light intensity, and their interaction as both fixed effects and random effects among populations. In other words, we test whether there were main effects of light intensity treatments and/or whether populations varied in their response to light intensity treatments. In all models, we included population as a phylogenetically structured random effect. We accounted for uncertainty in estimates of \aax{} using the standard deviation of the posterior distribution of each \aax{} estimate (@sec-aa-est). We crossed fixed and random effect structures with fixed effects of measurement light intensity and/or growth light intensity on the distributional parameter, $\sigma$, the residual variance in \aax{}. In total, we fit `r n_model1` models, each with a different combination of fixed, random, and distributional effects. We used the RAxML whole-transcriptome concatenated phylogeny based on 2,745 100-kb genomic windows from @pease_phylogenomics_2016. Two of our populations were not in this tree. We used accession LA1044 in place of LA3909, two populations of *S. galapagnse*; LA0750 was added as sister to LA0716, two closely related populations of *S. pennellii*. The node separating LA0750 from LA0716 was placed half-way between the next deepest node. We used the leave-one-out cross-validation information criterion (LOOIC) to compare the fit of models (\autoref{tbl-models}) using the *R* package **loo** version `r packageVersion("loo")` [@vehtari_practical_2017] to calculate LOOIC values. We selected the model with the lowest LOOIC value to generate posterior predictions for hypothesis testing.
+We fit Bayesian mixed effects models with phylogenetically structured random effects to test predictions of competing hypotheses about why amphistomy advantage (\aax) might be greater for leaves in sunny, open habitats. We fit all models combinations of measurement light intensity, growth light intensity, and their interaction as both fixed effects and random effects among populations. In other words, we test whether there were main effects of light intensity treatments and/or whether populations varied in their response to light intensity treatments. In all models, we included population as a phylogenetically structured random effect. We accounted for uncertainty in $\widehat{\mathrm{AA}}$ using the standard deviation of the posterior distribution of each $\widehat{\mathrm{AA}}$ estimate (@sec-aa-est). We crossed fixed and random effect structures with fixed effects of measurement light intensity and/or growth light intensity on the distributional parameter, $\sigma$, the residual variance in \aax{}. In total, we fit `r n_model1` models, each with a different combination of fixed, random, and distributional effects. We used the RAxML whole-transcriptome concatenated phylogeny based on 2,745 100-kb genomic windows from @pease_phylogenomics_2016. Two of our populations were not in this tree. We used accession LA1044 in place of LA3909, two populations of *S. galapagnse*; LA0750 was added as sister to LA0716, two closely related populations of *S. pennellii*. The node separating LA0750 from LA0716 was placed half-way between the next deepest node. We used the leave-one-out cross-validation information criterion (LOOIC) to compare the fit of models (\autoref{tbl-aa_loo1}) using the *R* package **loo** version `r packageVersion("loo")` [@vehtari_practical_2017] to calculate LOOIC values. We selected the model with the lowest LOOIC value to generate posterior predictions for hypothesis testing.
 
 #### Posterior predictions {#sec-predictions}
 
@@ -707,29 +708,27 @@ The assimilatory, plastic, and constitutive hypotheses make different prediction
 
 From the posterior of the selected model (@sec-phylo), we predicted the posterior distribution of the expected \aax{} for each population at each measurement light intensity and growth light intensity. If the 95% confidence intervals for \aax{} did not overlap zero, we considered \aax{} to be significantly different from zero. We also calculated posterior distribution for the average \aax{} among populations in each condition. We tested a linear effect of native light habitat on population-level \aax{} in each treatment condition, integrating over the entire posterior distribution. We calculated the posterior distribution of the slope. If the 95\% confidence interval for the slope did not overlap zero, we considered the slope to be significant.
 
-## MARKER - need to update table
-
 ```{r, predictions, eval=TRUE, echo=FALSE,message=FALSE,warning=FALSE}
 #| label: tbl-predictions
-#| tbl-cap: "Predictions of competing hypotheses about the relationship between \\aax{} and light intensity, light treatment, and native \\ppfd{} among populations. The middle column lists specific directional predictions about parameter values and model fit according to leave-one-out cross-validation information criterion (LOOIC), where $\\text{LOOIC}_i$ is the LOOIC value for model $i$. The rightmost column describes the predictions in words and explains how population-level \\aax{} is calculated in the relevant model."
+#| tbl-cap: "Predictions of competing hypotheses about the relationship between \\aax{} and light intensity, light treatment, and native plant area index (PAI) among populations. The middle column lists specific directional predictions about parameter values. The rightmost column describes the predictions in words and explains how population-level \\aax{} is calculated in the relevant model."
 
 tribble(
   ~"\\textbf{Hypothesis}", ~"\\textbf{Prediction(s)}", ~"\\textbf{Description}",
-  "Assimilatory", "$\\beta_{\\mathrm{AA},2000} > 0$", "Average \\aax{} at high light intensity is greater than that at low light intensity",
-  "Plastic", "$\\beta_{\\mathrm{AA},\\text{sun}} > 0$", "Average \\aax{} in sun leaves is greater than that in shade leaves",
-  "Constitutive", "$\\beta_{\\mathrm{PPFD,AA}} > 0$", "Population-level \\aax{} ($\\mathrm{AA}_\\text{acc}$) increases with native \\ppfd",
+  "Assimilatory", "$\\beta_{\\mathrm{AA},2000} > 0$", "\\aax{} at high light intensity is greater than that at low light intensity",
+  "Plastic", "$\\beta_{\\mathrm{AA},\\text{sun}} > 0$", "\\aax{} in sun leaves is greater than that in shade leaves",
+  "Constitutive", "$\\beta_{\\mathrm{PPFD,AA}} > 0$", "Population-level \\aax{} ($\\mathrm{AA}_\\text{acc}$) decreases with native PAI",
   "Constitutive", "", "$\\mathrm{AA}_\\text{acc} = \\beta_{\\mathrm{AA}, 0} + \\vec{\\beta}_{\\mathrm{AA}, \\text{acc}}$",
-  "Assimilatory $\\times$ Plastic", "$\\beta_{\\mathrm{AA},2000,\\text{sun}} > 0$", "Average \\aax{} is highest at high light intensity in sun leaves",
-  "Assimilatory $\\times$ Plastic", "$\\text{LOOIC}_\\text{1} > \\text{LOOIC}_\\text{2}$", "",
-  "Assimilatory $\\times$ Constitutive", "$\\beta_{\\mathrm{AA},2000} > 0$", "Average \\aax{} at high light intensity is greater than that at low light intensity",
-  "Assimilatory $\\times$ Constitutive", "$\\beta_{\\mathrm{PPFD,AA}} > 0$", "Population-level \\aax{} at high light intensity ($\\mathrm{AA}_{\\text{acc},2000}$) increases with native \\ppfd",
-  "Assimilatory $\\times$ Constitutive", "$\\text{LOOIC}_\\text{1} > \\text{LOOIC}_\\text{3}$", "$\\mathrm{AA}_{\\text{acc},2000} = \\beta_{\\mathrm{AA}, 0} + \\vec{\\beta}_{\\mathrm{AA}, \\text{acc}} + \\vec{\\beta}_{\\mathrm{AA}, 2000, \\text{acc}}$",
-  "Plastic $\\times$ Constitutive", "$\\beta_{\\mathrm{AA},\\text{sun}} > 0$", "Average \\aax{} in sun leaves is greater than that in shade leaves",
-  "Plastic $\\times$ Constitutive", "$\\beta_{\\mathrm{PPFD,AA}} > 0$", "Population-level \\aax{} in sun leaves ($\\mathrm{AA}_{\\text{acc},\\text{sun}}$) increases with native \\ppfd",
-  "Plastic $\\times$ Constitutive", "$\\text{LOOIC}_\\text{1} > \\text{LOOIC}_\\text{4}$", "$\\mathrm{AA}_{\\text{acc},\\text{sun}} = \\beta_{\\mathrm{AA}, 0} + \\vec{\\beta}_{\\mathrm{AA}, \\text{acc}} + \\vec{\\beta}_{\\mathrm{AA}, \\text{sun}, \\text{acc}}$",
-  "Assimilatory $\\times$ Plastic $\\times$ Constitutive", "$\\beta_{\\mathrm{AA},2000,\\text{sun}} > 0$", "Average \\aax{} is highest at high light intensity in sun leaves",
-  "Assimilatory $\\times$ Plastic $\\times$ Constitutive", "$\\beta_{\\mathrm{PPFD,AA}} > 0$", "Population-level \\aax{} at high light intensity in sun leaves ($\\mathrm{AA}_{\\text{acc},2000,\\text{sun}}$) increases with native \\ppfd",
-  "Assimilatory $\\times$ Plastic $\\times$ Constitutive", "$\\text{LOOIC}_\\text{3} > \\text{LOOIC}_\\text{5}$", "$\\mathrm{AA}_{\\text{acc},2000,\\text{sun}} = \\beta_{\\mathrm{AA}, 0} + \\vec{\\beta}_{\\mathrm{AA}, \\text{acc}} + \\vec{\\beta}_{\\mathrm{AA}, 2000, \\text{acc}} + \\vec{\\beta}_{\\mathrm{AA}, \\text{sun}, \\text{acc}}$"
+  "Assimilatory $\\times$ Plastic", "$\\beta_{\\mathrm{AA},2000,\\text{sun}} > 0$", "\\aax{} is highest at high light intensity in sun leaves",
+  "Assimilatory $\\times$ Plastic", "", "",
+  "Assimilatory $\\times$ Constitutive", "$\\beta_{\\mathrm{AA},2000} > 0$", "\\aax{} at high light intensity is greater than that at low light intensity",
+  "Assimilatory $\\times$ Constitutive", "$\\beta_{\\mathrm{PPFD,AA}} > 0$", "Population-level \\aax{} at high light intensity ($\\mathrm{AA}_{\\text{acc},2000}$) decreases with native PAI",
+  "Assimilatory $\\times$ Constitutive", "", "$\\mathrm{AA}_{\\text{acc},2000} = \\beta_{\\mathrm{AA}, 0} + \\vec{\\beta}_{\\mathrm{AA}, \\text{acc}} + \\vec{\\beta}_{\\mathrm{AA}, 2000, \\text{acc}}$",
+  "Plastic $\\times$ Constitutive", "$\\beta_{\\mathrm{AA},\\text{sun}} > 0$", "\\aax{} in sun leaves is greater than that in shade leaves",
+  "Plastic $\\times$ Constitutive", "$\\beta_{\\mathrm{PPFD,AA}} > 0$", "Population-level \\aax{} in sun leaves ($\\mathrm{AA}_{\\text{acc},\\text{sun}}$) decreases with native PAI",
+  "Plastic $\\times$ Constitutive", "", "$\\mathrm{AA}_{\\text{acc},\\text{sun}} = \\beta_{\\mathrm{AA}, 0} + \\vec{\\beta}_{\\mathrm{AA}, \\text{acc}} + \\vec{\\beta}_{\\mathrm{AA}, \\text{sun}, \\text{acc}}$",
+  "Assimilatory $\\times$ Plastic $\\times$ Constitutive", "$\\beta_{\\mathrm{AA},2000,\\text{sun}} > 0$", "\\aax{} is highest at high light intensity in sun leaves",
+  "Assimilatory $\\times$ Plastic $\\times$ Constitutive", "$\\beta_{\\mathrm{PPFD,AA}} > 0$", "Population-level \\aax{} at high light intensity in sun leaves ($\\mathrm{AA}_{\\text{acc},2000,\\text{sun}}$) decreases with native PAI",
+  "Assimilatory $\\times$ Plastic $\\times$ Constitutive", "", "$\\mathrm{AA}_{\\text{acc},2000,\\text{sun}} = \\beta_{\\mathrm{AA}, 0} + \\vec{\\beta}_{\\mathrm{AA}, \\text{acc}} + \\vec{\\beta}_{\\mathrm{AA}, 2000, \\text{acc}} + \\vec{\\beta}_{\\mathrm{AA}, \\text{sun}, \\text{acc}}$"
 
 ) |>
   knitr::kable(

@@ -7,13 +7,12 @@ accession_gedi = read_rds("data/accession-gedi.rds") |>
   rename(acc = accession)
 d1 = fit_aa1$data
 
-# Some redundancy with 206_plot-rxn-norms. Need to streamline and condense.
 df_new = crossing(
   acc = unique(d1$acc),
   light_treatment = c("low", "high"),
   light_intensity = c("150", "2000")
 ) |>
-  mutate(row = row_number())
+  mutate(row = row_number(), se_aa = 0)
 
 df_aa_pred1 = posterior_epred(fit_aa1, newdata = df_new) |>
   t() |>
@@ -22,7 +21,27 @@ df_aa_pred1 = posterior_epred(fit_aa1, newdata = df_new) |>
   pivot_longer(cols = -row,
                names_to = "draw",
                values_to = "aa") |>
-  full_join(df_new, by = "row") |>
+  full_join(df_new, by = "row") 
+
+df_coef = df_aa_pred1 |>
+  left_join(accession_gedi, by = join_by(acc)) |>
+  split(~ draw + light_treatment + light_intensity) |>
+  map(\(.x) {
+    lm(aa ~ log(pai), data = .x)
+  }) |>
+  map(coef) |>
+  map(as_tibble) |>
+  map(mutate, term = c("intercept", "slope")) |>
+  imap_dfr(\(.x, .y) {
+    mutate(.x, light_treatment = str_extract(.y, "low|high"),
+           light_intensity = str_extract(.y, "150|2000"))
+  }) 
+
+df_coef_summary = df_coef |>
+  group_by(term, light_treatment, light_intensity) |>
+  point_interval(value) 
+
+df_aa_pred2 = df_aa_pred1 |>
   group_by(acc, light_treatment, light_intensity) |>
   point_interval(aa) |>
   left_join(accession_gedi, by = join_by(acc)) |>
@@ -36,7 +55,7 @@ df_aa_pred1 = posterior_epred(fit_aa1, newdata = df_new) |>
       fct_recode(low = "150", high = "2000")
   )
 
-fig_aa_pai = ggplot(df_aa_pred1, aes(pai, aa, color = Growth, shape = Measurement)) +
+fig_aa_pai = ggplot(df_aa_pred2, aes(pai, aa, color = Growth, shape = Measurement)) +
   facet_grid(Measurement ~ Growth) +
   geom_point() +
   scale_color_manual(values = c("shade" = "tomato4", "sun" = "tomato")) +
