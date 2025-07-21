@@ -18,10 +18,11 @@ df_aa_pred1 = posterior_epred(fit_aa1, newdata = df_new) |>
   t() |>
   as_draws_df() |>
   mutate(row = row_number()) |>
+  dplyr::select(-.chain, -.iteration, -.draw) |>
   pivot_longer(cols = -row,
                names_to = "draw",
                values_to = "aa") |>
-  full_join(df_new, by = "row") 
+  full_join(df_new, by = "row")
 
 df_coef = df_aa_pred1 |>
   left_join(accession_gedi, by = join_by(acc)) |>
@@ -32,14 +33,20 @@ df_coef = df_aa_pred1 |>
   map(coef) |>
   map(as_tibble) |>
   map(mutate, term = c("intercept", "slope")) |>
+  map(pivot_wider, names_from = term) |>
   imap_dfr(\(.x, .y) {
-    mutate(.x, light_treatment = str_extract(.y, "low|high"),
-           light_intensity = str_extract(.y, "150|2000"))
-  }) 
+    mutate(
+      .x,
+      light_treatment = str_extract(.y, "low|high"),
+      light_intensity = str_extract(.y, "150|2000")
+    )
+  })  |>
+  mutate(draw = row_number())
 
 df_coef_summary = df_coef |>
+  pivot_longer(intercept:slope, names_to = "term", values_to = "value") |>
   group_by(term, light_treatment, light_intensity) |>
-  point_interval(value) 
+  point_interval(value)
 
 df_aa_pred2 = df_aa_pred1 |>
   group_by(acc, light_treatment, light_intensity) |>
@@ -55,13 +62,40 @@ df_aa_pred2 = df_aa_pred1 |>
       fct_recode(low = "150", high = "2000")
   )
 
+df_lineribbon = df_coef |>
+  crossing(log_pai = log(seq(
+    min(accession_gedi$pai),
+    max(accession_gedi$pai),
+    length.out = 10
+  ))) |>
+  mutate(aa = intercept + slope * log_pai) |>
+  group_by(log_pai, light_treatment, light_intensity) |>
+  point_interval(aa) |>
+  mutate(
+    pai = exp(log_pai),
+    Growth = light_treatment |>
+      factor(levels = c("low", "high")) |>
+      fct_recode(sun = "high", shade = "low"),
+    Measurement = light_intensity |>
+      factor(levels = c("150", "2000")) |>
+      fct_recode(low = "150", high = "2000")
+  )
+
+
 fig_aa_pai = ggplot(df_aa_pred2, aes(pai, aa, color = Growth, shape = Measurement)) +
   facet_grid(Measurement ~ Growth) +
+  geom_ribbon(
+    data = df_lineribbon,
+    aes(ymin = .lower, ymax = .upper),
+    alpha = 0.2,
+    linetype = "dashed"
+  ) +
+  geom_line(data = df_lineribbon, ) +
   geom_point() +
   scale_color_manual(values = c("shade" = "tomato4", "sun" = "tomato")) +
   scale_shape_manual(values = c("low" = 19, "high" = 21)) +
   scale_x_continuous(breaks = c(0.01, 0.1, 1), trans = reverselog10_trans()) +
-  xlab(expression(paste("native plant area index [", m^2~m^-2, "]"))) +
+  xlab(expression(paste("native plant area index [", m^2 ~ m^-2, "]"))) +
   ylab("amphi advantage") +
   ylim(0, 0.2) +
   geom_hline(yintercept = 0, linetype = "dashed") +
@@ -94,19 +128,17 @@ df_aa_pred2 = posterior_epred(fit_aa2, newdata = df_new, resp = "llma") |>
   group_by(acc, light_treatment) |>
   point_interval(llma) |>
   left_join(accession_gedi, by = join_by(acc))  |>
-  mutate(
-    Growth = light_treatment |>
-      factor(levels = c("low", "high")) |>
-      fct_recode(sun = "high", shade = "low")
-  )
+  mutate(Growth = light_treatment |>
+           factor(levels = c("low", "high")) |>
+           fct_recode(sun = "high", shade = "low"))
 
 ggplot(df_aa_pred2, aes(pai, exp(llma), color = Growth)) +
   geom_point() +
   scale_color_manual(values = c("shade" = "tomato4", "sun" = "tomato")) +
   scale_x_continuous(breaks = c(0.01, 0.1, 1), trans = reverselog10_trans()) +
-  xlab(expression(paste("plant area index [", m^2~m^-2, "]"))) +
+  xlab(expression(paste("plant area index [", m^2 ~ m^-2, "]"))) +
   ylab(expression(paste("leaf mass per area [g ", m^-2, "]")))
-  
+
 ggsave(
   "figures/pai-lma.pdf",
   width = 6,

@@ -17,8 +17,15 @@ nls_summary = read_rds("objects/nls_summary.rds") |>
   separate_wider_delim(curve,
                        "_",
                        names = c("acc_id", "curve_type", "light_intensity"),
-                       cols_remove = FALSE)
+                       cols_remove = FALSE) |>
+  mutate(acc = str_extract(acc_id, "^(LA[0-9]{4}A*|nelsonii|sandwicense)"))
 
+nls_summary |>
+  filter(curve_type == "amphi", light_intensity == "2000", parameter == "tau", model == "cdweibull", !is.na(value)) |>
+  summarize(tau = median(value), .by = acc) |>
+  arrange(tau) |>
+  print(n = Inf)
+# 
 ## CDWeibull usually preferred
 nls_summary |>
   summarize(

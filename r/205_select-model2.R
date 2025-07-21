@@ -59,8 +59,7 @@ aa_models = model_forms |>
     
     crit = 0
     x = 1
-    ad = 0.8
-    
+
     while (crit == 0 & x < 24) {
       m = brm(
         formula = fml + bf(llma |
@@ -91,8 +90,7 @@ aa_models = model_forms |>
         pull(c4)
       
       x = x + 1
-      ad = min(ad * 1.1, 0.99)
-      
+
     }
     
     return(m)

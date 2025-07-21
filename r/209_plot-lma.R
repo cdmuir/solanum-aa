@@ -71,7 +71,7 @@ df2 = ce[["aa.aa_llma"]] |>
          Measurement = light_intensity |>
            factor(levels = c("150", "2000")) |>
            fct_recode(low = "150", high = "2000"), Growth = NA)
-  
+
 # Plot
 fig_lma_aa = ggplot(df1, aes(x = lma, y = aa, shape = Measurement)) +
   geom_ribbon(data = df2, mapping = aes(ymin = .lower, ymax = .upper, group = Measurement), alpha = 0.5, color = NA, fill = "grey") + 
