@@ -26,7 +26,7 @@ df_aa_pred1 = posterior_epred(fit_aa1, newdata = df_new) |>
 
 df_coef = df_aa_pred1 |>
   left_join(accession_gedi, by = join_by(acc)) |>
-  split(~ draw + light_treatment + light_intensity) |>
+  split( ~ draw + light_treatment + light_intensity) |>
   map(\(.x) {
     lm(aa ~ log(pai), data = .x)
   }) |>
@@ -52,15 +52,8 @@ df_aa_pred2 = df_aa_pred1 |>
   group_by(acc, light_treatment, light_intensity) |>
   point_interval(aa) |>
   left_join(accession_gedi, by = join_by(acc)) |>
-  mutate(
-    x = order(aa),
-    Growth = light_treatment |>
-      factor(levels = c("low", "high")) |>
-      fct_recode(sun = "high", shade = "low"),
-    Measurement = light_intensity |>
-      factor(levels = c("150", "2000")) |>
-      fct_recode(low = "150", high = "2000")
-  )
+  mutate(x = order(aa)) |>
+  refactor_for_figure()
 
 df_lineribbon = df_coef |>
   crossing(log_pai = log(seq(
@@ -71,16 +64,22 @@ df_lineribbon = df_coef |>
   mutate(aa = intercept + slope * log_pai) |>
   group_by(log_pai, light_treatment, light_intensity) |>
   point_interval(aa) |>
-  mutate(
-    pai = exp(log_pai),
-    Growth = light_treatment |>
-      factor(levels = c("low", "high")) |>
-      fct_recode(sun = "high", shade = "low"),
-    Measurement = light_intensity |>
-      factor(levels = c("150", "2000")) |>
-      fct_recode(low = "150", high = "2000")
-  )
+  mutate(pai = exp(log_pai)) |>
+  refactor_for_figure()
 
+df_text = df_coef_summary |>
+  filter(term == "slope") |>
+  refactor_for_figure() |>
+  mutate(
+    # across(value:.upper, \(.x) sprintf("%.3f", -.x)),
+    # label = glue("-{term}: {value}\n95% CI: {.upper} – {.lower}"),
+    label = case_when(
+      sign(.lower) == sign(.upper) ~ "*",
+      sign(.lower) != sign(.upper) ~ "n.s."
+    ),
+    pai = max(accession_gedi$pai),
+    aa = 0.2
+  )
 
 fig_aa_pai = ggplot(df_aa_pred2, aes(pai, aa, color = Growth, shape = Measurement)) +
   facet_grid(Measurement ~ Growth) +
@@ -90,16 +89,25 @@ fig_aa_pai = ggplot(df_aa_pred2, aes(pai, aa, color = Growth, shape = Measuremen
     alpha = 0.2,
     linetype = "dashed"
   ) +
-  geom_line(data = df_lineribbon, ) +
+  geom_line(data = df_lineribbon) +
   geom_point() +
+  geom_text(
+    data = df_text,
+    mapping = aes(label = label, size = label),
+    hjust = 0,
+    vjust = 1,
+    color = "black"
+  ) +
   scale_color_manual(values = c("shade" = "tomato4", "sun" = "tomato")) +
   scale_shape_manual(values = c("low" = 19, "high" = 21)) +
+  scale_size_manual(values = c("*" = 5, "n.s." = 3), guide = "none") +
   scale_x_continuous(breaks = c(0.01, 0.1, 1), trans = reverselog10_trans()) +
   xlab(expression(paste("native plant area index [", m^2 ~ m^-2, "]"))) +
   ylab("amphi advantage") +
   ylim(0, 0.2) +
   geom_hline(yintercept = 0, linetype = "dashed") +
   theme(legend.position = "none")
+fig_aa_pai
 
 write_rds(fig_aa_pai, "objects/fig_aa_pai.rds")
 

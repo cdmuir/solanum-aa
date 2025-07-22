@@ -120,3 +120,18 @@ get_panel_dim = function(gp, fig_width, fig_height) {
     panel_width = convertUnit(panel_width, "in")
   )
 }
+
+## Function to refactor treatments for figures
+refactor_for_figure = function(.x) {
+  
+  mutate(
+    .x,
+    Growth = light_treatment |>
+      factor(levels = c("low", "high")) |>
+      fct_recode(sun = "high", shade = "low"),
+    Measurement = light_intensity |>
+      factor(levels = c("150", "2000")) |>
+      fct_recode(low = "150", high = "2000")
+  )
+  
+}

@@ -506,21 +506,27 @@ PAI) regardless of growth and measurement light intensities
 
 }
 
-\caption{\label{fig-aacap}\textbf{Amphistomy advantage (\aax{}) in wild tomatoes is amplified under simulated sunny growth conditions.}
+\caption{\label{fig-aacap}\textbf{Amphistomy advantage (\aax{}) in greater wild tomatoes from open habitats and is further amplified by developmental plasticity under sunny growth conditions.}
 \aax{} (\(y\)-axis) is the log-response ratio of photosynthesis in an
 amphistomatous leaf compared to an otherwise identical
 pseudohypostomatous leaf. In both panels, estimates are shown for plants
-grown under simulated shade or sun and measured under high light
-intensity (\ppfdequals{2000}) and low light intensity
-(\ppfdequals{150}). The dashed line at zero indicates no difference in
-photosynthesis between amphi- and pseudohypostomatous leaves.
-(\textbf{A}) The points are the posterior median \aax{} for each
-population, with error bars showing 95\% confidence intervals. Within
-each facet, the populations are arranged by \aax{} estimated in that
-growth and measurement condition. (\textbf{B}) The same estimates of
-\aax{} in each combination of growth and measurement light intensity
-ploted against native plant area index (PAI; \(x\)-axis, log-scale). The
-confidence intervals were omitted for visual clarity.}
+grown under simulated shade (brown) or sun (orange) and measured under
+high light intensity (\ppfdequals{2000}; open circles) and low light
+intensity (\ppfdequals{150}; solid circles). The dashed line at zero
+indicates no difference in photosynthesis between amphi- and
+pseudohypostomatous leaves. (\textbf{A}) The points are the posterior
+median \aax{} for each population, with error bars showing 95\%
+confidence intervals. Within each facet, the populations are arranged by
+\aax{} estimated in that growth and measurement condition. (\textbf{B})
+The same estimates of \aax{} in each combination of growth and
+measurement light intensity ploted against native plant area index (PAI;
+\(x\)-axis, log-scale). The confidence intervals were omitted for visual
+clarity. The median relationship between native PAI (\(x\)-axis;
+log-scale) and \aax{} is shown as a solid line with the shaded region
+between dashed lines showing the 95\% confidence ribbon. The * in the
+upper left corner of each facet indicates the slope of the linear
+regression is significantly different from zero; n.s. indicates not
+significant.}
 
 \end{figure}%
 
@@ -1555,9 +1561,9 @@ sampled the posterior distribution from a single chain with a minimum of
 models with more iterations to decrease the Gelman-Rubin convergence
 statistic (\(\hat{R}\)) (\emph{63}) to less than
 \(`aa_stats[["max_rhat"]]`\) and the bulk effective sample size (ESS) to
-greater than \(`aa_stats[["min_ess"]]`\) for all model parameters. We
-also increased the the \texttt{adapt\_delta} parameter until there were
-fewer than \(`aa_stats[["n_divergent"]]`\) divergent transitions.
+greater than \(`aa_stats[["min_ess"]]`\) for all model parameters, and
+there were fewer than \(`aa_stats[["n_divergent"]]`\) divergent
+transitions.
 
 \paragraph{\texorpdfstring{\agcurve{} curve
 parameters}{ curve parameters}}\label{sec-agcurve-pars}
@@ -1669,9 +1675,6 @@ integrating over the entire posterior distribution. We calculated the
 posterior distribution of the slope. If the 95\% confidence interval for
 the slope did not overlap zero, we considered the slope to be
 significant.
-
-\subsection{MARKER - need to update
-table}\label{marker---need-to-update-table}
 
 \begin{longtable}{>{\raggedright\arraybackslash}p{1in}>{\raggedright\arraybackslash}p{1.5in}>{\raggedright\arraybackslash}p{3in}}
 
