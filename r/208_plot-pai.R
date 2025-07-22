@@ -120,6 +120,8 @@ ggsave(
   bg = "transparent"
 )
 
+write_rds(df_coef_summary, "objects/df_coef_summary.rds")
+
 df_new = crossing(acc = unique(d1$acc),
                   light_treatment = c("low", "high")) |>
   mutate(row = row_number())
