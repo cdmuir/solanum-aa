@@ -15,11 +15,14 @@ library(grid)
 library(loo)
 library(lubridate)
 library(magrittr)
+library(mgcv)
 library(mvnfast)
 library(phangorn)
+library(progressr)
 library(purrr)
 library(readr)
 library(rlang)
+library(rootSolve)
 library(scales)
 library(stringr)
 library(tibble)
@@ -28,10 +31,10 @@ library(tidyr)
 library(TreeTools)
 
 source("r/functions.R")
-source("r/licor-functions.R")
+# source("r/licor-functions.R") # I don't think I am using anymore
 
 # format of acceptable IDs
-id_string = "^(LA[0-9]{4}A*|nelsonii|sandwicense)-[A-Z]{1}[AB]{0,1}$"
+id_string = "^(LA[0-9]{4}A*)-[A-Z]{1}[AB]{0,1}$"
 
 theme_set(theme_cowplot())
 
@@ -47,3 +50,20 @@ aa_args = read_rds("objects/aa_args.rds") |>
   )
 
 write_rds(aa_args, "objects/aa_args1.rds")
+
+# Fit Rubisco model
+x_depth = c(145, 830.5)
+y_depth = c(0, 700)
+x_rubisco = c(558, 56.5)
+y_rubisco = c(0, 100)
+nishio_carbon_1993_fig5 = read_csv("data/nishio_carbon_1993_fig5.csv",
+                                   show_col_types = FALSE) |>
+  mutate(
+    depth = raw_depth * (diff(y_depth) / diff(x_depth)) - x_depth[1],
+    rubisco = raw_rubisco * (diff(y_rubisco) / diff(x_rubisco)) -
+      x_rubisco[1] * (diff(y_rubisco) / diff(x_rubisco)),
+    # Reversing so that 0 is at abaxial, 1 is at adaxial, to match Earles et al.
+    rel_depth = rev(depth / (min(depth) + max(depth)))
+  )
+
+fit_rubisco = gam(rubisco ~ s(rel_depth), data = nishio_carbon_1993_fig5)

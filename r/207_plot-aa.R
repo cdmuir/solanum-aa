@@ -86,9 +86,9 @@ df_aa_pred3 = posterior_epred(fit_aa, newdata = df_new) |>
 df_aa_text = df_aa_pred1 |>
   ungroup() |>
   summarize(
-    x = median(x),
+    x = 0,
     label = round(mean(aa), 3),
-    aa = 0.20,
+    aa = 0.30,
     .by = c("Growth", "Measurement")
   )
 
@@ -109,7 +109,7 @@ fig_aa = ggplot(
   geom_hline(yintercept = 0, linetype = "dashed") +
   geom_text(data = df_aa_text,
             aes(x, aa, label = label),
-            inherit.aes = FALSE) +
+            inherit.aes = FALSE, hjust = 0, vjust = 1) +
   scale_color_manual(values = c("shade" = "tomato4", "sun" = "tomato")) +
   scale_shape_manual(values = c("low" = 19, "high" = 21)) +
   ylab("amphi advantage") +

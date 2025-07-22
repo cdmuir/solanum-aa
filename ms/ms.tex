@@ -22,7 +22,7 @@
 \usepackage{lmodern}
 \ifPDFTeX\else  
     % xetex/luatex font selection
-    \setmainfont[]{Times New Roman}
+  \setmainfont[]{Times New Roman}
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -44,28 +44,14 @@
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 % Make \paragraph and \subparagraph free-standing
-\makeatletter
 \ifx\paragraph\undefined\else
   \let\oldparagraph\paragraph
-  \renewcommand{\paragraph}{
-    \@ifstar
-      \xxxParagraphStar
-      \xxxParagraphNoStar
-  }
-  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
-  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
+  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
 \fi
 \ifx\subparagraph\undefined\else
   \let\oldsubparagraph\subparagraph
-  \renewcommand{\subparagraph}{
-    \@ifstar
-      \xxxSubParagraphStar
-      \xxxSubParagraphNoStar
-  }
-  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
-  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
+  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
-\makeatother
 
 
 \providecommand{\tightlist}{%
@@ -81,17 +67,15 @@
 \makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
-\newsavebox\pandoc@box
-\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
-  \sbox\pandoc@box{#1}%
-  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
-  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
-  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
-  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
-  \else\usebox{\pandoc@box}%
-  \fi%
-}
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
 % Set default figure placement to htbp
+\makeatletter
 \def\fps@figure{htbp}
 \makeatother
 % definitions for citeproc citations
@@ -212,7 +196,9 @@
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
-
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
 \usepackage{bookmark}
 
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
@@ -227,7 +213,6 @@
   urlcolor={Blue},
   pdfcreator={LaTeX via pandoc}}
 
-
 \title{Developmental plasticity to high light intensity amplifies the
 advantage of amphistomous leaves}
 \author{Christopher D. Muir\(^{1,2*}\) \and Wei Shen
@@ -236,7 +221,6 @@ Lim\(^{1}\) \and Dachuan Wang\(^{1,2}\)}
 
 \begin{document}
 \maketitle
-
 
 \begin{center}
 $^1$School of Life Sciences, University of Hawaiʻi, Mānoa, Hawaiʻi, USA\\
@@ -383,7 +367,7 @@ a forest canopy will often experience low light intensity.
 
 \centering{
 
-\includegraphics[width=2.24in,height=\textheight,keepaspectratio]{../figures/amphisomy draft 2024-03-28.jpg}
+\includegraphics[width=2.24in,height=\textheight]{../figures/amphisomy draft 2024-03-28.jpg}
 
 }
 
@@ -488,7 +472,7 @@ PAI) regardless of growth and measurement light intensities
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-aa-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-aa-1.pdf}
 
 }
 
@@ -502,7 +486,7 @@ PAI) regardless of growth and measurement light intensities
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-aacap-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-aacap-1.pdf}
 
 }
 
@@ -562,7 +546,7 @@ limitations.
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-lma_aa-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-lma_aa-1.pdf}
 
 }
 
@@ -1598,7 +1582,7 @@ mixed effects model described below.
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-example-aa-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-example-aa-1.pdf}
 
 }
 
@@ -1899,7 +1883,6 @@ LOOIC & $\Delta$LOOIC & Meas. & Growth & Inter. & Meas. & Growth & Inter. & Meas
 -1799.31 & 70.49 &  &  &  &  &  &  &  & \\*
 
 \end{longtable}
-
 
 
 
