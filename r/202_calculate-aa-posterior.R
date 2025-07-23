@@ -17,10 +17,6 @@ trimmed_rh_curves = read_rds("data/trimmed_rh_curves.rds") |>
 
 curve_fits_summary = read_rds("objects/curve-fits-summary.rds")
 
-# I need to decide if any of these require re-fitting
-curve_fits_summary |>
-  filter(rhat > 1.05 | ess_bulk < 100)
-
 # Draws from the curve fits ----
 curve_fits_draws = read_rds("objects/curve-fits-draws.rds") |>
   rename(b0 = b_Intercept, b1 = b_polylog_gsw2rawEQTRUE1, b2 = b_polylog_gsw2rawEQTRUE2) |>
@@ -63,17 +59,6 @@ aa_post = full_join(curve_fits_draws,
     aa = (upper_int - lower_int) / (log_gsw_pseudohypo - log_gsw_amphi)
   )
 
-# Export figures ----
-tmp = full_join(curve_fits_draws,
-          trimmed_rh_curves,
-          by = join_by(acc_id, leaf_type, light_intensity)) |>
-  mutate(log_gsw = min_log_gsw * (leaf_type == "amphi") + max_log_gsw * (leaf_type == "pseudohypo")) |>
-  filter(.draw < 11, acc == "LA0107") |>
-  split(~ acc_id)
-
-tmp$max_log_gsw
-
-
 # Check that AA estimates converged ----
 aa_summary = aa_post |>
   dplyr::select(starts_with("."), acc_id, aa, light_intensity) |>
@@ -86,10 +71,6 @@ aa_summary = aa_post |>
       mutate(acc_id = .x$acc_id[1],
              light_intensity = .x$light_intensity[1])
   }, .progress = TRUE)
-
-# I need to decide if any of these require re-fitting
-aa_summary |>
-  filter(rhat > 1.05 | ess_bulk < 100)
 
 # Write posterior of AA estimates ----
 write_rds(aa_post, "objects/aa_post.rds")

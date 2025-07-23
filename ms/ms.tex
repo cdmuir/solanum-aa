@@ -22,7 +22,7 @@
 \usepackage{lmodern}
 \ifPDFTeX\else  
     % xetex/luatex font selection
-  \setmainfont[]{Times New Roman}
+    \setmainfont[]{Times New Roman}
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -44,14 +44,28 @@
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 % Make \paragraph and \subparagraph free-standing
+\makeatletter
 \ifx\paragraph\undefined\else
   \let\oldparagraph\paragraph
-  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
 \fi
 \ifx\subparagraph\undefined\else
   \let\oldsubparagraph\subparagraph
-  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
+\makeatother
 
 
 \providecommand{\tightlist}{%
@@ -67,15 +81,17 @@
 \makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
-\makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
 % Set default figure placement to htbp
-\makeatletter
 \def\fps@figure{htbp}
 \makeatother
 % definitions for citeproc citations
@@ -196,9 +212,7 @@
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
-\ifLuaTeX
-  \usepackage{selnolig}  % disable illegal ligatures
-\fi
+
 \usepackage{bookmark}
 
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
@@ -213,6 +227,7 @@
   urlcolor={Blue},
   pdfcreator={LaTeX via pandoc}}
 
+
 \title{Developmental plasticity to high light intensity amplifies the
 advantage of amphistomous leaves}
 \author{Christopher D. Muir\(^{1,2*}\) \and Wei Shen
@@ -221,6 +236,7 @@ Lim\(^{1}\) \and Dachuan Wang\(^{1,2}\)}
 
 \begin{document}
 \maketitle
+
 
 \begin{center}
 $^1$School of Life Sciences, University of Hawaiʻi, Mānoa, Hawaiʻi, USA\\
@@ -367,7 +383,7 @@ a forest canopy will often experience low light intensity.
 
 \centering{
 
-\includegraphics[width=2.24in,height=\textheight]{../figures/amphisomy draft 2024-03-28.jpg}
+\includegraphics[width=2.24in,height=\textheight,keepaspectratio]{../figures/amphisomy draft 2024-03-28.jpg}
 
 }
 
@@ -471,7 +487,7 @@ in 3 of the 4 treatment combinations (Fig.~\ref{fig-aa}B).
 
 \centering{
 
-\includegraphics{ms_files/figure-pdf/fig-aa-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-aa-1.pdf}}
 
 }
 
@@ -485,7 +501,7 @@ in 3 of the 4 treatment combinations (Fig.~\ref{fig-aa}B).
 
 \centering{
 
-\includegraphics{ms_files/figure-pdf/fig-aacap-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-aacap-1.pdf}}
 
 }
 
@@ -550,7 +566,7 @@ these limitations.
 
 \centering{
 
-\includegraphics{ms_files/figure-pdf/fig-lma_aa-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-lma_aa-1.pdf}}
 
 }
 
@@ -1586,7 +1602,7 @@ mixed effects model described below.
 
 \centering{
 
-\includegraphics{ms_files/figure-pdf/fig-example-aa-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-example-aa-1.pdf}}
 
 }
 
@@ -1737,8 +1753,9 @@ light intensity, light treatments, and population on \aax{}.
 
 \caption{\label{tbl-aa_loo1}Leave-one-out cross-validation information
 criterion (LOOIC) for models of \aax{} as a function of light intensity,
-light treatment, and population. The model with the lowest LOOIC is
-considered the best fit to the data. The LOOIC column lists the LOOIC
+light treatment, and population. Only the top models
+(\(\Delta~\text{LOOIC} < 2\)) are shown. The model with the lowest LOOIC
+is considered the best fit to the data. The LOOIC column lists the LOOIC
 value for each model; the \(\Delta\)LOOIC column lists the difference
 between the LOOIC of the corresponding model and the best model (lowest
 LOOIC). Checkmarks in each row indicate whether the corresponding model
@@ -1769,138 +1786,26 @@ LOOIC & $\Delta$LOOIC & Meas. & Growth & Inter. & Meas. & Growth & Inter. & Meas
 \cellcolor{gray!10}{-1869.80} & \cellcolor{gray!10}{0.00} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
 -1868.94 & 0.86 & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$\\
 \cellcolor{gray!10}{-1868.68} & \cellcolor{gray!10}{1.12} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
--1867.89 & 1.92 &  & $\checkmark$ &  & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$\\
-\cellcolor{gray!10}{-1867.44} & \cellcolor{gray!10}{2.36} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
-\addlinespace
--1867.06 & 2.74 & $\checkmark$ & $\checkmark$ &  & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$\\
-\cellcolor{gray!10}{-1867.00} & \cellcolor{gray!10}{2.81} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
--1866.86 & 2.94 & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$\\
-\cellcolor{gray!10}{-1866.71} & \cellcolor{gray!10}{3.09} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
--1866.36 & 3.44 &  &  &  & $\checkmark$ & $\checkmark$ &  & $\checkmark$ & $\checkmark$\\
-\addlinespace
-\cellcolor{gray!10}{-1866.19} & \cellcolor{gray!10}{3.61} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
--1865.08 & 4.72 &  & $\checkmark$ &  & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$\\
-\cellcolor{gray!10}{-1864.70} & \cellcolor{gray!10}{5.10} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
--1864.47 & 5.34 & $\checkmark$ & $\checkmark$ & $\checkmark$ &  & $\checkmark$ &  & $\checkmark$ & $\checkmark$\\
-\cellcolor{gray!10}{-1863.52} & \cellcolor{gray!10}{6.28} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$}\\
-\addlinespace
--1863.27 & 6.54 & $\checkmark$ & $\checkmark$ & $\checkmark$ &  &  &  & $\checkmark$ & $\checkmark$\\
-\cellcolor{gray!10}{-1862.59} & \cellcolor{gray!10}{7.22} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
--1862.42 & 7.39 & $\checkmark$ & $\checkmark$ &  &  & $\checkmark$ &  & $\checkmark$ & $\checkmark$\\
-\cellcolor{gray!10}{-1862.06} & \cellcolor{gray!10}{7.74} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$}\\
--1861.93 & 7.87 & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$ & $\checkmark$ &  & $\checkmark$\\
-\addlinespace
-\cellcolor{gray!10}{-1861.71} & \cellcolor{gray!10}{8.10} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
--1861.45 & 8.36 & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ &  &  & $\checkmark$\\
-\cellcolor{gray!10}{-1860.69} & \cellcolor{gray!10}{9.11} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$}\\
--1860.41 & 9.39 & $\checkmark$ & $\checkmark$ &  & $\checkmark$ & $\checkmark$ & $\checkmark$ &  & $\checkmark$\\
-\cellcolor{gray!10}{-1859.96} & \cellcolor{gray!10}{9.84} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$}\\
-\addlinespace
--1858.68 & 11.12 & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ &  &  &  & $\checkmark$\\
-\cellcolor{gray!10}{-1858.53} & \cellcolor{gray!10}{11.27} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$}\\
--1858.18 & 11.62 &  & $\checkmark$ &  & $\checkmark$ & $\checkmark$ &  &  & $\checkmark$\\
-\cellcolor{gray!10}{-1858.10} & \cellcolor{gray!10}{11.70} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$}\\
--1857.84 & 11.96 & $\checkmark$ & $\checkmark$ &  & $\checkmark$ & $\checkmark$ &  &  & $\checkmark$\\
-\addlinespace
-\cellcolor{gray!10}{-1857.64} & \cellcolor{gray!10}{12.16} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$}\\
--1857.06 & 12.75 & $\checkmark$ &  &  & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$\\
-\cellcolor{gray!10}{-1856.48} & \cellcolor{gray!10}{13.32} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$}\\
--1856.40 & 13.40 & $\checkmark$ & $\checkmark$ & $\checkmark$ &  & $\checkmark$ &  &  & $\checkmark$\\
-\cellcolor{gray!10}{-1856.24} & \cellcolor{gray!10}{13.56} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{}\\
-\addlinespace
--1855.98 & 13.82 &  &  &  & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$\\
-\cellcolor{gray!10}{-1855.89} & \cellcolor{gray!10}{13.92} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{}\\
--1855.37 & 14.43 & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & \\
-\cellcolor{gray!10}{-1855.36} & \cellcolor{gray!10}{14.44} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$}\\
--1855.05 & 14.75 & $\checkmark$ & $\checkmark$ &  & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & \\
-\addlinespace
-\cellcolor{gray!10}{-1854.54} & \cellcolor{gray!10}{15.26} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$}\\
--1854.41 & 15.39 &  & $\checkmark$ &  & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & \\
-\cellcolor{gray!10}{-1853.87} & \cellcolor{gray!10}{15.94} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$}\\
--1853.55 & 16.25 & $\checkmark$ &  &  &  &  &  & $\checkmark$ & $\checkmark$\\
-\cellcolor{gray!10}{-1853.43} & \cellcolor{gray!10}{16.37} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{}\\
-\addlinespace
--1852.90 & 16.91 & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$ &  & $\checkmark$ & \\
-\cellcolor{gray!10}{-1851.37} & \cellcolor{gray!10}{18.43} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{}\\
--1851.18 & 18.62 &  &  &  & $\checkmark$ & $\checkmark$ &  & $\checkmark$ & \\
-\cellcolor{gray!10}{-1851.03} & \cellcolor{gray!10}{18.77} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{}\\
--1851.03 & 18.77 &  & $\checkmark$ &  & $\checkmark$ &  &  & $\checkmark$ & \\
-\addlinespace
-\cellcolor{gray!10}{-1850.89} & \cellcolor{gray!10}{18.91} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
--1850.69 & 19.12 & $\checkmark$ & $\checkmark$ &  & $\checkmark$ & $\checkmark$ &  & $\checkmark$ & \\
-\cellcolor{gray!10}{-1850.37} & \cellcolor{gray!10}{19.43} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
--1850.04 & 19.76 & $\checkmark$ & $\checkmark$ &  & $\checkmark$ &  &  & $\checkmark$ & \\
-\cellcolor{gray!10}{-1849.45} & \cellcolor{gray!10}{20.35} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
-\addlinespace
--1848.68 & 21.12 & $\checkmark$ &  &  &  & $\checkmark$ &  & $\checkmark$ & \\
-\cellcolor{gray!10}{-1848.64} & \cellcolor{gray!10}{21.16} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
--1847.73 & 22.07 & $\checkmark$ & $\checkmark$ & $\checkmark$ &  &  &  & $\checkmark$ & \\
-\cellcolor{gray!10}{-1847.72} & \cellcolor{gray!10}{22.08} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{}\\
--1847.47 & 22.33 & $\checkmark$ & $\checkmark$ &  & $\checkmark$ & $\checkmark$ & $\checkmark$ &  & \\
-\addlinespace
-\cellcolor{gray!10}{-1847.40} & \cellcolor{gray!10}{22.40} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$}\\
--1847.36 & 22.44 & $\checkmark$ &  &  & $\checkmark$ &  &  &  & $\checkmark$\\
-\cellcolor{gray!10}{-1847.14} & \cellcolor{gray!10}{22.66} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
--1846.28 & 23.52 & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ &  &  & \\
-\cellcolor{gray!10}{-1845.82} & \cellcolor{gray!10}{23.98} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{}\\
-\addlinespace
--1845.58 & 24.22 & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ &  &  &  & \\
-\cellcolor{gray!10}{-1845.55} & \cellcolor{gray!10}{24.26} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
--1845.31 & 24.49 & $\checkmark$ & $\checkmark$ &  &  &  &  & $\checkmark$ & \\
-\cellcolor{gray!10}{-1845.29} & \cellcolor{gray!10}{24.51} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$}\\
--1845.28 & 24.52 & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$ &  &  & \\
-\addlinespace
-\cellcolor{gray!10}{-1844.09} & \cellcolor{gray!10}{25.71} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
--1844.00 & 25.80 & $\checkmark$ & $\checkmark$ &  & $\checkmark$ & $\checkmark$ &  &  & \\
-\cellcolor{gray!10}{-1843.72} & \cellcolor{gray!10}{26.08} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
--1841.91 & 27.89 & $\checkmark$ & $\checkmark$ & $\checkmark$ &  & $\checkmark$ &  &  & \\
-\cellcolor{gray!10}{-1841.65} & \cellcolor{gray!10}{28.16} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{}\\
-\addlinespace
--1841.19 & 28.61 &  &  &  & $\checkmark$ &  &  & $\checkmark$ & \\
-\cellcolor{gray!10}{-1840.69} & \cellcolor{gray!10}{29.12} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
--1839.82 & 29.98 & $\checkmark$ & $\checkmark$ &  &  &  &  &  & \\
-\cellcolor{gray!10}{-1839.81} & \cellcolor{gray!10}{29.99} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
--1839.04 & 30.76 & $\checkmark$ & $\checkmark$ &  &  & $\checkmark$ &  &  & \\
-\addlinespace
-\cellcolor{gray!10}{-1838.36} & \cellcolor{gray!10}{31.44} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{}\\
--1834.02 & 35.78 &  &  &  &  & $\checkmark$ &  & $\checkmark$ & $\checkmark$\\
-\cellcolor{gray!10}{-1833.87} & \cellcolor{gray!10}{35.93} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
--1833.86 & 35.94 & $\checkmark$ &  &  & $\checkmark$ &  &  &  & \\
-\cellcolor{gray!10}{-1833.29} & \cellcolor{gray!10}{36.51} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
-\addlinespace
--1832.82 & 36.99 &  & $\checkmark$ &  &  & $\checkmark$ &  & $\checkmark$ & $\checkmark$\\
-\cellcolor{gray!10}{-1829.41} & \cellcolor{gray!10}{40.39} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
--1826.86 & 42.94 &  &  &  &  & $\checkmark$ &  &  & $\checkmark$\\
-\cellcolor{gray!10}{-1826.67} & \cellcolor{gray!10}{43.13} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
--1825.19 & 44.61 &  & $\checkmark$ &  &  & $\checkmark$ &  &  & $\checkmark$\\
-\addlinespace
-\cellcolor{gray!10}{-1824.95} & \cellcolor{gray!10}{44.86} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$}\\
--1818.14 & 51.66 &  &  &  &  &  &  &  & $\checkmark$\\
-\cellcolor{gray!10}{-1814.64} & \cellcolor{gray!10}{55.16} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{}\\
--1814.51 & 55.29 &  &  &  &  & $\checkmark$ &  & $\checkmark$ & \\
-\cellcolor{gray!10}{-1814.23} & \cellcolor{gray!10}{55.57} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{}\\
-\addlinespace
--1808.39 & 61.41 &  &  &  &  &  &  & $\checkmark$ & \\
-\cellcolor{gray!10}{-1808.13} & \cellcolor{gray!10}{61.67} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
--1807.22 & 62.58 &  & $\checkmark$ &  &  & $\checkmark$ &  &  & \\
-\cellcolor{gray!10}{-1806.92} & \cellcolor{gray!10}{62.88} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
--1799.31 & 70.49 &  &  &  &  &  &  &  & \\*
+-1867.89 & 1.92 &  & $\checkmark$ &  & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$\\*
 
 \end{longtable}
 
 \subsubsection{MARKER - make other LOOIC
 table}\label{marker---make-other-looic-table}
 
-\begin{table}
+\begin{landscape}
+
+\begin{longtable}[t]{>{\centering\arraybackslash}p{0.7in}>{\centering\arraybackslash}p{0.5in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}}
 
 \caption{\label{tbl-aa_loo2}Leave-one-out cross-validation information
 criterion (LOOIC) for models of \aax{} as a function of light intensity,
-light treatment, leaf mass per area (LMA), and population. The model
-with the lowest LOOIC is considered the best fit to the data. The LOOIC
-column lists the LOOIC value for each model; the \(\Delta\)LOOIC column
-lists the difference between the LOOIC of the corresponding model and
-the best model (lowest LOOIC). Checkmarks in each row indicate whether
-the corresponding model included affects of measurement light intensity
+light treatment, leaf mass per area (LMA), and population. Only the top
+models (\(\Delta~\text{LOOIC} < 2\)) are shown. The model with the
+lowest LOOIC is considered the best fit to the data. The LOOIC column
+lists the LOOIC value for each model; the \(\Delta\)LOOIC column lists
+the difference between the LOOIC of the corresponding model and the best
+model (lowest LOOIC). Checkmarks in each row indicate whether the
+corresponding model included affects of measurement light intensity
 (``Meas.''), growth light intensity (``Growth''), or LMA as fixed
 effects, random effects, or distributional effect on the residual
 variance. We test for fixed interaction effects between measurement and
@@ -1908,11 +1813,36 @@ growth light intensity and LMA. We also test for random interaction
 effects between measurement and growth light intensity. All models
 included phylogenetically structured random effects of population.}
 
-\centering{
+\tabularnewline
 
-}
+\toprule
+\multicolumn{2}{c}{ } & \multicolumn{7}{c}{Fixed} & \multicolumn{3}{c}{Random} & \multicolumn{2}{c}{Distributional} \\
+\cmidrule(l{3pt}r{3pt}){3-9} \cmidrule(l{3pt}r{3pt}){10-12} \cmidrule(l{3pt}r{3pt}){13-14}
+LOOIC & $\Delta$LOOIC & Meas. & Growth & LMA & Meas. $\times$ Growth & Meas. $\times$ Growth & Meas. $\times$ LMA & Growth $\times$ LMA & Meas. & Growth & Meas. $\times$ Growth & Meas. & Growth\\
+\midrule
+\endfirsthead
+\multicolumn{14}{@{}l}{\textit{(continued)}}\\
+\toprule
+LOOIC & $\Delta$LOOIC & Meas. & Growth & LMA & Meas. $\times$ Growth & Meas. $\times$ Growth & Meas. $\times$ LMA & Growth $\times$ LMA & Meas. & Growth & Meas. $\times$ Growth & Meas. & Growth\\
+\midrule
+\endhead
 
-\end{table}%
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!10}{-1872.05} & \cellcolor{gray!10}{0.00} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+-1871.15 & 0.89 & $\checkmark$ &  & $\checkmark$ &  &  &  &  & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$\\
+\cellcolor{gray!10}{-1871.03} & \cellcolor{gray!10}{1.01} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+-1871.03 & 1.02 &  &  & $\checkmark$ &  &  &  &  & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$\\
+\cellcolor{gray!10}{-1870.79} & \cellcolor{gray!10}{1.26} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+\addlinespace
+-1870.74 & 1.31 &  &  & $\checkmark$ &  &  &  &  & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$\\
+\cellcolor{gray!10}{-1870.06} & \cellcolor{gray!10}{1.99} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\*
+
+\end{longtable}
+
+\end{landscape}
+
 
 
 

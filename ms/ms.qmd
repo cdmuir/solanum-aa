@@ -766,10 +766,11 @@ THIS COULD BE USED FOR LMA MODEL? Note that LOOIC was calculated only from point
 
 ```{r, aa_loo1, echo=FALSE,message=FALSE,warning=FALSE}
 #| label: tbl-aa_loo1
-#| tbl-cap: 'Leave-one-out cross-validation information criterion (LOOIC) for models of \\aax{} as a function of light intensity, light treatment, and population. The model with the lowest LOOIC is considered the best fit to the data. The LOOIC column lists the LOOIC value for each model; the $\\Delta$LOOIC column lists the difference between the LOOIC of the corresponding model and the best model (lowest LOOIC). Checkmarks in each row indicate whether the corresponding model included affects of measurement light intensity ("Meas.") or growth light intensity ("Growth") as fixed effects, random effects, or distributional effect on the residual variance. We also test for fixed and random interaction effects ("Inter.") between measurement and growth light intensity. All models included phylogenetically structured random effects of population.'
+#| tbl-cap: 'Leave-one-out cross-validation information criterion (LOOIC) for models of \\aax{} as a function of light intensity, light treatment, and population. Only the top models ($\\Delta~\\text{LOOIC} < 2$) are shown. The model with the lowest LOOIC is considered the best fit to the data. The LOOIC column lists the LOOIC value for each model; the $\\Delta$LOOIC column lists the difference between the LOOIC of the corresponding model and the best model (lowest LOOIC). Checkmarks in each row indicate whether the corresponding model included affects of measurement light intensity ("Meas.") or growth light intensity ("Growth") as fixed effects, random effects, or distributional effect on the residual variance. We also test for fixed and random interaction effects ("Inter.") between measurement and growth light intensity. All models included phylogenetically structured random effects of population.'
 
 df1 = aa_loo_table1 |>
-  mutate(
+   filter(delta_looic < 2) |>
+   mutate(
     fixed_meas = str_detect(fixed, "light_intensity"),
     fixed_growth = str_detect(fixed, "light_treatment"),
     fixed_intrxn = str_detect(fixed, "\\*"),
@@ -825,11 +826,12 @@ kbl(
 
 ### MARKER - make other LOOIC table
 
-```{r, aa_loo2, eval=TRUE,echo=FALSE,message=FALSE,warning=FALSE}
+```{r, aa_loo2, results = "asis", eval=TRUE,echo=FALSE,message=FALSE,warning=FALSE}
 #| label: tbl-aa_loo2
-#| tbl-cap: 'Leave-one-out cross-validation information criterion (LOOIC) for models of \\aax{} as a function of light intensity, light treatment, leaf mass per area (LMA), and population. The model with the lowest LOOIC is considered the best fit to the data. The LOOIC column lists the LOOIC value for each model; the $\\Delta$LOOIC column lists the difference between the LOOIC of the corresponding model and the best model (lowest LOOIC). Checkmarks in each row indicate whether the corresponding model included affects of measurement light intensity ("Meas."), growth light intensity ("Growth"), or LMA as fixed effects, random effects, or distributional effect on the residual variance. We test for fixed interaction effects between measurement and growth light intensity and LMA. We also test for random interaction effects between measurement and growth light intensity. All models included phylogenetically structured random effects of population.'
+#| tbl-cap: 'Leave-one-out cross-validation information criterion (LOOIC) for models of \\aax{} as a function of light intensity, light treatment, leaf mass per area (LMA), and population. Only the top models ($\\Delta~\\text{LOOIC} < 2$) are shown. The model with the lowest LOOIC is considered the best fit to the data. The LOOIC column lists the LOOIC value for each model; the $\\Delta$LOOIC column lists the difference between the LOOIC of the corresponding model and the best model (lowest LOOIC). Checkmarks in each row indicate whether the corresponding model included affects of measurement light intensity ("Meas."), growth light intensity ("Growth"), or LMA as fixed effects, random effects, or distributional effect on the residual variance. We test for fixed interaction effects between measurement and growth light intensity and LMA. We also test for random interaction effects between measurement and growth light intensity. All models included phylogenetically structured random effects of population.'
 
 df1 = aa_loo_table2 |>
+  filter(delta_looic < 2) |>
   mutate(
     fixed_meas = str_detect(fixed, "light_intensity"),
     fixed_growth = str_detect(fixed, "light_treatment"),
@@ -866,13 +868,16 @@ c2 = case_when(
   str_detect(c1, "_meas") ~ "Meas.",
   str_detect(c1, "_growth") ~ "Growth",
   str_detect(c1, "_lma") ~ "LMA",
-  str_detect(c1, "_intrxn12") ~ "Meas. x Growth",
-  str_detect(c1, "_intrxn13") ~ "Meas. x LMA",
-  str_detect(c1, "_intrxn23") ~ "Growth x LMA",
-  str_detect(c1, "_intrxn123") ~ "Meas. x Growth x LMA",
+  str_detect(c1, "_intrxn12") ~ "Meas. $\\times$ Growth",
+  str_detect(c1, "_intrxn13") ~ "Meas. $\\times$ LMA",
+  str_detect(c1, "_intrxn23") ~ "Growth $\\times$ LMA",
+  str_detect(c1, "_intrxn123") ~ "Meas. $\\times$ Growth $\\times$ LMA",
+  str_detect(c1, "_intrxn$") ~ "Meas. $\\times$ Growth",
   str_detect(c1, "_acc") ~ "Population",
   .default = c1
 )
+
+cat("\\begin{landscape}")
 
 kbl(
   df1,
@@ -885,9 +890,9 @@ kbl(
 ) |>
   kable_styling(latex_options = c("striped", "repeat_header")) |>
   add_header_above(groupings) |>
+  column_spec(c(9, 12), border_right = TRUE) |>
   column_spec(1, width = "0.7in") |>
   column_spec(2, width = "0.5in") |>
-  column_spec(3:10, width = "0.4in") |>
-  column_spec(c(5, 8), border_right = TRUE)
-
+  column_spec(3:14, width = "0.4in")
+cat("\\end{landscape}")
 ```
