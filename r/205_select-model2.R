@@ -125,7 +125,8 @@ aa_loo_table = tibble(
   mutate(
     delta_looic = looic - min(looic),
     best_model = delta_looic == 0
-  )
+  ) |>
+  left_join(model_forms, by = join_by(model))
 
 write_rds(aa_loo_table, "objects/aa_loo_table2.rds")
 best_model_index = str_extract(aa_loo_table[1, "model"], "\\d+") |>
