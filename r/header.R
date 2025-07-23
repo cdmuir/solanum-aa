@@ -31,7 +31,6 @@ library(tidyr)
 library(TreeTools)
 
 source("r/functions.R")
-# source("r/licor-functions.R") # I don't think I am using anymore
 
 # format of acceptable IDs
 id_string = "^(LA[0-9]{4}A*)-[A-Z]{1}[AB]{0,1}$"

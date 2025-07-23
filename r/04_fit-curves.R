@@ -4,12 +4,7 @@ source("r/header.R")
 rh_curves = read_rds("data/trimmed_rh_curves.rds") |>
   mutate(ci = as.numeric(as.factor(curve)))
 
-# tmp = rh_curves |>
-#   split( ~ curve)
-# df = tmp[[1]]
-# curve_id = names(tmp)[[1]]
-
-plan(multisession, workers = 9)
+plan(multisession, workers = 19)
 
 rh_curves |>
   split(~ curve) |>

@@ -31,10 +31,7 @@ random_effects = c(
   "(1 + light_treatment * light_intensity | gr(acc, cov = A))"
 )
 
-sigma_effects = c("1",
-                  "light_treatment",
-                  "light_intensity",
-                  "light_treatment + light_intensity")
+sigma_effects = c("light_treatment + light_intensity")
 
 # Cross all combinations
 set.seed(602275201)

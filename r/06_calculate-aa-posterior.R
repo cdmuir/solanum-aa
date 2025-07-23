@@ -15,8 +15,6 @@ trimmed_rh_curves = read_rds("data/trimmed_rh_curves.rds") |>
     )
   )
 
-curve_fits_summary = read_rds("objects/curve-fits-summary.rds")
-
 # Draws from the curve fits ----
 curve_fits_draws = read_rds("objects/curve-fits-draws.rds") |>
   rename(b0 = b_Intercept, b1 = b_polylog_gsw2rawEQTRUE1, b2 = b_polylog_gsw2rawEQTRUE2) |>
