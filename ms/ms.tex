@@ -466,19 +466,19 @@ measurement light intensities, growth light intensities, and among
 populations outperformed simpler models based on information criteria
 (Table~\ref{tbl-aa_loo1}). Measured under high light intensity, \aax{}
 was consistently greater for sun plants. The average \aax{} among
-populations in the shade treatment was 0.041 (range: 0.010--0.113; 21 of
+populations in the shade treatment was 0.041 (range: 0.007--0.113; 19 of
 29 populations significant); however, the same populations grown at high
-light intensity showed a mean \aax{} of 0.053 (range: 0.021--0.125; 19
+light intensity showed a mean \aax{} of 0.052 (range: 0.020--0.120; 20
 of 29 populations significant). Contrary to the predictions of the
 assimilatory hypothesis, \aax{} was greater in all populations under low
 measurement light intensity for both sun and shade grown plants. The
 effect of low light on \aax{} was more pronounced in the sun-grown
 plants, where \aax{} was significantly greater under low measurement
-light intensity in 11 of 29 populations compared to 4 populations for
+light intensity in 13 of 29 populations compared to 12 populations for
 shade-grown plants. The overall average \aax{} of shade and sun grown
 plants measured under low light intensity was 0.064 (range:
-0.017--0.132; 28 of 29 populations significant) and 0.094 (range:
-0.036--0.197; 24 of 29 populations significant), respectively. There was
+0.022--0.137; 28 of 29 populations significant) and 0.100 (range:
+0.049--0.206; 27 of 29 populations significant), respectively. There was
 a modest tendency for populations from more open habitats (lower PAI) to
 exhibit greater \aax{} and the slope was significantly different than 0
 in 3 of the 4 treatment combinations (Fig.~\ref{fig-aa}B).
@@ -540,7 +540,7 @@ provides modest support for the constitutive hypothesis. Plastic changes
 in leaf thickness and/or packing density, summarized by the bulk leaf
 mass per area (LMA), may mediate the effect of growth light intensity on
 \aax{}. LMA increased in sun grown plants in all populations by an
-average of 119\% {[}95\% CI: 47 to 240\%{]}, similar to plastic
+average of 123\% {[}95\% CI: 42.9 to 256\%{]}, similar to plastic
 responses in many species (\emph{48}). While LMA is weakly, albeit
 significantly, associated with individual-level \aax{}
 (Fig.~\ref{fig-lma_aa}), the effect of growth light intensity on \aax{}
@@ -1434,7 +1434,7 @@ Step: description & Number of curves & Number of points per curve\\
 \cellcolor{gray!10}{1. remove unreliable and unusable data points} & \cellcolor{gray!10}{2,361} & \cellcolor{gray!10}{63.0}\\
 2. remove hysteretic portion of \agcurve{} curves at low \gsw{} & 2,360 & 59.2\\
 \cellcolor{gray!10}{3. remove outliers within each \agcurve{} curve} & \cellcolor{gray!10}{2,360} & \cellcolor{gray!10}{58.7}\\
-4. remove replicates with no overlap between amphi and pseudohypo \agcurve{} curves & 2,268 & 58.5\\
+4. remove replicates with no overlap between amphi and pseudohypo \agcurve{} curves & 2,268 & 58.4\\
 \cellcolor{gray!10}{5. thin redundant data points within each \agcurve{} curve} & \cellcolor{gray!10}{2,268} & \cellcolor{gray!10}{28.1}\\
 \addlinespace
 6. trim extreme \aax{} values & 2,214 & 28.1\\
@@ -1559,7 +1559,7 @@ All models were using a Bayesian model with HMC sampling in the
 probabilistic programming language \emph{Stan} (\emph{59}) using the
 \emph{R} package \textbf{brms} version 2.22.0 (\emph{60}). We used
 \emph{CmdStan} version 2.36.0 and \textbf{cmdstanr} version 0.9.0
-(\emph{61}) to interface with \emph{R} version 4.5.0 (\emph{62}). We
+(\emph{61}) to interface with \emph{R} version 4.5.1 (\emph{62}). We
 sampled the posterior distribution from a single chain with a minimum of
 1000 iterations after 1000 warmup iterations. If necessary, we refit
 models with more iterations to decrease the Gelman-Rubin convergence
@@ -1783,10 +1783,11 @@ LOOIC & $\Delta$LOOIC & Meas. & Growth & Inter. & Meas. & Growth & Inter. & Meas
 \endfoot
 \bottomrule
 \endlastfoot
-\cellcolor{gray!10}{-1869.80} & \cellcolor{gray!10}{0.00} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
--1868.94 & 0.86 & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$\\
-\cellcolor{gray!10}{-1868.68} & \cellcolor{gray!10}{1.12} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
--1867.89 & 1.92 &  & $\checkmark$ &  & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$\\*
+\cellcolor{gray!10}{-1882.56} & \cellcolor{gray!10}{0.00} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+-1881.70 & 0.86 &  &  &  & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$\\
+\cellcolor{gray!10}{-1881.00} & \cellcolor{gray!10}{1.56} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+-1880.91 & 1.65 & $\checkmark$ & $\checkmark$ &  & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$\\
+\cellcolor{gray!10}{-1880.63} & \cellcolor{gray!10}{1.93} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\*
 
 \end{longtable}
 
@@ -1830,14 +1831,23 @@ LOOIC & $\Delta$LOOIC & Meas. & Growth & LMA & Meas. $\times$ Growth & Meas. $\t
 \endfoot
 \bottomrule
 \endlastfoot
-\cellcolor{gray!10}{-1872.05} & \cellcolor{gray!10}{0.00} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
--1871.15 & 0.89 & $\checkmark$ &  & $\checkmark$ &  &  &  &  & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$\\
-\cellcolor{gray!10}{-1871.03} & \cellcolor{gray!10}{1.01} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
--1871.03 & 1.02 &  &  & $\checkmark$ &  &  &  &  & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$\\
-\cellcolor{gray!10}{-1870.79} & \cellcolor{gray!10}{1.26} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+\cellcolor{gray!10}{-1883.84} & \cellcolor{gray!10}{0.00} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+-1883.80 & 0.04 & $\checkmark$ &  & $\checkmark$ &  &  &  &  & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$\\
+\cellcolor{gray!10}{-1883.67} & \cellcolor{gray!10}{0.17} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+-1883.16 & 0.67 & $\checkmark$ &  & $\checkmark$ &  &  &  &  & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$\\
+\cellcolor{gray!10}{-1883.05} & \cellcolor{gray!10}{0.78} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
 \addlinespace
--1870.74 & 1.31 &  &  & $\checkmark$ &  &  &  &  & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$\\
-\cellcolor{gray!10}{-1870.06} & \cellcolor{gray!10}{1.99} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\*
+-1883.05 & 0.78 & $\checkmark$ &  & $\checkmark$ &  &  &  & $\checkmark$ & $\checkmark$ & $\checkmark$ &  & $\checkmark$ & $\checkmark$\\
+\cellcolor{gray!10}{-1882.93} & \cellcolor{gray!10}{0.90} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+-1882.87 & 0.97 & $\checkmark$ & $\checkmark$ & $\checkmark$ &  & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$\\
+\cellcolor{gray!10}{-1882.80} & \cellcolor{gray!10}{1.04} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+-1882.55 & 1.29 & $\checkmark$ & $\checkmark$ & $\checkmark$ &  & $\checkmark$ &  &  & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$\\
+\addlinespace
+\cellcolor{gray!10}{-1882.29} & \cellcolor{gray!10}{1.55} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+-1882.27 & 1.56 & $\checkmark$ & $\checkmark$ & $\checkmark$ &  &  & $\checkmark$ &  & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$\\
+\cellcolor{gray!10}{-1882.27} & \cellcolor{gray!10}{1.56} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+-1882.08 & 1.76 &  &  & $\checkmark$ &  &  &  &  & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$\\
+\cellcolor{gray!10}{-1881.86} & \cellcolor{gray!10}{1.98} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\*
 
 \end{longtable}
 

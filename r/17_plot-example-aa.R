@@ -1,7 +1,4 @@
 source("r/header.R")
-# library(gridExtra)
-# library(grid)
-# library(gridtext)
 
 scenarios = c("No amphistomy\nadvantage",
               "Significant amphistomy\nadvantage")

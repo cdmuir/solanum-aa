@@ -107,7 +107,6 @@ fig_aa_pai = ggplot(df_aa_pred2, aes(pai, aa, color = Growth, shape = Measuremen
   ylim(0, 0.2) +
   geom_hline(yintercept = 0, linetype = "dashed") +
   theme(legend.position = "none")
-fig_aa_pai
 
 write_rds(fig_aa_pai, "objects/fig_aa_pai.rds")
 
