@@ -11,6 +11,10 @@ csl: https://www.zotero.org/styles/science
 
 ### MANUSCRAPS
 
+from abstract: Developmental plasticity in leaf thickness and/or density, an adaptive response to optimize light interception, likely affects CO$_2$ diffusion within the leaf, altering amphistomy advantage as a byproduct. 
+
+From plasticity hypothesis: Secondarily, $\aasun{}$ and \gmaxsun{} should also be positively associated with native light habitat if genotypes adapted to sunny, open habitats if they can express a phenotype best adapted to that environment when leaves develop under high light intensity. 
+
 (not sure where this goes)  * We acclimated the focal leaf to high light (\ppfdequals{2000}) and high relative humidity (\rhequals{70}) until $A$ and \gsw{} reach their maximum. After that, we decreased \rh{} to $\approx 10\%$ to induce rapid stomatal closure without biochemical down
 
 Problems to bring up in discussion:
@@ -220,3 +224,15 @@ We considered models with two standard errors of the mean lower LOOIC value to b
 #### Light-response (\aqcurve) curves
 
 In `r percent_aa_and_aq`\% of plants, we measured light-response (\aqcurve) curves on the same leaflets as \agcurve{} curves. However, when a leaflet was damaged during \agcurve{} curves, we used the next closest leaflet for \aqcurve{} curves. Leaves acclimated to high light-intensity (\ppfdequals{2000}), ambient CO$_2$ (\caequals{415}), \rhequals{50}, and \tleafequals{25}. After $A$ and \gsw{} stabilized, we measured $A$ at 20 light-intensity levels between $0$ and $\qty{2000}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}$ in descending order.
+
+### From leaf traits
+
+ We measured chlorophyll concentration index (CCI) using a chrolophyll concentration meter (MC-100, Apogee Instruments, Logan, Utah, USA) on the lamina of focal leaflets before gas exchange measurements at the same time we measured leaf temperature.
+ 
+ ### From hypothesis section
+ 
+ A one-dimensional circuit model using the Farquhar-von Caemmerer-Berry biochemical model of C$_3$ photosynthesis [@farquhar_biochemical_1980] shows that both increased stomatal conductance and Rubisco activity should increase \aax{}, all else being equal (Supporting Information)
+ 
+ ### results
+ 
+ The effect of low light on \aax{} was more pronounced in the sun-grown plants, where \aax{} was significantly greater under low measurement light intensity in `r aa_summary3["high"]` of `r n_acc` populations compared to `r aa_summary3["low"]` populations for shade-grown plants.

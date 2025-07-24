@@ -22,7 +22,7 @@
 \usepackage{lmodern}
 \ifPDFTeX\else  
     % xetex/luatex font selection
-    \setmainfont[]{Times New Roman}
+  \setmainfont[]{Times New Roman}
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -44,28 +44,14 @@
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 % Make \paragraph and \subparagraph free-standing
-\makeatletter
 \ifx\paragraph\undefined\else
   \let\oldparagraph\paragraph
-  \renewcommand{\paragraph}{
-    \@ifstar
-      \xxxParagraphStar
-      \xxxParagraphNoStar
-  }
-  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
-  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
+  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
 \fi
 \ifx\subparagraph\undefined\else
   \let\oldsubparagraph\subparagraph
-  \renewcommand{\subparagraph}{
-    \@ifstar
-      \xxxSubParagraphStar
-      \xxxSubParagraphNoStar
-  }
-  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
-  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
+  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
-\makeatother
 
 
 \providecommand{\tightlist}{%
@@ -81,17 +67,15 @@
 \makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
-\newsavebox\pandoc@box
-\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
-  \sbox\pandoc@box{#1}%
-  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
-  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
-  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
-  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
-  \else\usebox{\pandoc@box}%
-  \fi%
-}
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
 % Set default figure placement to htbp
+\makeatletter
 \def\fps@figure{htbp}
 \makeatother
 % definitions for citeproc citations
@@ -159,6 +143,8 @@
 \newcommand{\ca}{$C_\mathrm{a}$}
 \newcommand{\caequals}[1]{$C_\mathrm{a} = \qty{#1}{\micro\mol\raiseto{-1}\mol}$}
 \newcommand{\cabetween}[2]{#1 < $C_\mathrm{a} < \qty{#2}{\micro\mol\raiseto{-1}\mol}$}
+\newcommand{\gias}{$g_\text{ias}$}
+\newcommand{\gmax}{$g_\text{max}$}
 \newcommand{\gmaxratio}{$g_\text{max,ratio}$}
 \newcommand{\gmaxshade}{$g_\text{max,shade}$}
 \newcommand{\gmaxsun}{$g_\text{max,sun}$}
@@ -212,13 +198,15 @@
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
-
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
 \usepackage{bookmark}
 
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
-  pdftitle={Developmental plasticity to high light intensity amplifies the advantage of amphistomous leaves},
+  pdftitle={Plasticity and adaptation to high light intensity amplify the advantage of amphistomous leaves},
   pdfauthor={Christopher D. Muir\^{}\{1,2*\}; Wei Shen Lim\^{}\{1\}; Dachuan Wang\^{}\{1,2\}},
   colorlinks=true,
   linkcolor={blue},
@@ -227,8 +215,7 @@
   urlcolor={Blue},
   pdfcreator={LaTeX via pandoc}}
 
-
-\title{Developmental plasticity to high light intensity amplifies the
+\title{Plasticity and adaptation to high light intensity amplify the
 advantage of amphistomous leaves}
 \author{Christopher D. Muir\(^{1,2*}\) \and Wei Shen
 Lim\(^{1}\) \and Dachuan Wang\(^{1,2}\)}
@@ -236,7 +223,6 @@ Lim\(^{1}\) \and Dachuan Wang\(^{1,2}\)}
 
 \begin{document}
 \maketitle
-
 
 \begin{center}
 $^1$School of Life Sciences, University of Hawaiʻi, Mānoa, Hawaiʻi, USA\\
@@ -261,34 +247,34 @@ supply or demand. We used a recently developed method to quantify
 amphistomy advantage, the photosynthetic rate of an amphistomatous leaf
 relative to an otherwise identical hypostomatous leaf, in 29 diverse
 populations representing 14 species of wild tomatoes (\emph{Solanum}
-sect. \emph{Lycopersicon} and sect. \emph{Lycopersicoides}). Plant grown
-under high light intensity benefit more in terms of CO\(_2\) assimilated
-for a given stomatal conductance than plants grown under low light,
-regardless of measurement light intensity or native light habitat.
-Developmental plasticity in leaf thickness and/or density, an adaptive
-response to optimize light interception, likely affects CO\(_2\)
-diffusion within the leaf, altering amphistomy advantage as a byproduct.
-Developmental plasticity may therefore play an important and previously
-unnoticed role in explaining the adaptive significance of amphistomy and
-the distribution of amphistomatous leaves in nature.
+sect. \emph{Lycopersicon} and sect. \emph{Lycopersicoides}). Plants
+grown under high light intensity benefit more in terms of CO\(_2\)
+assimilated for a given stomatal conductance than plants grown under low
+light, regardless of measurement light intensity. Furthermore,
+populations native to open habitats tend to benefit more from amphistomy
+compared to those from more closed habitats. Developmental plasticity
+and adaptation of leaves to high light intensity likely play a combined
+role in explaining the adaptive significance and distribution of
+amphistomy in nature.
 
 \subsection{Main text}\label{main-text}
 
 Stomata are microscopic pores on the surfaces of leaves and other
 photosynthetic organs formed by a pair of guard cells. They are
-essential for balancing carbon gained per unit water lost and permitted
-vascular plants to grow tall on land by enabling access to CO\(_2\) for
-photosynthetic carbon assimilation while preventing hydraulic failure in
-variable environments (\emph{1}--\emph{3}). Optimal stomatal function
-depends on both dynamic changes in aperture on the scale of minutes to
-hours, as well as static anatomy determined by developmental plasticity
-and constitutive genetic differences (\emph{4}--\emph{6}). Understanding
-how stomata respond to environmental change over daily, developmental,
-and evolutionary time is important for understanding adaptation
-(\emph{1}, \emph{7}--\emph{12}), predicting paleoclimate from fossil
-cuticles (\emph{13}--\emph{15}), and improving crops (\emph{16}).
-Stomatal function contributes to global carbon and water cycles
-(\emph{17}) and therefore predicting future climate (\emph{18}).
+essential for balancing carbon gained per unit water lost and were an
+essential innovation in vascular plants, permitting them to grow tall on
+land by enabling access to CO\(_2\) for photosynthetic carbon
+assimilation while preventing hydraulic failure in variable environments
+(\emph{1}--\emph{3}). Optimal stomatal function depends on both dynamic
+changes in aperture on the scale of minutes to hours, as well as static
+anatomy determined by developmental plasticity and constitutive genetic
+differences (\emph{4}--\emph{6}). Understanding how stomata respond to
+environmental change over daily, developmental, and evolutionary time is
+important for understanding adaptation (\emph{1}, \emph{7}--\emph{12}),
+predicting paleoclimate from fossil cuticles (\emph{13}--\emph{15}), and
+improving crops (\emph{16}). Stomatal function contributes to global
+carbon and water cycles (\emph{17}) and therefore predicting future
+climate (\emph{18}).
 
 Despite extensive theoretical and empirical progress understanding
 stomata function and anatomy from molecular to ecosystem levels, the
@@ -297,85 +283,79 @@ unsolved problem in leaf structure-function relationships
 (\emph{19}--\emph{26}). Amphistomatous leaves develop abaxial and
 adaxial stomata whose aperture can be independently regulated
 (\emph{27}--\emph{31}) to control gas exchange through each surface. All
-else being equal, gas exchange through stomata on both surfaces
-increases CO\(_2\) supply to chloroplasts by providing a second parallel
-pathway through leaf intercellular airspaces, enhancing photosynthesis
-(\emph{20}, \emph{32}). The extent to which amphistomy increases
-CO\(_2\) supply depends on resistance to diffusion in intercellular
-airspaces. This resistance can be low in thin, porous, amphistomatous
-leaves (\emph{28}, \emph{33}), but may be more substantial in thick,
-dense, hypostomatous leaves (\emph{34}). Amphistomatous leaves also lose
-more water through evaporation because of a second boundary layer
-conductance (\emph{35}), but the additional carbon gain should be enough
-to offset this cost in most realistic scenarios (\emph{36}).
+else being equal, simultaneous gas exchange through stomata on both
+surfaces increases CO\(_2\) supply to chloroplasts by providing a second
+parallel pathway through leaf intercellular airspaces, enhancing
+photosynthesis (\emph{20}, \emph{32}). The extent to which amphistomy
+increases CO\(_2\) supply depends on resistance to diffusion in
+intercellular airspaces. This resistance can be low in thin, porous,
+amphistomatous leaves (\emph{28}, \emph{33}), but may be more
+substantial in thick, dense, hypostomatous leaves (\emph{34}). We refer
+to the intercellular airspace conductance (\gias), the inverse of
+resistance. Amphistomatous leaves also lose more water through
+evaporation because of a second boundary layer conductance (\emph{35}),
+but the additional carbon gain should be enough to offset this cost in
+most realistic scenarios (\emph{36}).
 
 The paradoxical fact is that, despite the photosynthetic benefit, most
 leaves are not amphistomatous. Many vertically oriented and/or
 isobilateral leaves are amphistomatous (\emph{25}). But among
-dorsiventral leaves, herbaceous plants in open, high light habitats tend
-to have have amphistomatous leaves (\emph{22}, \emph{39}--\emph{44}).
-Most other leaves, except those from aquatic habitats, are
-hypostomatous, producing stomata only on the lower, abaxial surface.
-Even resupinate leaves develop stomata on the lower, albeit adaxial
-surface (\emph{45}), suggesting that leaf orientation (lower vs.~upper)
-rather than leaf polarity (abaxial vs.~adaxial) is causal. The
-covariation between stomatal density ratio and light habitat is both
-qualitative and quantitative. A higher proportion of sun leaves are
-amphistomatous (\emph{39}) and the proportion of stomata on the upper,
-adaxial surface increases with light (\emph{42}, \emph{43}). Resolving
-why high light intensity favors amphistomatous dorsivental leaves is an
-important first step toward understanding variation in stomatal density
-ratio and leaf structure-function relationships more generally.
+dorsiventral leaves, it is primarily herbaceous plants in open, high
+light habitats that tend to have amphistomatous leaves (\emph{22},
+\emph{39}--\emph{44}). Most other leaves, except those from aquatic
+habitats, are hypostomatous, producing stomata only on the lower,
+abaxial surface. Even resupinate leaves develop stomata on the lower,
+albeit adaxial surface (\emph{45}), suggesting that leaf orientation
+(lower vs.~upper) rather than leaf polarity (abaxial vs.~adaxial) is
+causal. The covariation between stomatal density ratio and light habitat
+is both qualitative and quantitative. A higher proportion of sun leaves
+are amphistomatous (\emph{39}) and the proportion of stomata on the
+upper, adaxial surface increases with light (\emph{42}, \emph{43}).
+Resolving why high light intensity favors amphistomatous dorsivental
+leaves is an important first step toward understanding variation in
+stomatal density ratio and leaf structure-function relationships more
+generally.
 
 The overarching hypothesis is that leaves with greater stomatal density
 ratio are more common in open, sunny habitats because they increase
 photosynthesis most in those circumstances. An amphistomatous leaf
 increases photosynthetic carbon gain compared to an otherwise identical
 hypostomatous leaf by increasing conductance through the leaf
-intercellular airspaces and boundary layers; the additional water loss
-through a second boundary layer is typically small (\emph{35}). We
-quantify this benefit as the amphistomy advantage (\aax{}), the
-log-response ratio of photosynthesis in an amphistomatous leaf compared
-to an otherwise identical pseudohypostomatous leaf (\emph{20},
-\emph{46}). Why would \aax{} be greater in sun than shade? We consider
-three nonmutually exclusive hypotheses that we classify as
-`acclimatory', `plastic', and `constitutive' (Fig.~\ref{fig-concept}).
+intercellular airspaces and boundary layers. We quantify this benefit as
+the amphistomy advantage (\aax{}), the log-response ratio of
+photosynthesis in an amphistomatous leaf compared to an otherwise
+identical pseudohypostomatous leaf (\emph{20}, \emph{46}). Why would
+\aax{} be greater in sun than shade? We consider three nonmutually
+exclusive hypotheses that we classify as `acclimation', `plasticity',
+and `constitutive' (Fig.~\ref{fig-concept}).
 
-\emph{Acclimatory hypothesis}: Photosynthetic induction to high light
+\emph{Acclimation hypothesis}: Photosynthetic induction to high light
 intensity typically involves increases in total leaf stomatal
 conductance (increased CO\(_2\) supply), the concentration of active
-Rubisco, and electron transport capacity (increased CO\(_2\) demand). A
-one-dimensional circuit model using the Farquhar-von Caemmerer-Berry
-biochemical model of C\(_3\) photosynthesis (\emph{47}) shows that both
-increased stomatal conductance and Rubisco activity should increase
-\aax{}, all else being equal (Supporting Information). If the
-acclimatory hypothesis is correct, we predict that
+Rubisco, and electron transport capacity (increased CO\(_2\) demand). If
+the acclimation hypothesis is correct, we predict that
 \(\aahigh{} > \aalow{}\) for all populations regardless of native
 habitat or growth environment.
 
 \emph{Plasticity hypothesis}: Individuals of the same genotype often
 develop dramatically different leaves in sun and shade conditions
-(\emph{48}). Plastic responses are likely adaptations to optimize
+(\emph{47}). Plastic responses are likely adaptations to optimize
 photosynthesis at different light intensities in variable environments
-(\emph{49}). Plastic changes in leaf anatomy and biochemistry could
+(\emph{48}). Plastic changes in leaf anatomy and biochemistry could
 modulate \aax{} as a byproduct. Thicker or less porous leaves, both of
 which are associated with high leaf mass per area (LMA), will have lower
-\(g_\mathrm{ias}\); leaves with increased total stomatal density and
-photosynthetic capacity have greater potential CO\(_2\) supply and
-demand. Under the plastic hypothesis, we predict that
-\(\aasun{} > \aashade{}\) for all populations and light intensities.
-Secondarily, \(\aasun{}\) and \gmaxsun{} should also be positively
-associated with native light habitat if genotypes adapted to sunny, open
-habitats if they can express a phenotype best adapted to that
-environment when leaves develop under high light intensity.
+\gias; leaves with increased total stomatal density and photosynthetic
+capacity have greater potential CO\(_2\) supply and demand. Under the
+plasticity hypothesis, we predict that \(\aasun{} > \aashade{}\) for all
+populations and light intensities.
 
 \emph{Constitutive hypothesis}: In environments that are relatively
 constant or where environmental change cannot be anticipated by a
 reliable cue, natural selection will favor constitutive expression of
 optimal phenotypes. We therefore predict genotypes from more sunny, open
-habitats will have consistently greater \aax under also measurement and
+habitats will have consistently greater \aax{} under all measurement and
 growth light intensities. For herbaceous plants, light intensity is
-largely a function of the tree canopy (\emph{50}). Herbs growing in the
+largely a function of the tree canopy (\emph{49}). Herbs growing in the
 open will regularly experience high light intensity; herbs growing under
 a forest canopy will often experience low light intensity.
 
@@ -383,7 +363,7 @@ a forest canopy will often experience low light intensity.
 
 \centering{
 
-\includegraphics[width=2.24in,height=\textheight,keepaspectratio]{../figures/amphisomy draft 2024-03-28.jpg}
+\includegraphics[width=2.24in,height=\textheight]{../figures/amphisomy draft 2024-03-28.jpg}
 
 }
 
@@ -402,7 +382,7 @@ intensity or growth light intensity.}
 
 The primary directional predictions for each hypothesis are summarized
 in Table~\ref{tbl-hypotheses}; detailed predictions for results that
-would indicate support for multiple hypotheses are in
+would indicate simultaneous support for multiple hypotheses are in
 Table~\ref{tbl-predictions}.
 
 \begin{table}
@@ -422,7 +402,7 @@ vs.~shade), and native plant area index (PAI) would affect \aax{}.
 \toprule
 Hypothesis & Measurement light intensity & Growth light intensity & Native PAI\\
 \midrule
-acclimatory & $\mathrm{AA}_{2000} > \mathrm{AA}_{150}$ & $\mathrm{AA}_{\text{sun}} = \mathrm{AA}_{\text{shade}}$ & $\operatorname{cor}(\mathrm{PAI}, \mathrm{AA}) = 0$\\
+acclimation & $\mathrm{AA}_{2000} > \mathrm{AA}_{150}$ & $\mathrm{AA}_{\text{sun}} = \mathrm{AA}_{\text{shade}}$ & $\operatorname{cor}(\mathrm{PAI}, \mathrm{AA}) = 0$\\
 plastic & $\mathrm{AA}_{2000} = \mathrm{AA}_{150}$ & $\mathrm{AA}_{\text{sun}} > \mathrm{AA}_{\text{shade}}$ & $\operatorname{cor}(\mathrm{PAI}, \mathrm{AA}) = 0$\\
 constitutive & $\mathrm{AA}_{2000} = \mathrm{AA}_{150}$ & $\mathrm{AA}_{\text{sun}} = \mathrm{AA}_{\text{shade}}$ & $\operatorname{cor}(\mathrm{PAI}, \mathrm{AA}) > 0$\\
 \bottomrule
@@ -433,31 +413,32 @@ constitutive & $\mathrm{AA}_{2000} = \mathrm{AA}_{150}$ & $\mathrm{AA}_{\text{su
 \end{table}%
 
 We tested these hypotheses by comparing \aax{} among amphistomatous wild
-tomato species (\emph{51}) from different native light habitats, grown
-under simulated sun and shade light treatments, and measured under
-contrasting light intensities (low and high). We measured \aax{} on 572
-individual plants from 29 populations (average of 9.86 replicates per
-light treatment) using a recently developed method (\emph{46}). With
-this method, we directly compare the photosynthetic rate of an untreated
-amphistomatous leaf to that of the same leaf with gas exchange blocked
-through the adaxial (upper) surface by transparent plastic, which we
-refer to as `pseudohypostomy'. To compare amphi- and pseudohypostomatous
-leaves at identical whole-leaf \(g_\text{sc}\), we measure \(A\) over a
-range of \(g_\text{sc}\), inducing stomatal opening and closure by
-modulating humidity (see Materials and Methods for further details). We
-estimated `amphistomy advantage' (\aax) \emph{sensu} (\emph{20}), but
-with modifications previously described in (\emph{46}) and here
-(Materials and Methods). The native light intensity was represented by
-plant area index (PAI \(\unit{\meter\squared\per\meter\squared}\)),
-estimated using a global gridded data set derived from the Global
-Ecosystem Dynamics Investigation {[}GEDI; (\emph{52}){]} and
-georeferenced accession collection information from the Tomato Genetics
-Resource Center. The growth light intensities were \ppfdequals{761} (sun
-treatment) and \ppfdqty{115} (shade treatment) while all other
-environment conditions were nearly identical (see Materials and
-Methods). The high and low measurement light intensities were
-\ppfdequals{2000} (97.8:2.24 red:blue) and \ppfdequals{150} (87.0:13.0
-red:blue), respectively.
+tomato species (Table~\ref{tbl-populations}; Figure~\ref{fig-sr-rxnorm};
+(\emph{50})) from different native light habitats, grown under simulated
+sun and shade light treatments, and measured under contrasting light
+intensities (low and high). We measured \aax{} on 572 individual plants
+from 29 populations (average of 9.86 replicates per light treatment)
+using a recently developed method (\emph{46}). With this method, we
+directly compare the photosynthetic rate of an untreated amphistomatous
+leaf to that of the same leaf with gas exchange blocked through the
+adaxial (upper) surface by transparent plastic, which we refer to as
+`pseudohypostomy'. To compare amphi- and pseudohypostomatous leaves at
+identical whole-leaf stomatal conductance (\gsw), we measure \(A\) over
+a range of \gsw, inducing stomatal opening and closure by modulating
+humidity (see Materials and Methods for further details). We estimated
+`amphistomy advantage' (\aax) \emph{sensu} (\emph{20}), but with
+modifications previously described in (\emph{46}) and here (Materials
+and Methods). The native light intensity was represented by plant area
+index (PAI \(\unit{\meter\squared\per\meter\squared}\)), estimated using
+a global gridded data set derived from the Global Ecosystem Dynamics
+Investigation {[}GEDI; (\emph{51}){]} and georeferenced accession
+collection information from the Tomato Genetics Resource Center
+(Table~\ref{tbl-populations}). The growth light intensities were
+\ppfdequals{761} (sun treatment) and \ppfdqty{115} (shade treatment)
+while all other environment conditions were nearly identical (see
+Materials and Methods). The high and low measurement light intensities
+were \ppfdequals{2000} (97.8:2.24 red:blue) and \ppfdequals{150}
+(87.0:13.0 red:blue), respectively.
 
 Consistent with biophysical theory of CO\(_2\) diffusion within leaves,
 \(\aay{} > 0\) for all populations (Fig.~\ref{fig-aa}A). Bayesian
@@ -470,24 +451,21 @@ populations in the shade treatment was 0.041 (range: 0.007--0.113; 19 of
 29 populations significant); however, the same populations grown at high
 light intensity showed a mean \aax{} of 0.052 (range: 0.020--0.120; 20
 of 29 populations significant). Contrary to the predictions of the
-assimilatory hypothesis, \aax{} was greater in all populations under low
+acclimation hypothesis, \aax{} was greater in all populations under low
 measurement light intensity for both sun and shade grown plants. The
-effect of low light on \aax{} was more pronounced in the sun-grown
-plants, where \aax{} was significantly greater under low measurement
-light intensity in 13 of 29 populations compared to 12 populations for
-shade-grown plants. The overall average \aax{} of shade and sun grown
-plants measured under low light intensity was 0.064 (range:
-0.022--0.137; 28 of 29 populations significant) and 0.100 (range:
-0.049--0.206; 27 of 29 populations significant), respectively. There was
-a modest tendency for populations from more open habitats (lower PAI) to
-exhibit greater \aax{} and the slope was significantly different than 0
-in 3 of the 4 treatment combinations (Fig.~\ref{fig-aa}B).
+overall average \aax{} of shade and sun grown plants measured under low
+light intensity was 0.064 (range: 0.022--0.137; 28 of 29 populations
+significant) and 0.100 (range: 0.049--0.206; 27 of 29 populations
+significant), respectively. There was a modest tendency for populations
+from more open habitats (lower PAI) to exhibit greater \aax{} and the
+slope was significantly different than 0 in 3 of the 4 treatment
+combinations (Fig.~\ref{fig-aa}B).
 
 \begin{figure}
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-aa-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-aa-1.pdf}
 
 }
 
@@ -501,7 +479,7 @@ in 3 of the 4 treatment combinations (Fig.~\ref{fig-aa}B).
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-aacap-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-aacap-1.pdf}
 
 }
 
@@ -535,24 +513,24 @@ and LMA,
 AA?}\label{marker---where-is-evidence-for-relationship-between-pai-and-lma-aa}
 
 The pattern of \aax{} across wild tomatoes strongly supports the
-plasticity hypothesis, argues against the acclimatory hypothesis, and
+plasticity hypothesis, contradicts the acclimation hypothesis, and
 provides modest support for the constitutive hypothesis. Plastic changes
 in leaf thickness and/or packing density, summarized by the bulk leaf
 mass per area (LMA), may mediate the effect of growth light intensity on
 \aax{}. LMA increased in sun grown plants in all populations by an
-average of 123\% {[}95\% CI: 42.9 to 256\%{]}, similar to plastic
-responses in many species (\emph{48}). While LMA is weakly, albeit
-significantly, associated with individual-level \aax{}
+average of 123\% {[}95\% CI: 42.9 to 256\%{]}, qualitatively similar to
+plastic responses in many species (\emph{47}). While LMA is weakly,
+albeit significantly, associated with individual-level \aax{}
 (Fig.~\ref{fig-lma_aa}), the effect of growth light intensity on \aax{}
 is still predictive based on model comparison (Table~\ref{tbl-aa_loo1}).
 In contrast, LMA did not mediate an indirect effect of native PAI on
-\aax{} (Table/Figure). Many anatomical traits underlie LMA (\emph{53})
+\aax{} (Table/Figure). Many anatomical traits underlie LMA (\emph{52})
 and future research will be needed identify which particular traits,
 such as leaf thickness or mesophyll porosity, are responsible for
 mediating \aax{}. The fact that the \aax{} of sun plants was greater
 under low measurement light intensity supports a long-standing
 hypothesis that resistance to CO\(_2\) diffusion is greater in the upper
-than lower portions of the leaf interior (\emph{54}). At low light
+than lower portions of the leaf interior (\emph{53}). At low light
 intensity, the bulk properties of the leaf are weighed toward the upper
 palisade where most light is intercepted. Hence, amphistomy may,
 unexpectedly, be particularly beneficial for sun leaves experiencing
@@ -566,7 +544,7 @@ these limitations.
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-lma_aa-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-lma_aa-1.pdf}
 
 }
 
@@ -578,22 +556,20 @@ points are colored by growth light treatment. The solid line is the
 posterior median of the linear regression of individual-level LMA on
 \(\aahigh\) with the shaded region showing the 95\% confidence ribbon;
 the dashed line is the same for \(\aalow\). Confidence intervals for
-each population estimate and individual-level estimates are omitted for
-visual clarity.}
+each population estimate were omitted for visual clarity.}
 
 \end{figure}%
 
 We conclude that developmental plasticity, as opposed to acclimation or
-adaptation to open habitats, may explain the explain the long-standing
-observation that amphistomatous leaves are more common in sunny
-habitats, at least among herbaceous plants including crop relatives. Our
-results advance existing explanations by showing high light intensity
-\emph{per se} does not increase the benefit of amphistomy, but rather
-that anatomical and biochemical change associated with higher light
-intensity modulate \aax{}. Developmental plasticity needs to be
-considered when interpreting phylogenetic comparative analyses of
-adaptation, because plastic differences may be mistaken for genetic
-differences.
+adaptation to open habitats, may explain the long-standing observation
+that amphistomatous leaves are more common in sunny habitats, at least
+among herbaceous plants including crop relatives. Our results advance
+existing explanations by showing high light intensity \emph{per se} does
+not increase the benefit of amphistomy, but rather that anatomical and
+biochemical change associated with higher light intensity modulate
+\aax{}. Developmental plasticity needs to be considered when
+interpreting phylogenetic comparative analyses of adaptation, because
+plastic differences may be mistaken for genetic differences.
 
 maybe this wording is better: Amphistomy likely plays a significant, but
 under appreciated, role in the carbon and water balance of plant groups
@@ -613,7 +589,7 @@ assumptions, we estimate that hypostomatous leaves could achieve the
 same \(A\) with X to X\% less water loss if they were amphistomatous
 (Table S9). Ours is the first experimental demonstration that amphistomy
 is beneficial for sun leaves because of plastic changes, but future
-research needs to estimates the tradeoffs associated with amphistomatous
+research needs to estimate the tradeoffs associated with amphistomatous
 leaves in order to fully explain their rarity among many woody plants
 and shade-tolerant herbs.
 
@@ -997,16 +973,8 @@ photosynthesis more in coastal than montane plants of {Hawaiian} ʻilima
 (\emph{{Sida} fallax})}. \emph{American Journal of Botany} \textbf{111},
 e16284 (2024).}
 
-\bibitem[\citeproctext]{ref-farquhar_biochemical_1980}
-\CSLLeftMargin{47. }%
-\CSLRightInline{G. D. Farquhar, S. von Caemmerer, J. A. Berry,
-\href{https://doi.org/10.1007/BF00386231}{A biochemical model of
-photosynthetic {CO}\(_{\textrm{2}}\) assimilation in leaves of
-{C}\(_{\textrm{3}}\) species}. \emph{Planta} \textbf{149}, 78--90
-(1980).}
-
 \bibitem[\citeproctext]{ref-poorter_metaanalysis_2019}
-\CSLLeftMargin{48. }%
+\CSLLeftMargin{47. }%
 \CSLRightInline{H. Poorter, Ü. Niinemets, N. Ntagkas, A. Siebenkäs, M.
 Mäenpää, S. Matsubara, T. L. Pons,
 \href{https://doi.org/10.1111/nph.15754}{A meta‐analysis of plant
@@ -1015,7 +983,7 @@ whole plant performance}. \emph{New Phytologist} \textbf{223},
 1073--1105 (2019).}
 
 \bibitem[\citeproctext]{ref-givnish_common-garden_2014}
-\CSLLeftMargin{49. }%
+\CSLLeftMargin{48. }%
 \CSLRightInline{T. J. Givnish, R. A. Montgomery,
 \href{https://doi.org/10.1098/rspb.2013.2944}{Common-garden studies on
 adaptive radiation of photosynthetic physiology among {Hawaiian}
@@ -1023,35 +991,35 @@ lobeliads}. \emph{Proceedings of the Royal Society B: Biological
 Sciences} \textbf{281}, 20132944--20132944 (2014).}
 
 \bibitem[\citeproctext]{ref-engelbrecht_evaluation_2001}
-\CSLLeftMargin{50. }%
+\CSLLeftMargin{49. }%
 \CSLRightInline{B. M. J. Engelbrecht, H. M. Herz,
 \href{https://doi.org/10.1017/S0266467401001146}{Evaluation of different
 methods to estimate understorey light conditions in tropical forests}.
 \emph{Journal of Tropical Ecology} \textbf{17}, 207--224 (2001).}
 
 \bibitem[\citeproctext]{ref-peralta_taxonomy_2008}
-\CSLLeftMargin{51. }%
+\CSLLeftMargin{50. }%
 \CSLRightInline{I. E. Peralta, D. M. Spooner, S. Knapp, Taxonomy of wild
 tomatoes and their relatives (\emph{solanum} sect.
 \emph{Lycopersicoides}, sect. \emph{Juglandifolia}, sect.
 \emph{Lycopersicon}; {Solanaceae}). \textbf{84} (2008).}
 
 \bibitem[\citeproctext]{ref-burns_multi-resolution_2024}
-\CSLLeftMargin{52. }%
+\CSLLeftMargin{51. }%
 \CSLRightInline{P. Burns, C. R. Hakkenberg, S. J. Goetz,
 \href{https://doi.org/10.1038/s41597-024-03668-4}{Multi-resolution
 gridded maps of vegetation structure from {GEDI}}. \emph{Scientific
 Data} \textbf{11}, 881 (2024).}
 
 \bibitem[\citeproctext]{ref-john_anatomical_2017}
-\CSLLeftMargin{53. }%
+\CSLLeftMargin{52. }%
 \CSLRightInline{G. P. John, C. Scoffoni, T. N. Buckley, R. Villar, H.
 Poorter, L. Sack, \href{https://doi.org/10.1111/ele.12739}{The
 anatomical and compositional basis of leaf mass per area}. \emph{Ecology
 Letters} \textbf{20}, 412--425 (2017).}
 
 \bibitem[\citeproctext]{ref-jones_effects_1972}
-\CSLLeftMargin{54. }%
+\CSLLeftMargin{53. }%
 \CSLRightInline{H. G. Jones, R. O. Slatyer,
 \href{https://doi.org/10.1071/BI9720443}{Effects of {Intercellular}
 {Resistances} on {Estimates} of the {Intracellular} {Resistance} to
@@ -1059,7 +1027,7 @@ Letters} \textbf{20}, 412--425 (2017).}
 Biological Sciences} \textbf{25}, 443 (1972).}
 
 \bibitem[\citeproctext]{ref-schoch_dependence_1980}
-\CSLLeftMargin{55. }%
+\CSLLeftMargin{54. }%
 \CSLRightInline{P.-G. Schoch, C. Zinsou, M. Sibi,
 \href{https://doi.org/10.1093/jxb/31.5.1211}{Dependence of the stomatal
 index on environmental factors during stomatal differentiation in leaves
@@ -1067,26 +1035,32 @@ of \emph{{Vigna} sinensis} {L}.: 1. {Effect} of light intensity}.
 \emph{Journal of Experimental Botany} \textbf{31}, 1211--1216 (1980).}
 
 \bibitem[\citeproctext]{ref-sack_developmental_2016}
-\CSLLeftMargin{56. }%
+\CSLLeftMargin{55. }%
 \CSLRightInline{L. Sack, T. N. Buckley,
 \href{https://doi.org/10.1104/pp.16.00476}{The developmental basis of
 stomatal density and flux}. \emph{Plant Physiology} \textbf{171},
 2358--2363 (2016).}
 
 \bibitem[\citeproctext]{ref-mott_amphistomy_1991}
-\CSLLeftMargin{57. }%
+\CSLLeftMargin{56. }%
 \CSLRightInline{K. A. Mott, O. Michaelson, Amphistomy as an adaptation
 to high light intensity in \emph{{Ambrosia} cordifolia} ({Compositae}).
 \emph{American Journal of Botany} \textbf{78}, 76--79 (1991).}
 
 \bibitem[\citeproctext]{ref-schindelin_fiji_2012}
-\CSLLeftMargin{58. }%
+\CSLLeftMargin{57. }%
 \CSLRightInline{J. Schindelin, I. Arganda-Carreras, E. Frise, V. Kaynig,
 M. Longair, T. Pietzsch, S. Preibisch, C. Rueden, S. Saalfeld, B.
 Schmid, J.-Y. Tinevez, D. J. White, V. Hartenstein, K. Eliceiri, P.
 Tomancak, A. Cardona, \href{https://doi.org/10.1038/nmeth.2019}{Fiji: An
 open-source platform for biological-image analysis}. \emph{Nature
 Methods} \textbf{9}, 676--682 (2012).}
+
+\bibitem[\citeproctext]{ref-monteith_principles_2013}
+\CSLLeftMargin{58. }%
+\CSLRightInline{J. L. Monteith, M. H. Unsworth, \emph{Principles of
+Environmental Physics: Plants, Animals, and the Atmosphere}
+(Elsevier/Academic Press, Amsterdam ; Boston, 4th ed., 2013).}
 
 \bibitem[\citeproctext]{ref-stan_development_team_stan_2025}
 \CSLLeftMargin{59. }%
@@ -1155,7 +1129,7 @@ model evaluation using leave-one-out cross-validation and {WAIC}}.
 We compared \aax{} among 29 ecologically diverse populations of wild
 tomato, including representatives of all described species of
 \emph{Solanum} sect. \emph{Lycopersicon} and sect.
-\emph{Lycopersicoides} (\emph{51}) and the cultivated tomato \emph{S.
+\emph{Lycopersicoides} (\emph{50}) and the cultivated tomato \emph{S.
 lycopersicum} var. \emph{lycopersicum} (Table~\ref{tbl-populations}).
 Due to constraints on growth space and time, we spread out measurements
 over 61.1 weeks from August 29, 2022 to October 31, 2023. Replicates
@@ -1168,9 +1142,9 @@ phylogeny?{]}
 
 \caption{\label{tbl-populations}Accession information of \emph{Solanum}
 populations used in this study. The species name, accession number,
-collection latitude, longitude, elevation, and daily solar radiation
-estimated using the SPLASH algorithm (see `Climate data'). TGRC: Tomato
-Genetics Resource Center; PAI: Plant area index.}
+collection latitude, longitude, elevation, and plant area index (PAI)
+from the Global Ecosystem Dynamics Investigation (see `Climate data').
+TGRC: Tomato Genetics Resource Center.}
 
 \tabularnewline
 
@@ -1292,7 +1266,7 @@ the cotyledons during early vegetative growth. This typically meant that
 plants had grown in light treatments for \(\approx\) 4 weeks, ensuring
 they had time to sense and respond developmentally to the light
 intensity of the treatment rather than the seedling conditions
-(\emph{55}). Shade plants grew slower than sun plants, hence leaves at
+(\emph{54}). Shade plants grew slower than sun plants, hence leaves at
 the same developmental stage were measured on chronologically older
 plants in the shade treatment. In some sun plants, we had to use leaves
 higher on the stem because short internodes made lower leaves
@@ -1301,10 +1275,7 @@ leaflets in 82.6\% of cases, but used the lateral leaflet closest to the
 terminal leaflet when it was damaged or difficult to clamp into the gas
 exchange chamber. When a leaflet was damaged during gas exchange
 measurements, we collected anatomical data from the nearest leaflet on
-the same leaf (1.58)\%. We measured chlorophyll concentration index
-(CCI) using a chrolophyll concentration meter (MC-100, Apogee
-Instruments, Logan, Utah, USA) on the lamina of focal leaflets before
-gas exchange measurements at the same time we measured leaf temperature.
+the same leaf (1.58\% of leaves).
 
 \paragraph{Amphistomy advantage}\label{amphistomy-advantage}
 
@@ -1330,7 +1301,7 @@ photosynthetic rate (\(A\)) and stomatal conductance to CO\(_2\) (\gsw)
 at ambient CO\(_2\) (\caequals{415}) and \tleafequals{25.0}. The
 irradiance of the light source in the pseudohypo leaf was higher because
 the propafilm reduces transmission. To compensate for reduced
-transmission, we increased incident \ppfd for pseudohypo leaves by a
+transmission, we increased incident \ppfd{} for pseudohypo leaves by a
 factor 1/0.91, the inverse of the measured transmissivity of the
 propafilm. We also set the stomatal conductance ratio, for purposes of
 calculating boundary layer conductance, to 0 for pseudohypo leaves
@@ -1359,7 +1330,7 @@ chamber humidity after the leaf had acclimated to high humidity. All
 other environmental conditions in the leaf chamber remained the same. We
 logged data until \gsw{} reached its nadir. We then acclimated the leaf
 to low light (\ppfdequals{150}) and \rhequals{70} before inducing
-stomatal closure with low \rh and logging data as described above.
+stomatal closure with low \rh{} and logging data as described above.
 
 \paragraph{Light-saturated photosynthetic
 rate}\label{light-saturated-photosynthetic-rate}
@@ -1377,33 +1348,51 @@ we measured \(A\) at
 
 We estimated the stomatal density and size on ab- and adaxial leaf
 surfaces from all leaves, using guard cell length as a proxy for
-stomatal size since it proportional to maximum conductance (\emph{56}).
-We made surface impressions of leaf lamina from the same area used for
-gas exchange measurements using a-silicone impression material (Zhermack
-elite HD+, light body, fast set, Rovigo, Italy). We applied clear nail
-polish to make positive replicas of the impression. After nail polish
-dried, we mounted replicas on a microscope slide using transparent tape
-(\emph{57}). We digitized a portion of each leaf surface replica using a
-brightfield microscope (Leica DM2000, Wetzlar, Germany). We counted and
-measured guard cell length on all stomata using the FIJI implementation
-of ImageJ2 version 2.3.0 (\emph{58}), then divided the count by the
-visible leaf area (\(\qty{0.890}{\raiseto{2}\milli\meter}\)) to estimate
-stomatal density.
+stomatal size since it is proportional to maximum conductance
+(\emph{55}). We made surface impressions of leaf lamina from the same
+area used for gas exchange measurements using a-silicone impression
+material (Zhermack elite HD+, light body, fast set, Rovigo, Italy). We
+applied clear nail polish to make positive replicas of the impression.
+After nail polish dried, we mounted replicas on a microscope slide using
+transparent tape (\emph{56}). We digitized a portion of each leaf
+surface replica using a brightfield microscope (Leica DM2000, Wetzlar,
+Germany). We counted and measured guard cell length on all stomata using
+the FIJI implementation of ImageJ2 version 2.3.0 (\emph{57}), then
+divided the count by the visible leaf area
+(\(\qty{0.890}{\raiseto{2}\milli\meter}\)) to estimate stomatal density.
+For each surface we calculated the anatomical maximum stomatal
+conductance (\gmax) at a reference leaf temperature of
+\(\qty{25}{\degreeCelsius}\) following (\emph{55}) as:
+
+\[g_\mathrm{max} = b m D_\mathrm{S} A_\mathrm{S}.\]
+
+The biophysical and morphological constants \(b\) and \(m\) are:
+
+\[b = \frac{D_\mathrm{wv}}{v},~\text{and}\]
+\[m = \frac{\pi c ^ 2}{j^{0.5} (4 h j + \pi c)},\]
+
+where \(D_\mathrm{wv}\) is the diffusion coefficient of water vapor in
+air and \(v\) is by the kinematic viscosity of dry air. We assumed
+\(D_\mathrm{wv} = \qty{2.49e-5}{\meter\squared\per\second}\) and
+\(v = \qty{2.24e-2}{\raiseto{3}\meter\per\mol}\) (\emph{58}). For
+kidney-shaped guard cells like those in wild tomatoes,
+\(c = h = j = 0.5\). The \gmaxratio{} is the \gmax{} of the adaxial
+surface divided by the sum total \gmax{} of both surfaces.
 
 \paragraph{Leaf mass per area}\label{leaf-mass-per-area}
 
 Leaf mass per area (LMA) is the dry mass divided by the leaflet area. We
 scanned fresh leaflets on a flat bed scanner (Epson V600, Los Alamitos,
 California. USA) and measured leaflet area from digital images using the
-FIJI implementation of ImageJ2 version 2.3.0 (\emph{58}). We dried
+FIJI implementation of ImageJ2 version 2.3.0 (\emph{57}). We dried
 leaves for 72 hours at \(\qty{74}{\degreeCelsius}\) in a food dehydrator
 (Cosori CP267-FD, Vesync Co., Anaheim, California, USA) and weighed
 using a benchtop analytical balance (Ohaus PR64 Analytical Balance,
-Parsippany, New Jersey, USA). In \(10.5\%\) we measured LMA on the
-adjacent leaflet because the focal leaflet was damaged or wilted while
-making surface impressions and we could not reliably estimate area. LMA
-data are missing from \(2.97\%\) of individuals because the area or mass
-was not recorded at all or recorded incorrectly.
+Parsippany, New Jersey, USA). In \(10.5\%\) of leaves we measured LMA on
+the adjacent leaflet because the focal leaflet was damaged or wilted
+while making surface impressions and we could not reliably estimate
+area. LMA data are missing from \(2.97\%\) of individuals because the
+area or mass was not recorded at all or recorded incorrectly.
 
 \subsubsection{\texorpdfstring{Cleaning \agcurve{}
 curves}{Cleaning  curves}}\label{cleaning-curves}
@@ -1520,19 +1509,19 @@ measured on consecutive days, a poor calibration or a damaged leaf could
 cause a large difference in \(A\) between days, which would appear as an
 extreme \aax{} value.
 
-\emph{Procedure}: We provionsally estimated \aax{} for each replicate by
-integrating over the range of \gsw{} values where amphi and pseudohypo
-\agcurve{} curves overlap. In this procedure, curve parameters were
-provisionally estimated using ordinary least squares with the
-\texttt{lm()} function in \emph{R}. We then used point estimates of
-\aax{} for each replicate as the response variable in a linear model
-with light treatment, light intensity, population, and all interactions
-as explanatory variables. This model was also fit using ordinary least
-squares with the \texttt{lm()} function in \emph{R}. We classified
-extreme \aax{} values as those with an absolute internal studentized
-residual \(> 3\). Because these values likely indicate significant
-measurement error or leaf damage, we removed \agcurve{} curves at both
-light intensities if either was classified as extreme.
+\emph{Procedure}: We provisionally estimated \aax{} for each replicate
+by integrating over the range of \gsw{} values where amphi and
+pseudohypo \agcurve{} curves overlap. In this procedure, curve
+parameters were provisionally estimated using ordinary least squares
+with the \texttt{lm()} function in \emph{R}. We then used point
+estimates of \aax{} for each replicate as the response variable in a
+linear model with light treatment, light intensity, population, and all
+interactions as explanatory variables. This model was also fit using
+ordinary least squares with the \texttt{lm()} function in \emph{R}. We
+classified extreme \aax{} values as those with an absolute internal
+studentized residual \(> 3\). Because these values likely indicate
+significant measurement error or leaf damage, we removed \agcurve{}
+curves at both light intensities if either was classified as extreme.
 
 \subsubsection{\texorpdfstring{Bayesian data analysis with
 \emph{Stan}}{Bayesian data analysis with Stan}}\label{sec-analysis}
@@ -1549,7 +1538,7 @@ Our analysis pipeline consisted of four main steps:
   \agcurve{} curve parameters
 \item
   Estimate the effects of light intensity, light treatment, and
-  population on \aax{} (assimilatory and plasticity hypotheses)
+  population on \aax{} (acclimation and plasticity hypotheses)
 \item
   Estimate the effects of native light habitat on population-level
   \aax{} (constitutive hypothesis)
@@ -1563,16 +1552,14 @@ probabilistic programming language \emph{Stan} (\emph{59}) using the
 sampled the posterior distribution from a single chain with a minimum of
 1000 iterations after 1000 warmup iterations. If necessary, we refit
 models with more iterations to decrease the Gelman-Rubin convergence
-statistic (\(\hat{R}\)) (\emph{63}) to less than
-\(`aa_stats[["max_rhat"]]`\) and the bulk effective sample size (ESS) to
-greater than \(`aa_stats[["min_ess"]]`\) for all model parameters, and
-there were fewer than \(`aa_stats[["n_divergent"]]`\) divergent
-transitions.
+statistic (\(\hat{R}\)) (\emph{63}) to less than 1.01 and the bulk
+effective sample size (ESS) to greater than 400 for all model
+parameters, and there were fewer than 10 divergent transitions.
 
 \paragraph{\texorpdfstring{\agcurve{} curve
 parameters}{ curve parameters}}\label{sec-agcurve-pars}
 
-We modeled \logA as a quadratic function of \loggsw for each leaf,
+We modeled \logA{} as a quadratic function of \loggsw{} for each leaf,
 measured at low and high light intensity, in both amphistomatous
 (untreated) and pseudohypostomatous (propafilm treatment) states.
 
@@ -1602,7 +1589,7 @@ mixed effects model described below.
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-example-aa-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-example-aa-1.pdf}
 
 }
 
@@ -1652,12 +1639,12 @@ predictions for hypothesis testing.
 
 \paragraph{Posterior predictions}\label{sec-predictions}
 
-The assimilatory, plastic, and constitutive hypotheses make different
+The acclimation, plasticity, and constitutive hypotheses make different
 predictions about the relationship between \aax{} and light intensity,
 light treatment, and native \ppfd{} among populations. Since these
 hypotheses are not mutually exclusive, we describe how we assessed
 support for one, two, or all three hypotheses simultaneously in
-\autoref{tbl-predictions}. In general, the assimilatory hypothesis was
+\autoref{tbl-predictions}. In general, the acclimation hypothesis was
 supported if \aax{} was greater at high light intensity than low light
 intensity. The plastic hypothesis was supported if \aax{} was greater in
 sun leaves than shade leaves. The constitutive hypothesis was supported
@@ -1695,35 +1682,35 @@ model.}
 \toprule
 \textbf{Hypothesis} & \textbf{Prediction(s)} & \textbf{Description}\\
 \midrule
-Assimilatory & $\beta_{\mathrm{AA},2000} > 0$ & \hspace{-1em}\aax{} at high light intensity is greater than that at low light intensity\\
+Acclimation & $\mathrm{AA}_{2000} > 0$ & \hspace{-1em}\aax{} at high light intensity is greater than that at low light intensity\\
 \cmidrule{1-3}\pagebreak[0]
-Plastic & $\beta_{\mathrm{AA},\text{sun}} > 0$ & \hspace{-1em}\aax{} in sun leaves is greater than that in shade leaves\\
+Plasticity & $\mathrm{AA}_{\text{sun}} > 0$ & \hspace{-1em}\aax{} in sun leaves is greater than that in shade leaves\\
 \cmidrule{1-3}\pagebreak[0]
-Constitutive & $\beta_{\mathrm{PPFD,AA}} > 0$ & \hspace{-1em}Population-level \aax{} ($\mathrm{AA}_\text{acc}$) decreases with native PAI\\
+Constitutive & $\beta_{\mathrm{PAI,AA}} > 0$ & \hspace{-1em}Population-level \aax{} ($\mathrm{AA}_\text{pop}$) decreases with native PAI\\
 \nopagebreak
- &  & \hspace{-1em}$\mathrm{AA}_\text{acc} = \beta_{\mathrm{AA}, 0} + \vec{\beta}_{\mathrm{AA}, \text{acc}}$\\
+ &  & \hspace{-1em}$\mathrm{AA}_\text{pop} = \beta_{\mathrm{AA}, 0} + \vec{\beta}_{\mathrm{AA}, \text{pop}}$\\
 \cmidrule{1-3}\pagebreak[0]
-Assimilatory $\times$ Plastic & $\beta_{\mathrm{AA},2000,\text{sun}} > 0$ & \hspace{-1em}\aax{} is highest at high light intensity in sun leaves\\
+Acclimation $\times$ Plasticity & $\mathrm{AA}_{2000,\text{sun}} > 0$ & \hspace{-1em}\aax{} is highest at high light intensity in sun leaves\\
 \nopagebreak
  &  & \hspace{-1em}\\
 \cmidrule{1-3}\pagebreak[0]
-Assimilatory $\times$ Constitutive & $\beta_{\mathrm{AA},2000} > 0$ & \hspace{-1em}\aax{} at high light intensity is greater than that at low light intensity\\
+Acclimation $\times$ Constitutive & $\mathrm{AA}_{2000} > 0$ & \hspace{-1em}\aax{} at high light intensity is greater than that at low light intensity\\
 \nopagebreak
- & $\beta_{\mathrm{PPFD,AA}} > 0$ & \hspace{-1em}Population-level \aax{} at high light intensity ($\mathrm{AA}_{\text{acc},2000}$) decreases with native PAI\\
+ & $\beta_{\mathrm{PAI,AA}} > 0$ & \hspace{-1em}Population-level \aax{} at high light intensity ($\mathrm{AA}_{\text{pop},2000}$) decreases with native PAI\\
 \nopagebreak
- &  & \hspace{-1em}$\mathrm{AA}_{\text{acc},2000} = \beta_{\mathrm{AA}, 0} + \vec{\beta}_{\mathrm{AA}, \text{acc}} + \vec{\beta}_{\mathrm{AA}, 2000, \text{acc}}$\\
+ &  & \hspace{-1em}$\mathrm{AA}_{\text{pop},2000} = \beta_{\mathrm{AA}, 0} + \vec{\beta}_{\mathrm{AA}, \text{pop}} + \vec{\beta}_{\mathrm{AA}, 2000, \text{pop}}$\\
 \cmidrule{1-3}\pagebreak[0]
-Plastic $\times$ Constitutive & $\beta_{\mathrm{AA},\text{sun}} > 0$ & \hspace{-1em}\aax{} in sun leaves is greater than that in shade leaves\\
+Plasticity $\times$ Constitutive & $\mathrm{AA}_{\text{sun}} > 0$ & \hspace{-1em}\aax{} in sun leaves is greater than that in shade leaves\\
 \nopagebreak
- & $\beta_{\mathrm{PPFD,AA}} > 0$ & \hspace{-1em}Population-level \aax{} in sun leaves ($\mathrm{AA}_{\text{acc},\text{sun}}$) decreases with native PAI\\
+ & $\beta_{\mathrm{PAI,AA}} > 0$ & \hspace{-1em}Population-level \aax{} in sun leaves ($\mathrm{AA}_{\text{pop},\text{sun}}$) decreases with native PAI\\
 \nopagebreak
- &  & \hspace{-1em}$\mathrm{AA}_{\text{acc},\text{sun}} = \beta_{\mathrm{AA}, 0} + \vec{\beta}_{\mathrm{AA}, \text{acc}} + \vec{\beta}_{\mathrm{AA}, \text{sun}, \text{acc}}$\\
+ &  & \hspace{-1em}$\mathrm{AA}_{\text{pop},\text{sun}} = \beta_{\mathrm{AA}, 0} + \vec{\beta}_{\mathrm{AA}, \text{pop}} + \vec{\beta}_{\mathrm{AA}, \text{sun}, \text{pop}}$\\
 \cmidrule{1-3}\pagebreak[0]
-Assimilatory $\times$ Plastic $\times$ Constitutive & $\beta_{\mathrm{AA},2000,\text{sun}} > 0$ & \hspace{-1em}\aax{} is highest at high light intensity in sun leaves\\
+Acclimation $\times$ Plasticity $\times$ Constitutive & $\mathrm{AA}_{2000,\text{sun}} > 0$ & \hspace{-1em}\aax{} is highest at high light intensity in sun leaves\\
 \nopagebreak
- & $\beta_{\mathrm{PPFD,AA}} > 0$ & \hspace{-1em}Population-level \aax{} at high light intensity in sun leaves ($\mathrm{AA}_{\text{acc},2000,\text{sun}}$) decreases with native PAI\\
+ & $\beta_{\mathrm{PAI,AA}} > 0$ & \hspace{-1em}Population-level \aax{} at high light intensity in sun leaves ($\mathrm{AA}_{\text{pop},2000,\text{sun}}$) decreases with native PAI\\
 \nopagebreak
- &  & \hspace{-1em}$\mathrm{AA}_{\text{acc},2000,\text{sun}} = \beta_{\mathrm{AA}, 0} + \vec{\beta}_{\mathrm{AA}, \text{acc}} + \vec{\beta}_{\mathrm{AA}, 2000, \text{acc}} + \vec{\beta}_{\mathrm{AA}, \text{sun}, \text{acc}}$\\
+ &  & \hspace{-1em}$\mathrm{AA}_{\text{pop},2000,\text{sun}} = \beta_{\mathrm{AA}, 0} + \vec{\beta}_{\mathrm{AA}, \text{pop}} + \vec{\beta}_{\mathrm{AA}, 2000, \text{pop}} + \vec{\beta}_{\mathrm{AA}, \text{sun}, \text{pop}}$\\
 \bottomrule
 
 \end{longtable}
@@ -1737,24 +1724,36 @@ light intensity, light treatments, and population on \aax{}.
 \begin{itemize}
 \tightlist
 \item
-  Variation in stomatal ratio among pops and light treatments
-\item
-  Table S7: Model comparison LOOIC tables
-\item
-  Table S8: Model comparison LOOIC tables with LMA
-\item
   Table S9: Calculation of alternate scenario where amphi leaves can get
   same A with less R
 \item
   Each A-gs figure with fitted curves, R2, and AA
 \end{itemize}
 
+\begin{figure}
+
+\centering{
+
+\includegraphics{ms_files/figure-pdf/fig-sr-rxnorm-1.pdf}
+
+}
+
+\caption{\label{fig-sr-rxnorm}Developmental plasticity in anatomical
+maximum stomatal conductance ratio (\gmaxratio; \(y\)-axis) to growth
+light intensity (\(x\)-axis) among \texttt{r\ n\_acc} wild tomato
+populations. All populations are amphistomatous, but vary in the
+stomatal density and size on each surface, which determines \gmaxratio.
+Each point is the average per population in that treatment; black lines
+connect the same population across treatments.}
+
+\end{figure}%
+
 \begin{longtable}[t]{>{\centering\arraybackslash}p{0.7in}>{\centering\arraybackslash}p{0.5in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{}c|>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{}c|>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}}
 
 \caption{\label{tbl-aa_loo1}Leave-one-out cross-validation information
 criterion (LOOIC) for models of \aax{} as a function of light intensity,
 light treatment, and population. Only the top models
-(\(\Delta~\text{LOOIC} < 2\)) are shown. The model with the lowest LOOIC
+(\(\Delta \text{LOOIC} < 2\)) are shown. The model with the lowest LOOIC
 is considered the best fit to the data. The LOOIC column lists the LOOIC
 value for each model; the \(\Delta\)LOOIC column lists the difference
 between the LOOIC of the corresponding model and the best model (lowest
@@ -1791,12 +1790,9 @@ LOOIC & $\Delta$LOOIC & Meas. & Growth & Inter. & Meas. & Growth & Inter. & Meas
 
 \end{longtable}
 
-\subsubsection{MARKER - make other LOOIC
-table}\label{marker---make-other-looic-table}
-
 \begin{landscape}
 
-\begin{longtable}[t]{>{\centering\arraybackslash}p{0.7in}>{\centering\arraybackslash}p{0.5in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}}
+\begin{longtable}[t]{>{\centering\arraybackslash}p{0.7in}>{\centering\arraybackslash}p{0.5in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}>{\centering\arraybackslash}p{0.4in}}
 
 \caption{\label{tbl-aa_loo2}Leave-one-out cross-validation information
 criterion (LOOIC) for models of \aax{} as a function of light intensity,
@@ -1807,52 +1803,51 @@ lists the LOOIC value for each model; the \(\Delta\)LOOIC column lists
 the difference between the LOOIC of the corresponding model and the best
 model (lowest LOOIC). Checkmarks in each row indicate whether the
 corresponding model included affects of measurement light intensity
-(``Meas.''), growth light intensity (``Growth''), or LMA as fixed
-effects, random effects, or distributional effect on the residual
-variance. We test for fixed interaction effects between measurement and
-growth light intensity and LMA. We also test for random interaction
-effects between measurement and growth light intensity. All models
-included phylogenetically structured random effects of population.}
+(``Meas.''), growth light intensity (``Growth''), or LMA as fixed or
+random effects. We test for fixed interaction effects between
+measurement and growth light intensity and LMA. We also test for random
+interaction effects between measurement and growth light intensity. All
+models included phylogenetically structured random effects of
+population.}
 
 \tabularnewline
 
 \toprule
-\multicolumn{2}{c}{ } & \multicolumn{7}{c}{Fixed} & \multicolumn{3}{c}{Random} & \multicolumn{2}{c}{Distributional} \\
-\cmidrule(l{3pt}r{3pt}){3-9} \cmidrule(l{3pt}r{3pt}){10-12} \cmidrule(l{3pt}r{3pt}){13-14}
-LOOIC & $\Delta$LOOIC & Meas. & Growth & LMA & Meas. $\times$ Growth & Meas. $\times$ Growth & Meas. $\times$ LMA & Growth $\times$ LMA & Meas. & Growth & Meas. $\times$ Growth & Meas. & Growth\\
+\multicolumn{2}{c}{ } & \multicolumn{7}{c}{Fixed} & \multicolumn{3}{c}{Random} \\
+\cmidrule(l{3pt}r{3pt}){3-9} \cmidrule(l{3pt}r{3pt}){10-12}
+LOOIC & $\Delta$LOOIC & Meas. & Growth & LMA & Meas. $\times$ Growth & Meas. $\times$ Growth & Meas. $\times$ LMA & Growth $\times$ LMA & Meas. & Growth & Meas. $\times$ Growth\\
 \midrule
 \endfirsthead
-\multicolumn{14}{@{}l}{\textit{(continued)}}\\
+\multicolumn{12}{@{}l}{\textit{(continued)}}\\
 \toprule
-LOOIC & $\Delta$LOOIC & Meas. & Growth & LMA & Meas. $\times$ Growth & Meas. $\times$ Growth & Meas. $\times$ LMA & Growth $\times$ LMA & Meas. & Growth & Meas. $\times$ Growth & Meas. & Growth\\
+LOOIC & $\Delta$LOOIC & Meas. & Growth & LMA & Meas. $\times$ Growth & Meas. $\times$ Growth & Meas. $\times$ LMA & Growth $\times$ LMA & Meas. & Growth & Meas. $\times$ Growth\\
 \midrule
 \endhead
 
 \endfoot
 \bottomrule
 \endlastfoot
-\cellcolor{gray!10}{-1883.84} & \cellcolor{gray!10}{0.00} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
--1883.80 & 0.04 & $\checkmark$ &  & $\checkmark$ &  &  &  &  & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$\\
-\cellcolor{gray!10}{-1883.67} & \cellcolor{gray!10}{0.17} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
--1883.16 & 0.67 & $\checkmark$ &  & $\checkmark$ &  &  &  &  & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$\\
-\cellcolor{gray!10}{-1883.05} & \cellcolor{gray!10}{0.78} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+\cellcolor{gray!10}{-1883.84} & \cellcolor{gray!10}{0.00} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+-1883.80 & 0.04 & $\checkmark$ &  & $\checkmark$ &  &  &  &  & $\checkmark$ & $\checkmark$ & $\checkmark$\\
+\cellcolor{gray!10}{-1883.67} & \cellcolor{gray!10}{0.17} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+-1883.16 & 0.67 & $\checkmark$ &  & $\checkmark$ &  &  &  &  & $\checkmark$ &  & \\
+\cellcolor{gray!10}{-1883.05} & \cellcolor{gray!10}{0.78} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
 \addlinespace
--1883.05 & 0.78 & $\checkmark$ &  & $\checkmark$ &  &  &  & $\checkmark$ & $\checkmark$ & $\checkmark$ &  & $\checkmark$ & $\checkmark$\\
-\cellcolor{gray!10}{-1882.93} & \cellcolor{gray!10}{0.90} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
--1882.87 & 0.97 & $\checkmark$ & $\checkmark$ & $\checkmark$ &  & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$\\
-\cellcolor{gray!10}{-1882.80} & \cellcolor{gray!10}{1.04} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
--1882.55 & 1.29 & $\checkmark$ & $\checkmark$ & $\checkmark$ &  & $\checkmark$ &  &  & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$\\
+-1883.05 & 0.78 & $\checkmark$ &  & $\checkmark$ &  &  &  & $\checkmark$ & $\checkmark$ & $\checkmark$ & \\
+\cellcolor{gray!10}{-1882.93} & \cellcolor{gray!10}{0.90} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{}\\
+-1882.87 & 0.97 & $\checkmark$ & $\checkmark$ & $\checkmark$ &  & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$ & $\checkmark$\\
+\cellcolor{gray!10}{-1882.80} & \cellcolor{gray!10}{1.04} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+-1882.55 & 1.29 & $\checkmark$ & $\checkmark$ & $\checkmark$ &  & $\checkmark$ &  &  & $\checkmark$ &  & \\
 \addlinespace
-\cellcolor{gray!10}{-1882.29} & \cellcolor{gray!10}{1.55} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
--1882.27 & 1.56 & $\checkmark$ & $\checkmark$ & $\checkmark$ &  &  & $\checkmark$ &  & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$\\
-\cellcolor{gray!10}{-1882.27} & \cellcolor{gray!10}{1.56} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
--1882.08 & 1.76 &  &  & $\checkmark$ &  &  &  &  & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$\\
-\cellcolor{gray!10}{-1881.86} & \cellcolor{gray!10}{1.98} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\*
+\cellcolor{gray!10}{-1882.29} & \cellcolor{gray!10}{1.55} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+-1882.27 & 1.56 & $\checkmark$ & $\checkmark$ & $\checkmark$ &  &  & $\checkmark$ &  & $\checkmark$ & $\checkmark$ & $\checkmark$\\
+\cellcolor{gray!10}{-1882.27} & \cellcolor{gray!10}{1.56} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+-1882.08 & 1.76 &  &  & $\checkmark$ &  &  &  &  & $\checkmark$ & $\checkmark$ & $\checkmark$\\
+\cellcolor{gray!10}{-1881.86} & \cellcolor{gray!10}{1.98} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\*
 
 \end{longtable}
 
 \end{landscape}
-
 
 
 
