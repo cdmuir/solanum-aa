@@ -63,6 +63,7 @@ library(brms)
 library(cowplot)
 library(dplyr)
 library(ggplot2)
+library(glue)
 library(kableExtra)
 library(knitr)
 library(lubridate)
@@ -456,10 +457,8 @@ plot_grid(
 ggplot()
 ```
 
-### MARKER - where is evidence for relationship between PAI and LMA, AA?
-
 <!-- Paragraph 7 (summarize secondary results) -->
-The pattern of \aax{} across wild tomatoes strongly supports the plasticity hypothesis, contradicts the acclimation hypothesis, and provides modest support for the constitutive hypothesis. Plastic changes in leaf thickness and/or packing density, summarized by the bulk leaf mass per area (LMA), may mediate the effect of growth light intensity on \aax{}. LMA increased in sun grown plants in all populations by an average of `r signif(100 * (exp(post_lma["Estimate"]) - 1), 3)`% [95% CI: `r signif(100 * (exp(post_lma["Q2.5"]) - 1), 3)` to `r signif(100 * (exp(post_lma["Q97.5"]) - 1), 3)`%], qualitatively similar to plastic responses in many species [@poorter_metaanalysis_2019]. While LMA is weakly, albeit significantly, associated with individual-level \aax{} ([Fig. @fig-lma_aa]), the effect of growth light intensity on \aax{} is still predictive based on model comparison (@tbl-aa_loo1). In contrast, LMA did not mediate an indirect effect of native PAI on \aax{} (Table/Figure). Many anatomical traits underlie LMA [@john_anatomical_2017] and future research will be needed identify which particular traits, such as leaf thickness or mesophyll porosity, are responsible for mediating \aax{}. The fact that the \aax{} of sun plants was greater under low measurement light intensity supports a long-standing hypothesis that resistance to CO$_2$ diffusion is greater in the upper than lower portions of the leaf interior [@jones_effects_1972]. At low light intensity, the bulk properties of the leaf are weighed toward the upper palisade where most light is intercepted. Hence, amphistomy may, unexpectedly, be particularly beneficial for sun leaves experiencing intermittent shade or cloud cover. Our study is limited in testing this because we could not directly measure the stomatal conductance ratio and intercellular resistance on each surface. Future experiments measuring \aax{} with a dual sided chamber [@wall_stomata_2022; @marquez_assessing_2023] can overcome these limitations.
+The pattern of \aax{} across wild tomatoes strongly supports the plasticity hypothesis, contradicts the acclimation hypothesis, and provides modest support for the constitutive hypothesis. Plastic changes in leaf thickness and/or packing density, summarized by the bulk leaf mass per area (LMA), may mediate the effect of growth light intensity on \aax{}. LMA increased in sun grown plants in all populations by an average of `r signif(100 * (exp(post_lma["Estimate"]) - 1), 3)`% [95% CI: `r signif(100 * (exp(post_lma["Q2.5"]) - 1), 3)` to `r signif(100 * (exp(post_lma["Q97.5"]) - 1), 3)`%], qualitatively similar to plastic responses in many species [@poorter_metaanalysis_2019]. While LMA is weakly, albeit significantly (@tbl-fit_aa2), associated with individual-level \aax{} ([Fig. @fig-lma_aa]), the effect of growth light intensity on \aax{} is still predictive based on model comparison (@tbl-aa_loo1). However, the direct effect of the sun treatment on \aax{} was weaker when LMA was included in the model (@tbl-fit_aa1 vs. @tbl-fit_aa2), suggestive of a mediating role. Many anatomical traits underlie LMA [@john_anatomical_2017] and future research will be needed identify which particular traits, such as leaf thickness or mesophyll porosity, are responsible for mediating \aax{}. The fact that the \aax{} of sun plants was greater under low measurement light intensity supports a long-standing hypothesis that resistance to CO$_2$ diffusion is greater in the upper than lower portions of the leaf interior [@jones_effects_1972]. At low light intensity, the bulk properties of the leaf are weighed toward the upper palisade where most light is intercepted. Hence, amphistomy may, unexpectedly, be particularly beneficial for sun leaves experiencing intermittent shade or cloud cover. Our study is limited in testing this because we could not directly measure the stomatal conductance ratio and intercellular resistance on each surface. Future experiments measuring \aax{} with a dual sided chamber [@wall_stomata_2022; @marquez_assessing_2023] can overcome these limitations.
 
 ```{r, lma_aa, echo = FALSE,warning=FALSE, message=FALSE} 
 #| label: fig-lma_aa
@@ -472,17 +471,16 @@ read_rds("../objects/fig_lma_aa.rds")
 
 ```
 
-We conclude that developmental plasticity, as opposed to acclimation or adaptation to open habitats, may explain the long-standing observation that amphistomatous leaves are more common in sunny habitats, at least among herbaceous plants including crop relatives. Our results advance existing explanations by showing high light intensity *per se* does not increase the benefit of amphistomy, but rather that anatomical and biochemical change associated with higher light intensity modulate \aax{}. Developmental plasticity needs to be considered when interpreting phylogenetic comparative analyses of adaptation, because plastic differences may be mistaken for genetic differences.
+We conclude that both developmental plasticity and adaptation to open habitats, but not acclimation, may explain the long-standing observation that amphistomatous leaves are more common in sunny habitats, at least among herbaceous plants including crop relatives. This result changes our understanding by showing high light intensity *per se* does not increase the benefit of amphistomy, but rather arise as a byproduct of anatomical and biochemical changes caused by plasticity and adaptation to higher light intensity modulate \aax{}. To gain more precise understanding of when amphistomy is most beneficial will require further research on its leaf anataomical and biochemical basis.
 
-maybe this wording is better: Amphistomy likely plays a significant, but under appreciated, role in the carbon and water balance of plant groups where this trait is common, such as herbaceous plants in sunny habitats and woody species in arid biomes (cites). If our estimates of AA from the wild tomato clades
+The magnitude of \aax{} we document across populations is also noteworthy, as it implies that hypostomatous leaves predominant in mesic to wet forests globally are giving up 'free' carbon that would require little to no additional water loss. Back-of-the-envelope calculations based on our data suggest that leaves could use X-X% less water for the same carbon gain if they were amphistomatous (see Supporting Information for details of calculations). As this is the first quantitative comparison of \aax{} across species, estimation from a broader range of species and environments will be required to fully understand the ecological causes and consequences of stomatal distributions on leaf surfaces.
 
-note: estimates of AA are less than that described by Parkhurst and Mott (1990) and also less than that of Xiong and Flexas (2021). What does this tell us?
+<!-- note: estimates of AA are less than that described by Parkhurst and Mott (1990) and also less than that of Xiong and Flexas (2021). What does this tell us? -->
 
-A second major conclusion is that the significant photosynthetic gain of amphistomatous leaves implies that the many hypostomatous leaves that dominate mesic to wet forests globally are giving up 'free' carbon that would require little to no additional water loss. Under realistic assumptions, we estimate that hypostomatous leaves could achieve the same $A$ with X to X% less water loss if they were amphistomatous (Table S9). Ours is the first experimental demonstration that amphistomy is beneficial for sun leaves because of plastic changes, but future research needs to estimate the tradeoffs associated with amphistomatous leaves in order to fully explain their rarity among many woody plants and shade-tolerant herbs.
 
 ## Acknowledgements
 
-Sam McKlin and Tom Buckley helped with protocol development. Justin Alter, Max Gatlin, Joana Kim, Jenna Matsuyama, Brandon Najarian, and Kai Yasuda contributed to data collection. Sarah Friedrich helped with conceptual figure.
+Sam McKlin and Tom Buckley helped with protocol development. Justin Alter, Max Gatlin, Joana Kim, Jenna Matsuyama, Brandon Najarian, and Kai Yasuda contributed to data collection. Sarah Friedrich helped with graphics.
 
 ### Funding:
 
@@ -718,7 +716,9 @@ read_rds("../figures/example-aa.rds")
 
 #### Phylogenetic mixed effects models {#sec-phylo}
 
-We fit Bayesian mixed effects models with phylogenetically structured random effects to test predictions of competing hypotheses about why amphistomy advantage (\aax) might be greater for leaves in sunny, open habitats. We fit all models combinations of measurement light intensity, growth light intensity, and their interaction as both fixed effects and random effects among populations. In other words, we test whether there were main effects of light intensity treatments and/or whether populations varied in their response to light intensity treatments. In all models, we included population as a phylogenetically structured random effect. We accounted for uncertainty in $\widehat{\mathrm{AA}}$ using the standard deviation of the posterior distribution of each $\widehat{\mathrm{AA}}$ estimate (@sec-aa-est). We crossed fixed and random effect structures with fixed effects of measurement light intensity and/or growth light intensity on the distributional parameter, $\sigma$, the residual variance in \aax{}. We used a robust regression approach by assuming $t$-distributed residuals, which makes estimates less susceptible to extreme values. In total, we fit `r n_model1` models, each with a different combination of fixed, random, and distributional effects. We used the RAxML whole-transcriptome concatenated phylogeny based on 2,745 100-kb genomic windows from @pease_phylogenomics_2016. Two of our populations were not in this tree. We used accession LA1044 in place of LA3909, two populations of *S. galapagnse*; LA0750 was added as sister to LA0716, two closely related populations of *S. pennellii*. The node separating LA0750 from LA0716 was placed half-way between the next deepest node. We used the leave-one-out cross-validation information criterion (LOOIC) to compare the fit of models (\autoref{tbl-aa_loo1}) using the *R* package **loo** version `r packageVersion("loo")` [@vehtari_practical_2017] to calculate LOOIC values. We selected the model with the lowest LOOIC value to generate posterior predictions for hypothesis testing.
+We fit Bayesian mixed effects models with phylogenetically structured random effects to test predictions of competing hypotheses about why amphistomy advantage (\aax) might be greater for leaves in sunny, open habitats. We fit all models combinations of measurement light intensity, growth light intensity, and their interaction as both fixed effects and random effects among populations. In other words, we test whether there were main effects of light intensity treatments and/or whether populations varied in their response to light intensity treatments. In all models, we included population as a phylogenetically structured random effect. We accounted for uncertainty in $\widehat{\mathrm{AA}}$ using the standard deviation of the posterior distribution of each $\widehat{\mathrm{AA}}$ estimate (@sec-aa-est). We crossed fixed and random effect structures with fixed effects of measurement light intensity and/or growth light intensity on the distributional parameter, $\sigma$, the residual variance in \aax{}. We used a robust regression approach by assuming $t$-distributed residuals, which makes estimates less susceptible to extreme values. In total, we fit `r n_model1` models, each with a different combination of fixed, random, and distributional effects. We used the RAxML whole-transcriptome concatenated phylogeny based on 2,745 100-kb genomic windows from @pease_phylogenomics_2016. Two of our populations were not in this tree. We used accession LA1044 in place of LA3909, two populations of *S. galapagnse*; LA0750 was added as sister to LA0716, two closely related populations of *S. pennellii*. The node separating LA0750 from LA0716 was placed half-way between the next deepest node. We used the leave-one-out cross-validation information criterion (LOOIC) to compare the fit of models (\autoref{tbl-aa_loo1}) using the *R* package **loo** version `r packageVersion("loo")` [@vehtari_practical_2017] to calculate LOOIC values. We selected the model with the lowest LOOIC value (@tbl-aa_loo1) to generate posterior predictions for hypothesis testing. Parameter estimates from the selected model are shown in @tbl-fit_aa1.
+
+To test whether LMA mediated the relationship between growth light intensity and \aax{}, we repeated a similar model comparison procedure but included $\log \mathrm{LMA}$ as an additional fixed effect in the model, as well its interaction with measurement and growth light intensity. The model included a direct effect of growth light intensity on $\log \mathrm{LMA}$ and random phylogeneticlly structured effects of population on $\log \mathrm{LMA}$ and effects of sun treatment on $\log \mathrm{LMA}$. This enabled us to disentangle whether $\log \mathrm{LMA}$ effects \aax{} directly or indirectly because both traits respond to growth light intensity. We integrated over missing LMA data using the `mi()` function in **brms**. Because the evidence strong supported including effects of growth and measurement light intensity on the residual variance in $\mathrm{AA}$, we included these in terms in all models. In total, we fit `r n_model2` models, each with a different combination of fixed and random effect structures. We selected the model with the lowest LOOIC value (@tbl-aa_loo2) to generate posterior predictions for hypothesis testing. Parameter estimates from the selected model are shown in @tbl-fit_aa2.
 
 #### Posterior predictions {#sec-predictions}
 
@@ -889,6 +889,7 @@ make_brms_summary_table = function(fit,
         grepl("^b_", Parameter) &
           !grepl("sigma|Intercept", Parameter) ~ "fixed effects",
         grepl("^b_(aa|llma)_Intercept$", Parameter) ~ "fixed effects",
+        grepl("^bsp_", Parameter) ~ "fixed effects",
         grepl("^b_", Parameter) &
           grepl("sigma", Parameter) ~ "distributional parameters",
         grepl("^sd_", Parameter) ~ "random effect SDs",
@@ -910,6 +911,7 @@ make_brms_summary_table = function(fit,
         Parameter == "b_aa_light_treatmenthigh" ~ "effect of sun on $\\mathrm{AA}$",
         Parameter == "b_aa_light_intensity2000" ~ "effect of high light on $\\mathrm{AA}$",
         Parameter == "b_aa_light_treatmenthigh:light_intensity2000" ~ "effect of sun $\\times$ high light interaction on $\\mathrm{AA}$",
+        Parameter == "bsp_aa_millma" ~ "effect of $\\log \\mathrm{LMA}$ on $\\mathrm{AA}$",
         Parameter == "b_sigma_aa_Intercept" ~ "$\\log \\sigma$ intercept (shade, low light)",
         Parameter == "b_sigma_aa_light_treatmenthigh" ~ "effect of sun on $\\log \\sigma$",
         Parameter == "b_sigma_aa_light_intensity2000" ~ "effect of high light on $\\log \\sigma$",
@@ -1026,14 +1028,22 @@ bind_rows(tbl_aa_fixed,
 * Table S9: Calculation of alternate scenario where amphi leaves can get same A with less R
 * Each A-gs figure with fitted curves, R2, and AA
 
+```{r, sr-rxnorm-cap, echo=FALSE,message=FALSE,warning=FALSE}
+
+sr_rxnorm_cap = glue::glue("Developmental plasticity in anatomical maximum stomatal conductance ratio (\\gmaxratio; $y$-axis) to growth light intensity ($x$-axis) among {n_acc} wild tomato populations. All populations are amphistomatous, but vary in the stomatal density and size on each surface, which determines \\gmaxratio. Each point is the average per population in that treatment; black lines connect the same population across treatments.")
+
+```
+
 ```{r, sr-rxnorm, echo=FALSE,message=FALSE,warning=FALSE}
 #| label: fig-sr-rxnorm
 #| fig-align: center
 #| fig-width: 4
 #| fig-height: 4
-#| fig-cap: "Developmental plasticity in anatomical maximum stomatal conductance ratio (\\gmaxratio; $y$-axis) to growth light intensity ($x$-axis) among `r n_acc` wild tomato populations. All populations are amphistomatous, but vary in the stomatal density and size on each surface, which determines \\gmaxratio. Each point is the average per population in that treatment; black lines connect the same population across treatments."
+#| fig-cap: !expr sr_rxnorm_cap
 read_rds("../figures/sr-rxnorm.rds")
 ```
+
+
 
 ```{r, aa_loo1, echo=FALSE,message=FALSE,warning=FALSE}
 #| label: tbl-aa_loo1

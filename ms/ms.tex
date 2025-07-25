@@ -22,7 +22,7 @@
 \usepackage{lmodern}
 \ifPDFTeX\else  
     % xetex/luatex font selection
-    \setmainfont[]{Times New Roman}
+  \setmainfont[]{Times New Roman}
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -44,28 +44,14 @@
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 % Make \paragraph and \subparagraph free-standing
-\makeatletter
 \ifx\paragraph\undefined\else
   \let\oldparagraph\paragraph
-  \renewcommand{\paragraph}{
-    \@ifstar
-      \xxxParagraphStar
-      \xxxParagraphNoStar
-  }
-  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
-  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
+  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
 \fi
 \ifx\subparagraph\undefined\else
   \let\oldsubparagraph\subparagraph
-  \renewcommand{\subparagraph}{
-    \@ifstar
-      \xxxSubParagraphStar
-      \xxxSubParagraphNoStar
-  }
-  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
-  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
+  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
-\makeatother
 
 
 \providecommand{\tightlist}{%
@@ -81,17 +67,15 @@
 \makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
-\newsavebox\pandoc@box
-\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
-  \sbox\pandoc@box{#1}%
-  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
-  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
-  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
-  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
-  \else\usebox{\pandoc@box}%
-  \fi%
-}
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
 % Set default figure placement to htbp
+\makeatletter
 \def\fps@figure{htbp}
 \makeatother
 % definitions for citeproc citations
@@ -214,7 +198,9 @@
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
-
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
 \usepackage{bookmark}
 
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
@@ -229,7 +215,6 @@
   urlcolor={Blue},
   pdfcreator={LaTeX via pandoc}}
 
-
 \title{Plasticity and adaptation to high light intensity amplify the
 advantage of amphistomous leaves}
 \author{Christopher D. Muir\(^{1,2*}\) \and Wei Shen
@@ -238,7 +223,6 @@ Lim\(^{1}\) \and Dachuan Wang\(^{1,2}\)}
 
 \begin{document}
 \maketitle
-
 
 \begin{center}
 $^1$School of Life Sciences, University of Hawaiʻi, Mānoa, Hawaiʻi, USA\\
@@ -379,7 +363,7 @@ a forest canopy will often experience low light intensity.
 
 \centering{
 
-\includegraphics[width=2.24in,height=\textheight,keepaspectratio]{../figures/amphisomy draft 2024-03-28.jpg}
+\includegraphics[width=2.24in,height=\textheight]{../figures/amphisomy draft 2024-03-28.jpg}
 
 }
 
@@ -481,7 +465,7 @@ combinations (Fig.~\ref{fig-aa}B).
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-aa-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-aa-1.pdf}
 
 }
 
@@ -495,7 +479,7 @@ combinations (Fig.~\ref{fig-aa}B).
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-aacap-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-aacap-1.pdf}
 
 }
 
@@ -536,31 +520,31 @@ mass per area (LMA), may mediate the effect of growth light intensity on
 \aax{}. LMA increased in sun grown plants in all populations by an
 average of 123\% {[}95\% CI: 42.9 to 256\%{]}, qualitatively similar to
 plastic responses in many species (\emph{47}). While LMA is weakly,
-albeit significantly, associated with individual-level \aax{}
-(Fig.~\ref{fig-lma_aa}), the effect of growth light intensity on \aax{}
-is still predictive based on model comparison (Table~\ref{tbl-aa_loo1}).
-In contrast, LMA did not mediate an indirect effect of native PAI on
-\aax{} (Table/Figure). Many anatomical traits underlie LMA (\emph{52})
-and future research will be needed identify which particular traits,
-such as leaf thickness or mesophyll porosity, are responsible for
-mediating \aax{}. The fact that the \aax{} of sun plants was greater
-under low measurement light intensity supports a long-standing
-hypothesis that resistance to CO\(_2\) diffusion is greater in the upper
-than lower portions of the leaf interior (\emph{53}). At low light
-intensity, the bulk properties of the leaf are weighed toward the upper
-palisade where most light is intercepted. Hence, amphistomy may,
-unexpectedly, be particularly beneficial for sun leaves experiencing
-intermittent shade or cloud cover. Our study is limited in testing this
-because we could not directly measure the stomatal conductance ratio and
-intercellular resistance on each surface. Future experiments measuring
-\aax{} with a dual sided chamber (\emph{31}, \emph{33}) can overcome
-these limitations.
+albeit significantly (Table~\ref{tbl-fit_aa2}), associated with
+individual-level \aax{} (Fig.~\ref{fig-lma_aa}), the effect of growth
+light intensity on \aax{} is still predictive based on model comparison
+(Table~\ref{tbl-aa_loo1}). In contrast, LMA did not mediate an indirect
+effect of native PAI on \aax{} (Table/Figure). Many anatomical traits
+underlie LMA (\emph{52}) and future research will be needed identify
+which particular traits, such as leaf thickness or mesophyll porosity,
+are responsible for mediating \aax{}. The fact that the \aax{} of sun
+plants was greater under low measurement light intensity supports a
+long-standing hypothesis that resistance to CO\(_2\) diffusion is
+greater in the upper than lower portions of the leaf interior
+(\emph{53}). At low light intensity, the bulk properties of the leaf are
+weighed toward the upper palisade where most light is intercepted.
+Hence, amphistomy may, unexpectedly, be particularly beneficial for sun
+leaves experiencing intermittent shade or cloud cover. Our study is
+limited in testing this because we could not directly measure the
+stomatal conductance ratio and intercellular resistance on each surface.
+Future experiments measuring \aax{} with a dual sided chamber
+(\emph{31}, \emph{33}) can overcome these limitations.
 
 \begin{figure}
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-lma_aa-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-lma_aa-1.pdf}
 
 }
 
@@ -1605,7 +1589,7 @@ mixed effects model described below.
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-example-aa-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-example-aa-1.pdf}
 
 }
 
@@ -1652,8 +1636,28 @@ LA0716 was placed half-way between the next deepest node. We used the
 leave-one-out cross-validation information criterion (LOOIC) to compare
 the fit of models (\autoref{tbl-aa_loo1}) using the \emph{R} package
 \textbf{loo} version 2.8.0 (\emph{65}) to calculate LOOIC values. We
-selected the model with the lowest LOOIC value to generate posterior
-predictions for hypothesis testing.
+selected the model with the lowest LOOIC value (Table~\ref{tbl-aa_loo1})
+to generate posterior predictions for hypothesis testing. Parameter
+estimates from the selected model are shown in Table~\ref{tbl-fit_aa1}.
+
+To test whether LMA mediated the relationship between growth light
+intensity and \aax{}, we repeated a similar model comparison procedure
+but included \(\log \mathrm{LMA}\) as an additional fixed effect in the
+model, as well its interaction with measurement and growth light
+intensity. The model included a direct effect of growth light intensity
+on \(\log \mathrm{LMA}\) and random phylogeneticlly structured effects
+of population on \(\log \mathrm{LMA}\) and effects of sun treatment on
+\(\log \mathrm{LMA}\). This enabled us to disentangle whether
+\(\log \mathrm{LMA}\) effects \aax{} directly or indirectly because both
+traits respond to growth light intensity. We integrated over missing LMA
+data using the \texttt{mi()} function in \textbf{brms}. Because the
+evidence strong supported including effects of growth and measurement
+light intensity on the residual variance in \(\mathrm{AA}\), we included
+these in terms in all models. In total, we fit 75 models, each with a
+different combination of fixed and random effect structures. We selected
+the model with the lowest LOOIC value (Table~\ref{tbl-aa_loo2}) to
+generate posterior predictions for hypothesis testing. Parameter
+estimates from the selected model are shown in Table~\ref{tbl-fit_aa2}.
 
 \paragraph{Posterior predictions}\label{sec-predictions}
 
@@ -1810,27 +1814,28 @@ Parameter & Estimate [95\% CI]\\
 \hspace{1em}\hspace{1em}\cellcolor{gray!10}{$\mathrm{AA}$ intercept (shade, low light)} & \cellcolor{gray!10}{-0.01 [-0.12, 0.09]}\\
 \hspace{1em}\hspace{1em}effect of sun on $\mathrm{AA}$ & 0.01 [-0.05, 0.06]\\
 \hspace{1em}\hspace{1em}\cellcolor{gray!10}{effect of high light on $\mathrm{AA}$} & \cellcolor{gray!10}{-0.03 [-0.07, 0]}\\
+\hspace{1em}\hspace{1em}effect of $\log \mathrm{LMA}$ on $\mathrm{AA}$ & 0.03 [0, 0.05]\\
 \addlinespace[0.3em]
 \multicolumn{2}{l}{\textit{~~Distributional parameters}}\\
-\hspace{1em}\hspace{1em}$\log \sigma$ intercept (shade, low light) & -2.5 [-2.61, -2.4]\\
-\hspace{1em}\hspace{1em}\cellcolor{gray!10}{effect of sun on $\log \sigma$} & \cellcolor{gray!10}{0.23 [0.13, 0.34]}\\
-\hspace{1em}\hspace{1em}effect of high light on $\log \sigma$ & -0.19 [-0.29, -0.08]\\
+\hspace{1em}\hspace{1em}\cellcolor{gray!10}{$\log \sigma$ intercept (shade, low light)} & \cellcolor{gray!10}{-2.5 [-2.61, -2.4]}\\
+\hspace{1em}\hspace{1em}effect of sun on $\log \sigma$ & 0.23 [0.13, 0.34]\\
+\hspace{1em}\hspace{1em}\cellcolor{gray!10}{effect of high light on $\log \sigma$} & \cellcolor{gray!10}{-0.19 [-0.29, -0.08]}\\
 \addlinespace[0.3em]
 \multicolumn{2}{l}{\textit{~~Random effect SDs}}\\
-\hspace{1em}\hspace{1em}\cellcolor{gray!10}{$\mathrm{AA}$ among populations} & \cellcolor{gray!10}{0.06 [0.04, 0.1]}\\
-\hspace{1em}\hspace{1em}effect of sun on $\mathrm{AA}$ among populations & 0.04 [0, 0.1]\\
-\hspace{1em}\hspace{1em}\cellcolor{gray!10}{effect of high light on $\mathrm{AA}$ among populations} & \cellcolor{gray!10}{0.02 [0, 0.05]}\\
-\hspace{1em}\hspace{1em}effect of sun $\times$ high light interaction on $\mathrm{AA}$ among populations & 0.04 [0, 0.09]\\
+\hspace{1em}\hspace{1em}$\mathrm{AA}$ among populations & 0.06 [0.04, 0.1]\\
+\hspace{1em}\hspace{1em}\cellcolor{gray!10}{effect of sun on $\mathrm{AA}$ among populations} & \cellcolor{gray!10}{0.04 [0, 0.1]}\\
+\hspace{1em}\hspace{1em}effect of high light on $\mathrm{AA}$ among populations & 0.02 [0, 0.05]\\
+\hspace{1em}\hspace{1em}\cellcolor{gray!10}{effect of sun $\times$ high light interaction on $\mathrm{AA}$ among populations} & \cellcolor{gray!10}{0.04 [0, 0.09]}\\
 \addlinespace[0.3em]
 \multicolumn{2}{l}{\textbf{Response: $\log~\mathrm{LMA}$}}\\
 \addlinespace[0.3em]
 \multicolumn{2}{l}{\textit{~~Fixed effects}}\\
-\hspace{1em}\hspace{1em}\cellcolor{gray!10}{$\log \mathrm{LMA}$ intercept (shade)} & \cellcolor{gray!10}{2.99 [2.42, 3.52]}\\
-\hspace{1em}\hspace{1em}effect of sun on $\log \mathrm{LMA}$ & 0.8 [0.36, 1.27]\\
+\hspace{1em}\hspace{1em}$\log \mathrm{LMA}$ intercept (shade) & 2.99 [2.42, 3.52]\\
+\hspace{1em}\hspace{1em}\cellcolor{gray!10}{effect of sun on $\log \mathrm{LMA}$} & \cellcolor{gray!10}{0.8 [0.36, 1.27]}\\
 \addlinespace[0.3em]
 \multicolumn{2}{l}{\textit{~~Random effect SDs}}\\
-\hspace{1em}\hspace{1em}\cellcolor{gray!10}{$\log \mathrm{LMA}$ among populations} & \cellcolor{gray!10}{0.48 [0.35, 0.66]}\\
-\hspace{1em}\hspace{1em}effect of sun on $\log \mathrm{LMA}$ among populations & 0.37 [0.23, 0.6]\\
+\hspace{1em}\hspace{1em}$\log \mathrm{LMA}$ among populations & 0.48 [0.35, 0.66]\\
+\hspace{1em}\hspace{1em}\cellcolor{gray!10}{effect of sun on $\log \mathrm{LMA}$ among populations} & \cellcolor{gray!10}{0.37 [0.23, 0.6]}\\
 \bottomrule
 \end{tabular}
 
@@ -1851,17 +1856,17 @@ Parameter & Estimate [95\% CI]\\
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-sr-rxnorm-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-sr-rxnorm-1.pdf}
 
 }
 
 \caption{\label{fig-sr-rxnorm}Developmental plasticity in anatomical
 maximum stomatal conductance ratio (\gmaxratio; \(y\)-axis) to growth
-light intensity (\(x\)-axis) among \texttt{r\ n\_acc} wild tomato
-populations. All populations are amphistomatous, but vary in the
-stomatal density and size on each surface, which determines \gmaxratio.
-Each point is the average per population in that treatment; black lines
-connect the same population across treatments.}
+light intensity (\(x\)-axis) among 29 wild tomato populations. All
+populations are amphistomatous, but vary in the stomatal density and
+size on each surface, which determines \gmaxratio. Each point is the
+average per population in that treatment; black lines connect the same
+population across treatments.}
 
 \end{figure}%
 
@@ -1965,7 +1970,6 @@ LOOIC & $\Delta$LOOIC & Meas. & Growth & LMA & Meas. $\times$ Growth & Meas. $\t
 \end{longtable}
 
 \end{landscape}
-
 
 
 

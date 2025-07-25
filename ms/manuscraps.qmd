@@ -236,3 +236,8 @@ In `r percent_aa_and_aq`\% of plants, we measured light-response (\aqcurve) curv
  ### results
  
  The effect of low light on \aax{} was more pronounced in the sun-grown plants, where \aax{} was significantly greater under low measurement light intensity in `r aa_summary3["high"]` of `r n_acc` populations compared to `r aa_summary3["low"]` populations for shade-grown plants.
+ 
+ 
+ ## conclusion
+ 
+ maybe this wording is better: Amphistomy likely plays a significant, but under appreciated, role in the carbon and water balance of plant groups where this trait is common, such as herbaceous plants in sunny habitats and woody species in arid biomes (cites). If our estimates of AA from the wild tomato clades
