@@ -718,7 +718,7 @@ read_rds("../figures/example-aa.rds")
 
 #### Phylogenetic mixed effects models {#sec-phylo}
 
-We fit Bayesian mixed effects models with phylogenetically structured random effects to test predictions of competing hypotheses about why amphistomy advantage (\aax) might be greater for leaves in sunny, open habitats. We fit all models combinations of measurement light intensity, growth light intensity, and their interaction as both fixed effects and random effects among populations. In other words, we test whether there were main effects of light intensity treatments and/or whether populations varied in their response to light intensity treatments. In all models, we included population as a phylogenetically structured random effect. We accounted for uncertainty in $\widehat{\mathrm{AA}}$ using the standard deviation of the posterior distribution of each $\widehat{\mathrm{AA}}$ estimate (@sec-aa-est). We crossed fixed and random effect structures with fixed effects of measurement light intensity and/or growth light intensity on the distributional parameter, $\sigma$, the residual variance in \aax{}. In total, we fit `r n_model1` models, each with a different combination of fixed, random, and distributional effects. We used the RAxML whole-transcriptome concatenated phylogeny based on 2,745 100-kb genomic windows from @pease_phylogenomics_2016. Two of our populations were not in this tree. We used accession LA1044 in place of LA3909, two populations of *S. galapagnse*; LA0750 was added as sister to LA0716, two closely related populations of *S. pennellii*. The node separating LA0750 from LA0716 was placed half-way between the next deepest node. We used the leave-one-out cross-validation information criterion (LOOIC) to compare the fit of models (\autoref{tbl-aa_loo1}) using the *R* package **loo** version `r packageVersion("loo")` [@vehtari_practical_2017] to calculate LOOIC values. We selected the model with the lowest LOOIC value to generate posterior predictions for hypothesis testing.
+We fit Bayesian mixed effects models with phylogenetically structured random effects to test predictions of competing hypotheses about why amphistomy advantage (\aax) might be greater for leaves in sunny, open habitats. We fit all models combinations of measurement light intensity, growth light intensity, and their interaction as both fixed effects and random effects among populations. In other words, we test whether there were main effects of light intensity treatments and/or whether populations varied in their response to light intensity treatments. In all models, we included population as a phylogenetically structured random effect. We accounted for uncertainty in $\widehat{\mathrm{AA}}$ using the standard deviation of the posterior distribution of each $\widehat{\mathrm{AA}}$ estimate (@sec-aa-est). We crossed fixed and random effect structures with fixed effects of measurement light intensity and/or growth light intensity on the distributional parameter, $\sigma$, the residual variance in \aax{}. We used a robust regression approach by assuming $t$-distributed residuals, which makes estimates less susceptible to extreme values. In total, we fit `r n_model1` models, each with a different combination of fixed, random, and distributional effects. We used the RAxML whole-transcriptome concatenated phylogeny based on 2,745 100-kb genomic windows from @pease_phylogenomics_2016. Two of our populations were not in this tree. We used accession LA1044 in place of LA3909, two populations of *S. galapagnse*; LA0750 was added as sister to LA0716, two closely related populations of *S. pennellii*. The node separating LA0750 from LA0716 was placed half-way between the next deepest node. We used the leave-one-out cross-validation information criterion (LOOIC) to compare the fit of models (\autoref{tbl-aa_loo1}) using the *R* package **loo** version `r packageVersion("loo")` [@vehtari_practical_2017] to calculate LOOIC values. We selected the model with the lowest LOOIC value to generate posterior predictions for hypothesis testing.
 
 #### Posterior predictions {#sec-predictions}
 
@@ -769,9 +769,259 @@ THIS COULD BE USED FOR LMA MODEL? Note that LOOIC was calculated only from point
 
 ## Results
 
-### MARKER - table of selected model 1
+```{r fit_aa1, results = 'asis', echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+#| label: tbl-fit_aa1
+#| tbl-cap: "Parameter estimates and 95% confidence intervals (CIs) from the posterior distribution of the selected model. Models potentially include fixed, random, and distributional effects of growth light intensity (shade and sun), measurement light intensity (low and high), and their interaction on amphistomy advantage ($\\mathrm{AA}$). The distributional effects refer to the effect of factors on residual variation in $\\mathrm{AA}$, denoted $\\sigma$, on a log-link scale. For phylogenetically structured random effects, we report the estimated standard deviation (SD)."
 
-### MARKER - table of selected model 2
+make_brms_summary_table = function(fit,
+                                   ci_level = 0.95,
+                                   digits = 2) {
+  # Get posterior summary
+  summ = posterior_summary(fit, prob = c((1 - ci_level) / 2, 1 - (1 - ci_level) / 2))
+  summ_df = as.data.frame(summ)
+  summ_df$param = rownames(summ_df)
+  colnames(summ_df) = c("Estimate", "Est.Error", "CI_low", "CI_high", "Parameter")
+  
+  # Classify parameters
+  summ_df = summ_df |>
+    mutate(
+      Type = case_when(
+        grepl("^b_", Parameter) &
+          !grepl("sigma|Intercept", Parameter) ~ "fixed effects",
+        grepl("^b_Intercept$", Parameter) ~ "fixed effects",
+        grepl("^b_", Parameter) &
+          grepl("sigma", Parameter) ~ "distributional parameters",
+        grepl("^sd_", Parameter) ~ "random effect SDs",
+        TRUE ~ "Other"
+      )
+    )
+  
+  # Clean parameter names
+  summ_df = summ_df |>
+    mutate(
+      Parameter = case_when(
+        Parameter == "b_Intercept" ~ "$\\mathrm{AA}$ intercept (shade, low light)",
+        Parameter == "b_light_treatmenthigh" ~ "effect of sun on $\\mathrm{AA}$",
+        Parameter == "b_light_intensity2000" ~ "effect of high light on $\\mathrm{AA}$",
+        Parameter == "b_light_treatmenthigh:light_intensity2000" ~ "effect of sun $\\times$ high light interaction on $\\mathrm{AA}$",
+        Parameter == "b_sigma_Intercept" ~ "$\\log \\sigma$ intercept (shade, low light)",
+        Parameter == "b_sigma_light_treatmenthigh" ~ "effect of sun on $\\log \\sigma$",
+        Parameter == "b_sigma_light_intensity2000" ~ "effect of high light on $\\log \\sigma$",
+        Parameter == "sd_acc__Intercept" ~ "$\\mathrm{AA}$ among populations",
+        Parameter == "sd_acc__light_treatmenthigh" ~ "effect of sun on $\\mathrm{AA}$ among populations",
+        Parameter == "sd_acc__light_intensity2000" ~ "effect of high light on $\\mathrm{AA}$ among populations",
+        Parameter == "sd_acc__light_treatmenthigh:light_intensity2000" ~ "effect of sun $\\times$ high light interaction on $\\mathrm{AA}$ among populations"
+      )
+    )
+  
+  # Select and format
+  summ_df |>
+    filter(Type != "Other") |>
+    mutate(across(c(Estimate, CI_low, CI_high), ~ round(., digits))) |>
+    mutate(`Estimate [95% CI]` = paste0(Estimate, " [", CI_low, ", ", CI_high, "]")) |>
+    select(Type, Parameter, `Estimate [95% CI]`) |>
+    arrange(match(
+      Type,
+      c(
+        "fixed effects",
+        "distributional parameters",
+        "random effect SDs"
+      )
+    )) |>
+    as_tibble()
+}
+
+summary_tbl = make_brms_summary_table(fit_aa1)
+
+tbl_fixed = summary_tbl |> filter(Type == "fixed effects") |> select(-Type)
+tbl_dist  = summary_tbl |> filter(Type == "distributional parameters") |> select(-Type)
+tbl_rand  = summary_tbl |> filter(Type == "random effect SDs") |> select(-Type)
+
+bind_rows(tbl_fixed, tbl_dist, tbl_rand) |>
+  kable(
+    col.names = c("Parameter", "Estimate [95\\% CI]"),
+    booktabs = TRUE,
+    format = "latex",
+    escape = FALSE
+  ) |>
+  kable_styling(latex_options = c("striped")) |>
+  pack_rows("Fixed effects",
+            1,
+            nrow(tbl_fixed),
+            bold = FALSE,
+            italic = TRUE) |>
+  pack_rows(
+    "Distributional parameters",
+    nrow(tbl_fixed) + 1,
+    nrow(tbl_fixed) + nrow(tbl_dist),
+    bold = FALSE,
+    italic = TRUE
+  ) |>
+  pack_rows(
+    "Random effect SDs",
+    nrow(tbl_fixed) + nrow(tbl_dist) + 1,
+    nrow(tbl_fixed) + nrow(tbl_dist) + nrow(tbl_rand),
+    bold = FALSE,
+    italic = TRUE
+  ) |>
+  column_spec(1, width = "4in") |>
+  column_spec(2, width = "2in")
+
+```
+
+```{r fit_aa2, results = 'asis', echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+#| label: tbl-fit_aa2
+#| tbl-cap: "Parameter estimates and 95% confidence intervals (CIs) from the posterior distribution of the selected model with leaf mass per area (LMA) as potential mediator variable. Models potentially include fixed, random, and distributional effects of growth light intensity (shade and sun), measurement light intensity (low and high), $\\log \\mathrm{LMA}$, and their interactions on amphistomy advantage ($\\mathrm{AA}$). The distributional effects refer to the effect of factors on residual variation in $\\mathrm{AA}$, denoted $\\sigma$, on a log-link scale. LMA can also be affected by growth light intensity and population. For phylogenetically structured random effects, we report the estimated standard deviation (SD)."
+
+make_brms_summary_table = function(fit,
+                                   ci_level = 0.95,
+                                   digits = 2) {
+  # Get posterior summary
+  summ = posterior_summary(fit, prob = c((1 - ci_level) / 2, 1 - (1 - ci_level) / 2))
+  summ_df = as.data.frame(summ)
+  summ_df$param = rownames(summ_df)
+  colnames(summ_df) = c("Estimate", "Est.Error", "CI_low", "CI_high", "Parameter")
+  
+  # Classify parameters
+  summ_df = summ_df |>
+    mutate(
+      Type = case_when(
+        grepl("^b_", Parameter) &
+          !grepl("sigma|Intercept", Parameter) ~ "fixed effects",
+        grepl("^b_(aa|llma)_Intercept$", Parameter) ~ "fixed effects",
+        grepl("^b_", Parameter) &
+          grepl("sigma", Parameter) ~ "distributional parameters",
+        grepl("^sd_", Parameter) ~ "random effect SDs",
+        TRUE ~ "Other",
+      ),
+      resp = case_when(
+        str_detect(Parameter, "_aa_") ~ "aa",
+        str_detect(Parameter, "_llma_") ~ "lma",
+        TRUE ~ NA_character_
+      )
+    )
+  
+  # Clean parameter names
+  summ_df <- summ_df %>%
+    mutate(
+      Parameter = case_when(
+        # AA
+        Parameter == "b_aa_Intercept" ~ "$\\mathrm{AA}$ intercept (shade, low light)",
+        Parameter == "b_aa_light_treatmenthigh" ~ "effect of sun on $\\mathrm{AA}$",
+        Parameter == "b_aa_light_intensity2000" ~ "effect of high light on $\\mathrm{AA}$",
+        Parameter == "b_aa_light_treatmenthigh:light_intensity2000" ~ "effect of sun $\\times$ high light interaction on $\\mathrm{AA}$",
+        Parameter == "b_sigma_aa_Intercept" ~ "$\\log \\sigma$ intercept (shade, low light)",
+        Parameter == "b_sigma_aa_light_treatmenthigh" ~ "effect of sun on $\\log \\sigma$",
+        Parameter == "b_sigma_aa_light_intensity2000" ~ "effect of high light on $\\log \\sigma$",
+        Parameter == "sd_acc__aa_Intercept" ~ "$\\mathrm{AA}$ among populations",
+        Parameter == "sd_acc__aa_light_treatmenthigh" ~ "effect of sun on $\\mathrm{AA}$ among populations",
+        Parameter == "sd_acc__aa_light_intensity2000" ~ "effect of high light on $\\mathrm{AA}$ among populations",
+        Parameter == "sd_acc__aa_light_treatmenthigh:light_intensity2000" ~ "effect of sun $\\times$ high light interaction on $\\mathrm{AA}$ among populations",
+        
+        # LMA
+        Parameter == "b_llma_Intercept" ~ "$\\log \\mathrm{LMA}$ intercept (shade)",
+        Parameter == "b_llma_light_treatmenthigh" ~ "effect of sun on $\\log \\mathrm{LMA}$",
+        Parameter == "b_sigma_llma_Intercept" ~ "$\\log \\sigma$ intercept (shade)",
+        Parameter == "b_sigma_llma_light_treatmenthigh" ~ "effect of sun on $\\log \\sigma$",
+        Parameter == "sd_acc__llma_Intercept" ~ "$\\log \\mathrm{LMA}$ among populations",
+        Parameter == "sd_acc__llma_light_treatmenthigh" ~ "effect of sun on $\\log \\mathrm{LMA}$ among populations"
+      )
+    )
+  
+  # Select and format
+  summ_df |>
+    filter(Type != "Other") |>
+    mutate(across(c(Estimate, CI_low, CI_high), ~ round(., digits))) |>
+    mutate(`Estimate [95% CI]` = paste0(Estimate, " [", CI_low, ", ", CI_high, "]")) |>
+    select(resp, Type, Parameter, `Estimate [95% CI]`) |>
+    arrange(resp, match(
+      Type,
+      c(
+        "fixed effects",
+        "distributional parameters",
+        "random effect SDs"
+      )
+    )) |>
+    as_tibble()
+}
+
+summary_tbl = make_brms_summary_table(fit_aa2)
+
+tbl_aa_fixed = summary_tbl |> filter(Type == "fixed effects", resp == "aa") |> select(-Type)
+tbl_aa_dist  = summary_tbl |> filter(Type == "distributional parameters", resp == "aa") |> select(-Type)
+tbl_aa_rand  = summary_tbl |> filter(Type == "random effect SDs", resp == "aa") |> select(-Type)
+tbl_lma_fixed = summary_tbl |> filter(Type == "fixed effects", resp == "lma") |> select(-Type)
+tbl_lma_rand  = summary_tbl |> filter(Type == "random effect SDs", resp == "lma") |> select(-Type)
+
+bind_rows(tbl_aa_fixed,
+          tbl_aa_dist,
+          tbl_aa_rand,
+          tbl_lma_fixed,
+          tbl_lma_rand) |>
+  select(-resp) |>
+  kable(
+    col.names = c("Parameter", "Estimate [95\\% CI]"),
+    booktabs = TRUE,
+    format = "latex",
+    escape = FALSE
+  ) |>
+  kable_styling(latex_options = c("striped")) |>
+  pack_rows(
+    "Response: $\\mathrm{AA}$",
+    1,
+    nrow(tbl_aa_fixed) + nrow(tbl_aa_dist) + nrow(tbl_aa_rand),
+    escape = FALSE
+  ) |>
+  pack_rows(
+    "~~Fixed effects",
+    1,
+    nrow(tbl_aa_fixed),
+    escape = FALSE,
+    bold = FALSE,
+    italic = TRUE
+  ) |>
+  pack_rows(
+    "~~Distributional parameters",
+    nrow(tbl_aa_fixed) + 1,
+    nrow(tbl_aa_fixed) + nrow(tbl_aa_dist),
+    escape = FALSE,
+    bold = FALSE,
+    italic = TRUE
+  ) |>
+  pack_rows(
+    "~~Random effect SDs",
+    nrow(tbl_aa_fixed) + nrow(tbl_aa_dist) + 1,
+    nrow(tbl_aa_fixed) + nrow(tbl_aa_dist) + nrow(tbl_aa_rand),
+    escape = FALSE,
+    bold = FALSE,
+    italic = TRUE
+  ) |>
+  pack_rows(
+    "Response: $\\log~\\\\mathrm{LMA}$",
+    nrow(tbl_aa_fixed) + nrow(tbl_aa_dist) + nrow(tbl_aa_rand) + 1,
+    nrow(tbl_aa_fixed) + nrow(tbl_aa_dist) + nrow(tbl_aa_rand) + nrow(tbl_lma_fixed) + nrow(tbl_lma_rand),
+    escape = FALSE
+  ) |>
+  pack_rows(
+    "~~Fixed effects",
+    nrow(tbl_aa_fixed) + nrow(tbl_aa_dist) + nrow(tbl_aa_rand) + 1,
+    nrow(tbl_aa_fixed) + nrow(tbl_aa_dist) + nrow(tbl_aa_rand) + nrow(tbl_lma_fixed),
+    escape = FALSE,
+    bold = FALSE,
+    italic = TRUE
+  ) |>
+  pack_rows(
+    "~~Random effect SDs",
+    nrow(tbl_aa_fixed) + nrow(tbl_aa_dist) + nrow(tbl_aa_rand) + nrow(tbl_lma_fixed) + 1,
+    nrow(tbl_aa_fixed) + nrow(tbl_aa_dist) + nrow(tbl_aa_rand) + nrow(tbl_lma_fixed) + nrow(tbl_lma_rand),
+    escape = FALSE,
+    bold = FALSE,
+    italic = TRUE
+  ) |>
+  column_spec(1, width = "4.5in") |>
+  column_spec(2, width = "2in")
+
+```
 
 * Table S9: Calculation of alternate scenario where amphi leaves can get same A with less R
 * Each A-gs figure with fitted curves, R2, and AA

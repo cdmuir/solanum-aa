@@ -22,7 +22,7 @@
 \usepackage{lmodern}
 \ifPDFTeX\else  
     % xetex/luatex font selection
-  \setmainfont[]{Times New Roman}
+    \setmainfont[]{Times New Roman}
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -44,14 +44,28 @@
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 % Make \paragraph and \subparagraph free-standing
+\makeatletter
 \ifx\paragraph\undefined\else
   \let\oldparagraph\paragraph
-  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
 \fi
 \ifx\subparagraph\undefined\else
   \let\oldsubparagraph\subparagraph
-  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
+\makeatother
 
 
 \providecommand{\tightlist}{%
@@ -67,15 +81,17 @@
 \makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
-\makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
 % Set default figure placement to htbp
-\makeatletter
 \def\fps@figure{htbp}
 \makeatother
 % definitions for citeproc citations
@@ -198,9 +214,7 @@
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
-\ifLuaTeX
-  \usepackage{selnolig}  % disable illegal ligatures
-\fi
+
 \usepackage{bookmark}
 
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
@@ -215,6 +229,7 @@
   urlcolor={Blue},
   pdfcreator={LaTeX via pandoc}}
 
+
 \title{Plasticity and adaptation to high light intensity amplify the
 advantage of amphistomous leaves}
 \author{Christopher D. Muir\(^{1,2*}\) \and Wei Shen
@@ -223,6 +238,7 @@ Lim\(^{1}\) \and Dachuan Wang\(^{1,2}\)}
 
 \begin{document}
 \maketitle
+
 
 \begin{center}
 $^1$School of Life Sciences, University of Hawaiʻi, Mānoa, Hawaiʻi, USA\\
@@ -363,7 +379,7 @@ a forest canopy will often experience low light intensity.
 
 \centering{
 
-\includegraphics[width=2.24in,height=\textheight]{../figures/amphisomy draft 2024-03-28.jpg}
+\includegraphics[width=2.24in,height=\textheight,keepaspectratio]{../figures/amphisomy draft 2024-03-28.jpg}
 
 }
 
@@ -465,7 +481,7 @@ combinations (Fig.~\ref{fig-aa}B).
 
 \centering{
 
-\includegraphics{ms_files/figure-pdf/fig-aa-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-aa-1.pdf}}
 
 }
 
@@ -479,7 +495,7 @@ combinations (Fig.~\ref{fig-aa}B).
 
 \centering{
 
-\includegraphics{ms_files/figure-pdf/fig-aacap-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-aacap-1.pdf}}
 
 }
 
@@ -544,7 +560,7 @@ these limitations.
 
 \centering{
 
-\includegraphics{ms_files/figure-pdf/fig-lma_aa-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-lma_aa-1.pdf}}
 
 }
 
@@ -1589,7 +1605,7 @@ mixed effects model described below.
 
 \centering{
 
-\includegraphics{ms_files/figure-pdf/fig-example-aa-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-example-aa-1.pdf}}
 
 }
 
@@ -1623,7 +1639,9 @@ using the standard deviation of the posterior distribution of each
 crossed fixed and random effect structures with fixed effects of
 measurement light intensity and/or growth light intensity on the
 distributional parameter, \(\sigma\), the residual variance in \aax{}.
-In total, we fit 100 models, each with a different combination of fixed,
+We used a robust regression approach by assuming \(t\)-distributed
+residuals, which makes estimates less susceptible to extreme values. In
+total, we fit 100 models, each with a different combination of fixed,
 random, and distributional effects. We used the RAxML
 whole-transcriptome concatenated phylogeny based on 2,745 100-kb genomic
 windows from (\emph{64}). Two of our populations were not in this tree.
@@ -1721,6 +1739,105 @@ light intensity, light treatments, and population on \aax{}.
 
 \subsection{Results}\label{results}
 
+\begin{table}
+
+\caption{\label{tbl-fit_aa1}Parameter estimates and 95\% confidence
+intervals (CIs) from the posterior distribution of the selected model.
+Models potentially include fixed, random, and distributional effects of
+growth light intensity (shade and sun), measurement light intensity (low
+and high), and their interaction on amphistomy advantage
+(\(\mathrm{AA}\)). The distributional effects refer to the effect of
+factors on residual variation in \(\mathrm{AA}\), denoted \(\sigma\), on
+a log-link scale. For phylogenetically structured random effects, we
+report the estimated standard deviation (SD).}
+
+\centering{
+
+\centering
+\begin{tabular}{>{\raggedright\arraybackslash}p{4in}>{\raggedright\arraybackslash}p{2in}}
+\toprule
+Parameter & Estimate [95\% CI]\\
+\midrule
+\addlinespace[0.3em]
+\multicolumn{2}{l}{\textit{Fixed effects}}\\
+\hspace{1em}\cellcolor{gray!10}{$\mathrm{AA}$ intercept (shade, low light)} & \cellcolor{gray!10}{0.08 [0.01, 0.16]}\\
+\hspace{1em}effect of sun on $\mathrm{AA}$ & 0.04 [-0.02, 0.12]\\
+\hspace{1em}\cellcolor{gray!10}{effect of high light on $\mathrm{AA}$} & \cellcolor{gray!10}{-0.03 [-0.06, 0]}\\
+\hspace{1em}effect of sun $\times$ high light interaction on $\mathrm{AA}$ & -0.03 [-0.1, 0.03]\\
+\addlinespace[0.3em]
+\multicolumn{2}{l}{\textit{Distributional parameters}}\\
+\hspace{1em}\cellcolor{gray!10}{$\log \sigma$ intercept (shade, low light)} & \cellcolor{gray!10}{-2.51 [-2.61, -2.41]}\\
+\hspace{1em}effect of sun on $\log \sigma$ & 0.23 [0.12, 0.33]\\
+\hspace{1em}\cellcolor{gray!10}{effect of high light on $\log \sigma$} & \cellcolor{gray!10}{-0.19 [-0.3, -0.09]}\\
+\addlinespace[0.3em]
+\multicolumn{2}{l}{\textit{Random effect SDs}}\\
+\hspace{1em}$\mathrm{AA}$ among populations & 0.06 [0.04, 0.1]\\
+\hspace{1em}\cellcolor{gray!10}{effect of sun on $\mathrm{AA}$ among populations} & \cellcolor{gray!10}{0.05 [0, 0.1]}\\
+\hspace{1em}effect of high light on $\mathrm{AA}$ among populations & 0.02 [0, 0.05]\\
+\hspace{1em}\cellcolor{gray!10}{effect of sun $\times$ high light interaction on $\mathrm{AA}$ among populations} & \cellcolor{gray!10}{0.04 [0, 0.1]}\\
+\bottomrule
+\end{tabular}
+
+}
+
+\end{table}%
+
+\begin{table}
+
+\caption{\label{tbl-fit_aa2}Parameter estimates and 95\% confidence
+intervals (CIs) from the posterior distribution of the selected model
+with leaf mass per area (LMA) as potential mediator variable. Models
+potentially include fixed, random, and distributional effects of growth
+light intensity (shade and sun), measurement light intensity (low and
+high), \(\log \mathrm{LMA}\), and their interactions on amphistomy
+advantage (\(\mathrm{AA}\)). The distributional effects refer to the
+effect of factors on residual variation in \(\mathrm{AA}\), denoted
+\(\sigma\), on a log-link scale. LMA can also be affected by growth
+light intensity and population. For phylogenetically structured random
+effects, we report the estimated standard deviation (SD).}
+
+\centering{
+
+\centering
+\begin{tabular}{>{\raggedright\arraybackslash}p{4.5in}>{\raggedright\arraybackslash}p{2in}}
+\toprule
+Parameter & Estimate [95\% CI]\\
+\midrule
+\addlinespace[0.3em]
+\multicolumn{2}{l}{\textbf{Response: $\mathrm{AA}$}}\\
+\addlinespace[0.3em]
+\multicolumn{2}{l}{\textit{~~Fixed effects}}\\
+\hspace{1em}\hspace{1em}\cellcolor{gray!10}{$\mathrm{AA}$ intercept (shade, low light)} & \cellcolor{gray!10}{-0.01 [-0.12, 0.09]}\\
+\hspace{1em}\hspace{1em}effect of sun on $\mathrm{AA}$ & 0.01 [-0.05, 0.06]\\
+\hspace{1em}\hspace{1em}\cellcolor{gray!10}{effect of high light on $\mathrm{AA}$} & \cellcolor{gray!10}{-0.03 [-0.07, 0]}\\
+\addlinespace[0.3em]
+\multicolumn{2}{l}{\textit{~~Distributional parameters}}\\
+\hspace{1em}\hspace{1em}$\log \sigma$ intercept (shade, low light) & -2.5 [-2.61, -2.4]\\
+\hspace{1em}\hspace{1em}\cellcolor{gray!10}{effect of sun on $\log \sigma$} & \cellcolor{gray!10}{0.23 [0.13, 0.34]}\\
+\hspace{1em}\hspace{1em}effect of high light on $\log \sigma$ & -0.19 [-0.29, -0.08]\\
+\addlinespace[0.3em]
+\multicolumn{2}{l}{\textit{~~Random effect SDs}}\\
+\hspace{1em}\hspace{1em}\cellcolor{gray!10}{$\mathrm{AA}$ among populations} & \cellcolor{gray!10}{0.06 [0.04, 0.1]}\\
+\hspace{1em}\hspace{1em}effect of sun on $\mathrm{AA}$ among populations & 0.04 [0, 0.1]\\
+\hspace{1em}\hspace{1em}\cellcolor{gray!10}{effect of high light on $\mathrm{AA}$ among populations} & \cellcolor{gray!10}{0.02 [0, 0.05]}\\
+\hspace{1em}\hspace{1em}effect of sun $\times$ high light interaction on $\mathrm{AA}$ among populations & 0.04 [0, 0.09]\\
+\addlinespace[0.3em]
+\multicolumn{2}{l}{\textbf{Response: $\log~\mathrm{LMA}$}}\\
+\addlinespace[0.3em]
+\multicolumn{2}{l}{\textit{~~Fixed effects}}\\
+\hspace{1em}\hspace{1em}\cellcolor{gray!10}{$\log \mathrm{LMA}$ intercept (shade)} & \cellcolor{gray!10}{2.99 [2.42, 3.52]}\\
+\hspace{1em}\hspace{1em}effect of sun on $\log \mathrm{LMA}$ & 0.8 [0.36, 1.27]\\
+\addlinespace[0.3em]
+\multicolumn{2}{l}{\textit{~~Random effect SDs}}\\
+\hspace{1em}\hspace{1em}\cellcolor{gray!10}{$\log \mathrm{LMA}$ among populations} & \cellcolor{gray!10}{0.48 [0.35, 0.66]}\\
+\hspace{1em}\hspace{1em}effect of sun on $\log \mathrm{LMA}$ among populations & 0.37 [0.23, 0.6]\\
+\bottomrule
+\end{tabular}
+
+}
+
+\end{table}%
+
 \begin{itemize}
 \tightlist
 \item
@@ -1734,7 +1851,7 @@ light intensity, light treatments, and population on \aax{}.
 
 \centering{
 
-\includegraphics{ms_files/figure-pdf/fig-sr-rxnorm-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-sr-rxnorm-1.pdf}}
 
 }
 
@@ -1848,6 +1965,7 @@ LOOIC & $\Delta$LOOIC & Meas. & Growth & LMA & Meas. $\times$ Growth & Meas. $\t
 \end{longtable}
 
 \end{landscape}
+
 
 
 

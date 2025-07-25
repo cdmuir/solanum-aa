@@ -26,44 +26,152 @@ bibliography: solanum-aa.bib
 csl: https://www.zotero.org/styles/science
 ---
 
-```{r load-objects, echo=FALSE, eval=TRUE}
+```{r load-objects, echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+library(brms)
+library(cowplot)
 library(dplyr)
+library(ggplot2)
+library(kableExtra)
+library(knitr)
+library(lubridate)
+library(magrittr)
 library(readr)
+library(stringr)
 library(tibble)
+library(tidyr)
+
+theme_set(theme_cowplot())
+
+source("../r/functions.R")
+
+aa_args = read_rds("../objects/aa_args1.rds")
+aa_stats = read_rds("../objects/aa_stats.rds")
+# sort list by name
+aa_stats = aa_stats[order(names(aa_stats))]
+
+plant_info = read_rds("../data/plant-info.rds")
+
+accession_info = read_rds("../data/accession-info.rds") |>
+  dplyr::select(species, accession)
+
+rh_curves = read_rds("../data/trimmed_rh_curves.rds")
+
+stomata = read_rds("../data/stomata.rds")
+
+fit_aa2 = read_rds("../objects/fit_aa2.rds")
 ```
 
-blah \autoref{tbl-models}.
+```{r fit_aa2, results = 'asis', echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+#| label: tbl-fit_aa2
+#| tbl-cap: "Parameter estimates and 95% confidence intervals (CIs) from the posterior distribution of the selected model with leaf mass per area (LMA) as potential mediator variable. Models potentially include fixed, random, and distributional effects of growth light intensity (shade and sun), measurement light intensity (low and high), $\\log \\mathrm{LMA}$, and their interactions on amphistomy advantage ($\\mathrm{AA}$). The distributional effects refer to the effect of factors on residual variation in $\\mathrm{AA}$, denoted $\\sigma$, on a log-link scale. LMA can also be affected by growth light intensity and population. For phylogenetically structured random effects, we report the estimated standard deviation (SD)."
 
-```{r, models, echo=FALSE,message=FALSE,warning=FALSE}
-#| label: tbl-models
-#| tbl-cap: "Summary of differences among competing models of how \\aax{} varies with light intensity, light treatment, and among accessions as a function of native \\ppfd. The models are numbered from simpler to more complex. All models include fixed effects of light intensity and light treatment; some models include interactions between. All models include a phylogenetic random effect of accession on \\aax; some models include varying effects of light intensity and light treatment among accessions. The last column indicates the accession-level \\aax{} variable we used as a response to native \\ppfd."
+make_brms_summary_table = function(fit,
+                                   ci_level = 0.95,
+                                   digits = 2) {
+  # Get posterior summary
+  summ = posterior_summary(fit, prob = c((1 - ci_level) / 2, 1 - (1 - ci_level) / 2))
+  summ_df = as.data.frame(summ)
+  summ_df$param = rownames(summ_df)
+  colnames(summ_df) = c("Estimate", "Est.Error", "CI_low", "CI_high", "Parameter")
+  
+  # Classify parameters
+  summ_df = summ_df |>
+    mutate(
+      Type = case_when(
+        grepl("^b_", Parameter) &
+          !grepl("sigma|Intercept", Parameter) ~ "fixed effects",
+        grepl("^b_(aa|llma)_Intercept$", Parameter) ~ "fixed effects",
+        grepl("^b_", Parameter) &
+          grepl("sigma", Parameter) ~ "distributional parameters",
+        grepl("^sd_", Parameter) ~ "random effect SDs",
+        TRUE ~ "Other",
+      ),
+      resp = case_when(
+        str_detect(Parameter, "_aa_") ~ "aa",
+        str_detect(Parameter, "_llma_") ~ "lma",
+        TRUE ~ NA_character_
+      )
+    )
+  
+  # Clean parameter names
+  summ_df <- summ_df %>%
+    mutate(Parameter = case_when(
+      
+      # AA
+      Parameter == "b_aa_Intercept" ~ "$\\mathrm{AA}$ intercept (shade, low light)",
+      Parameter == "b_aa_light_treatmenthigh" ~ "effect of sun on $\\mathrm{AA}$",
+      Parameter == "b_aa_light_intensity2000" ~ "effect of high light on $\\mathrm{AA}$",
+      Parameter == "b_aa_light_treatmenthigh:light_intensity2000" ~ "effect of sun $\\times$ high light interaction on $\\mathrm{AA}$",
+      Parameter == "b_sigma_aa_Intercept" ~ "$\\log \\sigma$ intercept (shade, low light)",
+      Parameter == "b_sigma_aa_light_treatmenthigh" ~ "effect of sun on $\\log \\sigma$",
+      Parameter == "b_sigma_aa_light_intensity2000" ~ "effect of high light on $\\log \\sigma$",
+      Parameter == "sd_acc__aa_Intercept" ~ "$\\mathrm{AA}$ among populations",
+      Parameter == "sd_acc__aa_light_treatmenthigh" ~ "effect of sun on $\\mathrm{AA}$ among populations",
+      Parameter == "sd_acc__aa_light_intensity2000" ~ "effect of high light on $\\mathrm{AA}$ among populations",
+      Parameter == "sd_acc__aa_light_treatmenthigh:light_intensity2000" ~ "effect of sun $\\times$ high light interaction on $\\mathrm{AA}$ among populations",
+      
+      # LMA
+      Parameter == "b_llma_Intercept" ~ "$\\log \\mathrm{LMA}$ intercept (shade)",
+      Parameter == "b_llma_light_treatmenthigh" ~ "effect of sun on $\\log \\mathrm{LMA}$",
+      Parameter == "b_sigma_llma_Intercept" ~ "$\\log \\sigma$ intercept (shade)",
+      Parameter == "b_sigma_llma_light_treatmenthigh" ~ "effect of sun on $\\log \\sigma$",
+      Parameter == "sd_acc__llma_Intercept" ~ "$\\log \\mathrm{LMA}$ among populations",
+      Parameter == "sd_acc__llma_light_treatmenthigh" ~ "effect of sun on $\\log \\mathrm{LMA}$ among populations"
+    ))
+  
+  # Select and format
+  summ_df |>
+    filter(Type != "Other") |>
+    mutate(across(c(Estimate, CI_low, CI_high), ~ round(., digits))) |>
+    mutate(`Estimate [95% CI]` = paste0(Estimate, " [", CI_low, ", ", CI_high, "]")) |>
+    select(resp, Type, Parameter, `Estimate [95% CI]`) |>
+    arrange(resp,
+            match(
+      Type,
+      c(
+        "fixed effects",
+        "distributional parameters",
+        "random effect SDs"
+      )
+    )) |>
+    as_tibble()
+}
 
-tribble(
-    ~"Model", ~"Fixed effects", ~"Phylogenetic random effects", ~"Response to native \\ppfd",
-    "1", "light intensity", "varying intercept among accessions", "$\\mathrm{AA}_{0, \\text{acc}}$",
-    "1", "light treatment", "", "",
-    "2", "light intensity", "varying intercept among accessions", "$\\mathrm{AA}_{0, \\text{acc}}$",
-    "2", "light treatment", "", "",
-    "2", "intensity $\\times$ treatment", "", "",
-    "3", "light intensity", "varying intercept among accessions", "$\\mathrm{AA}_{2000, \\text{acc}}$",
-    "3", "light treatment", "varying effect of high light intensity among accessions", "",
-    "4", "light intensity", "varying intercept among accessions", "$\\mathrm{AA}_{\\text{sun, acc}}$",
-    "4", "light treatment", "varying effect of sun treatment among accessions", "",
-    "5", "light intensity", "varying intercept among accessions", "$\\mathrm{AA}_{2000, \\text{sun, acc}}$",
-    "5", "light treatment", "varying effect of high light intensity among accessions", "",
-    "5", "intensity $\\times$ treatment", "varying effect of sun treatment among accessions", ""
-  ) |>
-  knitr::kable(
-    format = "latex",
-    align = c("c", "l", "l", "l"),
+summary_tbl = make_brms_summary_table(fit_aa2)
+
+tbl_aa_fixed = summary_tbl |> filter(Type == "fixed effects", resp == "aa") |> select(-Type)
+tbl_aa_dist  = summary_tbl |> filter(Type == "distributional parameters", resp == "aa") |> select(-Type)
+tbl_aa_rand  = summary_tbl |> filter(Type == "random effect SDs", resp == "aa") |> select(-Type)
+tbl_lma_fixed = summary_tbl |> filter(Type == "fixed effects", resp == "lma") |> select(-Type)
+tbl_lma_rand  = summary_tbl |> filter(Type == "random effect SDs", resp == "lma") |> select(-Type)
+
+bind_rows(tbl_aa_fixed, tbl_aa_dist, tbl_aa_rand, tbl_lma_fixed, tbl_lma_rand) |>
+  select(-resp) |>
+  kable(
+    col.names = c("Parameter", "Estimate [95\\% CI]"),
     booktabs = TRUE,
-    escape = FALSE,
-    longtable = FALSE
+    format = "latex",
+    escape = FALSE
   ) |>
-    kableExtra::collapse_rows(columns = 1, latex_hline = "major", row_group_label_position = "first") |>
-  kableExtra::column_spec(1, width = "0.3in") |>
-  kableExtra::column_spec(2, width = "1.3in") |>
-  kableExtra::column_spec(3, width = "3.4in") |>
-  kableExtra::column_spec(4, width = "1in")
+  kable_styling(latex_options = c("striped")) |>
+  pack_rows("Response: $\\mathrm{AA}$", 1, nrow(tbl_aa_fixed) + nrow(tbl_aa_dist) + nrow(tbl_aa_rand), escape = FALSE) |>
+  pack_rows("~~Fixed effects", 1, nrow(tbl_aa_fixed), escape = FALSE, bold = FALSE, italic = TRUE) |>
+  pack_rows("~~Distributional parameters",
+            nrow(tbl_aa_fixed) + 1,
+            nrow(tbl_aa_fixed) + nrow(tbl_aa_dist), escape = FALSE, bold = FALSE, italic = TRUE) |>
+  pack_rows(
+    "~~Random effect SDs",
+    nrow(tbl_aa_fixed) + nrow(tbl_aa_dist) + 1,
+    nrow(tbl_aa_fixed) + nrow(tbl_aa_dist) + nrow(tbl_aa_rand), escape = FALSE, bold = FALSE, italic = TRUE
+  ) |>
+    pack_rows("Response: $\\log~\\\\mathrm{LMA}$", nrow(tbl_aa_fixed) + nrow(tbl_aa_dist) + nrow(tbl_aa_rand) + 1, nrow(tbl_aa_fixed) + nrow(tbl_aa_dist) + nrow(tbl_aa_rand) + nrow(tbl_lma_fixed) + nrow(tbl_lma_rand), escape = FALSE) |>
+  pack_rows("~~Fixed effects", nrow(tbl_aa_fixed) + nrow(tbl_aa_dist) + nrow(tbl_aa_rand) + 1, nrow(tbl_aa_fixed) + nrow(tbl_aa_dist) + nrow(tbl_aa_rand) + nrow(tbl_lma_fixed), escape = FALSE, bold = FALSE, italic = TRUE) |>
+ pack_rows(
+    "~~Random effect SDs",
+    nrow(tbl_aa_fixed) + nrow(tbl_aa_dist) + nrow(tbl_aa_rand) + nrow(tbl_lma_fixed) + 1,
+    nrow(tbl_aa_fixed) + nrow(tbl_aa_dist) + nrow(tbl_aa_rand) + nrow(tbl_lma_fixed) + nrow(tbl_lma_rand), escape = FALSE, bold = FALSE, italic = TRUE
+  ) |>
+  column_spec(1, width = "4.5in") |>
+  column_spec(2, width = "2in")
 
 ```
