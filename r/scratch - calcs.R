@@ -16,7 +16,7 @@ tibble(acc = unique(rh_curves$acc), seed = sample(1e9, length(unique(rh_curves$a
     
     while (crit == 0 & x < 24) {
       m = brm(
-        formula = log_A ~ leaf_type + light_intensity * log_gsw + (light_intensity * log_gsw |
+        formula = log_A ~ leaf_type + light_intensity * log_gsw + (leaf_type + light_intensity * log_gsw |
                                                                      acc_id),
         
         data = filter(rh_curves, acc == .acc),
@@ -47,7 +47,7 @@ tibble(acc = unique(rh_curves$acc), seed = sample(1e9, length(unique(rh_curves$a
     }
     
     write_rds(m, glue("objects/simple-Ags-fits/{acc}.rds"))
-    return(m)
+    
   },
   .progress = TRUE,
   .options = furrr_options(seed = TRUE))
