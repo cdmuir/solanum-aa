@@ -10,7 +10,9 @@ vjust = 0.5
 
 # load data
 accession_info = read_rds("data/accession-info.rds")
-plant_info = read_rds("data/plant-info.rds")
+plant_info = read_rds("data/plant-info.rds") |>
+  mutate(light_treatment = light_treatment |>
+           fct_recode(shade = "low", sun = "high"))
 aa_summary = read_rds("objects/aa_summary.rds")
 fit_curve_diagnostics = read_rds("objects/fit_curve_diagnostics.rds") |>
   mutate(
@@ -24,7 +26,7 @@ assert_true(all(!is.na(fit_curve_diagnostics$acc_id))) # Check for NA values in 
 assert_true(all(!is.na(fit_curve_diagnostics$`Curve type`))) # Check for NA values in `Curve type`
 assert_true(all(!is.na(fit_curve_diagnostics$light_intensity))) # Check for NA values in light_intensity
 
-plan(multisession, workers = 9)
+plan(multisession, workers = 19)
 ags_curves = future_map(
   unique(aa_summary$acc_id),
   \(.x) {
