@@ -341,7 +341,7 @@ df_coef_summary = read_rds("../objects/df_coef_summary.rds") |>
 
 ## Abstract
 
-The presence of stomata on both leaf surfaces (amphistomy) can increase photosynthesis in C$_3$ plants by reducing the path length for CO$_2$ diffusion between substomatal cavities and chloroplasts. Amphistomatous leaves are common among herbaceous plants growing in sunny habitats, including many crop species. This distribution of amphistomatous leaves in nature may result from an increased photosynthetic benefit of amphistomy under high light intensity, either because of acclimatory, plastic, or constitutive variation in CO$_2$ supply or demand. We used a recently developed method to quantify amphistomy advantage, the photosynthetic rate of an amphistomatous leaf relative to an otherwise identical hypostomatous leaf, in `r n_acc` diverse populations representing `r n_sp` species of wild tomatoes (*Solanum* sect. *Lycopersicon* and sect. *Lycopersicoides*). Plants grown under high light intensity benefit more in terms of CO$_2$ assimilated for a given stomatal conductance than plants grown under low light, regardless of measurement light intensity. Furthermore, populations native to open habitats tend to benefit more from amphistomy compared to those from more closed habitats. Developmental plasticity and adaptation of leaves to high light intensity likely play a combined role in explaining the adaptive significance and distribution of amphistomy in nature.
+The presence of stomata on both leaf surfaces (amphistomy) can increase photosynthesis in C$_3$ plants by reducing the path length for CO$_2$ diffusion between substomatal cavities and chloroplasts. Amphistomatous leaves are common among herbaceous plants growing in sunny habitats, including many crop species. This distribution of amphistomatous leaves in nature may result from an increased photosynthetic benefit of amphistomy under high light intensity, either because of acclimatory, plastic, or constitutive variation in CO$_2$ supply or demand. We used a recently developed method to quantify amphistomy advantage, the photosynthetic rate of an amphistomatous leaf relative to an otherwise identical hypostomatous leaf, in `r n_acc` diverse populations representing `r n_sp` species of wild tomatoes (*Solanum* sect. *Lycopersicon* and sect. *Lycopersicoides*). Plants grown under high light intensity benefit more in terms of CO$_2$ assimilated for a given stomatal conductance than plants grown under low light, regardless of measurement light intensity. Furthermore, populations native to open habitats tend to benefit more from amphistomy compared to those from more closed habitats. Developmental plasticity and adaptation of leaves to high light intensity likely play a combined role in explaining the adaptive significance and distribution of amphistomy in nature. We estimate that hypostomatous leaves would expend 10-65\% more water to achieve the same photosynthetic rate as a comparable amphistomatous leaf, implying large fitness costs of amphistomy in  ecological contexts where this trait is rare.
 
 ## Main text
 
@@ -473,7 +473,7 @@ read_rds("../objects/fig_lma_aa.rds")
 
 We conclude that both developmental plasticity and adaptation to open habitats, but not acclimation, may explain the long-standing observation that amphistomatous leaves are more common in sunny habitats, at least among herbaceous plants including crop relatives. This result changes our understanding by showing high light intensity *per se* does not increase the benefit of amphistomy, but rather arise as a byproduct of anatomical and biochemical changes caused by plasticity and adaptation to higher light intensity modulate \aax{}. To gain more precise understanding of when amphistomy is most beneficial will require further research on its leaf anataomical and biochemical basis.
 
-The magnitude of \aax{} we document across populations is also noteworthy, as it implies that hypostomatous leaves predominant in mesic to wet forests globally are giving up 'free' carbon that would require little to no additional water loss. Back-of-the-envelope calculations based on our data suggest that leaves could use X-X% less water for the same carbon gain if they were amphistomatous (see Supporting Information for details of calculations). As this is the first quantitative comparison of \aax{} across species, estimation from a broader range of species and environments will be required to fully understand the ecological causes and consequences of stomatal distributions on leaf surfaces.
+The magnitude of \aax{} we document across populations is also noteworthy, as it implies that hypostomatous leaves predominant in mesic to wet forests globally are giving up 'free' carbon that would require little to no additional water loss. The cost of hypostomy can be quantified as the difference in total \gsw{} that an amphistomatous leaf would require to achieve the same photosynthetic rate. This cost can be locally approximated on a log-ratio scale as $\mathrm{AA} / \varepsilon_g$ (Supporting Information), where $\varepsilon_g$ is the elasticity of $A$ to \gsw. For $\mathrm{AA} = 0.05$, the water cost of hypostomy would be 0.5 (64.9\%) at low elasticities ($\varepsilon_g = 0.1$) and 0.1 (10.5\%) at high elasticities ($\varepsilon_g = 0.5$). For plants to expend this much extra water implies a large fitness cost of upper stomata in certain ecological contexts. As this is the first quantitative comparison of \aax{} across species, estimation from a broader range of species and environments will be required to fully understand the ecological causes and consequences of stomatal distributions on leaf surfaces.
 
 <!-- note: estimates of AA are less than that described by Parkhurst and Mott (1990) and also less than that of Xiong and Flexas (2021). What does this tell us? -->
 
@@ -718,7 +718,8 @@ read_rds("../figures/example-aa.rds")
 
 We fit Bayesian mixed effects models with phylogenetically structured random effects to test predictions of competing hypotheses about why amphistomy advantage (\aax) might be greater for leaves in sunny, open habitats. We fit all models combinations of measurement light intensity, growth light intensity, and their interaction as both fixed effects and random effects among populations. In other words, we test whether there were main effects of light intensity treatments and/or whether populations varied in their response to light intensity treatments. In all models, we included population as a phylogenetically structured random effect. We accounted for uncertainty in $\widehat{\mathrm{AA}}$ using the standard deviation of the posterior distribution of each $\widehat{\mathrm{AA}}$ estimate (@sec-aa-est). We crossed fixed and random effect structures with fixed effects of measurement light intensity and/or growth light intensity on the distributional parameter, $\sigma$, the residual variance in \aax{}. We used a robust regression approach by assuming $t$-distributed residuals, which makes estimates less susceptible to extreme values. In total, we fit `r n_model1` models, each with a different combination of fixed, random, and distributional effects. We used the RAxML whole-transcriptome concatenated phylogeny based on 2,745 100-kb genomic windows from @pease_phylogenomics_2016. Two of our populations were not in this tree. We used accession LA1044 in place of LA3909, two populations of *S. galapagnse*; LA0750 was added as sister to LA0716, two closely related populations of *S. pennellii*. The node separating LA0750 from LA0716 was placed half-way between the next deepest node. We used the leave-one-out cross-validation information criterion (LOOIC) to compare the fit of models (\autoref{tbl-aa_loo1}) using the *R* package **loo** version `r packageVersion("loo")` [@vehtari_practical_2017] to calculate LOOIC values. We selected the model with the lowest LOOIC value (@tbl-aa_loo1) to generate posterior predictions for hypothesis testing. Parameter estimates from the selected model are shown in @tbl-fit_aa1.
 
-To test whether LMA mediated the relationship between growth light intensity and \aax{}, we repeated a similar model comparison procedure but included $\log \mathrm{LMA}$ as an additional fixed effect in the model, as well its interaction with measurement and growth light intensity. The model included a direct effect of growth light intensity on $\log \mathrm{LMA}$ and random phylogeneticlly structured effects of population on $\log \mathrm{LMA}$ and effects of sun treatment on $\log \mathrm{LMA}$. This enabled us to disentangle whether $\log \mathrm{LMA}$ effects \aax{} directly or indirectly because both traits respond to growth light intensity. We integrated over missing LMA data using the `mi()` function in **brms**. Because the evidence strong supported including effects of growth and measurement light intensity on the residual variance in $\mathrm{AA}$, we included these in terms in all models. In total, we fit `r n_model2` models, each with a different combination of fixed and random effect structures. We selected the model with the lowest LOOIC value (@tbl-aa_loo2) to generate posterior predictions for hypothesis testing. Parameter estimates from the selected model are shown in @tbl-fit_aa2.
+To test whether LMA mediated the relationship between growth light intensity and \aax{}, we repeated a similar model comparison procedure but included $\log \mathrm{LMA}$ as an additional fixed effect in the model, as well its interaction with measurement and growth light intensity. The model included a direct effect of growth light intensity on $\log \mathrm{LMA}$ and random phylogeneticlly structured effects of population on $\log \mathrm{LMA}$ and effects of sun treatment on $\log \mathrm{LMA}$. This enabled us to disentangle whether $\log \mathrm{LMA}$ effects \aax{} directly or indirectly because both traits respond to growth light intensity. We integrated over missing LMA data using the `mi()` function in **brms**. Because the evidence strong supported including effects of growth and measurement light intensity on the residual variance in $\mathrm{AA}$, we included these in terms in all models. In total, we fit `r n_model2` models, each with a different combination of fixed and random effect structures. We selected the model with the lowest LOOIC value (@tbl-aa_loo2) to generate posterior predictions for hypothesis testing. Note that LOOIC was calculated only from pointwise likelihood values of the submodel estimating effects of light intensity, light treatments, and population on \aax{}. 
+Parameter estimates from the selected model are shown in @tbl-fit_aa2.
 
 #### Posterior predictions {#sec-predictions}
 
@@ -765,7 +766,21 @@ tribble(
 
 ```
 
-THIS COULD BE USED FOR LMA MODEL? Note that LOOIC was calculated only from pointwise likelihood values of the submodel estimating effects of light intensity, light treatments, and population on \aax{}. 
+### Estimating the water cost of hypostomy
+
+Amphistomy advantage implies that hypostomatous leaves would need to lose more water by having higher \gsw{} to achieve the same photosynthetic rate. We estimated this cost of hypostomy approximately. For simpliticity, we focus on a sufficiently small region of the \agcurve{} curve such that we can approximate the relationship between \gsw{} and $A$ as log-log linear. We also assume that slope is same in both amphistomatous and hypostomatous leaves, which was often approximately the case in our experiment (@fig-curves). With these assumptions, the approximate water cost of hypostomy can be derived from the equations:
+
+$$\log(A_{\mathrm{amphi}}) = \beta_\text{amphi} + \varepsilon_g \log(g_\text{sw}),~\text{and}$$
+$$\log(A_{\mathrm{hypo}}) = \beta_\text{hypo} + \varepsilon_g \log(g_\text{sw}).$$
+Solving for the difference in $\log{g_\text{sw}}$ at a given $\log{A_{\mathrm{hypo}}}$ is:
+
+$$\log(g_\text{sw,amphi}) - \log(g_\text{sw,hypo}) = \frac{\beta_\text{amphi} - \beta_\text{hypo}}{\varepsilon_g}.$$
+Noting that because the curves are parallel, $\mathrm{AA} = \log(A_\text{amphi} /A_\text{hypo}) = \beta_\text{amphi} - \beta_\text{hypo}$, this reveals that the negative log-ratio of the \gsw{} is related to \aax{} divided by the slope:
+
+$$-\log\left(\frac{g_\text{sw,amphi}}{g_\text{sw,hypo}}\right) = \frac{\mathrm{AA}}{\varepsilon_g}.$$
+We note that the slope in this case is an elasticity of of $A$ to \gsw{} because both are log-transformed. This quantity will be proportional the water cost of hypostomy assuming that VPD and other environmental variables are held constant and boundary layer conductance are high enough to be negligible.
+
+<!-- estimated the average value of this quantity for each population under each measurement light treatment by regressing \gsw{} against $A$ on a log-log scale, with curve type (amphistomy versus pseudohypostomy) and replicate within population as a random effect using **brms**. We followed the fitting procedures described above for other models. Because of the different assumptions, the estimates of \aax{} in this model will not be identical to that described above, but this approximate method enables a simpler, back-of-the-envelope calculation of the water cost of hypostomy. -->
 
 ## Results
 
@@ -1025,9 +1040,6 @@ bind_rows(tbl_aa_fixed,
 
 ```
 
-* Table S9: Calculation of alternate scenario where amphi leaves can get same A with less R
-* Each A-gs figure with fitted curves, R2, and AA
-
 ```{r, sr-rxnorm-cap, echo=FALSE,message=FALSE,warning=FALSE}
 
 sr_rxnorm_cap = glue::glue("Developmental plasticity in anatomical maximum stomatal conductance ratio (\\gmaxratio; $y$-axis) to growth light intensity ($x$-axis) among {n_acc} wild tomato populations. All populations are amphistomatous, but vary in the stomatal density and size on each surface, which determines \\gmaxratio. Each point is the average per population in that treatment; black lines connect the same population across treatments.")
@@ -1042,8 +1054,6 @@ sr_rxnorm_cap = glue::glue("Developmental plasticity in anatomical maximum stoma
 #| fig-cap: !expr sr_rxnorm_cap
 read_rds("../figures/sr-rxnorm.rds")
 ```
-
-
 
 ```{r, aa_loo1, echo=FALSE,message=FALSE,warning=FALSE}
 #| label: tbl-aa_loo1
@@ -1173,4 +1183,10 @@ kbl(
   column_spec(2, width = "0.5in") |>
   column_spec(3:12, width = "0.4in")
 cat("\\end{landscape}")
+```
+
+```{r, curves, echo=FALSE,message=FALSE,warning=FALSE}
+#| label: fig-curves
+#| fig-cap: "(Figures in separate file) The \\agcurve{} curves, fitted lines, and \\aax{} estimates for every individual plant. The title provides the Tomato Genetics Resource Center accession number, replicate letter, and species names. The subtitle indicates the growth light intensity (sun or shade). Points are raw data, lines are fitted curves, and shaded regions are 95% confidence ribbons for the fitted curves. The Bayesian correlation coefficient $r^2$ is shown to the right of each curve, along with the estimate of \\aax{} $\\pm$ two standard errors for each pair of amphi (orange) and pseudohypo (blue) curves."
+ggplot()
 ```

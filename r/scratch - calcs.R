@@ -5,7 +5,7 @@ rh_curves = read_rds("data/trimmed_rh_curves.rds")
 tr = read_rds("data/phylogeny.rds")
 A = vcv(tr, corr = TRUE)
 
-plan(multisession, workers = 19)
+plan(multisession, workers = 9)
 
 set.seed(125691028)
 tibble(acc = unique(rh_curves$acc), seed = sample(1e9, length(unique(rh_curves$acc)))) |>
@@ -16,7 +16,7 @@ tibble(acc = unique(rh_curves$acc), seed = sample(1e9, length(unique(rh_curves$a
     
     while (crit == 0 & x < 24) {
       m = brm(
-        formula = log_A ~ leaf_type + light_intensity * log_gsw + (leaf_type + light_intensity * log_gsw |
+        formula = log_A ~ leaf_type + leaf_type:light_intensity + light_intensity * log_gsw + (leaf_type + leaf_type:light_intensity + light_intensity * log_gsw |
                                                                      acc_id),
         
         data = filter(rh_curves, acc == .acc),
