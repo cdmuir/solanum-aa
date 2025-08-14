@@ -22,7 +22,7 @@
 \usepackage{lmodern}
 \ifPDFTeX\else  
     % xetex/luatex font selection
-  \setmainfont[]{Times New Roman}
+    \setmainfont[]{Times New Roman}
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -44,14 +44,28 @@
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 % Make \paragraph and \subparagraph free-standing
+\makeatletter
 \ifx\paragraph\undefined\else
   \let\oldparagraph\paragraph
-  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
 \fi
 \ifx\subparagraph\undefined\else
   \let\oldsubparagraph\subparagraph
-  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
+\makeatother
 
 
 \providecommand{\tightlist}{%
@@ -67,15 +81,17 @@
 \makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
-\makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
 % Set default figure placement to htbp
-\makeatletter
 \def\fps@figure{htbp}
 \makeatother
 % definitions for citeproc citations
@@ -198,9 +214,7 @@
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
-\ifLuaTeX
-  \usepackage{selnolig}  % disable illegal ligatures
-\fi
+
 \usepackage{bookmark}
 
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
@@ -215,6 +229,7 @@
   urlcolor={Blue},
   pdfcreator={LaTeX via pandoc}}
 
+
 \title{Plasticity and adaptation to high light intensity amplify the
 advantage of amphistomatous leaves}
 \author{Christopher D. Muir\(^{1,2*}\) \and Wei Shen
@@ -223,6 +238,7 @@ Lim\(^{1}\) \and Dachuan Wang\(^{1,2}\)}
 
 \begin{document}
 \maketitle
+
 
 \begin{center}
 $^1$School of Life Sciences, University of Hawaiʻi, Mānoa, Hawaiʻi, USA\\
@@ -369,7 +385,7 @@ a forest canopy will often experience low light intensity.
 
 \centering{
 
-\includegraphics[width=2.24in,height=\textheight]{../figures/amphisomy draft 2024-03-28.jpg}
+\includegraphics[width=2.24in,height=\textheight,keepaspectratio]{../figures/amphisomy draft 2024-03-28.jpg}
 
 }
 
@@ -471,7 +487,7 @@ combinations (Fig.~\ref{fig-aa}B).
 
 \centering{
 
-\includegraphics{ms_files/figure-pdf/fig-aa-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-aa-1.pdf}}
 
 }
 
@@ -485,7 +501,7 @@ combinations (Fig.~\ref{fig-aa}B).
 
 \centering{
 
-\includegraphics{ms_files/figure-pdf/fig-aacap-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-aacap-1.pdf}}
 
 }
 
@@ -548,7 +564,7 @@ Future experiments measuring \aax{} with a dual sided chamber
 
 \centering{
 
-\includegraphics{ms_files/figure-pdf/fig-lma_aa-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-lma_aa-1.pdf}}
 
 }
 
@@ -1027,8 +1043,15 @@ Letters} \textbf{20}, 412--425 (2017).}
 {Co2} {Uptake} by {Plant} {Leaves}}. \emph{Australian Journal of
 Biological Sciences} \textbf{25}, 443 (1972).}
 
-\bibitem[\citeproctext]{ref-schoch_dependence_1980}
+\bibitem[\citeproctext]{ref-pease_phylogenomics_2016}
 \CSLLeftMargin{54. }%
+\CSLRightInline{J. B. Pease, D. C. Haak, M. W. Hahn, L. C. Moyle,
+\href{https://doi.org/10.1371/journal.pbio.1002379}{Phylogenomics
+reveals three sources of adaptive variation during a rapid radiation}.
+\emph{PLOS Biology} \textbf{14}, e1002379 (2016).}
+
+\bibitem[\citeproctext]{ref-schoch_dependence_1980}
+\CSLLeftMargin{55. }%
 \CSLRightInline{P.-G. Schoch, C. Zinsou, M. Sibi,
 \href{https://doi.org/10.1093/jxb/31.5.1211}{Dependence of the stomatal
 index on environmental factors during stomatal differentiation in leaves
@@ -1036,20 +1059,20 @@ of \emph{{Vigna} sinensis} {L}.: 1. {Effect} of light intensity}.
 \emph{Journal of Experimental Botany} \textbf{31}, 1211--1216 (1980).}
 
 \bibitem[\citeproctext]{ref-sack_developmental_2016}
-\CSLLeftMargin{55. }%
+\CSLLeftMargin{56. }%
 \CSLRightInline{L. Sack, T. N. Buckley,
 \href{https://doi.org/10.1104/pp.16.00476}{The developmental basis of
 stomatal density and flux}. \emph{Plant Physiology} \textbf{171},
 2358--2363 (2016).}
 
 \bibitem[\citeproctext]{ref-mott_amphistomy_1991}
-\CSLLeftMargin{56. }%
+\CSLLeftMargin{57. }%
 \CSLRightInline{K. A. Mott, O. Michaelson, Amphistomy as an adaptation
 to high light intensity in \emph{{Ambrosia} cordifolia} ({Compositae}).
 \emph{American Journal of Botany} \textbf{78}, 76--79 (1991).}
 
 \bibitem[\citeproctext]{ref-schindelin_fiji_2012}
-\CSLLeftMargin{57. }%
+\CSLLeftMargin{58. }%
 \CSLRightInline{J. Schindelin, I. Arganda-Carreras, E. Frise, V. Kaynig,
 M. Longair, T. Pietzsch, S. Preibisch, C. Rueden, S. Saalfeld, B.
 Schmid, J.-Y. Tinevez, D. J. White, V. Hartenstein, K. Eliceiri, P.
@@ -1058,19 +1081,19 @@ open-source platform for biological-image analysis}. \emph{Nature
 Methods} \textbf{9}, 676--682 (2012).}
 
 \bibitem[\citeproctext]{ref-monteith_principles_2013}
-\CSLLeftMargin{58. }%
+\CSLLeftMargin{59. }%
 \CSLRightInline{J. L. Monteith, M. H. Unsworth, \emph{Principles of
 Environmental Physics: Plants, Animals, and the Atmosphere}
 (Elsevier/Academic Press, Amsterdam ; Boston, 4th ed., 2013).}
 
 \bibitem[\citeproctext]{ref-stan_development_team_stan_2025}
-\CSLLeftMargin{59. }%
+\CSLLeftMargin{60. }%
 \CSLRightInline{Stan Development Team, \emph{Stan {Modeling} {Language}
 {Users} {Guide} and {Reference} {Manual}} (2025;
 \url{https://mc-stan.org}).}
 
 \bibitem[\citeproctext]{ref-burkner_brms_2017}
-\CSLLeftMargin{60. }%
+\CSLLeftMargin{61. }%
 \CSLRightInline{P.-C. Bürkner,
 \href{https://doi.org/10.18637/jss.v080.i01}{\textbf{Brms} : {An}
 \emph{r} {Package} for {Bayesian} {Multilevel} {Models} {Using}
@@ -1078,30 +1101,23 @@ Environmental Physics: Plants, Animals, and the Atmosphere}
 (2017).}
 
 \bibitem[\citeproctext]{ref-gabry_cmdstanr_2025}
-\CSLLeftMargin{61. }%
+\CSLLeftMargin{62. }%
 \CSLRightInline{J. Gabry, R. Češnovar, A. Johnson, S. Bronder,
 \emph{Cmdstanr: {R} {Interface} to '{CmdStan}'} (2025;
 \href{https://mc-stan.org/cmdstanr,\%20https://discourse.mc-stan.org}{https://mc-stan.org/cmdstanr,
 https://discourse.mc-stan.org}).}
 
 \bibitem[\citeproctext]{ref-r_core_team_r:_2025}
-\CSLLeftMargin{62. }%
+\CSLLeftMargin{63. }%
 \CSLRightInline{R Core Team, \emph{R: {A} {Language} and {Environment}
 for {Statistical} {Computing}} (R Foundation for Statistical Computing,
 Vienna, Austria, 2025; \url{http://www.R-project.org/}).}
 
 \bibitem[\citeproctext]{ref-gelman_inference_1992}
-\CSLLeftMargin{63. }%
+\CSLLeftMargin{64. }%
 \CSLRightInline{A. Gelman, D. B. Rubin, Inference from iterative
 simulation using multiple sequences. \emph{Statistical Science}
 \textbf{7}, 457--472 (1992).}
-
-\bibitem[\citeproctext]{ref-pease_phylogenomics_2016}
-\CSLLeftMargin{64. }%
-\CSLRightInline{J. B. Pease, D. C. Haak, M. W. Hahn, L. C. Moyle,
-\href{https://doi.org/10.1371/journal.pbio.1002379}{Phylogenomics
-reveals three sources of adaptive variation during a rapid radiation}.
-\emph{PLOS Biology} \textbf{14}, e1002379 (2016).}
 
 \bibitem[\citeproctext]{ref-vehtari_practical_2017}
 \CSLLeftMargin{65. }%
@@ -1132,12 +1148,16 @@ tomato, including representatives of all described species of
 \emph{Solanum} sect. \emph{Lycopersicon} and sect.
 \emph{Lycopersicoides} (\emph{50}) and the cultivated tomato \emph{S.
 lycopersicum} var. \emph{lycopersicum} (Table~\ref{tbl-populations}).
-Due to constraints on growth space and time, we spread out measurements
-over 61.1 weeks from August 29, 2022 to October 31, 2023. Replicates
-within population were evenly spread out over this period to prevent
-confounding of temporal variation in growth conditions with accession.
-{[}anything else to say here? maybe explain population selection and
-phylogeny?{]}
+These populations were selected in a previous study because they
+encompass the breadth of climatic variation in the wild tomato clade
+(\emph{54}). In one case, we substituted a congeric population of the
+species (\emph{S. galapagense}) because of difficult growing the focal
+population. We also added an a population of \emph{S. pennellii}. Due to
+constraints on growth space and time, we spread out measurements over
+61.1 weeks from August 29, 2022 to October 31, 2023. Replicates within
+population were evenly spread out over this period to prevent
+confounding of temporal variation in growth conditions with variation
+among populations.
 
 \begin{longtable}{>{\raggedright\arraybackslash}p{3.25cm}lrrrr}
 
@@ -1206,7 +1226,7 @@ We recorded \(\mathrm{PPFD}\) using full spectrum quantum sensors
 temperature, RH, and {[}CO\(_2\){]} using an EE894 sensor (E+E
 Elektronik, Engerwitzdorf, Austria) protected by a radiation shield. All
 environmental measurements were taken every 10 minutes from the middle
-of plants racks at approximately the same height as the leaves we
+of plant racks at approximately the same height as the leaves we
 measured. We measured leaf temperature of focal leaves prior to
 measurement using an infrared radiometer (SI-111-SS, Apogee Instruments,
 Logan, Utah, USA).
@@ -1225,7 +1245,8 @@ same environmental conditions (12:12 h,
 24.3:\(\qty{21.7}{\degreeCelsius}\), 49.6:58.4 RH day:night cycle). LED
 light provided
 \(\mathrm{PPFD} = \qty{267}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}\)
-(Fluence RAZRx, Austin, Texas, USA).
+(Fluence RAZRx, Austin, Texas, USA) during the germination and seedling
+stages.
 
 \paragraph{Light treatments}\label{light-treatments}
 
@@ -1267,7 +1288,7 @@ the cotyledons during early vegetative growth. This typically meant that
 plants had grown in light treatments for \(\approx\) 4 weeks, ensuring
 they had time to sense and respond developmentally to the light
 intensity of the treatment rather than the seedling conditions
-(\emph{54}). Shade plants grew slower than sun plants, hence leaves at
+(\emph{55}). Shade plants grew slower than sun plants, hence leaves at
 the same developmental stage were measured on chronologically older
 plants in the shade treatment. In some sun plants, we had to use leaves
 higher on the stem because short internodes made lower leaves
@@ -1333,37 +1354,25 @@ logged data until \gsw{} reached its nadir. We then acclimated the leaf
 to low light (\ppfdequals{150}) and \rhequals{70} before inducing
 stomatal closure with low \rh{} and logging data as described above.
 
-\paragraph{Light-saturated photosynthetic
-rate}\label{light-saturated-photosynthetic-rate}
-
-In 91.3\% of plants, we measured the maximum photosynthetic rate
-(\(A_\mathrm{max}\)) on the same leaflets as \agcurve{} curves. However,
-when a leaflet was damaged during \agcurve{} curves, we used the next
-closest leaflet for \(A_\mathrm{max}\). Leaves acclimated to high
-light-intensity (\ppfdequals{2000}), ambient CO\(_2\) (\caequals{415}),
-\rhequals{50}, and \tleafequals{25}. After \(A\) and \gsw{} stabilized,
-we measured \(A\) at
-\(\qty{2000}{\micro\mol\raiseto{-2}\meter\raiseto{-1}\second}\).
-
 \paragraph{Stomatal anatomy}\label{stomatal-anatomy}
 
 We estimated the stomatal density and size on ab- and adaxial leaf
 surfaces from all leaves, using guard cell length as a proxy for
 stomatal size since it is proportional to maximum conductance
-(\emph{55}). We made surface impressions of leaf lamina from the same
+(\emph{56}). We made surface impressions of leaf lamina from the same
 area used for gas exchange measurements using a-silicone impression
 material (Zhermack elite HD+, light body, fast set, Rovigo, Italy). We
 applied clear nail polish to make positive replicas of the impression.
 After nail polish dried, we mounted replicas on a microscope slide using
-transparent tape (\emph{56}). We digitized a portion of each leaf
+transparent tape (\emph{57}). We digitized a portion of each leaf
 surface replica using a brightfield microscope (Leica DM2000, Wetzlar,
 Germany). We counted and measured guard cell length on all stomata using
-the FIJI implementation of ImageJ2 version 2.3.0 (\emph{57}), then
+the FIJI implementation of ImageJ2 version 2.3.0 (\emph{58}), then
 divided the count by the visible leaf area
 (\(\qty{0.890}{\raiseto{2}\milli\meter}\)) to estimate stomatal density.
 For each surface we calculated the anatomical maximum stomatal
 conductance (\gmax) at a reference leaf temperature of
-\(\qty{25}{\degreeCelsius}\) following (\emph{55}) as:
+\(\qty{25}{\degreeCelsius}\) following (\emph{56}) as:
 
 \[g_\mathrm{max} = b m D_\mathrm{S} A_\mathrm{S}.\]
 
@@ -1375,7 +1384,7 @@ The biophysical and morphological constants \(b\) and \(m\) are:
 where \(D_\mathrm{wv}\) is the diffusion coefficient of water vapor in
 air and \(v\) is by the kinematic viscosity of dry air. We assumed
 \(D_\mathrm{wv} = \qty{2.49e-5}{\meter\squared\per\second}\) and
-\(v = \qty{2.24e-2}{\raiseto{3}\meter\per\mol}\) (\emph{58}). For
+\(v = \qty{2.24e-2}{\raiseto{3}\meter\per\mol}\) (\emph{59}). For
 kidney-shaped guard cells like those in wild tomatoes,
 \(c = h = j = 0.5\). The \gmaxratio{} is the \gmax{} of the adaxial
 surface divided by the sum total \gmax{} of both surfaces.
@@ -1385,7 +1394,7 @@ surface divided by the sum total \gmax{} of both surfaces.
 Leaf mass per area (LMA) is the dry mass divided by the leaflet area. We
 scanned fresh leaflets on a flat bed scanner (Epson V600, Los Alamitos,
 California. USA) and measured leaflet area from digital images using the
-FIJI implementation of ImageJ2 version 2.3.0 (\emph{57}). We dried
+FIJI implementation of ImageJ2 version 2.3.0 (\emph{58}). We dried
 leaves for 72 hours at \(\qty{74}{\degreeCelsius}\) in a food dehydrator
 (Cosori CP267-FD, Vesync Co., Anaheim, California, USA) and weighed
 using a benchtop analytical balance (Ohaus PR64 Analytical Balance,
@@ -1533,7 +1542,7 @@ Our analysis pipeline consisted of four main steps:
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Estimate \agcurve{} curve parameters for each leaf
+  Estimate \agcurve{} curve parameters
 \item
   Estimate \aax{} for both measurement light intensities using
   \agcurve{} curve parameters
@@ -1545,17 +1554,17 @@ Our analysis pipeline consisted of four main steps:
   \aax{} (constitutive hypothesis)
 \end{enumerate}
 
-All models were using a Bayesian model with HMC sampling in the
-probabilistic programming language \emph{Stan} (\emph{59}) using the
-\emph{R} package \textbf{brms} version 2.22.0 (\emph{60}). We used
-\emph{CmdStan} version 2.36.0 and \textbf{cmdstanr} version 0.9.0
-(\emph{61}) to interface with \emph{R} version 4.5.1 (\emph{62}). We
-sampled the posterior distribution from a single chain with a minimum of
-1000 iterations after 1000 warmup iterations. If necessary, we refit
-models with more iterations to decrease the Gelman-Rubin convergence
-statistic (\(\hat{R}\)) (\emph{63}) to less than 1.01 and the bulk
-effective sample size (ESS) to greater than 400 for all model
-parameters, and there were fewer than 10 divergent transitions.
+All models were fit using a Bayesian HMC sampling in the probabilistic
+programming language \emph{Stan} (\emph{60}) using the \emph{R} package
+\textbf{brms} version 2.22.0 (\emph{61}). We used \emph{CmdStan} version
+2.36.0 and \textbf{cmdstanr} version 0.9.0 (\emph{62}) to interface with
+\emph{R} version 4.5.1 (\emph{63}). We sampled the posterior
+distribution from a single chain with a minimum of 1000 iterations after
+1000 warmup iterations. If necessary, we refit models with more
+iterations to decrease the Gelman-Rubin convergence statistic
+(\(\hat{R}\)) (\emph{64}) to less than 1.01 and the bulk effective
+sample size (ESS) to greater than 400 for all model parameters, and
+there were fewer than 10 divergent transitions.
 
 \paragraph{\texorpdfstring{\agcurve{} curve
 parameters}{ curve parameters}}\label{sec-agcurve-pars}
@@ -1590,7 +1599,7 @@ mixed effects model described below.
 
 \centering{
 
-\includegraphics{ms_files/figure-pdf/fig-example-aa-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-example-aa-1.pdf}}
 
 }
 
@@ -1620,26 +1629,26 @@ populations varied in their response to light intensity treatments. In
 all models, we included population as a phylogenetically structured
 random effect. We accounted for uncertainty in \(\widehat{\mathrm{AA}}\)
 using the standard deviation of the posterior distribution of each
-\(\widehat{\mathrm{AA}}\) estimate (Section~\ref{sec-aa-est}). We
-crossed fixed and random effect structures with fixed effects of
-measurement light intensity and/or growth light intensity on the
-distributional parameter, \(\sigma\), the residual variance in \aax{}.
-We used a robust regression approach by assuming \(t\)-distributed
-residuals, which makes estimates less susceptible to extreme values. In
-total, we fit 100 models, each with a different combination of fixed,
-random, and distributional effects. We used the RAxML
-whole-transcriptome concatenated phylogeny based on 2,745 100-kb genomic
-windows from (\emph{64}). Two of our populations were not in this tree.
-We used accession LA1044 in place of LA3909, two populations of \emph{S.
-galapagnse}; LA0750 was added as sister to LA0716, two closely related
-populations of \emph{S. pennellii}. The node separating LA0750 from
-LA0716 was placed half-way between the next deepest node. We used the
-leave-one-out cross-validation information criterion (LOOIC) to compare
-the fit of models (\autoref{tbl-aa_loo1}) using the \emph{R} package
-\textbf{loo} version 2.8.0 (\emph{65}) to calculate LOOIC values. We
-selected the model with the lowest LOOIC value (Table~\ref{tbl-aa_loo1})
-to generate posterior predictions for hypothesis testing. Parameter
-estimates from the selected model are shown in Table~\ref{tbl-fit_aa1}.
+\(\widehat{\mathrm{AA}}\) estimate (see above). We crossed fixed and
+random effect structures with fixed effects of measurement light
+intensity and/or growth light intensity on the distributional parameter,
+\(\sigma\), the residual variance in \aax{}. We used a robust regression
+approach by assuming \(t\)-distributed residuals, which makes estimates
+less susceptible to extreme values. In total, we fit 100 models, each
+with a different combination of fixed, random, and distributional
+effects. We used the RAxML whole-transcriptome concatenated phylogeny
+based on 2,745 100-kb genomic windows from (\emph{54}). Two of our
+populations were not in this tree. We used accession LA1044 in place of
+LA3909, two populations of \emph{S. galapagense}; LA0750 was added as
+sister to LA0716, two closely related populations of \emph{S.
+pennellii}. The node separating LA0750 from LA0716 was placed half-way
+between the next deepest node. We used the leave-one-out
+cross-validation information criterion (LOOIC) to compare the fit of
+models (\autoref{tbl-aa_loo1}) using the \emph{R} package \textbf{loo}
+version 2.8.0 (\emph{65}) to calculate LOOIC values. We selected the
+model with the lowest LOOIC value (Table~\ref{tbl-aa_loo1}) to generate
+posterior predictions for hypothesis testing. Parameter estimates from
+the selected model are shown in Table~\ref{tbl-fit_aa1}.
 
 To test whether LMA mediated the relationship between growth light
 intensity and \aax{}, we repeated a similar model comparison procedure
@@ -1652,23 +1661,23 @@ of population on \(\log \mathrm{LMA}\) and effects of sun treatment on
 \(\log \mathrm{LMA}\) effects \aax{} directly or indirectly because both
 traits respond to growth light intensity. We integrated over missing LMA
 data using the \texttt{mi()} function in \textbf{brms}. Because the
-evidence strong supported including effects of growth and measurement
-light intensity on the residual variance in \(\mathrm{AA}\), we included
-these in terms in all models. In total, we fit 75 models, each with a
-different combination of fixed and random effect structures. We selected
-the model with the lowest LOOIC value (Table~\ref{tbl-aa_loo2}) to
-generate posterior predictions for hypothesis testing. Note that LOOIC
-was calculated only from pointwise likelihood values of the submodel
-estimating effects of light intensity, light treatments, and population
-on \aax{}. Parameter estimates from the selected model are shown in
-Table~\ref{tbl-fit_aa2}.
+evidence from the first set of models strongly supported including
+effects of growth and measurement light intensity on the residual
+variance in \(\mathrm{AA}\), we included these in terms in all models.
+In total, we fit 75 models, each with a different combination of fixed
+and random effect structures. We selected the model with the lowest
+LOOIC value (Table~\ref{tbl-aa_loo2}) to generate posterior predictions
+for hypothesis testing. Note that LOOIC was calculated only from
+pointwise likelihood values of the submodel estimating effects of light
+intensity, light treatments, and population on \aax{}. Parameter
+estimates from the selected model are shown in Table~\ref{tbl-fit_aa2}.
 
 \paragraph{Posterior predictions}\label{sec-predictions}
 
 The acclimation, plasticity, and constitutive hypotheses make different
 predictions about the relationship between \aax{} and light intensity,
-light treatment, and native \ppfd{} among populations. Since these
-hypotheses are not mutually exclusive, we describe how we assessed
+light treatment, and native \(\mathrm{PAI}\) among populations. Since
+these hypotheses are not mutually exclusive, we describe how we assessed
 support for one, two, or all three hypotheses simultaneously in
 \autoref{tbl-predictions}. In general, the acclimation hypothesis was
 supported if \aax{} was greater at high light intensity than low light
@@ -1680,18 +1689,17 @@ high light intensity, sun leaves, and native \ppfd{} because these are
 the only interactions which could explain why amphistomatous leaves are
 advantageous in high light habitats.
 
-From the posterior of the selected model (Section~\ref{sec-phylo}), we
-predicted the posterior distribution of the expected \aax{} for each
-population at each measurement light intensity and growth light
-intensity. If the 95\% confidence intervals for \aax{} did not overlap
-zero, we considered \aax{} to be significantly different from zero. We
-also calculated posterior distribution for the average \aax{} among
-populations in each condition. We tested a linear effect of native light
-habitat on population-level \aax{} in each treatment condition,
-integrating over the entire posterior distribution. We calculated the
-posterior distribution of the slope. If the 95\% confidence interval for
-the slope did not overlap zero, we considered the slope to be
-significant.
+From the model selected using LOOIC, we predicted the posterior
+distribution of the expected \aax{} for each population at each
+measurement light intensity and growth light intensity. If the 95\%
+confidence intervals for \aax{} did not overlap zero, we considered
+\aax{} to be significantly different from zero. We also calculated
+posterior distribution for the average \aax{} among populations in each
+condition. We tested a linear effect of native light habitat on
+population-level \aax{} in each treatment condition, integrating over
+the entire posterior distribution to calculate a posterior distribution
+of the slope. If the 95\% confidence interval for the slope did not
+overlap zero, we considered the slope to be significant.
 
 \begin{longtable}{>{\raggedright\arraybackslash}p{1in}>{\raggedright\arraybackslash}p{1.5in}>{\raggedright\arraybackslash}p{3in}}
 
@@ -1712,7 +1720,7 @@ Acclimation & $\mathrm{AA}_{2000} > 0$ & \hspace{-1em}\aax{} at high light inten
 \cmidrule{1-3}\pagebreak[0]
 Plasticity & $\mathrm{AA}_{\text{sun}} > 0$ & \hspace{-1em}\aax{} in sun leaves is greater than that in shade leaves\\
 \cmidrule{1-3}\pagebreak[0]
-Constitutive & $\beta_{\mathrm{PAI,AA}} > 0$ & \hspace{-1em}Population-level \aax{} ($\mathrm{AA}_\text{pop}$) decreases with native PAI\\
+Constitutive & $\beta_{\mathrm{PAI,AA}} < 0$ & \hspace{-1em}Population-level \aax{} ($\mathrm{AA}_\text{pop}$) decreases with native PAI\\
 \nopagebreak
  &  & \hspace{-1em}$\mathrm{AA}_\text{pop} = \beta_{\mathrm{AA}, 0} + \vec{\beta}_{\mathrm{AA}, \text{pop}}$\\
 \cmidrule{1-3}\pagebreak[0]
@@ -1722,13 +1730,13 @@ Acclimation $\times$ Plasticity & $\mathrm{AA}_{2000,\text{sun}} > 0$ & \hspace{
 \cmidrule{1-3}\pagebreak[0]
 Acclimation $\times$ Constitutive & $\mathrm{AA}_{2000} > 0$ & \hspace{-1em}\aax{} at high light intensity is greater than that at low light intensity\\
 \nopagebreak
- & $\beta_{\mathrm{PAI,AA}} > 0$ & \hspace{-1em}Population-level \aax{} at high light intensity ($\mathrm{AA}_{\text{pop},2000}$) decreases with native PAI\\
+ & $\beta_{\mathrm{PAI,AA}} < 0$ & \hspace{-1em}Population-level \aax{} at high light intensity ($\mathrm{AA}_{\text{pop},2000}$) decreases with native PAI\\
 \nopagebreak
  &  & \hspace{-1em}$\mathrm{AA}_{\text{pop},2000} = \beta_{\mathrm{AA}, 0} + \vec{\beta}_{\mathrm{AA}, \text{pop}} + \vec{\beta}_{\mathrm{AA}, 2000, \text{pop}}$\\
 \cmidrule{1-3}\pagebreak[0]
 Plasticity $\times$ Constitutive & $\mathrm{AA}_{\text{sun}} > 0$ & \hspace{-1em}\aax{} in sun leaves is greater than that in shade leaves\\
 \nopagebreak
- & $\beta_{\mathrm{PAI,AA}} > 0$ & \hspace{-1em}Population-level \aax{} in sun leaves ($\mathrm{AA}_{\text{pop},\text{sun}}$) decreases with native PAI\\
+ & $\beta_{\mathrm{PAI,AA}} < 0$ & \hspace{-1em}Population-level \aax{} in sun leaves ($\mathrm{AA}_{\text{pop},\text{sun}}$) decreases with native PAI\\
 \nopagebreak
  &  & \hspace{-1em}$\mathrm{AA}_{\text{pop},\text{sun}} = \beta_{\mathrm{AA}, 0} + \vec{\beta}_{\mathrm{AA}, \text{pop}} + \vec{\beta}_{\mathrm{AA}, \text{sun}, \text{pop}}$\\
 \cmidrule{1-3}\pagebreak[0]
@@ -1741,19 +1749,19 @@ Acclimation $\times$ Plasticity $\times$ Constitutive & $\mathrm{AA}_{2000,\text
 
 \end{longtable}
 
-\subsubsection{Estimating the water cost of
-hypostomy}\label{estimating-the-water-cost-of-hypostomy}
+\subsubsection{The water cost of
+hypostomy}\label{the-water-cost-of-hypostomy}
 
 Amphistomy advantage implies that hypostomatous leaves would need to
 lose more water by having higher \gsw{} to achieve the same
-photosynthetic rate. We estimated this cost of hypostomy approximately.
-For simpliticity, we focus on a sufficiently small region of the
-\agcurve{} curve such that we can approximate the relationship between
-\gsw{} and \(A\) as log-log linear. We also assume that slope is same in
-both amphistomatous and hypostomatous leaves, which was often
-approximately the case in our experiment (Figure~\ref{fig-curves}). With
-these assumptions, the approximate water cost of hypostomy can be
-derived from the equations:
+photosynthetic rate as an otherwise identical amphistomatous leaf. We
+estimated this cost of hypostomy approximately. For simplicity, we focus
+on a sufficiently small region of the \agcurve{} curve such that we can
+approximate the relationship between \gsw{} and \(A\) as log-log linear.
+We also assume that the slope is the same in both amphistomatous and
+hypostomatous leaves, which was often approximately the case in our
+experiment (Figure~\ref{fig-curves}). With these assumptions, the
+approximate water cost of hypostomy can be derived from the equations:
 
 \[\log(A_{\mathrm{amphi}}) = \beta_\text{amphi} + \varepsilon_g \log(g_\text{sw}),~\text{and}\]
 \[\log(A_{\mathrm{hypo}}) = \beta_\text{hypo} + \varepsilon_g \log(g_\text{sw}).\]
@@ -1767,13 +1775,11 @@ this reveals that the negative log-ratio of the \gsw{} is related to
 \aax{} divided by the slope:
 
 \[-\log\left(\frac{g_\text{sw,amphi}}{g_\text{sw,hypo}}\right) = \frac{\mathrm{AA}}{\varepsilon_g}.\]
-We note that the slope in this case is an elasticity of of \(A\) to
-\gsw{} because both are log-transformed. This quantity will be
-proportional the water cost of hypostomy assuming that VPD and other
-environmental variables are held constant and boundary layer conductance
-are high enough to be negligible.
-
-\subsection{Results}\label{results}
+We note that the slope in this case is the elasticity of \(A\) to \gsw{}
+because both are log-transformed. This quantity will be proportional the
+water cost of hypostomy assuming that VPD and other environmental
+variables are held constant and the boundary layer resistance is
+negligible.
 
 \begin{table}
 
@@ -1823,14 +1829,12 @@ Parameter & Estimate [95\% CI]\\
 \caption{\label{tbl-fit_aa2}Parameter estimates and 95\% confidence
 intervals (CIs) from the posterior distribution of the selected model
 with leaf mass per area (LMA) as potential mediator variable. Models
-potentially include fixed, random, and distributional effects of growth
-light intensity (shade and sun), measurement light intensity (low and
-high), \(\log \mathrm{LMA}\), and their interactions on amphistomy
-advantage (\(\mathrm{AA}\)). The distributional effects refer to the
-effect of factors on residual variation in \(\mathrm{AA}\), denoted
-\(\sigma\), on a log-link scale. LMA can also be affected by growth
-light intensity and population. For phylogenetically structured random
-effects, we report the estimated standard deviation (SD).}
+potentially include fixed and random effects of growth light intensity
+(shade and sun), measurement light intensity (low and high),
+\(\log \mathrm{LMA}\), and their interactions on amphistomy advantage
+(\(\mathrm{AA}\)). LMA can also be affected by growth light intensity
+and population. For phylogenetically structured random effects, we
+report the estimated standard deviation (SD).}
 
 \centering{
 
@@ -1879,7 +1883,7 @@ Parameter & Estimate [95\% CI]\\
 
 \centering{
 
-\includegraphics{ms_files/figure-pdf/fig-sr-rxnorm-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-sr-rxnorm-1.pdf}}
 
 }
 
@@ -1899,16 +1903,17 @@ population across treatments.}
 criterion (LOOIC) for models of \aax{} as a function of light intensity,
 light treatment, and population. Only the top models
 (\(\Delta \text{LOOIC} < 2\)) are shown. The model with the lowest LOOIC
-is considered the best fit to the data. The LOOIC column lists the LOOIC
-value for each model; the \(\Delta\)LOOIC column lists the difference
-between the LOOIC of the corresponding model and the best model (lowest
-LOOIC). Checkmarks in each row indicate whether the corresponding model
-included affects of measurement light intensity (``Meas.'') or growth
-light intensity (``Growth'') as fixed effects, random effects, or
-distributional effect on the residual variance. We also test for fixed
-and random interaction effects (``Inter.'') between measurement and
-growth light intensity. All models included phylogenetically structured
-random effects of population.}
+was selected for generating posterior predictions to test hypotheses.
+The LOOIC column lists the LOOIC value for each model; the
+\(\Delta\)LOOIC column lists the difference between the LOOIC of the
+corresponding model and the best model (lowest LOOIC). Checkmarks in
+each row indicate whether the corresponding model included affects of
+measurement light intensity (``Meas.'') or growth light intensity
+(``Growth'') as fixed effects, random effects, or distributional effect
+on the residual variance. We also test for fixed and random interaction
+effects (``Inter.'') between measurement and growth light intensity. All
+models included phylogenetically structured random effects of
+population.}
 
 \tabularnewline
 
@@ -1943,17 +1948,17 @@ LOOIC & $\Delta$LOOIC & Meas. & Growth & Inter. & Meas. & Growth & Inter. & Meas
 criterion (LOOIC) for models of \aax{} as a function of light intensity,
 light treatment, leaf mass per area (LMA), and population. Only the top
 models (\(\Delta~\text{LOOIC} < 2\)) are shown. The model with the
-lowest LOOIC is considered the best fit to the data. The LOOIC column
-lists the LOOIC value for each model; the \(\Delta\)LOOIC column lists
-the difference between the LOOIC of the corresponding model and the best
-model (lowest LOOIC). Checkmarks in each row indicate whether the
-corresponding model included affects of measurement light intensity
-(``Meas.''), growth light intensity (``Growth''), or LMA as fixed or
-random effects. We test for fixed interaction effects between
-measurement and growth light intensity and LMA. We also test for random
-interaction effects between measurement and growth light intensity. All
-models included phylogenetically structured random effects of
-population.}
+lowest LOOIC was selected for generating posterior predictions to test
+hypotheses. The LOOIC column lists the LOOIC value for each model; the
+\(\Delta\)LOOIC column lists the difference between the LOOIC of the
+corresponding model and the best model (lowest LOOIC). Checkmarks in
+each row indicate whether the corresponding model included affects of
+measurement light intensity (``Meas.''), growth light intensity
+(``Growth''), or LMA as fixed or random effects. We test for fixed
+interaction effects between measurement and growth light intensity and
+LMA. We also test for random interaction effects between measurement and
+growth light intensity. All models included phylogenetically structured
+random effects of population.}
 
 \tabularnewline
 
@@ -1998,7 +2003,7 @@ LOOIC & $\Delta$LOOIC & Meas. & Growth & LMA & Meas. $\times$ Growth & Meas. $\t
 
 \centering{
 
-\includegraphics{ms_files/figure-pdf/fig-curves-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-curves-1.pdf}}
 
 }
 
@@ -2008,12 +2013,13 @@ The title provides the Tomato Genetics Resource Center accession number,
 replicate letter, and species names. The subtitle indicates the growth
 light intensity (sun or shade). Points are raw data, lines are fitted
 curves, and shaded regions are 95\% confidence ribbons for the fitted
-curves. The Bayesian correlation coefficient \(r^2\) is shown to the
+curves. The Bayesian correlation coefficient, \(r^2\), is shown to the
 right of each curve, along with the estimate of \aax{} \(\pm\) two
 standard errors for each pair of amphi (orange) and pseudohypo (blue)
 curves.}
 
 \end{figure}%
+
 
 
 
