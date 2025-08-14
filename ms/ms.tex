@@ -22,7 +22,7 @@
 \usepackage{lmodern}
 \ifPDFTeX\else  
     % xetex/luatex font selection
-    \setmainfont[]{Times New Roman}
+  \setmainfont[]{Times New Roman}
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -44,28 +44,14 @@
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 % Make \paragraph and \subparagraph free-standing
-\makeatletter
 \ifx\paragraph\undefined\else
   \let\oldparagraph\paragraph
-  \renewcommand{\paragraph}{
-    \@ifstar
-      \xxxParagraphStar
-      \xxxParagraphNoStar
-  }
-  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
-  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
+  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
 \fi
 \ifx\subparagraph\undefined\else
   \let\oldsubparagraph\subparagraph
-  \renewcommand{\subparagraph}{
-    \@ifstar
-      \xxxSubParagraphStar
-      \xxxSubParagraphNoStar
-  }
-  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
-  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
+  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
-\makeatother
 
 
 \providecommand{\tightlist}{%
@@ -81,17 +67,15 @@
 \makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
-\newsavebox\pandoc@box
-\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
-  \sbox\pandoc@box{#1}%
-  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
-  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
-  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
-  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
-  \else\usebox{\pandoc@box}%
-  \fi%
-}
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
 % Set default figure placement to htbp
+\makeatletter
 \def\fps@figure{htbp}
 \makeatother
 % definitions for citeproc citations
@@ -214,13 +198,15 @@
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
-
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
 \usepackage{bookmark}
 
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
-  pdftitle={Plasticity and adaptation to high light intensity amplify the advantage of amphistomous leaves},
+  pdftitle={Plasticity and adaptation to high light intensity amplify the advantage of amphistomatous leaves},
   pdfauthor={Christopher D. Muir\^{}\{1,2*\}; Wei Shen Lim\^{}\{1\}; Dachuan Wang\^{}\{1,2\}},
   colorlinks=true,
   linkcolor={blue},
@@ -229,16 +215,14 @@
   urlcolor={Blue},
   pdfcreator={LaTeX via pandoc}}
 
-
 \title{Plasticity and adaptation to high light intensity amplify the
-advantage of amphistomous leaves}
+advantage of amphistomatous leaves}
 \author{Christopher D. Muir\(^{1,2*}\) \and Wei Shen
 Lim\(^{1}\) \and Dachuan Wang\(^{1,2}\)}
 \date{}
 
 \begin{document}
 \maketitle
-
 
 \begin{center}
 $^1$School of Life Sciences, University of Hawaiʻi, Mānoa, Hawaiʻi, USA\\
@@ -254,27 +238,28 @@ ORCID: Christopher D. Muir — \href{https://orcid.org/0000-0003-2555-3878}{0000
 The presence of stomata on both leaf surfaces (amphistomy) can increase
 photosynthesis in C\(_3\) plants by reducing the path length for
 CO\(_2\) diffusion between substomatal cavities and chloroplasts.
-Amphistomatous leaves are common among herbaceous plants growing in
-sunny habitats, including many crop species. This distribution of
-amphistomatous leaves in nature may result from an increased
-photosynthetic benefit of amphistomy under high light intensity, either
-because of acclimatory, plastic, or constitutive variation in CO\(_2\)
-supply or demand. We used a recently developed method to quantify
-amphistomy advantage, the photosynthetic rate of an amphistomatous leaf
-relative to an otherwise identical hypostomatous leaf, in 29 diverse
-populations representing 14 species of wild tomatoes (\emph{Solanum}
-sect. \emph{Lycopersicon} and sect. \emph{Lycopersicoides}). Plants
-grown under high light intensity benefit more in terms of CO\(_2\)
-assimilated for a given stomatal conductance than plants grown under low
-light, regardless of measurement light intensity. Furthermore,
-populations native to open habitats tend to benefit more from amphistomy
-compared to those from more closed habitats. Developmental plasticity
-and adaptation of leaves to high light intensity likely play a combined
-role in explaining the adaptive significance and distribution of
-amphistomy in nature. We estimate that hypostomatous leaves would expend
-10-65\% more water to achieve the same photosynthetic rate as a
-comparable amphistomatous leaf, implying large fitness costs of
-amphistomy in ecological contexts where this trait is rare.
+Paradoxically, despite this photosynthetic advantage, most leaves are
+hypostomatous (stomata on lower surface only). Based on the observation
+that amphistomatous leaves are most common among herbaceous plants
+growing in sunny habitats, including many crop species, it has long been
+hypothesized that traits affecting CO\(_2\) supply or demand amplify the
+advantage of amphistomy under high light intensity. We used a recently
+developed method to quantify amphistomy advantage, the photosynthetic
+rate of an amphistomatous leaf relative to an otherwise identical
+hypostomatous leaf, in 29 diverse populations representing 14 species of
+wild tomatoes (\emph{Solanum} sect. \emph{Lycopersicon} and sect.
+\emph{Lycopersicoides}). Plants grown under high light intensity benefit
+more from amphistomy in terms of CO\(_2\) assimilated for a given
+stomatal conductance than plants grown under low light, regardless of
+measurement light intensity. Furthermore, populations native to open
+habitats tend to benefit more from amphistomy compared to those from
+more closed habitats. Developmental plasticity and adaptation of leaves
+to high light intensity likely play a combined role in explaining the
+adaptive significance and distribution of amphistomy in nature. We
+estimate that hypostomatous leaves would expend 10-65\% more water to
+achieve the same photosynthetic rate as a comparable amphistomatous
+leaf, implying large fitness costs of amphistomy in ecological contexts
+where this trait is rare.
 
 \subsection{Main text}\label{main-text}
 
@@ -289,8 +274,9 @@ changes in aperture on the scale of minutes to hours, as well as static
 anatomy determined by developmental plasticity and constitutive genetic
 differences (\emph{4}--\emph{6}). Understanding how stomata respond to
 environmental change over daily, developmental, and evolutionary time is
-important for understanding adaptation (\emph{1}, \emph{7}--\emph{12}),
-predicting paleoclimate from fossil cuticles (\emph{13}--\emph{15}), and
+important for studying adaptation (\emph{1}, \emph{7}, \emph{8}),
+inferring paleoclimate from fossil cuticles (\emph{9}--\emph{11}),
+predicting responses to climate change (\emph{12}--\emph{15}), and
 improving crops (\emph{16}). Stomatal function contributes to global
 carbon and water cycles (\emph{17}) and therefore predicting future
 climate (\emph{18}).
@@ -326,14 +312,15 @@ habitats, are hypostomatous, producing stomata only on the lower,
 abaxial surface. Even resupinate leaves develop stomata on the lower,
 albeit adaxial surface (\emph{45}), suggesting that leaf orientation
 (lower vs.~upper) rather than leaf polarity (abaxial vs.~adaxial) is
-causal. The covariation between stomatal density ratio and light habitat
-is both qualitative and quantitative. A higher proportion of sun leaves
-are amphistomatous (\emph{39}) and the proportion of stomata on the
-upper, adaxial surface increases with light (\emph{42}, \emph{43}).
-Resolving why high light intensity favors amphistomatous dorsivental
-leaves is an important first step toward understanding variation in
-stomatal density ratio and leaf structure-function relationships more
-generally.
+causal. Stomatal density ratio, defined as the ratio of upper to total
+stomatal density, is a quantitative metric of stomatal distribution. The
+covariation between stomatal density ratio and light habitat is both
+qualitative and quantitative. A higher proportion of sun leaves are
+amphistomatous (\emph{39}) and the proportion of stomata on the upper,
+adaxial surface increases with light (\emph{42}, \emph{43}). Resolving
+why high light intensity favors amphistomatous dorsivental leaves is an
+important first step toward understanding variation in stomatal density
+ratio and leaf structure-function relationships more generally.
 
 The overarching hypothesis is that leaves with greater stomatal density
 ratio are more common in open, sunny habitats because they increase
@@ -382,12 +369,12 @@ a forest canopy will often experience low light intensity.
 
 \centering{
 
-\includegraphics[width=2.24in,height=\textheight,keepaspectratio]{../figures/amphisomy draft 2024-03-28.jpg}
+\includegraphics[width=2.24in,height=\textheight]{../figures/amphisomy draft 2024-03-28.jpg}
 
 }
 
 \caption{\label{fig-concept}\textbf{Conceptual outline of three nonmutually exclusive hypotheses explaining why amphistomy advantage (\aax{}) might be greater for leaves in sunny, open habitats.}
-The acclimatory hypothesis predicts that \aax{} is greater under high
+The acclimatopn hypothesis predicts that \aax{} is greater under high
 measurement light intensity (\ppfdqty{2000}) than low measurement light
 intensity (\ppfdequals{150}), regardless of growth light intensity or
 native plant area index (PAI). The plasticity hypothesis predicts that
@@ -484,7 +471,7 @@ combinations (Fig.~\ref{fig-aa}B).
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-aa-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-aa-1.pdf}
 
 }
 
@@ -498,11 +485,11 @@ combinations (Fig.~\ref{fig-aa}B).
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-aacap-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-aacap-1.pdf}
 
 }
 
-\caption{\label{fig-aacap}\textbf{Amphistomy advantage (\aax{}) in greater wild tomatoes from open habitats and is further amplified by developmental plasticity under sunny growth conditions.}
+\caption{\label{fig-aacap}\textbf{Amphistomy advantage (\aax{}) is greater in wild tomatoes from open habitats and is further amplified by developmental plasticity under sunny growth conditions.}
 \aax{} (\(y\)-axis) is the log-response ratio of photosynthesis in an
 amphistomatous leaf compared to an otherwise identical
 pseudohypostomatous leaf. In both panels, estimates are shown for plants
@@ -516,7 +503,7 @@ confidence intervals. Within each facet, the populations are arranged by
 \aax{} estimated in that growth and measurement condition. The average
 \aax{} among populations for each treatment group is written in the top
 left corner. (\textbf{B}) The same estimates of \aax{} in each
-combination of growth and measurement light intensity ploted against
+combination of growth and measurement light intensity plotted against
 native plant area index (PAI; \(x\)-axis, log-scale). The confidence
 intervals were omitted for visual clarity. The median relationship
 between native PAI (\(x\)-axis; log-scale) and \aax{} is shown as a
@@ -542,26 +529,26 @@ light intensity on \aax{} is still predictive based on model comparison
 treatment on \aax{} was weaker when LMA was included in the model
 (Table~\ref{tbl-fit_aa1} vs. Table~\ref{tbl-fit_aa2}), suggestive of a
 mediating role. Many anatomical traits underlie LMA (\emph{52}) and
-future research will be needed identify which particular traits, such as
-leaf thickness or mesophyll porosity, are responsible for mediating
+future research will be needed to identify which particular traits, such
+as leaf thickness or mesophyll porosity, are responsible for mediating
 \aax{}. The fact that the \aax{} of sun plants was greater under low
 measurement light intensity supports a long-standing hypothesis that
 resistance to CO\(_2\) diffusion is greater in the upper than lower
-portions of the leaf interior (\emph{53}). At low light intensity, the
-bulk properties of the leaf are weighed toward the upper palisade where
-most light is intercepted. Hence, amphistomy may, unexpectedly, be
-particularly beneficial for sun leaves experiencing intermittent shade
-or cloud cover. Our study is limited in testing this because we could
-not directly measure the stomatal conductance ratio and intercellular
-resistance on each surface. Future experiments measuring \aax{} with a
-dual sided chamber (\emph{31}, \emph{33}) can overcome these
-limitations.
+portions of the leaf interior (\emph{53}). At low light intensity,
+photosynthesis is weighted toward the upper palisade where most light is
+intercepted. If resistance to CO\(_2\) diffusion is high in the upper
+palisade, amphistomy may, unexpectedly, be particularly beneficial for
+sun leaves experiencing intermittent shade or cloud cover. Our study is
+limited in testing this because we could not directly measure the
+stomatal conductance ratio and intercellular resistance on each surface.
+Future experiments measuring \aax{} with a dual sided chamber
+(\emph{31}, \emph{33}) can overcome these limitations.
 
 \begin{figure}
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-lma_aa-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-lma_aa-1.pdf}
 
 }
 
@@ -581,12 +568,12 @@ We conclude that both developmental plasticity and adaptation to open
 habitats, but not acclimation, may explain the long-standing observation
 that amphistomatous leaves are more common in sunny habitats, at least
 among herbaceous plants including crop relatives. This result changes
-our understanding by showing high light intensity \emph{per se} does not
-increase the benefit of amphistomy, but rather arise as a byproduct of
-anatomical and biochemical changes caused by plasticity and adaptation
-to higher light intensity modulate \aax{}. To gain more precise
-understanding of when amphistomy is most beneficial will require further
-research on its leaf anataomical and biochemical basis.
+our understanding by showing that high light intensity \emph{per se}
+does not increase the benefit of amphistomy. Instead, the benefit
+increases as a byproduct of anatomical and biochemical changes caused by
+plasticity and adaptation to higher light intensity. To gain more
+precise understanding of when amphistomy is most beneficial will require
+further research on its leaf anatomical and biochemical basis.
 
 The magnitude of \aax{} we document across populations is also
 noteworthy, as it implies that hypostomatous leaves predominant in mesic
@@ -602,10 +589,10 @@ locally approximated on a log-ratio scale as
 at high elasticities (\(\varepsilon_g = 0.5\)). For plants to expend
 this much extra water implies a large fitness cost of upper stomata in
 certain ecological contexts. As this is the first quantitative
-comparison of \aax{} across species, estimation from a broader range of
-species and environments will be required to fully understand the
-ecological causes and consequences of stomatal distributions on leaf
-surfaces.
+comparison of \aax{} across species, estimates from a broader range of
+species and more stressful environments will be required to fully
+understand the ecological causes and consequences of stomatal
+distributions on leaf surfaces.
 
 \subsection{Acknowledgements}\label{acknowledgements}
 
@@ -674,54 +661,23 @@ epidermal area for gas exchange}. \emph{New Phytologist} \textbf{210},
 morphology and distribution on photosynthetic gas exchange}. \emph{The
 Plant Journal} \textbf{101}, 768--779 (2020).}
 
-\bibitem[\citeproctext]{ref-woodward_stomatal_1987}
-\CSLLeftMargin{7. }%
-\CSLRightInline{F. I. Woodward,
-\href{https://doi.org/10.1038/327617a0}{Stomatal numbers are sensitive
-to increases in {CO2} from pre-industrial levels}. \emph{Nature}
-\textbf{327}, 617--618 (1987).}
-
 \bibitem[\citeproctext]{ref-buckley_modelling_2013}
-\CSLLeftMargin{8. }%
+\CSLLeftMargin{7. }%
 \CSLRightInline{T. N. Buckley, K. A. Mott,
 \href{https://doi.org/10.1111/pce.12140}{Modelling stomatal conductance
 in response to environmental factors: {Modelling} stomatal conductance}.
 \emph{Plant, Cell \& Environment} \textbf{36}, 1691--1699 (2013).}
 
 \bibitem[\citeproctext]{ref-haworth_co-ordination_2013}
-\CSLLeftMargin{9. }%
+\CSLLeftMargin{8. }%
 \CSLRightInline{M. Haworth, C. Elliott-Kingston, J. C. McElwain,
 \href{https://doi.org/10.1007/s00442-012-2406-9}{Co-ordination of
 physiological and morphological responses of stomata to elevated
 {[}{CO2}{]} in vascular plants}. \emph{Oecologia} \textbf{171}, 71--82
 (2013).}
 
-\bibitem[\citeproctext]{ref-liang_stomatal_2023}
-\CSLLeftMargin{10. }%
-\CSLRightInline{X. Liang, D. Wang, Q. Ye, J. Zhang, M. Liu, H. Liu, K.
-Yu, Y. Wang, E. Hou, B. Zhong, L. Xu, T. Lv, S. Peng, H. Lu, P. Sicard,
-A. Anav, D. S. Ellsworth,
-\href{https://doi.org/10.1038/s41467-023-37934-7}{Stomatal responses of
-terrestrial plants to global change}. \emph{Nature Communications}
-\textbf{14}, 2188 (2023).}
-
-\bibitem[\citeproctext]{ref-chua_stomatal_2024}
-\CSLLeftMargin{11. }%
-\CSLRightInline{L. C. Chua, O. S. Lau,
-\href{https://doi.org/10.1242/dev.202681}{Stomatal development in the
-changing climate}. \emph{Development} \textbf{151}, dev202681 (2024).}
-
-\bibitem[\citeproctext]{ref-lang_century-long_2024}
-\CSLLeftMargin{12. }%
-\CSLRightInline{P. L. M. Lang, J. M. Erberich, L. Lopez, C. L. Weiß, G.
-Amador, H. F. Fung, S. M. Latorre, J. R. Lasky, H. A. Burbano, M.
-Expósito-Alonso, D. C. Bergmann,
-\href{https://doi.org/10.1038/s41559-024-02481-x}{Century-long timelines
-of herbarium genomes predict plant stomatal response to climate change}.
-\emph{Nature Ecology \& Evolution} \textbf{8}, 1641--1653 (2024).}
-
 \bibitem[\citeproctext]{ref-franks_new_2014}
-\CSLLeftMargin{13. }%
+\CSLLeftMargin{9. }%
 \CSLRightInline{P. J. Franks, D. L. Royer, D. J. Beerling, P. K. Van de
 Water, D. J. Cantrill, M. M. Barbour, J. A. Berry,
 \href{https://doi.org/10.1002/2014GL060457}{New constraints on
@@ -729,14 +685,14 @@ atmospheric {CO}\(_{\textrm{2}}\) concentration for the {Phanerozoic}}.
 \emph{Geophysical Research Letters} \textbf{41}, 4685--4694 (2014).}
 
 \bibitem[\citeproctext]{ref-mcelwain_paleoecology_2017}
-\CSLLeftMargin{14. }%
+\CSLLeftMargin{10. }%
 \CSLRightInline{J. C. McElwain, M. Steinthorsdottir, Paleoecology,
 ploidy, paleoatmospheric composition, and developmental biology: A
 review of the multiple uses of fossil stomata. \emph{Plant Physiology}
 \textbf{174}, 650--664 (2017).}
 
 \bibitem[\citeproctext]{ref-the_cenozoic_co_proxy_integration_project_cencopip_consortium_toward_2023}
-\CSLLeftMargin{15. }%
+\CSLLeftMargin{11. }%
 \CSLRightInline{The Cenozoic CO Proxy Integration Project (CenCOPIP)
 Consortium*†, B. Hönisch, D. L. Royer, D. O. Breecker, P. J. Polissar,
 G. J. Bowen, M. J. Henehan, Y. Cui, M. Steinthorsdottir, J. C. McElwain,
@@ -758,6 +714,37 @@ Sinha, T. F. Tesfamichael, A. Tripati, J. Van Der Burgh, J. Yu, J. C.
 Zachos, L. Zhang, \href{https://doi.org/10.1126/science.adi5177}{Toward
 a {Cenozoic} history of atmospheric {CO}\(_{\textrm{2}}\)}.
 \emph{Science} \textbf{382}, eadi5177 (2023).}
+
+\bibitem[\citeproctext]{ref-woodward_stomatal_1987}
+\CSLLeftMargin{12. }%
+\CSLRightInline{F. I. Woodward,
+\href{https://doi.org/10.1038/327617a0}{Stomatal numbers are sensitive
+to increases in {CO2} from pre-industrial levels}. \emph{Nature}
+\textbf{327}, 617--618 (1987).}
+
+\bibitem[\citeproctext]{ref-liang_stomatal_2023}
+\CSLLeftMargin{13. }%
+\CSLRightInline{X. Liang, D. Wang, Q. Ye, J. Zhang, M. Liu, H. Liu, K.
+Yu, Y. Wang, E. Hou, B. Zhong, L. Xu, T. Lv, S. Peng, H. Lu, P. Sicard,
+A. Anav, D. S. Ellsworth,
+\href{https://doi.org/10.1038/s41467-023-37934-7}{Stomatal responses of
+terrestrial plants to global change}. \emph{Nature Communications}
+\textbf{14}, 2188 (2023).}
+
+\bibitem[\citeproctext]{ref-chua_stomatal_2024}
+\CSLLeftMargin{14. }%
+\CSLRightInline{L. C. Chua, O. S. Lau,
+\href{https://doi.org/10.1242/dev.202681}{Stomatal development in the
+changing climate}. \emph{Development} \textbf{151}, dev202681 (2024).}
+
+\bibitem[\citeproctext]{ref-lang_century-long_2024}
+\CSLLeftMargin{15. }%
+\CSLRightInline{P. L. M. Lang, J. M. Erberich, L. Lopez, C. L. Weiß, G.
+Amador, H. F. Fung, S. M. Latorre, J. R. Lasky, H. A. Burbano, M.
+Expósito-Alonso, D. C. Bergmann,
+\href{https://doi.org/10.1038/s41559-024-02481-x}{Century-long timelines
+of herbarium genomes predict plant stomatal response to climate change}.
+\emph{Nature Ecology \& Evolution} \textbf{8}, 1641--1653 (2024).}
 
 \bibitem[\citeproctext]{ref-hofmann_impact_2025}
 \CSLLeftMargin{16. }%
@@ -1214,9 +1201,9 @@ Species & TGRC accession & Latitude & Longitude & Elevation (mas) & $\mathrm{PAI
 
 \subsubsection{Plant growth conditions}\label{plant-growth-conditions}
 
-In all growth spaces, we recorded \(\mathrm{PPFD}\) using full spectrum
-quantum sensors (SQ-500-SS, Apogee Instruments, Logan, Utah, USA); we
-recorded temperature, RH, and {[}CO\(_2\){]} using an EE894 sensor (E+E
+We recorded \(\mathrm{PPFD}\) using full spectrum quantum sensors
+(SQ-500-SS, Apogee Instruments, Logan, Utah, USA); we recorded
+temperature, RH, and {[}CO\(_2\){]} using an EE894 sensor (E+E
 Elektronik, Engerwitzdorf, Austria) protected by a radiation shield. All
 environmental measurements were taken every 10 minutes from the middle
 of plants racks at approximately the same height as the leaves we
@@ -1270,8 +1257,8 @@ oscillating air circulator (Vornado Atom 1, Andover, Kansas, USA).
 Despite these efforts, the air in the sun treatment was on average
 \(\qty{2.56}{\degreeCelsius}\) warmer and the average RH was
 consequently 5.75\% lower. However, because of evaporative cooling, the
-leaves in the sun treatment were only \(\qty{0.886}{\degreeCelsius}\) on
-average (\(n = 699\) leaves).
+leaves in the sun treatment were only \(\qty{0.886}{\degreeCelsius}\)
+warmer on average (\(n = 699\) leaves).
 
 \subsubsection{Leaf trait measurements}\label{leaf-trait-measurements}
 
@@ -1603,7 +1590,7 @@ mixed effects model described below.
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-example-aa-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-example-aa-1.pdf}
 
 }
 
@@ -1892,7 +1879,7 @@ Parameter & Estimate [95\% CI]\\
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-sr-rxnorm-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-sr-rxnorm-1.pdf}
 
 }
 
@@ -2011,7 +1998,7 @@ LOOIC & $\Delta$LOOIC & Meas. & Growth & LMA & Meas. $\times$ Growth & Meas. $\t
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-curves-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-curves-1.pdf}
 
 }
 
@@ -2027,7 +2014,6 @@ standard errors for each pair of amphi (orange) and pseudohypo (blue)
 curves.}
 
 \end{figure}%
-
 
 
 
