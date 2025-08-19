@@ -401,7 +401,7 @@ kableExtra::kable(
     native = c(
       "$\\operatorname{cor}(\\mathrm{PAI}, \\mathrm{AA}) = 0$",
       "$\\operatorname{cor}(\\mathrm{PAI}, \\mathrm{AA}) = 0$",
-      "$\\operatorname{cor}(\\mathrm{PAI}, \\mathrm{AA}) > 0$"
+      "$\\operatorname{cor}(\\mathrm{PAI}, \\mathrm{AA}) < 0$"
     )
   ),
   col.names = c(
@@ -485,11 +485,11 @@ The magnitude of \aax{} we document across populations is also noteworthy, as it
 
 ## Acknowledgements
 
-Sam McKlin and Tom Buckley helped with protocol development. Justin Alter, Max Gatlin, Joana Kim, Jenna Matsuyama, Brandon Najarian, and Kai Yasuda contributed to data collection. Sarah Friedrich helped with graphics.
+Sam McKlin and Tom Buckley helped with protocol development. Justin Alter, Max Gatlin, Joana Kim, Jenna Matsuyama, Brandon Najarian, and Kai Yasuda contributed to data collection. Kate McCulloh provided feedback on an earlier version of this manuscript. Sarah Friedrich helped with graphics. We used Copilot and ChatGPT to assist with coding.
 
 ### Funding:
 
-US National Science Foundation OIA-1929167 to C.D.M.
+US National Science Foundation OIA-1929167 (C.D.M.)
 
 ### Author contributions:
 
@@ -511,6 +511,7 @@ Conceptualization: C.D.M.; Methodology: C.D.M., W.S.L.; Investigation: C.D.M., W
 \setcounter{figure}{0}
 \setcounter{table}{0}
 \setcounter{equation}{0}
+\setcounter{page}{1}
 ```
 
 ## Materials and Methods {#sec-methods}

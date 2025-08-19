@@ -22,7 +22,7 @@
 \usepackage{lmodern}
 \ifPDFTeX\else  
     % xetex/luatex font selection
-    \setmainfont[]{Times New Roman}
+  \setmainfont[]{Times New Roman}
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -44,28 +44,14 @@
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 % Make \paragraph and \subparagraph free-standing
-\makeatletter
 \ifx\paragraph\undefined\else
   \let\oldparagraph\paragraph
-  \renewcommand{\paragraph}{
-    \@ifstar
-      \xxxParagraphStar
-      \xxxParagraphNoStar
-  }
-  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
-  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
+  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
 \fi
 \ifx\subparagraph\undefined\else
   \let\oldsubparagraph\subparagraph
-  \renewcommand{\subparagraph}{
-    \@ifstar
-      \xxxSubParagraphStar
-      \xxxSubParagraphNoStar
-  }
-  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
-  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
+  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
-\makeatother
 
 
 \providecommand{\tightlist}{%
@@ -81,17 +67,15 @@
 \makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
-\newsavebox\pandoc@box
-\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
-  \sbox\pandoc@box{#1}%
-  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
-  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
-  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
-  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
-  \else\usebox{\pandoc@box}%
-  \fi%
-}
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
 % Set default figure placement to htbp
+\makeatletter
 \def\fps@figure{htbp}
 \makeatother
 % definitions for citeproc citations
@@ -214,7 +198,9 @@
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
-
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
 \usepackage{bookmark}
 
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
@@ -229,7 +215,6 @@
   urlcolor={Blue},
   pdfcreator={LaTeX via pandoc}}
 
-
 \title{Plasticity and adaptation to high light intensity amplify the
 advantage of amphistomatous leaves}
 \author{Christopher D. Muir\(^{1,2*}\) \and Wei Shen
@@ -238,7 +223,6 @@ Lim\(^{1}\) \and Dachuan Wang\(^{1,2}\)}
 
 \begin{document}
 \maketitle
-
 
 \begin{center}
 $^1$School of Life Sciences, University of Hawaiʻi; Mānoa, Hawaiʻi, USA\\
@@ -377,7 +361,7 @@ a forest canopy will often experience low light intensity.
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{../figures/hypotheses.pdf}}
+\includegraphics{../figures/hypotheses.pdf}
 
 }
 
@@ -418,7 +402,7 @@ Hypothesis & Measurement light intensity & Growth light intensity & Native PAI\\
 \midrule
 acclimation & $\mathrm{AA}_{2000} > \mathrm{AA}_{150}$ & $\mathrm{AA}_{\text{sun}} = \mathrm{AA}_{\text{shade}}$ & $\operatorname{cor}(\mathrm{PAI}, \mathrm{AA}) = 0$\\
 plastic & $\mathrm{AA}_{2000} = \mathrm{AA}_{150}$ & $\mathrm{AA}_{\text{sun}} > \mathrm{AA}_{\text{shade}}$ & $\operatorname{cor}(\mathrm{PAI}, \mathrm{AA}) = 0$\\
-constitutive & $\mathrm{AA}_{2000} = \mathrm{AA}_{150}$ & $\mathrm{AA}_{\text{sun}} = \mathrm{AA}_{\text{shade}}$ & $\operatorname{cor}(\mathrm{PAI}, \mathrm{AA}) > 0$\\
+constitutive & $\mathrm{AA}_{2000} = \mathrm{AA}_{150}$ & $\mathrm{AA}_{\text{sun}} = \mathrm{AA}_{\text{shade}}$ & $\operatorname{cor}(\mathrm{PAI}, \mathrm{AA}) < 0$\\
 \bottomrule
 \end{tabular}
 
@@ -479,7 +463,7 @@ combinations (Fig.~\ref{fig-aa}B).
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-aa-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-aa-1.pdf}
 
 }
 
@@ -493,7 +477,7 @@ combinations (Fig.~\ref{fig-aa}B).
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-aacap-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-aacap-1.pdf}
 
 }
 
@@ -557,7 +541,7 @@ experiments measuring \aax{} with a dual sided chamber (\emph{31},
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-lma_aa-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-lma_aa-1.pdf}
 
 }
 
@@ -607,12 +591,13 @@ distributions on leaf surfaces.
 
 Sam McKlin and Tom Buckley helped with protocol development. Justin
 Alter, Max Gatlin, Joana Kim, Jenna Matsuyama, Brandon Najarian, and Kai
-Yasuda contributed to data collection. Sarah Friedrich helped with
-graphics.
+Yasuda contributed to data collection. Kate McCulloh provided feedback
+on an earlier version of this manuscript. Sarah Friedrich helped with
+graphics. We used Copilot and ChatGPT to assist with coding.
 
 \subsubsection{Funding:}\label{funding}
 
-US National Science Foundation OIA-1929167 to C.D.M.
+US National Science Foundation OIA-1929167 (C.D.M.)
 
 \subsubsection{Author contributions:}\label{author-contributions}
 
@@ -1131,6 +1116,7 @@ model evaluation using leave-one-out cross-validation and {WAIC}}.
 \setcounter{figure}{0}
 \setcounter{table}{0}
 \setcounter{equation}{0}
+\setcounter{page}{1}
 
 \subsection{Materials and Methods}\label{sec-methods}
 
@@ -1592,7 +1578,7 @@ mixed effects model described below.
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-example-aa-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-example-aa-1.pdf}
 
 }
 
@@ -1876,7 +1862,7 @@ Parameter & Estimate [95\% CI]\\
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-sr-rxnorm-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-sr-rxnorm-1.pdf}
 
 }
 
@@ -1996,7 +1982,7 @@ LOOIC & $\Delta$LOOIC & Meas. & Growth & LMA & Meas. $\times$ Growth & Meas. $\t
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-curves-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-curves-1.pdf}
 
 }
 
@@ -2012,7 +1998,6 @@ standard errors for each pair of amphi (orange) and pseudohypo (blue)
 curves.}
 
 \end{figure}%
-
 
 
 

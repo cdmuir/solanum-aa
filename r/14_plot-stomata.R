@@ -4,8 +4,6 @@ fit_aa = read_rds("objects/fit_aa1.rds")
 fit_stomata = read_rds("objects/fit_stomata.rds")
 accession_gedi = read_rds("data/accession-gedi.rds") |>
   rename(acc = accession)
-accession_climate = read_rds("data/accession-climate.rds") |>
-  rename(acc = accession)
 d1 = fit_aa$data
 
 plant_info = read_rds("data/plant-info.rds") |>

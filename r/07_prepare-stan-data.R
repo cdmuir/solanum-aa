@@ -5,19 +5,12 @@ plant_info = read_rds("data/plant-info.rds") |>
   mutate(llma = log(lma_gm2)) |>
   dplyr::select(accession, acc_id, light_treatment, llma) 
 
-trimmed_amphi_first = read_rds("data/trimmed_amphi_first.rds") |>
-  summarize(
-    amphi_first = unique(amphi_first),
-    .by = c("acc_id")
-  )
-
 phy = read_rds("data/phylogeny.rds")
 
 aa_summary = read_rds("objects/aa_summary.rds") |>
   dplyr::select(acc_id, light_intensity, aa = median, se_aa = sd) |>
   mutate(scaled_aa = (aa - mean(aa)) / sd(aa)) |>
-  left_join(plant_info, by = join_by(acc_id)) |>
-  left_join(trimmed_amphi_first, by = join_by(acc_id)) 
+  left_join(plant_info, by = join_by(acc_id))
 
 accession_gedi = read_rds("data/accession-gedi.rds") |>
   dplyr::select(accession, pai) |>

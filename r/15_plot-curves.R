@@ -26,7 +26,7 @@ assert_true(all(!is.na(fit_curve_diagnostics$acc_id))) # Check for NA values in 
 assert_true(all(!is.na(fit_curve_diagnostics$`Curve type`))) # Check for NA values in `Curve type`
 assert_true(all(!is.na(fit_curve_diagnostics$light_intensity))) # Check for NA values in light_intensity
 
-plan(multisession, workers = 1)
+plan(multisession, workers = 19)
 ags_curves = future_map(
   unique(aa_summary$acc_id),
   \(.x) {
