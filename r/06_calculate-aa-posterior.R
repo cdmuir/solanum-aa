@@ -60,7 +60,7 @@ aa_post = full_join(curve_fits_draws,
 # Check that AA estimates converged ----
 aa_summary = aa_post |>
   dplyr::select(starts_with("."), acc_id, aa, light_intensity) |>
-  split(~ acc_id + light_intensity) |>
+  split( ~ acc_id + light_intensity) |>
   map_dfr(\(.x) {
     .x |>
       select(-acc_id, -light_intensity) |>

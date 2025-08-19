@@ -5,11 +5,11 @@ fit_aa = read_rds("objects/fit_aa2.rds")
 
 # Estimated llma for each acc, light_intensity, and light_treatment
 df_new1 = crossing(
-    acc = unique(fit_aa$data$acc),
-    acc_id = unique(fit_aa$data$acc_id),
-    light_intensity = unique(fit_aa$data$light_intensity),
-    light_treatment = unique(fit_aa$data$light_treatment)
-  ) |>
+  acc = unique(fit_aa$data$acc),
+  acc_id = unique(fit_aa$data$acc_id),
+  light_intensity = unique(fit_aa$data$light_intensity),
+  light_treatment = unique(fit_aa$data$light_treatment)
+) |>
   mutate(row = row_number())
 
 df_pred1 = posterior_epred(fit_aa, newdata = df_new1, resp = "llma") |>
@@ -54,7 +54,7 @@ df1 = full_join(
 ) |>
   ungroup() |>
   mutate(across(contains("llma"), exp)) |>
-  rename_with(~ str_replace(., "^llma", "lma"), .cols = starts_with("llma")) |>
+  rename_with( ~ str_replace(., "^llma", "lma"), .cols = starts_with("llma")) |>
   mutate(
     Growth = light_treatment |>
       factor(levels = c("low", "high")) |>
@@ -67,26 +67,44 @@ df1 = full_join(
 # Regression lines
 ce = conditional_effects(fit_aa)
 df2 = ce[["aa.aa_llma"]] |>
-  mutate(lma = exp(llma), aa = estimate__, .lower = lower__, .upper = upper__,
-         Measurement = light_intensity |>
-           factor(levels = c("150", "2000")) |>
-           fct_recode(low = "150", high = "2000"), Growth = NA)
+  mutate(
+    lma = exp(llma),
+    aa = estimate__,
+    .lower = lower__,
+    .upper = upper__,
+    Measurement = light_intensity |>
+      factor(levels = c("150", "2000")) |>
+      fct_recode(low = "150", high = "2000"),
+    Growth = NA
+  )
 
 # Plot
 fig_lma_aa = ggplot(df1, aes(x = lma, y = aa, shape = Measurement)) +
-  geom_ribbon(data = df2, mapping = aes(ymin = .lower, ymax = .upper, group = Measurement), alpha = 0.5, color = NA, fill = "grey") + 
-  geom_line(data = df2, aes(linetype = Measurement), linewidth = 1.1) +
+  geom_ribbon(
+    data = df2,
+    mapping = aes(ymin = .lower, ymax = .upper, group = Measurement),
+    alpha = 0.5,
+    color = NA,
+    fill = "grey"
+  ) +
+  geom_line(data = df2,
+            aes(linetype = Measurement),
+            linewidth = 1.1) +
   # geom_interval(aes(ymin = aa_lower, ymax = aa_upper), linewidth = 0.5) +
   # geom_interval(aes(xmin = lma_lower, xmax = lma_upper), linewidth = 0.5) +
-  geom_point(mapping = aes(color = Growth), fill = "white", size = 2) +
+  geom_point(
+    mapping = aes(color = Growth),
+    fill = "white",
+    size = 2
+  ) +
   scale_color_manual(values = c("shade" = "tomato4", "sun" = "tomato")) +
   scale_shape_manual(values = c("low" = 19, "high" = 21)) +
-  labs(
-    x = expression(paste("leaf mass per area [g ", m^-2, "]")),,
-    y = "amphi advantage"
-  ) +
+  labs(x = expression(paste("leaf mass per area [g ", m^-2, "]")), , y = "amphi advantage") +
   xlim(min(df1$lma), max(df1$lma)) +
-  theme(legend.key.width = unit(1.5, "cm")) 
+  theme(legend.key.width = unit(1.5, "cm"))
 
 write_rds(fig_lma_aa, "objects/fig_lma_aa.rds")
-ggsave("figures/lma-aa.pdf", fig_lma_aa, width = 6, height = 4)
+ggsave("figures/lma-aa.pdf",
+       fig_lma_aa,
+       width = 6,
+       height = 4)

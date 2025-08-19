@@ -11,7 +11,13 @@ rh_curves1 = rh_curves |>
     max_log_gsw = max(log_gsw),
     licor_date = first(licor_date),
     S = unique(S),
-    .by = c("acc", "acc_id", "light_treatment", "light_intensity", "leaf_type")
+    .by = c(
+      "acc",
+      "acc_id",
+      "light_treatment",
+      "light_intensity",
+      "leaf_type"
+    )
   ) |>
   rowwise() |>
   mutate(
@@ -22,13 +28,30 @@ rh_curves1 = rh_curves |>
     log_gsw = min_log_gsw * (leaf_type == "amphi") + max_log_gsw * (leaf_type == "pseudohypo")
   ) |>
   dplyr::select(-fit, -terms, -min_log_gsw, -max_log_gsw) |>
-  pivot_wider(names_from = leaf_type, values_from = c(b0, b1, b2, log_gsw, S, licor_date)) |>
+  pivot_wider(names_from = leaf_type,
+              values_from = c(b0, b1, b2, log_gsw, S, licor_date)) |>
   mutate(
-    upper_int = aa_int(log_gsw_pseudohypo, b0_amphi, b0_pseudohypo, b1_amphi, b1_pseudohypo, b2_amphi, b2_pseudohypo),
-    lower_int = aa_int(log_gsw_amphi, b0_amphi, b0_pseudohypo, b1_amphi, b1_pseudohypo, b2_amphi, b2_pseudohypo),
+    upper_int = aa_int(
+      log_gsw_pseudohypo,
+      b0_amphi,
+      b0_pseudohypo,
+      b1_amphi,
+      b1_pseudohypo,
+      b2_amphi,
+      b2_pseudohypo
+    ),
+    lower_int = aa_int(
+      log_gsw_amphi,
+      b0_amphi,
+      b0_pseudohypo,
+      b1_amphi,
+      b1_pseudohypo,
+      b2_amphi,
+      b2_pseudohypo
+    ),
     aa = (upper_int - lower_int) / (log_gsw_pseudohypo - log_gsw_amphi),
     amphi_first = ymd(licor_date_amphi) < ymd(licor_date_pseudohypo)
-  ) 
+  )
 
 fit1 = lm(aa ~ amphi_first + acc * light_treatment * light_intensity, data = rh_curves1)
 summary(aov(fit1))

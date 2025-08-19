@@ -38,22 +38,18 @@ df_stomata_pred = c("lower_sd", "upper_sd", "lower_gcl", "upper_gcl") |>
            factor(levels = c("low", "high")) |>
            fct_recode(sun = "high", shade = "low"))
 
-sr_rxnorm = ggplot(df_stomata_pred, aes(Growth, gmax_ratio, group = acc, color = Growth)) +
+sr_rxnorm = ggplot(df_stomata_pred,
+                   aes(Growth, gmax_ratio, group = acc, color = Growth)) +
   geom_line(color = "black") +
   geom_point() +
   scale_color_manual(values = c("shade" = "tomato4", "sun" = "tomato")) +
   xlab("Growth light intensity") +
-  ylab(expression(italic(g)[max]~ratio)) +
+  ylab(expression(italic(g)[max] ~ ratio)) +
   ylim(0, 0.5) +
-  theme(
-    legend.position = "none", axis.title.x = element_blank() )
-  
-ggsave("~/Documents/grants/01_preparing/amiphistomy-proposal/figures/light_plasticity1.pdf", width = 3.25/1.5, height = 4/1.5)
+  theme(legend.position = "none", axis.title.x = element_blank())
 
-ggsave(
-  "figures/sr-rxnorm.pdf",
-  width = 4,
-  height = 4,
-)
+ggsave("figures/sr-rxnorm.pdf",
+       width = 4,
+       height = 4,)
 
 write_rds(sr_rxnorm, "figures/sr-rxnorm.rds")

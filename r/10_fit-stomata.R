@@ -13,11 +13,9 @@ plant_info = read_rds("data/plant-info.rds") |>
 df_stomata = read_rds("data/stomata.rds") |>
   left_join(plant_info, by = join_by(accession, replicate)) |>
   rename(acc = accession) |>
-  filter(
-    acc %in% unique(d1$acc),
-    if_all(contains("stomatal_density"), ~ !is.na(.x)),
-    if_all(contains("guard_cell_length"), ~ !is.na(.x))
-  ) |>
+  filter(acc %in% unique(d1$acc),
+         if_all(contains("stomatal_density"), ~ !is.na(.x)),
+         if_all(contains("guard_cell_length"), ~ !is.na(.x))) |>
   mutate(
     lower_sd = log(lower_stomatal_density_mm2),
     upper_sd = log(upper_stomatal_density_mm2),
@@ -42,7 +40,7 @@ model_forms = expand.grid(
   mutate(seed = sample(1e9, nrow(.)))
 
 # Build and fit each model
-plan(multisession, workers = 8)
+plan(multisession, workers = 19)
 
 stomata_models = future_pmap(model_forms, function(fixed, random, sigma, seed) {
   fml = bf(as.formula(
@@ -88,10 +86,7 @@ stomata_loo_table = tibble(
   se = sapply(loos, \(x) x$estimates["looic", "SE"])
 ) |>
   arrange(looic) |>
-  mutate(
-    delta_looic = looic - min(looic),
-    best_model = delta_looic == 0
-  )
+  mutate(delta_looic = looic - min(looic), best_model = delta_looic == 0)
 
 write_rds(stomata_loo_table, "objects/stomata_loo_table.rds")
 best_model_index = str_extract(stomata_loo_table[1, "model"], "\\d+") |>

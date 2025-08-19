@@ -1,4 +1,4 @@
-# Prepare data for analysis
+# Make phylogeny for analysis
 source("r/header.R")
 
 read_rds("data/thinned_rh_curves.rds") |>

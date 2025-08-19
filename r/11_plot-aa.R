@@ -135,24 +135,3 @@ ggsave(
 write_rds(df_aa_pred1, "objects/df_aa_pred1.rds")
 write_rds(df_aa_pred2, "objects/df_aa_pred2.rds")
 write_rds(df_aa_pred3, "objects/df_aa_pred3.rds")
-
-# Plot for amphistomy-proposal
-# set.seed(07102025)
-# amphi_advantage = ggplot(df_aa_pred1, aes(light_intensity, aa, color = light_treatment, shape = light_intensity)) +
-#   facet_wrap(~Growth) +
-#   geom_jitter(width = 0.1, height = 0, size = 2, fill = "white") +
-#   stat_summary(
-#     fun.data = mean_cl_boot,
-#     fun.args = list(conf.int = 0.95),
-#     geom = "pointinterval",
-#     position = position_nudge(x = -0.3),
-#     fill = "white", size = 12, linewidth = 1
-#   ) +
-#   geom_hline(yintercept = 0, linetype = "dashed") +
-#   scale_color_manual(values = c("low" = "tomato4", "high" = "tomato")) +
-#   scale_shape_manual(values = c("150" = 19, "2000" = 21)) +
-#   xlab(expression(Light~intensity~(mu*mol~m^-2~s^-1))) +
-#   ylab("Amphistomy advantage") +
-#   theme(legend.position = "none", strip.background = element_blank())
-# 
-# write_rds(amphi_advantage, "objects/amphi_advantage.rds")
