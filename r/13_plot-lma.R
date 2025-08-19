@@ -89,7 +89,7 @@ fig_lma_aa = ggplot(df1, aes(x = lma, y = aa, shape = Measurement)) +
   ) +
   geom_line(data = df2,
             aes(linetype = Measurement),
-            linewidth = 1.1) +
+            linewidth = 1.1, show.legend = FALSE) +
   # geom_interval(aes(ymin = aa_lower, ymax = aa_upper), linewidth = 0.5) +
   # geom_interval(aes(xmin = lma_lower, xmax = lma_upper), linewidth = 0.5) +
   geom_point(
