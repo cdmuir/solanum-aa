@@ -42,9 +42,11 @@ header-includes: |
   \newcommand{\rh}{$\mathrm{RH}$}
   \newcommand{\rhequals}[1]{$\mathrm{RH} = #1\%$}
   \newcommand{\tleafequals}[1]{$T_\mathrm{leaf} = \qty{#1}{\degreeCelsius}$}
+  \usepackage{setspace}
+  \usepackage[modulo]{lineno}
 mainfont: Times New Roman
 bibliography: solanum-aa.bib
-csl: science.csl
+csl: https://www.zotero.org/styles/pnas
 ---
 
 ```{=latex}
@@ -55,6 +57,10 @@ $^2$Department of Botany, University of Wisconsin, Madison; Wisconsin, USA\\
 *Corresponding author: cdmuir@wisc.edu\\
 \medskip
 ORCID: Christopher D. Muir — \href{https://orcid.org/0000-0003-2555-3878}{0000-0003-2555-3878}\\
+\medskip
+Classification: Biological Sciences, Ecology\\
+\medskip
+Keywords: amphistomy, photosynthesis, \textit{Solanum}, stomata
 \end{center}
 ```
 
@@ -339,6 +345,12 @@ df_coef_summary = read_rds("../objects/df_coef_summary.rds") |>
 
 ```
 
+```{=latex}
+\newpage
+\begin{linenumbers}
+\begin{doublespace}
+```
+
 ## Abstract
 
 <!-- Abstracts of Research Articles should explain to the general reader why the research was done, what was found and why the results are important. They should start with some brief BACKGROUND information: a sentence giving a broad introduction to the field comprehensible to the general reader, and then a sentence of more detailed background specific to your study. This should be followed by an explanation of the OBJECTIVES/METHODS and then the RESULTS. The final sentence should outline the main CONCLUSIONS of the study, in terms that will be comprehensible to all readers. The Abstract is distinct from the main body of the text and thus should not be the only source of background information critical to understanding the manuscript. Please do not include citations or abbreviations in the Abstract. The abstract should be 125 words or less. For Perspectives and Policy Forums, please include a one-sentence abstract. -->
@@ -347,6 +359,10 @@ The presence of stomata on both leaf surfaces (amphistomy) increases photosynthe
 
  <!-- LONG FORM - save in case of resubmission -->
 <!-- The presence of stomata on both leaf surfaces (amphistomy) can increase photosynthesis in C$_3$ plants by reducing the path length for CO$_2$ diffusion between substomatal cavities and chloroplasts. Paradoxically, despite this photosynthetic advantage, most leaves are hypostomatous (stomata on lower surface only). Based on the observation that amphistomatous leaves are most common among herbaceous plants growing in sunny habitats, including many crop species, it has long been hypothesized that traits affecting CO$_2$ supply or demand amplify the advantage of amphistomy under high light intensity. We used a recently developed method to quantify amphistomy advantage, the photosynthetic rate of an amphistomatous leaf relative to an otherwise identical hypostomatous leaf, in `r n_acc` diverse populations representing `r n_sp` species of wild tomatoes (*Solanum* sect. *Lycopersicon* and sect. *Lycopersicoides*). Plants grown under high light intensity benefit more from amphistomy in terms of CO$_2$ assimilated for a given stomatal conductance than plants grown under low light, regardless of measurement light intensity. Furthermore, populations native to open habitats tend to benefit more from amphistomy compared to those from more closed habitats. Developmental plasticity and adaptation of leaves to high light intensity likely play a combined role in explaining the adaptive significance and distribution of amphistomy in nature. We estimate that hypostomatous leaves would expend 10-65\% more water to achieve the same photosynthetic rate as a comparable amphistomatous leaf, implying large fitness costs of amphistomy in ecological contexts where this trait is rare. -->
+
+## Significance statement
+
+Stomata, the "mouths" of plants, regulate CO$_2$ available for photosynthesis. They are ubiquitous on leaves and essential to understanding why vascular plants transformed Earth and how our crops grow. Yet the adaptive significance of why many leaves only have stomata on their lower surface is a mystery. Many assume that this limits water loss, but we show the opposite is true. By manipulating which stomata a leaf can use, we show that leaves with stomata on both surfaces gain more CO$_2$ for the same amount of water lost, increasing water use efficiency. Furthermore, species from open canopies grown under high light benefit the most, which may explain why leaves with stomata on both sides are most prevalent in these habitats.
 
 ## Main text
 
@@ -494,6 +510,11 @@ US National Science Foundation OIA-1929167 (C.D.M.)
 ### Author contributions:
 
 Conceptualization: C.D.M.; Methodology: C.D.M., W.S.L.; Investigation: C.D.M., W.S.L., D.W.; Visualization: C.D.M.; Funding acquisition: C.D.M.; Writing – original draft: C.D.M.; Writing – review & editing: C.D.M., W.S.L., D.W.
+
+```{=latex}
+\end{doublespace}
+\end{linenumbers}
+```
 
 ## References
 
