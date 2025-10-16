@@ -3,32 +3,49 @@ source("r/header.R")
 
 plant_info = read_rds("data/plant-info.rds") |>
   mutate(llma = log(lma_gm2)) |>
-  dplyr::select(accession, acc_id, light_treatment, llma) 
+  dplyr::select(accession, acc_id, light_treatment, llma)
 
 phy = read_rds("data/phylogeny.rds")
 
-aa_summary = read_rds("objects/aa_summary.rds") |>
+aa_summary_steadystate = read_rds("objects/aa_summary_steadystate.rds") |>
+  dplyr::select(acc_id, light_intensity, aa = median, se_aa = sd) |>
+  mutate(scaled_aa = (aa - mean(aa)) / sd(aa)) |>
+  left_join(plant_info, by = join_by(acc_id))
+
+aa_summary_dynamic = read_rds("objects/aa_summary_dynamic.rds") |>
   dplyr::select(acc_id, light_intensity, aa = median, se_aa = sd) |>
   mutate(scaled_aa = (aa - mean(aa)) / sd(aa)) |>
   left_join(plant_info, by = join_by(acc_id))
 
 accession_gedi = read_rds("data/accession-gedi.rds") |>
   dplyr::select(accession, pai) |>
-  dplyr::filter(accession %in% unique(aa_summary$accession)) |>
+  dplyr::filter(accession %in% unique(aa_summary_steadystate$accession)) |>
   mutate(scaled_pai = (pai - mean(pai)) / sd(pai))
 
-assert_true(setequal(unique(aa_summary$accession), accession_gedi$accession))
+assert_true(setequal(
+  unique(aa_summary_steadystate$accession),
+  accession_gedi$accession
+))
+assert_true(setequal(
+  unique(aa_summary_dynamic$accession),
+  accession_gedi$accession
+))
 assert_true(setequal(phy$tip.label, accession_gedi$accession))
-    
+
 # make divergence matrix and index in same order as acc
 Dmat = cophenetic(phy)
 i = as.numeric(as.factor(colnames(Dmat)))
 Dmat1 = Dmat[i, i] / max(Dmat)
 
 # Compose data
-stan_data = aa_summary |>
+stan_data_steadystate = aa_summary_steadystate |>
   rename(acc = accession) %T>%
-  write_rds("objects/stan_data_df.rds") |>
+  write_rds("objects/stan_data_df_steadystate.rds") |>
+  compose_data()
+
+stan_data_dynamic = aa_summary_dynamic |>
+  rename(acc = accession) %T>%
+  write_rds("objects/stan_data_df_dynamic.rds") |>
   compose_data()
 
 # add GEDI data
