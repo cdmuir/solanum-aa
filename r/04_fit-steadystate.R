@@ -4,12 +4,13 @@ source("r/header.R")
 rh_curves = read_rds("data/trimmed_rh_curves.rds") |>
   mutate(ci = as.numeric(as.factor(curve)))
 
+dir = "objects/curve-fits/steadystate"
 plan(multisession, workers = 19)
 
 rh_curves |>
   split(~ curve) |>
   future_iwalk(\(df, curve_id) {
-    s = paste0("objects/curve-fits/", curve_id, ".rds")
+    s = paste0(dir, curve_id, ".rds")
     if (!file.exists(s)) {
       crit = 0
       x = 1
@@ -52,7 +53,7 @@ rh_curves |>
     }
   }, .progress = TRUE, .options = furrr_options(seed = TRUE))
 
-fit_curve_diagnostics = list.files("objects/curve-fits", full.names = TRUE) |>
+fit_steadystate_diagnostics = list.files(dir, full.names = TRUE) |>
   future_map_dfr(\(.x) {
     m = read_rds(.x)
     s = summarise_draws(m) |>
@@ -69,4 +70,4 @@ fit_curve_diagnostics = list.files("objects/curve-fits", full.names = TRUE) |>
     )
   }, .progress = TRUE)
 
-write_rds(fit_curve_diagnostics, "objects/fit_curve_diagnostics.rds")
+write_rds(fit_steadystate_diagnostics, "objects/fit_steadystate_diagnostics.rds")

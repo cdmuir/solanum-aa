@@ -15,7 +15,9 @@ read_rds("data/thinned_rh_curves.rds") |>
   unite("curve", acc_id, leaf_type, light_intensity, remove = FALSE) |>
   mutate(
     log_gsw = log(gsw),
-    scaled_log_gsw = (log_gsw - mean(log_gsw)) / sd(log_gsw)
+    scaled_log_gsw = (log_gsw - mean(log_gsw)) / sd(log_gsw),
+    log_A = log(A),
+    log_Adyn = log(Adyn)
   ) |>
   write_rds("data/prepared_rh_curves.rds")
 

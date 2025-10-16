@@ -1,8 +1,7 @@
 # Fit preliminary model to each RH curve to identify and trim AA outliers
 source("r/header.R")
 
-rh_curves = read_rds("data/prepared_rh_curves.rds") |>
-  mutate(log_A = log(A))
+rh_curves = read_rds("data/prepared_rh_curves.rds")
 
 rh_curves1 = rh_curves |>
   summarize(
