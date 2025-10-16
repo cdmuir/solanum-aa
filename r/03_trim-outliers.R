@@ -5,7 +5,8 @@ rh_curves = read_rds("data/prepared_rh_curves.rds")
 
 rh_curves1 = rh_curves |>
   summarize(
-    fit = list(lm(log_A ~ poly(log_gsw, 2, raw = TRUE))),
+    fit_sty = list(lm(log_A ~ poly(log_gsw, 2, raw = TRUE))),
+    fit_dyn = list(lm(log_Adyn ~ poly(log_gsw, 2, raw = TRUE))),
     min_log_gsw = min(log_gsw),
     max_log_gsw = max(log_gsw),
     licor_date = first(licor_date),
