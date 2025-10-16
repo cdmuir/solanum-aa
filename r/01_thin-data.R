@@ -26,8 +26,8 @@ do.call(
       .by = c("acc_id", "curve_type", "light_intensity")
     ) |>
     dplyr::summarize(
-      n_rh_curve5 = n(),
-      n_point_per_rh_curve5 = mean(n_point)
+      n_rh_curve6 = n(),
+      n_point_per_rh_curve6 = mean(n_point)
     ) |>
     as.list()
 )
