@@ -1,10 +1,10 @@
-# Fit quadratic parameters to each curve separately (steady state A)
+# Fit quadratic parameters to each curve separately (dynamic A)
 source("r/header.R")
 
 rh_curves = read_rds("data/trimmed_rh_curves.rds") |>
   mutate(ci = as.numeric(as.factor(curve)))
 
-dir = "objects/curve-fits/steadystate/"
+dir = "objects/curve-fits/dynamic/"
 plan(multisession, workers = 19)
 
 rh_curves |>
@@ -18,7 +18,7 @@ rh_curves |>
       
       while (crit == 0 & x < 24) {
         m = brm(
-          log_A ~ poly(log_gsw, 2, raw = TRUE),
+          log_Adyn ~ poly(log_gsw, 2, raw = TRUE),
           iter = x * aa_args$n_iter_init,
           thin = x,
           data = df,
@@ -53,7 +53,7 @@ rh_curves |>
     }
   }, .progress = TRUE, .options = furrr_options(seed = TRUE))
 
-fit_steadystate_diagnostics = list.files(dir, full.names = TRUE) |>
+fit_dynamic_diagnostics = list.files(dir, full.names = TRUE) |>
   future_map_dfr(\(.x) {
     m = read_rds(.x)
     s = summarise_draws(m) |>
@@ -70,4 +70,4 @@ fit_steadystate_diagnostics = list.files(dir, full.names = TRUE) |>
     )
   }, .progress = TRUE)
 
-write_rds(fit_steadystate_diagnostics, "objects/fit_steadystate_diagnostics.rds")
+write_rds(fit_dynamic_diagnostics, "objects/fit_dynamic_diagnostics.rds")
