@@ -1,7 +1,0 @@
-build-r.sub
-build-stan.sub
-fit_[0-9]*
-*.stan
-packages.tar.gz
-stan_*
-install-htc-packages.R
