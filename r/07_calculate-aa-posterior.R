@@ -16,7 +16,7 @@ trimmed_rh_curves = read_rds("data/trimmed_rh_curves.rds") |>
   )
 
 # Draws from the curve fits ----
-steadystate_draws = read_rds("objects/steadystate-draws.rds") |>
+steadystate_draws = read_rds("objects/sty-draws.rds") |>
   rename(b0 = b_Intercept, b1 = b_polylog_gsw2rawEQTRUE1, b2 = b_polylog_gsw2rawEQTRUE2) |>
   dplyr::select(starts_with("."), matches("b[0-2]"), file) |>
   mutate(accid_leaftype_lightintensity = str_remove(file, ".rds"),
@@ -27,7 +27,7 @@ steadystate_draws = read_rds("objects/steadystate-draws.rds") |>
     names = c("acc_id", "leaf_type", "light_intensity")
   )
 
-dynamic_draws = read_rds("objects/dynamic-draws.rds") |>
+dynamic_draws = read_rds("objects/dyn-draws.rds") |>
   rename(b0 = b_Intercept, b1 = b_polylog_gsw2rawEQTRUE1, b2 = b_polylog_gsw2rawEQTRUE2) |>
   dplyr::select(starts_with("."), matches("b[0-2]"), file) |>
   mutate(accid_leaftype_lightintensity = str_remove(file, ".rds"),
@@ -123,7 +123,7 @@ aa_summary_dynamic = aa_post_dynamic |>
   }, .progress = TRUE)
 
 # Write posterior of AA estimates ----
-write_rds(aa_post_steadystate, "objects/aa_post_steadystate.rds")
-write_rds(aa_post_dynamic, "objects/aa_post_dynamic.rds")
-write_rds(aa_summary_steadystate, "objects/aa_summary_steadystate.rds")
-write_rds(aa_summary_dynamic, "objects/aa_summary_dynamic.rds")
+write_rds(aa_post_steadystate, "objects/aa_post_sty.rds")
+write_rds(aa_post_dynamic, "objects/aa_post_dyn.rds")
+write_rds(aa_summary_steadystate, "objects/aa_summary_sty.rds")
+write_rds(aa_summary_dynamic, "objects/aa_summary_dyn.rds")
