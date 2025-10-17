@@ -7,12 +7,12 @@ plant_info = read_rds("data/plant-info.rds") |>
 
 phy = read_rds("data/phylogeny.rds")
 
-aa_summary_steadystate = read_rds("objects/aa_summary_steadystate.rds") |>
+aa_summary_steadystate = read_rds("objects/aa_summary_sty.rds") |>
   dplyr::select(acc_id, light_intensity, aa = median, se_aa = sd) |>
   mutate(scaled_aa = (aa - mean(aa)) / sd(aa)) |>
   left_join(plant_info, by = join_by(acc_id))
 
-aa_summary_dynamic = read_rds("objects/aa_summary_dynamic.rds") |>
+aa_summary_dynamic = read_rds("objects/aa_summary_dyn.rds") |>
   dplyr::select(acc_id, light_intensity, aa = median, se_aa = sd) |>
   mutate(scaled_aa = (aa - mean(aa)) / sd(aa)) |>
   left_join(plant_info, by = join_by(acc_id))
@@ -40,12 +40,12 @@ Dmat1 = Dmat[i, i] / max(Dmat)
 # Compose data
 stan_data_steadystate = aa_summary_steadystate |>
   rename(acc = accession) %T>%
-  write_rds("objects/stan_data_df_steadystate.rds") |>
+  write_rds("objects/stan_data_df_sty.rds") |>
   compose_data()
 
 stan_data_dynamic = aa_summary_dynamic |>
   rename(acc = accession) %T>%
-  write_rds("objects/stan_data_df_dynamic.rds") |>
+  write_rds("objects/stan_data_df_dyn.rds") |>
   compose_data()
 
 # add GEDI data
