@@ -1,7 +1,7 @@
 # Fit phylogenetic model on posterior estimate of AA
 source("r/header.R")
 
-d1 = read_rds("objects/stan_data_df.rds")
+d1 = read_rds("objects/stan_data_df_steadystate.rds")
 tr = read_rds("data/phylogeny.rds")
 A = vcv(tr, corr = TRUE)
 
@@ -44,7 +44,7 @@ plan(multisession, workers = 19)
 
 aa_models = model_forms |>
   dplyr::select(fixed, random, sigma, seed) |>
-  future_pmap(function(fixed, random, sigma, seed) {
+  future_pmap(\(fixed, random, sigma, seed) {
   fml = bf(as.formula(paste(
     "aa | se(se_aa, sigma = TRUE) ~", fixed, "+", random
   )), as.formula(paste("sigma ~", sigma)))
@@ -114,7 +114,7 @@ aa_loo_table = tibble(
   left_join(model_forms, by = join_by(model))
 
 # Write results
-write_rds(aa_loo_table, "objects/aa_loo_table1.rds")
+write_rds(aa_loo_table, "objects/aa_sty_loo_table1.rds")
 best_model_index = str_extract(aa_loo_table[1, "model"], "\\d+") |>
   as.integer()
-write_rds(aa_models[[best_model_index]], "objects/fit_aa1.rds")
+write_rds(aa_models[[best_model_index]], "objects/fit_aa1_sty.rds")

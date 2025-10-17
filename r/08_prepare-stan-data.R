@@ -53,7 +53,7 @@ stan_accession_gedi = compose_data(accession_gedi)
 stan_accession_gedi$n = NULL
 stan_accession_gedi$accession = NULL
 stan_accession_gedi$n_accession = NULL
-stan_data = c(stan_data, stan_accession_gedi)
+stan_data = c(stan_data_steadystate, stan_accession_gedi)
 
 # add phylogeny
 stan_data$Dmat = Dmat1
