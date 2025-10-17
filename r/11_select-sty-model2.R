@@ -1,7 +1,7 @@
-# Test whether LMA mediates affect growth light treatment on AA
+# Test whether LMA mediates affect growth light treatment on AA (steady state)
 source("r/header.R")
 
-d1 = read_rds("objects/stan_data_df.rds")
+d1 = read_rds("objects/stan_data_df_steadystate.rds")
 tr = read_rds("data/phylogeny.rds")
 A = vcv(tr, corr = TRUE)
 
@@ -45,7 +45,7 @@ model_forms = expand.grid(
          model = paste0("model_", row_number()))
 
 # Build and fit each model
-plan(multisession, workers = 19)
+plan(multisession, workers = 9)
 
 aa_models = model_forms |>
   dplyr::select(fixed, random, sigma, seed) |>
@@ -125,7 +125,7 @@ aa_loo_table = tibble(
   ) |>
   left_join(model_forms, by = join_by(model))
 
-write_rds(aa_loo_table, "objects/aa_loo_table2.rds")
+write_rds(aa_loo_table, "objects/aa_sty_loo_table2.rds")
 best_model_index = str_extract(aa_loo_table[1, "model"], "\\d+") |>
   as.integer()
-write_rds(aa_models[[best_model_index]], "objects/fit_aa2.rds")
+write_rds(aa_models[[best_model_index]], "objects/fit_aa2_sty.rds")
