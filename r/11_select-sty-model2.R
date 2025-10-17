@@ -45,7 +45,7 @@ model_forms = expand.grid(
          model = paste0("model_", row_number()))
 
 # Build and fit each model
-plan(multisession, workers = 9)
+plan(multisession, workers = 19)
 
 aa_models = model_forms |>
   dplyr::select(fixed, random, sigma, seed) |>
