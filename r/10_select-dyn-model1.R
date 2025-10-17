@@ -1,7 +1,7 @@
 # Fit phylogenetic model on posterior estimate of AA (dynamic)
 source("r/header.R")
 
-d1 = read_rds("objects/stan_data_df_dynamic.rds")
+d1 = read_rds("objects/stan_data_df_dyn.rds")
 tr = read_rds("data/phylogeny.rds")
 A = vcv(tr, corr = TRUE)
 

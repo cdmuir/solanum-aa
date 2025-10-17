@@ -1,11 +1,12 @@
 # Plot PAI against AA and LMA
 source("r/header.R")
 
-fit_aa1 = read_rds("objects/fit_aa1.rds")
+fit_aa1 = read_rds("objects/fit_aa1_sty.rds")
 fit_aa2 = read_rds("objects/fit_aa2.rds")
-accession_gedi = read_rds("data/accession-gedi.rds") |>
-  rename(acc = accession)
 d1 = fit_aa1$data
+accession_gedi = read_rds("data/accession-gedi.rds") |>
+  rename(acc = accession) |>
+  filter(acc %in% unique(d1$acc))
 
 df_new = crossing(
   acc = unique(d1$acc),
@@ -78,7 +79,7 @@ df_text = df_coef_summary |>
       sign(.lower) != sign(.upper) ~ "n.s."
     ),
     pai = max(accession_gedi$pai),
-    aa = 0.2
+    aa = 0.16
   )
 
 fig_aa_pai = ggplot(df_aa_pred2, aes(pai, aa, color = Growth, shape = Measurement)) +
@@ -104,7 +105,7 @@ fig_aa_pai = ggplot(df_aa_pred2, aes(pai, aa, color = Growth, shape = Measuremen
   scale_x_continuous(breaks = c(0.01, 0.1, 1), trans = reverselog10_trans()) +
   xlab(expression(paste("native plant area index [", m^2 ~ m^-2, "]"))) +
   ylab("amphi advantage") +
-  ylim(0, 0.2) +
+  ylim(0, 0.16) +
   geom_hline(yintercept = 0, linetype = "dashed") +
   theme(legend.position = "none")
 
