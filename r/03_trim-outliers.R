@@ -21,46 +21,80 @@ rh_curves1 = rh_curves |>
   ) |>
   rowwise() |>
   mutate(
-    terms = list(coef(fit)),
-    b0 = terms[[1]],
-    b1 = terms[[2]],
-    b2 = terms[[3]],
+    terms_sty = list(coef(fit_sty)),
+    b0_sty = terms_sty[[1]],
+    b1_sty = terms_sty[[2]],
+    b2_sty = terms_sty[[3]],
+    terms_dyn = list(coef(fit_dyn)),
+    b0_dyn = terms_dyn[[1]],
+    b1_dyn = terms_dyn[[2]],
+    b2_dyn = terms_dyn[[3]],
     log_gsw = min_log_gsw * (leaf_type == "amphi") + max_log_gsw * (leaf_type == "pseudohypo")
   ) |>
-  dplyr::select(-fit, -terms, -min_log_gsw, -max_log_gsw) |>
+  dplyr::select(-starts_with("fit_"), -starts_with("terms_"), -min_log_gsw, -max_log_gsw) |>
   pivot_wider(names_from = leaf_type,
-              values_from = c(b0, b1, b2, log_gsw, S, licor_date)) |>
+              values_from = c(b0_sty, b1_sty, b2_sty, b0_dyn, b1_dyn, b2_dyn, log_gsw, S, licor_date)) |>
   mutate(
-    upper_int = aa_int(
+    upper_int_sty = aa_int(
       log_gsw_pseudohypo,
-      b0_amphi,
-      b0_pseudohypo,
-      b1_amphi,
-      b1_pseudohypo,
-      b2_amphi,
-      b2_pseudohypo
+      b0_sty_amphi,
+      b0_sty_pseudohypo,
+      b1_sty_amphi,
+      b1_sty_pseudohypo,
+      b2_sty_amphi,
+      b2_sty_pseudohypo
     ),
-    lower_int = aa_int(
+    lower_int_sty = aa_int(
       log_gsw_amphi,
-      b0_amphi,
-      b0_pseudohypo,
-      b1_amphi,
-      b1_pseudohypo,
-      b2_amphi,
-      b2_pseudohypo
+      b0_sty_amphi,
+      b0_sty_pseudohypo,
+      b1_sty_amphi,
+      b1_sty_pseudohypo,
+      b2_sty_amphi,
+      b2_sty_pseudohypo
     ),
-    aa = (upper_int - lower_int) / (log_gsw_pseudohypo - log_gsw_amphi),
+    upper_int_dyn = aa_int(
+      log_gsw_pseudohypo,
+      b0_dyn_amphi,
+      b0_dyn_pseudohypo,
+      b1_dyn_amphi,
+      b1_dyn_pseudohypo,
+      b2_dyn_amphi,
+      b2_dyn_pseudohypo
+    ),
+    lower_int_dyn = aa_int(
+      log_gsw_amphi,
+      b0_dyn_amphi,
+      b0_dyn_pseudohypo,
+      b1_dyn_amphi,
+      b1_dyn_pseudohypo,
+      b2_dyn_amphi,
+      b2_dyn_pseudohypo
+    ),
+    aa_sty = (upper_int_sty - lower_int_sty) / (log_gsw_pseudohypo - log_gsw_amphi),
+    aa_dyn = (upper_int_dyn - lower_int_dyn) / (log_gsw_pseudohypo - log_gsw_amphi),
     amphi_first = ymd(licor_date_amphi) < ymd(licor_date_pseudohypo)
   )
 
-fit1 = lm(aa ~ amphi_first + acc * light_treatment * light_intensity, data = rh_curves1)
-summary(aov(fit1))
-rh_curves1$resid = rstudent(fit1)
+fit_sty = lm(aa_sty ~ amphi_first + acc * light_treatment * light_intensity,
+             data = rh_curves1)
+fit_dyn = lm(aa_dyn ~ amphi_first + acc * light_treatment * light_intensity,
+             data = rh_curves1)
+summary(aov(fit_sty))
+summary(aov(fit_dyn))
+rh_curves1$resid_sty = rstudent(fit_sty)
+rh_curves1$resid_dyn = rstudent(fit_dyn)
 
+# Using outliers from steady state data
 acc_id_outlier = rh_curves1 |>
-  filter(abs(resid) > aa_args$aa_outlier_threshold) |>
-  dplyr::select(acc_id, aa, resid) |>
+  filter(abs(resid_sty) > aa_args$aa_outlier_threshold) |>
+  dplyr::select(acc_id, aa_sty, resid_sty) |>
   pull(acc_id)
+
+# acc_id_outlier = rh_curves1 |>
+#   filter(abs(resid_dyn) > aa_args$aa_outlier_threshold) |>
+#   dplyr::select(acc_id, aa_dyn, resid_dyn) |>
+#   pull(acc_id)
 
 do.call(
   "add_to_stats",
