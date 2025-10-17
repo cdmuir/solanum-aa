@@ -14,7 +14,7 @@ steadystate_curve_fits |>
       posterior::summarize_draws() |>
       mutate(file = .x)
   }, .progress = TRUE) |>
-  write_rds("objects/steadystate-summary.rds")
+  write_rds("objects/sty-summary.rds")
 
 dynamic_curve_fits |>
   map_dfr(\(.x) {
@@ -22,7 +22,7 @@ dynamic_curve_fits |>
       posterior::summarize_draws() |>
       mutate(file = .x)
   }, .progress = TRUE) |>
-  write_rds("objects/dynamic-summary.rds")
+  write_rds("objects/dyn-summary.rds")
 
 # Curve fit draws
 steadystate_curve_fits |>
@@ -31,7 +31,7 @@ steadystate_curve_fits |>
       as_draws_df() |>
       mutate(file = .x)
   }, .progress = TRUE) |>
-  write_rds("objects/steadystate-draws.rds")
+  write_rds("objects/sty-draws.rds")
 
 dynamic_curve_fits |>
   map_dfr(\(.x) {
@@ -39,4 +39,4 @@ dynamic_curve_fits |>
       as_draws_df() |>
       mutate(file = .x)
   }, .progress = TRUE) |>
-  write_rds("objects/dynamic-draws.rds")
+  write_rds("objects/dyn-draws.rds")
