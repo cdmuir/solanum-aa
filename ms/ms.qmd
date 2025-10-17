@@ -638,19 +638,20 @@ Leaf mass per area (LMA) is the dry mass divided by the leaflet area. We scanned
 
 ### Cleaning \agcurve{} curves
 
-The raw data set consisted of `r prettyNum(aa_stats$n_rh_curve0, big.mark = ",")` \agcurve{} curves with an average of `r formatC(aa_stats$n_point_per_rh_curve0, digits = 3)` points per curve. Manual curation of a data set this size in a principled, consistent manner is not feasible. Therefore, we automated data cleaning using custom *R* scripts. Cleaning is divided into six sequential steps (\autoref{tbl-cleaning1}).
+The raw data set consisted of `r prettyNum(aa_stats$n_rh_curve0, big.mark = ",")` \agcurve{} curves with an average of `r formatC(aa_stats$n_point_per_rh_curve0, digits = 3)` points per curve. Manual curation of a data set this size in a principled, consistent manner is not feasible. Therefore, we automated data cleaning using custom *R* scripts. Cleaning is divided into seven sequential steps (\autoref{tbl-cleaning1}).
 
 ```{r, cleaning1, echo=FALSE,message=FALSE,warning=FALSE}
 #| label: tbl-cleaning1
-#| tbl-cap: "Six sequential steps for cleaning \\agcurve{} curves. The rationale and procedure for each step are described in the text. The rightmost columns summarize the number of curves and mean number of points per curve remaining after each step. For reference, there are four possible \\agcurve{} curves per replicate: all combinations of leaf type (amphi or pseudohypo) and light intensity (high or low)."
+#| tbl-cap: "Seven sequential steps for cleaning \\agcurve{} curves. The rationale and procedure for each step are described in the text. The rightmost columns summarize the number of curves and mean number of points per curve remaining after each step. For reference, there are four possible \\agcurve{} curves per replicate: all combinations of leaf type (amphi or pseudohypo) and light intensity (high or low)."
 
 step_description_col = c(
   "1. remove unreliable and unusable data points",
-  "2. remove hysteretic portion of \\agcurve{} curves at low \\gsw{}",
-  "3. remove outliers within each \\agcurve{} curve",
-  "4. remove replicates with no overlap between amphi and pseudohypo \\agcurve{} curves",
-  "5. thin redundant data points within each \\agcurve{} curve",
-  "6. trim extreme \\aax{} values"
+  "2. remove points not at steady state",
+  "3. remove hysteretic portion of \\agcurve{} curves at low \\gsw{}",
+  "4. remove outliers within each \\agcurve{} curve",
+  "5. remove replicates with no overlap between amphi and pseudohypo \\agcurve{} curves",
+  "6. thin redundant data points within each \\agcurve{} curve",
+  "7. trim extreme \\aax{} values"
 )
 
 n_curve_col = unlist(aa_stats[str_detect(names(aa_stats), "^n_rh_curve[1-9]$")]) |>
@@ -674,6 +675,12 @@ tibble(
 
 ```
 
+
+#### Remove points not at steady state
+
+*Rationale*: Recent methods have been developed to quantify dynamic (i.e. unsteady state) assimilation and transpiration rates during gas exchange measurements [@saathoff_gas_2021]. These methods potentially obviate the need to wait minutes to assure steady state conditions, enabling rapid estimation of dynamic gas exchange. The equations for dynamic assimilation and transpiration can also be used to assess whether steady state conditions have been reached. If dynamic and steady state estimates are similar, this indicates that the system is in steady state [@saathoff_gas_2021]. To be conservative, we did not use dynamic assimilation or transpiration rates, but instead used the comparison between dynamic and steady state rates to identify and remove points that were not at steady state.
+
+*Procedure*: We removed all points where $\left| \log{A_\mathrm{sty} / A_\mathrm{dyn}} \right| < `r aa_args[['steadystate_cutoff']]`$ and $\left| \log{E_\mathrm{sty} / E_\mathrm{dyn}} \right| < `r aa_args[['steadystate_cutoff']]`$. The subscripts 'sty' and 'dyn' refer to steady state and dynamic estimates, respectively; the assimilation and transpiration rates are denoted by $A$ and $E$, respectively.
 
 #### Remove unreliable and unusable data points
 

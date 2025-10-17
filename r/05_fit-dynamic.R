@@ -71,3 +71,9 @@ fit_dynamic_diagnostics = list.files(dir, full.names = TRUE) |>
   }, .progress = TRUE)
 
 write_rds(fit_dynamic_diagnostics, "objects/fit_dynamic_diagnostics.rds")
+
+zip::zip(
+  "objects/curve-fits/dynamic.zip",
+  files = list.files("objects/curve-fits/dynamic", full.names = TRUE),
+  mode = "cherry-pick"
+)

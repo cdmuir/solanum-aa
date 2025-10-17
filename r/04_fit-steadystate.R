@@ -71,3 +71,9 @@ fit_steadystate_diagnostics = list.files(dir, full.names = TRUE) |>
   }, .progress = TRUE)
 
 write_rds(fit_steadystate_diagnostics, "objects/fit_steadystate_diagnostics.rds")
+
+zip::zip(
+  "objects/curve-fits/steadystate.zip",
+  files = list.files("objects/curve-fits/steadystate", full.names = TRUE),
+  mode = "cherry-pick"
+)
