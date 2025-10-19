@@ -2,7 +2,7 @@
 source("r/header.R")
 
 fit_aa1 = read_rds("objects/fit_aa1_sty.rds")
-fit_aa2 = read_rds("objects/fit_aa2.rds")
+fit_aa2 = read_rds("objects/fit_aa2_sty.rds")
 d1 = fit_aa1$data
 accession_gedi = read_rds("data/accession-gedi.rds") |>
   rename(acc = accession) |>

@@ -88,7 +88,7 @@ df_aa_text = df_aa_pred1 |>
   summarize(
     x = 0,
     label = sprintf("%.3f", round(mean(aa), 3)),
-    aa = 0.30,
+    aa = 0.20,
     .by = c("Growth", "Measurement")
   )
 

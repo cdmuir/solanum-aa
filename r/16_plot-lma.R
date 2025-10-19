@@ -1,7 +1,7 @@
 # Plot effect LMA on AA
 source("r/header.R")
 
-fit_aa = read_rds("objects/fit_aa2.rds")
+fit_aa = read_rds("objects/fit_aa2_sty.rds")
 
 # Estimated llma for each acc, light_intensity, and light_treatment
 df_new1 = crossing(

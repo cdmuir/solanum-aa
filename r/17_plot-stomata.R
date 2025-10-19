@@ -1,6 +1,6 @@
 source("r/header.R")
 
-fit_aa = read_rds("objects/fit_aa1.rds")
+fit_aa = read_rds("objects/fit_aa1_sty.rds")
 fit_stomata = read_rds("objects/fit_stomata.rds")
 accession_gedi = read_rds("data/accession-gedi.rds") |>
   rename(acc = accession)
