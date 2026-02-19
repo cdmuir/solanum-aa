@@ -1,5 +1,4 @@
 % Options for packages loaded elsewhere
-% Options for packages loaded elsewhere
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
 \PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
@@ -8,22 +7,21 @@
   letterpaper,
   DIV=11,
   numbers=noendperiod]{scrartcl}
-\usepackage{xcolor}
+
 \usepackage{amsmath,amssymb}
-\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 \usepackage{iftex}
 \ifPDFTeX
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
 \else % if luatex or xetex
-  \usepackage{unicode-math} % this also loads fontspec
+  \usepackage{unicode-math}
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
 \fi
 \usepackage{lmodern}
-\ifPDFTeX\else
-  % xetex/luatex font selection
+\ifPDFTeX\else  
+    % xetex/luatex font selection
   \setmainfont[]{Times New Roman}
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
@@ -42,32 +40,22 @@
 }{% if KOMA class
   \KOMAoptions{parskip=half}}
 \makeatother
+\usepackage{xcolor}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 % Make \paragraph and \subparagraph free-standing
-\makeatletter
 \ifx\paragraph\undefined\else
   \let\oldparagraph\paragraph
-  \renewcommand{\paragraph}{
-    \@ifstar
-      \xxxParagraphStar
-      \xxxParagraphNoStar
-  }
-  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
-  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
+  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
 \fi
 \ifx\subparagraph\undefined\else
   \let\oldsubparagraph\subparagraph
-  \renewcommand{\subparagraph}{
-    \@ifstar
-      \xxxSubParagraphStar
-      \xxxSubParagraphNoStar
-  }
-  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
-  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
+  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
-\makeatother
 
 
-\usepackage{longtable,booktabs,array}
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}\usepackage{longtable,booktabs,array}
 \usepackage{calc} % for calculating minipage widths
 % Correct order of tables after \paragraph or \subparagraph
 \usepackage{etoolbox}
@@ -79,21 +67,17 @@
 \makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
-\newsavebox\pandoc@box
-\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
-  \sbox\pandoc@box{#1}%
-  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
-  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
-  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
-  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
-  \else\usebox{\pandoc@box}%
-  \fi%
-}
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
 % Set default figure placement to htbp
+\makeatletter
 \def\fps@figure{htbp}
 \makeatother
-
-
 % definitions for citeproc citations
 \NewDocumentCommand\citeproctext{}{}
 \NewDocumentCommand\citeproc{mm}{%
@@ -127,18 +111,6 @@
 \newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
 \newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
 \newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
-
-
-
-\setlength{\emergencystretch}{3em} % prevent overfull lines
-
-\providecommand{\tightlist}{%
-  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-
-
-
- 
-
 
 \usepackage{booktabs}
 \usepackage{longtable}
@@ -228,9 +200,13 @@
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
 \usepackage{bookmark}
+
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\urlstyle{same}
+\urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
   pdftitle={Plasticity and adaptation to high light intensity amplify the advantage of amphistomatous leaves},
   pdfauthor={Christopher D. Muir\^{}\{1,2*\}; Wei Shen Lim\^{}\{1\}; Dachuan Wang\^{}\{1,2\}},
@@ -241,15 +217,14 @@
   urlcolor={Blue},
   pdfcreator={LaTeX via pandoc}}
 
-
 \title{Plasticity and adaptation to high light intensity amplify the
 advantage of amphistomatous leaves}
 \author{Christopher D. Muir\(^{1,2*}\) \and Wei Shen
 Lim\(^{1}\) \and Dachuan Wang\(^{1,2}\)}
 \date{}
+
 \begin{document}
 \maketitle
-
 
 \begin{center}
 $^1$School of Life Sciences, University of Hawaiʻi; Mānoa, Hawaiʻi, USA\\
@@ -405,7 +380,7 @@ forest canopy will often experience low light intensity.
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{../figures/hypotheses.pdf}}
+\includegraphics{../figures/hypotheses.pdf}
 
 }
 
@@ -515,7 +490,7 @@ significantly different than 0 in all treatment combinations
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-aa-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-aa-1.pdf}
 
 }
 
@@ -529,7 +504,7 @@ significantly different than 0 in all treatment combinations
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-aacap-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-aacap-1.pdf}
 
 }
 
@@ -591,7 +566,7 @@ limitations.
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-lma_aa-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-lma_aa-1.pdf}
 
 }
 
@@ -1158,9 +1133,9 @@ tomato, including representatives of all described species of
 lycopersicum} var. \emph{lycopersicum} (Table~\ref{tbl-populations}).
 These populations were selected in a previous study because they
 encompass the breadth of climatic variation in the wild tomato clade
-(54). In one case, we substituted a congeric population of the species
-(\emph{S. galapagense}) because of difficult growing the focal
-population. We also added an a population of \emph{S. pennellii}. Due to
+(54). In one case, we substituted a congeneric population of the species
+(\emph{S. galapagense}) because of difficulty growing the focal
+population and we also added a population of \emph{S. pennellii}. Due to
 constraints on growth space and time, we spread out measurements over
 61.1 weeks from August 29, 2022 to October 31, 2023. Replicates within
 population were evenly spread out over this period to prevent
@@ -1588,7 +1563,7 @@ All models were fit using a Bayesian HMC sampling in the probabilistic
 programming language \emph{Stan} (61) using the \emph{R} package
 \textbf{brms} version 2.23.0 (62). We used \emph{CmdStan} version 2.37.0
 and \textbf{cmdstanr} version 0.9.0 (63) to interface with \emph{R}
-version 4.5.1 (64). We sampled the posterior distribution from a single
+version 4.5.2 (64). We sampled the posterior distribution from a single
 chain with a minimum of 1000 iterations after 1000 warmup iterations. If
 necessary, we refit models with more iterations to decrease the
 Gelman-Rubin convergence statistic (\(\hat{R}\)) (65) to less than 1.01
@@ -1628,7 +1603,7 @@ mixed effects model described below.
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-example-aa-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-example-aa-1.pdf}
 
 }
 
@@ -1906,7 +1881,7 @@ Parameter & Estimate [95\% CI]\\
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-sr-rxnorm-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-sr-rxnorm-1.pdf}
 
 }
 
@@ -2029,7 +2004,7 @@ LOOIC & $\Delta$LOOIC & Meas. & Growth & LMA & Meas. $\times$ Growth & Meas. $\t
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-curves-1.pdf}}
+\includegraphics{ms_files/figure-pdf/fig-curves-1.pdf}
 
 }
 
@@ -2045,7 +2020,6 @@ standard errors for each pair of amphi (orange) and pseudohypo (blue)
 curves.}
 
 \end{figure}%
-
 
 
 

@@ -90,8 +90,7 @@ aa_stats = aa_stats[order(names(aa_stats))]
 
 plant_info = read_rds("../data/plant-info.rds")
 
-accession_info = read_rds("../data/accession-info.rds") |>
-  dplyr::select(species, accession)
+accession_info = read_rds("../data/accession-info.rds")
 
 rh_curves = read_rds("../data/trimmed_rh_curves.rds")
 
@@ -556,7 +555,7 @@ Conceptualization: C.D.M.; Methodology: C.D.M., W.S.L.; Investigation: C.D.M., W
 
 ### Populations
 
-We compared \aax{} among `r n_acc` ecologically diverse populations of wild tomato, including representatives of all described species of *Solanum* sect. *Lycopersicon* and sect. *Lycopersicoides* [@peralta_taxonomy_2008] and the cultivated tomato *S. lycopersicum* var. *lycopersicum* (@tbl-populations). These populations were selected in a previous study because they encompass the breadth of climatic variation in the wild tomato clade [@pease_phylogenomics_2016]. In one case, we substituted a congeric population of the species (*S. galapagense*) because of difficult growing the focal population. We also added an a population of *S. pennellii*. Due to constraints on growth space and time, we spread out measurements over `r n_weeks` weeks from `r start_licor_date` to `r end_licor_date`. Replicates within population were evenly spread out over this period to prevent confounding of temporal variation in growth conditions with variation among populations. 
+We compared \aax{} among `r n_acc` ecologically diverse populations of wild tomato, including representatives of all described species of *Solanum* sect. *Lycopersicon* and sect. *Lycopersicoides* [@peralta_taxonomy_2008] and the cultivated tomato *S. lycopersicum* var. *lycopersicum* (@tbl-populations). These populations were selected in a previous study because they encompass the breadth of climatic variation in the wild tomato clade [@pease_phylogenomics_2016]. In one case, we substituted a congeneric population of the species (*S. galapagense*) because of difficulty growing the focal population and we also added a population of *S. pennellii*. Due to constraints on growth space and time, we spread out measurements over `r n_weeks` weeks from `r start_licor_date` to `r end_licor_date`. Replicates within population were evenly spread out over this period to prevent confounding of temporal variation in growth conditions with variation among populations. 
 
 ```{r, populations, eval=TRUE,echo=FALSE,message=FALSE,warning=FALSE}
 #| label: tbl-populations
@@ -564,7 +563,7 @@ We compared \aax{} among `r n_acc` ecologically diverse populations of wild toma
 
 # Copied from solanum-aq project
 
-accession_info = read_rds("../data/accession-info.rds") |>
+accession_info |>
   filter(accession %in% rh_curves$acc) |>
   left_join(read_rds("../data/accession-gedi.rds") |>
               select(accession, pai), by = join_by(accession)) |>
@@ -576,9 +575,7 @@ accession_info = read_rds("../data/accession-info.rds") |>
     `Longitude` = lon,
     `Elevation (mas)` = elev,
     `$\\mathrm{PAI}~(\\unit{\\meter\\squared\\per\\meter\\squared})$` = pai
-  )
-
-accession_info |>
+  ) |>
   knitr::kable(
     format = "latex",
     digits = c(rep(0, 2), 3, 3, 0, 2),
