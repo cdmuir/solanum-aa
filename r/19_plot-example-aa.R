@@ -91,8 +91,9 @@ gp_aa = ggplot(df_segment,
     data = df_text,
     mapping = aes(label = label),
     hjust = -0.1,
-    vjust =0.5, 
-    color = "black"
+    vjust = 0.5, 
+    color = "black",
+    size = 4
   ) +
   scale_color_manual(
     values = c(
@@ -113,10 +114,10 @@ gp_aa = ggplot(df_segment,
 
 write_rds(gp_aa, "figures/example-aa.rds")
 
-# ggsave(
-#   "figures/example-aa.pdf",
-#   gp_aa,
-#   width = 6.5,
-#   height = 3.5,
-#   device = cairo_pdf
-# )
+ggsave(
+  "figures/example-aa.pdf",
+  gp_aa,
+  width = 6.5,
+  height = 3.5,
+  device = cairo_pdf
+)

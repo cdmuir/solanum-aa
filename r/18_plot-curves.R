@@ -13,8 +13,8 @@ accession_info = read_rds("data/accession-info.rds")
 plant_info = read_rds("data/plant-info.rds") |>
   mutate(light_treatment = light_treatment |>
            fct_recode(shade = "low", sun = "high"))
-aa_summary = read_rds("objects/aa_summary.rds")
-fit_curve_diagnostics = read_rds("objects/fit_curve_diagnostics.rds") |>
+aa_summary = read_rds("objects/aa_summary_sty.rds")
+fit_sty_diagnostics = read_rds("objects/fit_sty_diagnostics.rds") |>
   mutate(
     acc_id = str_extract(file, "LA[0-9]{4}A*-[A-Z]{1}[AB]{0,1}"),
     `Curve type` = str_extract(file, "amphi|pseudohypo"),
@@ -22,9 +22,9 @@ fit_curve_diagnostics = read_rds("objects/fit_curve_diagnostics.rds") |>
   )
 
 # checks
-assert_true(all(!is.na(fit_curve_diagnostics$acc_id))) # Check for NA values in acc_id
-assert_true(all(!is.na(fit_curve_diagnostics$`Curve type`))) # Check for NA values in `Curve type`
-assert_true(all(!is.na(fit_curve_diagnostics$light_intensity))) # Check for NA values in light_intensity
+assert_true(all(!is.na(fit_sty_diagnostics$acc_id))) # Check for NA values in acc_id
+assert_true(all(!is.na(fit_sty_diagnostics$`Curve type`))) # Check for NA values in `Curve type`
+assert_true(all(!is.na(fit_sty_diagnostics$light_intensity))) # Check for NA values in light_intensity
 
 plan(multisession, workers = 19)
 ags_curves = future_map(
@@ -35,7 +35,7 @@ ags_curves = future_map(
       crossing(curve_type = c("amphi", "pseudohypo")) |>
       mutate(
         file = glue(
-          "objects/curve-fits/{acc_id}_{curve_type}_{light_intensity}.rds"
+          "objects/curve-fits/steadystate/{acc_id}_{curve_type}_{light_intensity}.rds"
         ),
         fit = map(file, read_rds),
         r2 = map(fit, bayes_R2),
@@ -98,7 +98,7 @@ ags_curves = future_map(
         A = last(A),
         .by = c("acc_id", "Curve type", "light_intensity", "Measurement")
       ) |>
-      left_join(fit_curve_diagnostics,
+      left_join(fit_sty_diagnostics,
                 by = join_by(acc_id, `Curve type`, light_intensity)) |>
       mutate(r2_label = glue("italic(r)^2 == {r2_formatted}", r2_formatted = format(r2, digits = 3))) |>
       mutate(gsw = max(gsw), .by = Measurement)
