@@ -685,9 +685,9 @@ tibble(
 
 #### Remove unreliable and unusable data points
 
-*Rationale*: Unreliable data points consisted of those where chamber [CO$_2$] was unstable and therefore measurements are not biologically meaningful. Unusable data points were those where $A < 0$ because the logarithm of a negative number is undefined.
+*Rationale*: Unreliable data points consisted of those where chamber [CO$_2$] was unstable and therefore measurements are not biologically meaningful or leaf temperature departed from the target value. Unusable data points were those where $A < 0$ because the logarithm of a negative number is undefined.
 
-*Procedure*: We retained data points where \cabetween{`r ca_min`}{`r ca_max`} and $A> 0$.
+*Procedure*: We retained data points where \cabetween{`r ca_min`}{`r ca_max`}, $\left| T_\mathrm{leaf} - \qty{25}{degreeCelsius} \right| > `r aa_args[['degreeC_threshold']]`$, and $A> 0$.
 
 #### Remove hysteretic portion of \agcurve{} curves at low \gsw{}
 
