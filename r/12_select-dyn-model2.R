@@ -125,7 +125,7 @@ aa_loo_table = tibble(
   ) |>
   left_join(model_forms, by = join_by(model))
 
-write_rds(aa_loo_table, "objects/aa_sty_loo_table2.rds")
+write_rds(aa_loo_table, "objects/aa_dyn_loo_table2.rds")
 best_model_index = str_extract(aa_loo_table[1, "model"], "\\d+") |>
   as.integer()
-write_rds(aa_models[[best_model_index]], "objects/fit_aa2_sty.rds")
+write_rds(aa_models[[best_model_index]], "objects/fit_aa2_dyn.rds")
