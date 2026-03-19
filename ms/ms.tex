@@ -1,4 +1,5 @@
 % Options for packages loaded elsewhere
+% Options for packages loaded elsewhere
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
 \PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
@@ -7,21 +8,22 @@
   letterpaper,
   DIV=11,
   numbers=noendperiod]{scrartcl}
-
+\usepackage{xcolor}
 \usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 \usepackage{iftex}
 \ifPDFTeX
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
 \else % if luatex or xetex
-  \usepackage{unicode-math}
+  \usepackage{unicode-math} % this also loads fontspec
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
 \fi
 \usepackage{lmodern}
-\ifPDFTeX\else  
-    % xetex/luatex font selection
+\ifPDFTeX\else
+  % xetex/luatex font selection
   \setmainfont[]{Times New Roman}
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
@@ -40,22 +42,32 @@
 }{% if KOMA class
   \KOMAoptions{parskip=half}}
 \makeatother
-\usepackage{xcolor}
-\setlength{\emergencystretch}{3em} % prevent overfull lines
-\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 % Make \paragraph and \subparagraph free-standing
+\makeatletter
 \ifx\paragraph\undefined\else
   \let\oldparagraph\paragraph
-  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
 \fi
 \ifx\subparagraph\undefined\else
   \let\oldsubparagraph\subparagraph
-  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
+\makeatother
 
 
-\providecommand{\tightlist}{%
-  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}\usepackage{longtable,booktabs,array}
+\usepackage{longtable,booktabs,array}
 \usepackage{calc} % for calculating minipage widths
 % Correct order of tables after \paragraph or \subparagraph
 \usepackage{etoolbox}
@@ -67,17 +79,21 @@
 \makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
-\makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
 % Set default figure placement to htbp
-\makeatletter
 \def\fps@figure{htbp}
 \makeatother
+
+
 % definitions for citeproc citations
 \NewDocumentCommand\citeproctext{}{}
 \NewDocumentCommand\citeproc{mm}{%
@@ -111,6 +127,18 @@
 \newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
 \newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
 \newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+
+
+
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+
+
+ 
+
 
 \usepackage{booktabs}
 \usepackage{longtable}
@@ -200,13 +228,9 @@
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
-\ifLuaTeX
-  \usepackage{selnolig}  % disable illegal ligatures
-\fi
 \usepackage{bookmark}
-
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\urlstyle{same} % disable monospaced font for URLs
+\urlstyle{same}
 \hypersetup{
   pdftitle={Plasticity and adaptation to high light intensity amplify the advantage of amphistomatous leaves},
   pdfauthor={Christopher D. Muir\^{}\{1,2*\}; Wei Shen Lim\^{}\{1\}; Dachuan Wang\^{}\{1,2\}},
@@ -217,14 +241,15 @@
   urlcolor={Blue},
   pdfcreator={LaTeX via pandoc}}
 
+
 \title{Plasticity and adaptation to high light intensity amplify the
 advantage of amphistomatous leaves}
 \author{Christopher D. Muir\(^{1,2*}\) \and Wei Shen
 Lim\(^{1}\) \and Dachuan Wang\(^{1,2}\)}
 \date{}
-
 \begin{document}
 \maketitle
+
 
 \begin{center}
 $^1$School of Life Sciences, University of Hawaiʻi; Mānoa, Hawaiʻi, USA\\
@@ -380,7 +405,7 @@ forest canopy will often experience low light intensity.
 
 \centering{
 
-\includegraphics{../figures/hypotheses.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{../figures/hypotheses.pdf}}
 
 }
 
@@ -433,8 +458,8 @@ We tested these hypotheses by comparing \aax{} among amphistomatous wild
 tomato species (Table~\ref{tbl-populations}; Figure~\ref{fig-sr-rxnorm};
 (50)) from different native light habitats, grown under simulated sun
 and shade light treatments, and measured under contrasting light
-intensities (low and high). We measured \aax{} on 567 individual plants
-from 29 populations (average of 9.78 replicates per light treatment)
+intensities (low and high). We measured \aax{} on 566 individual plants
+from 29 populations (average of 9.76 replicates per light treatment)
 using a recently developed method (46). With this method, we directly
 compare the photosynthetic rate of an untreated amphistomatous leaf to
 that of the same leaf with gas exchange blocked through the adaxial
@@ -472,25 +497,25 @@ estimates from the best model.
 
 Measured under high light intensity, \aax{} was consistently greater for
 sun plants. The average \aax{} among populations in the shade treatment
-was 0.039 (range: 0.012--0.098; 23 of 29 populations significant);
+was 0.041 (range: 0.009--0.105; 19 of 29 populations significant);
 however, the same populations grown at high light intensity showed a
-mean \aax{} of 0.055 (range: 0.028--0.114; 28 of 29 populations
+mean \aax{} of 0.051 (range: 0.021--0.116; 21 of 29 populations
 significant). Contrary to the predictions of the acclimation hypothesis,
 \aax{} was greater in all populations under low measurement light
 intensity for both sun and shade grown plants. The overall average
 \aax{} of shade and sun grown plants measured under low light intensity
-was 0.074 (range: 0.032--0.141; 28 of 29 populations significant) and
-0.090 (range: 0.049--0.158; 29 of 29 populations significant),
+was 0.071 (range: 0.034--0.133; 29 of 29 populations significant) and
+0.096 (range: 0.052--0.184; 29 of 29 populations significant),
 respectively. There was a modest tendency for populations from more open
 habitats (lower PAI) to exhibit greater \aax{} and the slope was
-significantly different than 0 in all treatment combinations
-(Fig.~\ref{fig-aa}B).
+significantly different than 0 in three of the four treatment
+combinations (Fig.~\ref{fig-aa}B).
 
 \begin{figure}
 
 \centering{
 
-\includegraphics{ms_files/figure-pdf/fig-aa-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-aa-1.pdf}}
 
 }
 
@@ -504,7 +529,7 @@ significantly different than 0 in all treatment combinations
 
 \centering{
 
-\includegraphics{ms_files/figure-pdf/fig-aacap-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-aacap-1.pdf}}
 
 }
 
@@ -539,34 +564,34 @@ provides modest support for the constitutive hypothesis. Plastic changes
 in leaf thickness and/or packing density, summarized by the bulk leaf
 mass per area (LMA), may mediate the effect of growth light intensity on
 \aax{}. LMA increased in sun grown plants in all populations by an
-average of 123\% {[}95\% CI: 50.8 to 233\%{]}, qualitatively similar to
+average of 121\% {[}95\% CI: 47.1 to 260\%{]}, qualitatively similar to
 plastic responses in many species (47). When LMA is included in
 statistical models, the effect growth light intensity on \aax{} is no
 longer supported, indicating that plastic changes in LMA mediate the
 effect of growth light intensity (Table~\ref{tbl-fit_aa2}). The effect
 of LMA on individual-level \aax{} (Fig.~\ref{fig-lma_aa}) is weak,
-albeit significantly (Table~\ref{tbl-fit_aa2}). This is likely because
-many anatomical traits underlie LMA (52) and future research will be
-needed to identify which particular traits, such as leaf thickness or
-mesophyll porosity, are responsible for mediating \aax{}. The fact that
-the \aax{} of sun plants was greater under low measurement light
-intensity supports a long-standing hypothesis that resistance to
-CO\(_2\) diffusion is greater in the upper than lower portions of the
-leaf interior (53). At low light intensity, photosynthesis is weighted
-toward the upper palisade where most light is intercepted. If resistance
-to CO\(_2\) diffusion is high in the upper palisade, amphistomy may,
-unexpectedly, be particularly beneficial for sun leaves experiencing
-intermittent shade or cloud cover. Our study is limited in testing this
-because we could not directly measure the stomatal conductance ratio and
-intercellular resistance on each surface. Future experiments measuring
-\aax{} with a dual sided chamber (31, 33) can overcome these
-limitations.
+albeit significantly greater than 0 (Table~\ref{tbl-fit_aa2}). This is
+likely because many anatomical traits underlie LMA (52) and future
+research will be needed to identify which particular traits, such as
+leaf thickness or mesophyll porosity, are responsible for mediating
+\aax{}. The fact that the \aax{} of sun plants was greater under low
+measurement light intensity supports a long-standing hypothesis that
+resistance to CO\(_2\) diffusion is greater in the upper than lower
+portions of the leaf interior (53). At low light intensity,
+photosynthesis is weighted toward the upper palisade where most light is
+intercepted. If resistance to CO\(_2\) diffusion is high in the upper
+palisade, amphistomy may, unexpectedly, be particularly beneficial for
+sun leaves experiencing intermittent shade or cloud cover. Our study is
+limited in testing this because we could not directly measure the
+stomatal conductance ratio and intercellular resistance on each surface.
+Future experiments measuring \aax{} with a dual sided chamber (31, 33)
+can overcome these limitations.
 
 \begin{figure}
 
 \centering{
 
-\includegraphics{ms_files/figure-pdf/fig-lma_aa-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-lma_aa-1.pdf}}
 
 }
 
@@ -1342,7 +1367,7 @@ We estimated the stomatal density and size on ab- and adaxial leaf
 surfaces from all leaves, using guard cell length as a proxy for
 stomatal size since it is proportional to maximum conductance (56). We
 made surface impressions of leaf lamina from the same area used for gas
-exchange measurements using a-silicone impression material (Zhermack
+exchange measurements using a silicone impression material (Zhermack
 elite HD+, light body, fast set, Rovigo, Italy). We applied clear nail
 polish to make positive replicas of the impression. After nail polish
 dried, we mounted replicas on a microscope slide using transparent tape
@@ -1379,10 +1404,10 @@ FIJI implementation of ImageJ2 version 2.3.0 (58). We dried leaves for
 72 hours at \(\qty{74}{\degreeCelsius}\) in a food dehydrator (Cosori
 CP267-FD, Vesync Co., Anaheim, California, USA) and weighed using a
 benchtop analytical balance (Ohaus PR64 Analytical Balance, Parsippany,
-New Jersey, USA). In \(10.3\%\) of leaves we measured LMA on the
+New Jersey, USA). In \(10.4\%\) of leaves we measured LMA on the
 adjacent leaflet because the focal leaflet was damaged or wilted while
 making surface impressions and we could not reliably estimate area. LMA
-data are missing from \(2.82\%\) of individuals because the area or mass
+data are missing from \(2.83\%\) of individuals because the area or mass
 was not recorded at all or recorded incorrectly.
 
 \subsubsection{\texorpdfstring{Cleaning \agcurve{}
@@ -1411,14 +1436,14 @@ all combinations of leaf type (amphi or pseudohypo) and light intensity
 \toprule
 Step: description & Number of curves & Number of points per curve\\
 \midrule
-\cellcolor{gray!10}{1. remove unreliable and unusable data points} & \cellcolor{gray!10}{2,361} & \cellcolor{gray!10}{63.0}\\
-2. remove points not at steady state & 2,359 & 59.3\\
-\cellcolor{gray!10}{3. remove hysteretic portion of \agcurve{} curves at low \gsw{}} & \cellcolor{gray!10}{2,359} & \cellcolor{gray!10}{55.6}\\
-4. remove outliers within each \agcurve{} curve & 2,349 & 55.4\\
-\cellcolor{gray!10}{5. remove replicates with no overlap between amphi and pseudohypo \agcurve{} curves} & \cellcolor{gray!10}{2,224} & \cellcolor{gray!10}{55.2}\\
+\cellcolor{gray!10}{1. remove unreliable and unusable data points} & \cellcolor{gray!10}{2,357} & \cellcolor{gray!10}{63.0}\\
+2. remove points not at steady state & 2,355 & 59.3\\
+\cellcolor{gray!10}{3. remove hysteretic portion of \agcurve{} curves at low \gsw{}} & \cellcolor{gray!10}{2,355} & \cellcolor{gray!10}{55.5}\\
+4. remove outliers within each \agcurve{} curve & 2,345 & 55.3\\
+\cellcolor{gray!10}{5. remove replicates with no overlap between amphi and pseudohypo \agcurve{} curves} & \cellcolor{gray!10}{2,218} & \cellcolor{gray!10}{55.2}\\
 \addlinespace
-6. thin redundant data points within each \agcurve{} curve & 2,224 & 27.0\\
-\cellcolor{gray!10}{7. trim extreme \aax{} values} & \cellcolor{gray!10}{2,162} & \cellcolor{gray!10}{27.0}\\
+6. thin redundant data points within each \agcurve{} curve & 2,218 & 27.0\\
+\cellcolor{gray!10}{7. trim extreme \aax{} values} & \cellcolor{gray!10}{2,156} & \cellcolor{gray!10}{27.0}\\
 \bottomrule
 \end{tabular}
 
@@ -1454,10 +1479,12 @@ points}\label{remove-unreliable-and-unusable-data-points}
 
 \emph{Rationale}: Unreliable data points consisted of those where
 chamber {[}CO\(_2\){]} was unstable and therefore measurements are not
-biologically meaningful. Unusable data points were those where \(A < 0\)
-because the logarithm of a negative number is undefined.
+biologically meaningful or leaf temperature departed from the target
+value. Unusable data points were those where \(A < 0\) because the
+logarithm of a negative number is undefined.
 
-\emph{Procedure}: We retained data points where \cabetween{410}{420} and
+\emph{Procedure}: We retained data points where \cabetween{410}{420},
+\(\left| T_\mathrm{leaf} - \qty{25}{\degreeCelsius} \right| < 0.5\), and
 \(A> 0\).
 
 \paragraph{\texorpdfstring{Remove hysteretic portion of \agcurve{}
@@ -1561,7 +1588,7 @@ Our analysis pipeline consisted of four main steps:
 
 All models were fit using a Bayesian HMC sampling in the probabilistic
 programming language \emph{Stan} (61) using the \emph{R} package
-\textbf{brms} version 2.23.0 (62). We used \emph{CmdStan} version 2.37.0
+\textbf{brms} version 2.23.0 (62). We used \emph{CmdStan} version 2.38.0
 and \textbf{cmdstanr} version 0.9.0 (63) to interface with \emph{R}
 version 4.5.2 (64). We sampled the posterior distribution from a single
 chain with a minimum of 1000 iterations after 1000 warmup iterations. If
@@ -1603,7 +1630,7 @@ mixed effects model described below.
 
 \centering{
 
-\includegraphics{ms_files/figure-pdf/fig-example-aa-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-example-aa-1.pdf}}
 
 }
 
@@ -1648,7 +1675,7 @@ LA0716, two closely related populations of \emph{S. pennellii}. The node
 separating LA0750 from LA0716 was placed half-way between the next
 deepest node. We used the leave-one-out cross-validation information
 criterion (LOOIC) to compare the fit of models (\autoref{tbl-aa_loo1})
-using the \emph{R} package \textbf{loo} version 2.8.0 (66) to calculate
+using the \emph{R} package \textbf{loo} version 2.9.0 (66) to calculate
 LOOIC values. We selected the model with the lowest LOOIC value
 (Table~\ref{tbl-aa_loo1}) to generate posterior predictions for
 hypothesis testing. Parameter estimates from the selected model are
@@ -1806,18 +1833,21 @@ Parameter & Estimate [95\% CI]\\
 \midrule
 \addlinespace[0.3em]
 \multicolumn{2}{l}{\textit{Fixed effects}}\\
-\hspace{1em}\cellcolor{gray!10}{$\mathrm{AA}$ intercept (shade, low light)} & \cellcolor{gray!10}{0.09 [0.02, 0.16]}\\
-\hspace{1em}effect of sun on $\mathrm{AA}$ & 0.02 [0.01, 0.03]\\
-\hspace{1em}\cellcolor{gray!10}{effect of high light on $\mathrm{AA}$} & \cellcolor{gray!10}{-0.04 [-0.07, -0.01]}\\
+\hspace{1em}\cellcolor{gray!10}{$\mathrm{AA}$ intercept (shade, low light)} & \cellcolor{gray!10}{0.09 [0.02, 0.15]}\\
+\hspace{1em}effect of sun on $\mathrm{AA}$ & 0.03 [-0.02, 0.1]\\
+\hspace{1em}\cellcolor{gray!10}{effect of high light on $\mathrm{AA}$} & \cellcolor{gray!10}{-0.03 [-0.06, 0]}\\
+\hspace{1em}effect of sun $\times$ high light interaction on $\mathrm{AA}$ & -0.02 [-0.08, 0.03]\\
 \addlinespace[0.3em]
 \multicolumn{2}{l}{\textit{Distributional parameters}}\\
-\hspace{1em}$\log \sigma$ intercept (shade, low light) & -2.49 [-2.6, -2.39]\\
-\hspace{1em}\cellcolor{gray!10}{effect of sun on $\log \sigma$} & \cellcolor{gray!10}{0.23 [0.11, 0.33]}\\
-\hspace{1em}effect of high light on $\log \sigma$ & -0.19 [-0.3, -0.07]\\
+\hspace{1em}\cellcolor{gray!10}{$\log \sigma$ intercept (shade, low light)} & \cellcolor{gray!10}{-2.5 [-2.6, -2.39]}\\
+\hspace{1em}effect of sun on $\log \sigma$ & 0.21 [0.09, 0.32]\\
+\hspace{1em}\cellcolor{gray!10}{effect of high light on $\log \sigma$} & \cellcolor{gray!10}{-0.19 [-0.3, -0.07]}\\
 \addlinespace[0.3em]
 \multicolumn{2}{l}{\textit{Random effect SDs}}\\
-\hspace{1em}\cellcolor{gray!10}{$\mathrm{AA}$ among populations} & \cellcolor{gray!10}{0.06 [0.03, 0.09]}\\
-\hspace{1em}effect of high light on $\mathrm{AA}$ among populations & 0.02 [0, 0.05]\\
+\hspace{1em}$\mathrm{AA}$ among populations & 0.05 [0.03, 0.09]\\
+\hspace{1em}\cellcolor{gray!10}{effect of sun on $\mathrm{AA}$ among populations} & \cellcolor{gray!10}{0.04 [0, 0.09]}\\
+\hspace{1em}effect of high light on $\mathrm{AA}$ among populations & 0.02 [0, 0.04]\\
+\hspace{1em}\cellcolor{gray!10}{effect of sun $\times$ high light interaction on $\mathrm{AA}$ among populations} & \cellcolor{gray!10}{0.04 [0, 0.08]}\\
 \bottomrule
 \end{tabular}
 
@@ -1848,28 +1878,28 @@ Parameter & Estimate [95\% CI]\\
 \multicolumn{2}{l}{\textbf{Response: $\mathrm{AA}$}}\\
 \addlinespace[0.3em]
 \multicolumn{2}{l}{\textit{~~Fixed effects}}\\
-\hspace{1em}\hspace{1em}\cellcolor{gray!10}{$\mathrm{AA}$ intercept (shade, low light)} & \cellcolor{gray!10}{0.03 [-0.07, 0.11]}\\
-\hspace{1em}\hspace{1em}effect of high light on $\mathrm{AA}$ & -0.04 [-0.08, 0]\\
-\hspace{1em}\hspace{1em}\cellcolor{gray!10}{effect of $\log \mathrm{LMA}$ on $\mathrm{AA}$} & \cellcolor{gray!10}{0.02 [0.01, 0.03]}\\
+\hspace{1em}\hspace{1em}\cellcolor{gray!10}{$\mathrm{AA}$ intercept (shade, low light)} & \cellcolor{gray!10}{0.03 [-0.06, 0.11]}\\
+\hspace{1em}\hspace{1em}effect of high light on $\mathrm{AA}$ & -0.04 [-0.07, -0.01]\\
+\hspace{1em}\hspace{1em}\cellcolor{gray!10}{effect of $\log \mathrm{LMA}$ on $\mathrm{AA}$} & \cellcolor{gray!10}{0.02 [0.01, 0.04]}\\
 \addlinespace[0.3em]
 \multicolumn{2}{l}{\textit{~~Distributional parameters}}\\
-\hspace{1em}\hspace{1em}$\log \sigma$ intercept (shade, low light) & -2.51 [-2.62, -2.41]\\
-\hspace{1em}\hspace{1em}\cellcolor{gray!10}{effect of sun on $\log \sigma$} & \cellcolor{gray!10}{0.23 [0.12, 0.34]}\\
-\hspace{1em}\hspace{1em}effect of high light on $\log \sigma$ & -0.17 [-0.29, -0.06]\\
+\hspace{1em}\hspace{1em}$\log \sigma$ intercept (shade, low light) & -2.5 [-2.61, -2.39]\\
+\hspace{1em}\hspace{1em}\cellcolor{gray!10}{effect of sun on $\log \sigma$} & \cellcolor{gray!10}{0.22 [0.11, 0.33]}\\
+\hspace{1em}\hspace{1em}effect of high light on $\log \sigma$ & -0.18 [-0.3, -0.07]\\
 \addlinespace[0.3em]
 \multicolumn{2}{l}{\textit{~~Random effect SDs}}\\
-\hspace{1em}\hspace{1em}\cellcolor{gray!10}{$\mathrm{AA}$ among populations} & \cellcolor{gray!10}{0.06 [0.04, 0.1]}\\
-\hspace{1em}\hspace{1em}effect of high light on $\mathrm{AA}$ among populations & 0.02 [0, 0.06]\\
+\hspace{1em}\hspace{1em}\cellcolor{gray!10}{$\mathrm{AA}$ among populations} & \cellcolor{gray!10}{0.06 [0.03, 0.09]}\\
+\hspace{1em}\hspace{1em}effect of high light on $\mathrm{AA}$ among populations & 0.02 [0, 0.05]\\
 \addlinespace[0.3em]
 \multicolumn{2}{l}{\textbf{Response: $\log~\mathrm{LMA}$}}\\
 \addlinespace[0.3em]
 \multicolumn{2}{l}{\textit{~~Fixed effects}}\\
-\hspace{1em}\hspace{1em}\cellcolor{gray!10}{$\log \mathrm{LMA}$ intercept (shade)} & \cellcolor{gray!10}{3 [2.5, 3.52]}\\
-\hspace{1em}\hspace{1em}effect of sun on $\log \mathrm{LMA}$ & 0.8 [0.41, 1.2]\\
+\hspace{1em}\hspace{1em}\cellcolor{gray!10}{$\log \mathrm{LMA}$ intercept (shade)} & \cellcolor{gray!10}{3.01 [2.46, 3.55]}\\
+\hspace{1em}\hspace{1em}effect of sun on $\log \mathrm{LMA}$ & 0.79 [0.39, 1.28]\\
 \addlinespace[0.3em]
 \multicolumn{2}{l}{\textit{~~Random effect SDs}}\\
-\hspace{1em}\hspace{1em}\cellcolor{gray!10}{$\log \mathrm{LMA}$ among populations} & \cellcolor{gray!10}{0.47 [0.34, 0.67]}\\
-\hspace{1em}\hspace{1em}effect of sun on $\log \mathrm{LMA}$ among populations & 0.36 [0.22, 0.57]\\
+\hspace{1em}\hspace{1em}\cellcolor{gray!10}{$\log \mathrm{LMA}$ among populations} & \cellcolor{gray!10}{0.47 [0.33, 0.64]}\\
+\hspace{1em}\hspace{1em}effect of sun on $\log \mathrm{LMA}$ among populations & 0.36 [0.22, 0.55]\\
 \bottomrule
 \end{tabular}
 
@@ -1881,7 +1911,7 @@ Parameter & Estimate [95\% CI]\\
 
 \centering{
 
-\includegraphics{ms_files/figure-pdf/fig-sr-rxnorm-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-sr-rxnorm-1.pdf}}
 
 }
 
@@ -1930,22 +1960,14 @@ LOOIC & $\Delta$LOOIC & Meas. & Growth & Inter. & Meas. & Growth & Inter. & Meas
 \endfoot
 \bottomrule
 \endlastfoot
-\cellcolor{gray!10}{-1789.54} & \cellcolor{gray!10}{0.00} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
--1789.47 & 0.07 & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$ &  & $\checkmark$ & $\checkmark$\\
-\cellcolor{gray!10}{-1789.25} & \cellcolor{gray!10}{0.29} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
--1789.18 & 0.36 & $\checkmark$ & $\checkmark$ &  & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$\\
-\cellcolor{gray!10}{-1788.95} & \cellcolor{gray!10}{0.60} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+\cellcolor{gray!10}{-1792.82} & \cellcolor{gray!10}{0.00} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+-1791.96 & 0.86 & $\checkmark$ & $\checkmark$ &  & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$\\
+\cellcolor{gray!10}{-1791.88} & \cellcolor{gray!10}{0.94} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+-1791.31 & 1.51 & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$\\
+\cellcolor{gray!10}{-1791.19} & \cellcolor{gray!10}{1.63} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
 \addlinespace
--1788.67 & 0.88 & $\checkmark$ &  &  &  & $\checkmark$ &  & $\checkmark$ & $\checkmark$\\
-\cellcolor{gray!10}{-1788.33} & \cellcolor{gray!10}{1.21} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
--1788.33 & 1.22 & $\checkmark$ & $\checkmark$ &  &  & $\checkmark$ &  & $\checkmark$ & $\checkmark$\\
-\cellcolor{gray!10}{-1788.21} & \cellcolor{gray!10}{1.34} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
--1788.19 & 1.35 & $\checkmark$ & $\checkmark$ &  &  &  &  & $\checkmark$ & $\checkmark$\\
-\addlinespace
-\cellcolor{gray!10}{-1788.17} & \cellcolor{gray!10}{1.38} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
--1788.17 & 1.38 & $\checkmark$ & $\checkmark$ & $\checkmark$ &  & $\checkmark$ &  & $\checkmark$ & $\checkmark$\\
-\cellcolor{gray!10}{-1787.91} & \cellcolor{gray!10}{1.64} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
--1787.75 & 1.80 &  &  &  & $\checkmark$ & $\checkmark$ &  & $\checkmark$ & $\checkmark$\\*
+-1791.06 & 1.76 & $\checkmark$ & $\checkmark$ &  &  & $\checkmark$ &  & $\checkmark$ & $\checkmark$\\
+\cellcolor{gray!10}{-1790.94} & \cellcolor{gray!10}{1.88} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\*
 
 \end{longtable}
 
@@ -1986,15 +2008,17 @@ LOOIC & $\Delta$LOOIC & Meas. & Growth & LMA & Meas. $\times$ Growth & Meas. $\t
 \endfoot
 \bottomrule
 \endlastfoot
-\cellcolor{gray!10}{-1799.06} & \cellcolor{gray!10}{0.00} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
--1798.39 & 0.67 & $\checkmark$ &  & $\checkmark$ &  &  &  &  &  &  & \\
-\cellcolor{gray!10}{-1798.21} & \cellcolor{gray!10}{0.85} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
--1797.91 & 1.15 &  &  & $\checkmark$ &  &  &  &  & $\checkmark$ &  & \\
-\cellcolor{gray!10}{-1797.77} & \cellcolor{gray!10}{1.29} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+\cellcolor{gray!10}{-1794.67} & \cellcolor{gray!10}{0.00} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+-1793.79 & 0.88 & $\checkmark$ &  & $\checkmark$ &  &  &  &  &  &  & \\
+\cellcolor{gray!10}{-1793.65} & \cellcolor{gray!10}{1.02} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
+-1793.51 & 1.17 & $\checkmark$ &  & $\checkmark$ &  &  &  &  & $\checkmark$ & $\checkmark$ & \\
+\cellcolor{gray!10}{-1793.28} & \cellcolor{gray!10}{1.39} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
 \addlinespace
--1797.44 & 1.62 & $\checkmark$ & $\checkmark$ & $\checkmark$ &  & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$ & $\checkmark$\\
-\cellcolor{gray!10}{-1797.17} & \cellcolor{gray!10}{1.89} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{}\\
--1797.11 & 1.95 & $\checkmark$ &  & $\checkmark$ &  &  &  &  & $\checkmark$ & $\checkmark$ & \\*
+-1793.05 & 1.62 & $\checkmark$ & $\checkmark$ & $\checkmark$ &  &  &  &  & $\checkmark$ & $\checkmark$ & $\checkmark$\\
+\cellcolor{gray!10}{-1793.05} & \cellcolor{gray!10}{1.62} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{}\\
+-1793.03 & 1.65 & $\checkmark$ &  & $\checkmark$ &  &  &  & $\checkmark$ &  &  & \\
+\cellcolor{gray!10}{-1792.81} & \cellcolor{gray!10}{1.86} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$} & \cellcolor{gray!10}{$\checkmark$}\\
+-1792.68 & 1.99 & $\checkmark$ & $\checkmark$ &  &  & $\checkmark$ &  &  & $\checkmark$ & $\checkmark$ & $\checkmark$\\*
 
 \end{longtable}
 
@@ -2004,7 +2028,7 @@ LOOIC & $\Delta$LOOIC & Meas. & Growth & LMA & Meas. $\times$ Growth & Meas. $\t
 
 \centering{
 
-\includegraphics{ms_files/figure-pdf/fig-curves-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{ms_files/figure-pdf/fig-curves-1.pdf}}
 
 }
 
@@ -2020,6 +2044,7 @@ standard errors for each pair of amphi (orange) and pseudohypo (blue)
 curves.}
 
 \end{figure}%
+
 
 
 

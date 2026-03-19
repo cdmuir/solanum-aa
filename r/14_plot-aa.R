@@ -88,7 +88,7 @@ df_aa_text = df_aa_pred1 |>
   summarize(
     x = 0,
     label = sprintf("%.3f", round(mean(aa), 3)),
-    aa = 0.20,
+    aa = Inf,
     .by = c("Growth", "Measurement")
   )
 
@@ -109,7 +109,7 @@ fig_aa = ggplot(
   geom_hline(yintercept = 0, linetype = "dashed") +
   geom_text(data = df_aa_text,
             aes(x, aa, label = label),
-            inherit.aes = FALSE, hjust = 0, vjust = 1) +
+            inherit.aes = FALSE, hjust = 0, vjust = 1.5) +
   scale_color_manual(values = c("shade" = "tomato4", "sun" = "tomato")) +
   scale_shape_manual(values = c("low" = 19, "high" = 21)) +
   ylab("amphi advantage") +

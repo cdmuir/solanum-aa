@@ -79,7 +79,7 @@ df_text = df_coef_summary |>
       sign(.lower) != sign(.upper) ~ "n.s."
     ),
     pai = max(accession_gedi$pai),
-    aa = 0.16
+    aa = 0.17
   )
 
 fig_aa_pai = ggplot(df_aa_pred2, aes(pai, aa, color = Growth, shape = Measurement)) +
@@ -105,7 +105,7 @@ fig_aa_pai = ggplot(df_aa_pred2, aes(pai, aa, color = Growth, shape = Measuremen
   scale_x_continuous(breaks = c(0.01, 0.1, 1), trans = reverselog10_trans()) +
   xlab(expression(paste("native plant area index [", m^2 ~ m^-2, "]"))) +
   ylab("amphi advantage") +
-  ylim(0, 0.16) +
+  ylim(0, 0.17) +
   geom_hline(yintercept = 0, linetype = "dashed") +
   theme(legend.position = "none")
 
