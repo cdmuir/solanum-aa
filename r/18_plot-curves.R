@@ -263,3 +263,5 @@ for (i in seq_along(ags_curves)) {
 }
 
 dev.off()
+
+file.remove("Rplots.pdf")
